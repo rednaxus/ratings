@@ -1,16 +1,13 @@
 // @flow weak
 
-import { connect }              from 'react-redux';
-import {
-  bindActionCreators,
-  compose
-}                               from 'redux';
-import { withRouter }           from 'react-router';
-import * as viewsActions        from '../../redux/modules/views';
-import * as userInfosActions    from '../../redux/modules/userInfos';
-import * as sidemenuActions     from '../../redux/modules/sideMenu';
-import * as earningGraphActions from '../../redux/modules/earningGraph';
-import App                      from './App';
+import { connect } from 'react-redux'
+import { bindActionCreators, compose } from 'redux'
+import { withRouter }           from 'react-router'
+import * as viewsActions        from '../../redux/modules/views'
+import * as userInfosActions    from '../../redux/modules/userInfos'
+import * as sidemenuActions     from '../../redux/modules/sideMenu'
+import * as earningGraphActions from '../../redux/modules/earningGraph'
+import App                      from './App'
 
 
 const mapStateToProps = (state) => {

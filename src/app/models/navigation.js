@@ -27,6 +27,11 @@ export const navigation = {
           faIconName: 'fa-eye'
         },
         {
+          name: 'Availability',
+          linkTo: '/Dashboard/availability',
+          faIconName: 'fa-eye'
+        },
+        {
           name: 'StatsCard',
           linkTo: '/Dashboard/statsCard',
           faIconName: 'fa-check-square-o'
@@ -72,6 +77,16 @@ export const navigation = {
           name: 'General preview',
           linkTo: '/general',
           faIconName: 'fa-eye'
+        },
+        {
+          name: 'Rules',
+          linkTo: '/general/rules',
+          faIconName: 'fa-columns'
+        },
+        { 
+          name: 'About',
+          linkTo: '/general/about',
+          faIconName: 'fa-info'
         },
         {
           name: 'Breadcrumb',

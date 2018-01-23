@@ -17,12 +17,15 @@ import ScrollTop                from './components/scrollToTop/ScrollToTop';
 import Login                    from './views/login/index';
 import PageNotFound             from './views/pageNotFound';
 
+import getWeb3 from './services/getWeb3'
+
 // #region flow types
 type Props = any;
 type State = any;
 // #endregion
 
-const store = configureStore();
+export const store = configureStore();
+
 
 class Root extends Component<Props, State> {
   render() {

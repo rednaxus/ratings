@@ -140,6 +140,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.19.3",
     "morgan": "^1.9.0",
+    "nuka-carousel": "^3.0.1",
     "pretty-error": "^2.1.1",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
@@ -148,7 +149,7 @@
     "react-collapse": "^4.0.3",
     "react-dom": "^16.2.0",
     "react-height": "^3.0.0",
-    "react-highlight": "briancappello/react-highlight#react-v16-compiled",
+    "react-highlight": "^0.10.0",
     "react-motion": "^0.5.2",
     "react-notification": "^6.8.2",
     "react-overdrive": "^0.0.9",
@@ -163,7 +164,8 @@
     "redux-devtools-extension": "^2.13.2",
     "redux-thunk": "^2.2.0",
     "serialize-javascript": "^1.4.0",
-    "smoothscroll-polyfill": "^0.4.0"
+    "smoothscroll-polyfill": "^0.4.0",
+    "web3": "^0.20.4"
   },
   "jest": {
     "setupTestFrameworkScriptFile": "<rootDir>/src/setupTests.js",

@@ -2,12 +2,8 @@
 
 import moment               from 'moment';
 import { appConfig }        from '../../config';
-import {
-  fetchMockUserInfosData
-}                           from '../../services';
-import {
-  getUserInfoData
-}                           from '../../services/API';
+import { fetchMockUserInfosData } from '../../services';
+import { getUserInfoData } from '../../services/API';
 
 const REQUEST_USER_INFOS_DATA   = 'REQUEST_USER_INFOS_DATA';
 const RECEIVED_USER_INFOS_DATA  = 'RECEIVED_USER_INFOS_DATA';

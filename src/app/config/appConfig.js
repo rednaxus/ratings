@@ -35,6 +35,6 @@ export const appConfig = {
     }
   },
 
-  HELLO_WORD: 'Hello'
+  HELLO_WORD: ''
 
 };

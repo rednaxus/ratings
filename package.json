@@ -1,5 +1,5 @@
 {
-  "name": "veva rating agency",
+  "name": "Veva-Rating-Agency",
   "version": "0.1.0",
   "description": "Rating Agency running on decentralized ethereum blockchain",
   "main": "src/index.js",
@@ -165,6 +165,7 @@
     "redux-thunk": "^2.2.0",
     "serialize-javascript": "^1.4.0",
     "smoothscroll-polyfill": "^0.4.0",
+    "truffle-contract": "^1.1.11",
     "web3": "^0.20.4"
   },
   "jest": {

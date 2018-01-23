@@ -19,16 +19,60 @@ export const navigation = {
     // group menu #1
     {
       id: 1,
-      group: 'Dashboard  ',
+      group: 'Analyst',
       menus: [
         {
-          name: 'Dashboard preview',
+          name: 'Dashboard',
           linkTo: '/',
           faIconName: 'fa-eye'
         },
         {
           name: 'Availability',
           linkTo: '/Dashboard/availability',
+          faIconName: 'fa-eye'
+        }
+      ]
+    },
+    // group menu #2
+    {
+      id: 2,
+      group: 'Info',
+      menus: [
+        {
+          name: 'General preview',
+          linkTo: '/general',
+          faIconName: 'fa-eye'
+        },
+        {
+          name: 'Rules',
+          linkTo: '/general/rules',
+          faIconName: 'fa-columns'
+        },
+        { 
+          name: 'About',
+          linkTo: '/general/about',
+          faIconName: 'fa-info'
+        }
+      ]
+    },
+    // group menu #3
+    {
+      id: 3,
+      group: 'Tests1',
+      menus: [
+        {
+          name: 'Dashboard Demo',
+          linkTo: '/Dashboard/home',
+          faIconName: 'fa-eye'
+        },
+        {
+          name: 'Basic Elements preview',
+          linkTo: '/basicElements',
+          faIconName: 'fa-eye'
+        },
+        {
+          name: 'Simple tables preview',
+          linkTo: '/simpleTables',
           faIconName: 'fa-eye'
         },
         {
@@ -68,27 +112,12 @@ export const navigation = {
         }
       ]
     },
-    // group menu #2
+    // group menu #4
     {
-      id: 2,
-      group: 'General',
+      id: 4,
+      group: 'Tests2',
       menus: [
-        {
-          name: 'General preview',
-          linkTo: '/general',
-          faIconName: 'fa-eye'
-        },
-        {
-          name: 'Rules',
-          linkTo: '/general/rules',
-          faIconName: 'fa-columns'
-        },
-        { 
-          name: 'About',
-          linkTo: '/general/about',
-          faIconName: 'fa-info'
-        },
-        {
+         {
           name: 'Breadcrumb',
           linkTo: '/general/breadcrumb',
           faIconName: 'fa-bars'
@@ -127,30 +156,6 @@ export const navigation = {
           name: 'Default buttons',
           linkTo: '/general/defaultButtons',
           faIconName: 'fa-hand-o-up'
-        }
-      ]
-    },
-    // group menu #3
-    {
-      id: 3,
-      group: 'BasicElements',
-      menus: [
-        {
-          name: 'Basic Elements preview',
-          linkTo: '/basicElements',
-          faIconName: 'fa-eye'
-        }
-      ]
-    },
-    // group menu #4
-    {
-      id: 4,
-      group: 'SimpleTables',
-      menus: [
-        {
-          name: 'Simple tables preview',
-          linkTo: '/simpleTables',
-          faIconName: 'fa-eye'
         }
       ]
     }

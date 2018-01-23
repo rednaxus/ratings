@@ -9,12 +9,14 @@ import teamMates            from './teamMates'
 import views                from './views'
 import userAuth             from './userAuth'
 import web3                 from './web3'
+import tokens from './tokens'
 
 export const reducers = {
   earningGraph,
   sideMenu,
   userInfos,
   teamMates,
+  tokens,
   views,
   userAuth,
   web3

@@ -23,13 +23,14 @@ import TwitterFeedConnected         from '../views/twitterFeed'
 import WorkProgressConnected        from '../views/workProgress'
 import ProtectedConnected           from '../views/protected'
 
+import Dashboard  from '../views/dashboard'
 import Rules from '../views/rules'
 import Availability from '../views/availability'
 import About from '../views/about'
 
 export const MainRoutes = () => (
   <Switch>
-    <Route exact path="/" component={HomeConnected} />
+    <Route exact path="/" component={ Dashboard } />
     <Route path="/Dashboard/availability" component={ Availability }  />
     <Route path="/Dashboard/statsCard" component={ StatsCardConnected } />
     <Route path="/Dashboard/earningGraph" component={ EarningGraphConnected } />
@@ -38,6 +39,7 @@ export const MainRoutes = () => (
     <Route path="/Dashboard/twitterFeed" component={TwitterFeedConnected} />
     <Route path="/Dashboard/teamMates" component={TeamMatesViewConnected} />
     <Route path="/Dashboard/todoList" component={TodoListViewConnected} />
+    <Route path="/Dashboard/home" component={ HomeConnected } />
 
     <Route exact path="/simpleTables" component={SimpleTablesConnected} />
 

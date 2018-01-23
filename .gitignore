@@ -1,0 +1,16 @@
+.vscode/
+.idea/
+*.log
+npm-debug.log.*
+.DS_Store
+**/.DS_Store
+**/.~*
+**/thumbs.db
+**/node_modules
+**/.xcodeproj
+**/package-lock.json
+.project
+.settings
+build/
+dist/
+public/assets/

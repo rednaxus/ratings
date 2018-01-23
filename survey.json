@@ -1,0 +1,241 @@
+{ 
+  "title": "Jurist Survey", 
+  "showProgressBar": "top", 
+  "pages": [{
+   "elements": [
+    {
+     "type": "rating",
+     "maxRateDescription": " hi",
+     "minRateDescription": "lo",
+     "name": "pedigree",
+     "title": "Rate this team\"s core ability to execute the most challenging aspects of this venture, based on the pedigree of the principals"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "critical skills",
+     "title": "Has this team filled all the critical skills gap required to successfully execute this venture?"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "experience&accomplishments",
+     "title": "How close does the team\"s prior experience and accomplishments match the most difficult aspects of this venture?"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "commitment",
+     "title": "Has the team demonstrated the commitment necessary to see this venture through to success?"
+    }
+   ],
+   "name": "team"
+  },
+  {
+   "elements": [
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "problem strength",
+     "title": "Consider this venture’s offering from the vantage of its audience.  \nHow strong is the problem, need, or desire being addressed?"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "size of need",
+     "title": "How many individuals, companies have this need?  How large is the addressable market in your estimate?"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "market growth",
+     "title": "Is this a market that is growing fast or stagnating/regressing?\n"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "competition",
+     "title": "How intense is the competition, either direct or indirect?\n"
+    }
+   ],
+   "name": "opportunity"
+  },
+  {
+   "elements": [
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "coverage",
+     "title": "Has the offering/product been previewed by pundits, social media, reviewers.  How positive / negative is the reaction?"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "market support",
+     "title": "How much support is this offering having in the market, either from channel partners, or organic marketing, or press?"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "adoption",
+     "title": "How fast is the addressable market adopting this product/offering?"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "competitor response",
+     "title": "What is the response from competitors (direct/indirect)?"
+    }
+   ],
+   "name": "market momentum"
+  },
+  {
+   "elements": [
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "core capabilities",
+     "title": "Upon review of the solution, product, technology and core science, how transformative is this team’s offering to the market?"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "review credibility",
+     "title": "Has the technology been reviewed by experts(you or other peers) to validate it?  How credible are the ac?"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "technology risk",
+     "title": "How risky is this technology/approach?"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "comparitive effectiveness",
+     "title": "Comparing this offering with existing/upcoming alternatives.  \nHow much more effective is it?"
+    }
+   ],
+   "name": "product solution"
+  },
+  {
+   "elements": [
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "balance sheet",
+     "title": "Based on audited financials (if available), how strong is its balance sheet and ability to continually invest?"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "revenue / profit momentum",
+     "title": "Based on audited financials (if available), how strong is the revenue and marginal profit momentum of the company?\n"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "brand / community support",
+     "title": "How strong is the goodwill (brand or community support) of the company? How strong is the human capital goodwill of the company?"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "intellectual property",
+     "title": "How strong is the intellectual property related to the company’s offering and roadmap?  Does it give it a competitive advantage?"
+    }
+   ],
+   "name": "resources"
+  },
+  {
+   "elements": [
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "number of tokens issued",
+     "title": "Review the schedule of token issuance by the company.\nDo you anticipate greater than usual tokens to be offered for sale?"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "vesting schedule / time-locks",
+     "title": "Review the schedule of vesting / time-locks on tokens in the ecosystem.\nDo you anticipate greater than usual tokens to be offered for sale?"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "token demand",
+     "title": "Based on demand by trade/commercial buyers of tokens, do you anticipate greater than usual tokens to be purchased?"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "speculative demand",
+     "title": "Based on demand by speculative/financial buyers of tokens, do you anticipate greater than usual tokens to be purchased?"
+    }
+   ],
+   "name": "token supply / demand"
+  },
+  {
+   "elements": [
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "bull brief",
+     "title": "Upon review, can you attest that the Bull valuation brief represents a best-effort, truthful, non-plagiarized, non-conflicted effort by the analyst?"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "bear brief",
+     "title": "Upon review, can you attest that the Bear valuation brief represents a best-effort, truthful, non-plagiarized, non-conflicted effort by the analyst?"
+    },
+    {
+     "type": "rating",
+     "maxRateDescription": "hi",
+     "minRateDescription": "lo",
+     "name": "jurist recommendation",
+     "rateValues": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10"
+     ],
+     "title": "After reviewing the Bull and Bear valuation briefs what is your recommendation?"
+    }
+   ],
+   "name": "final"
+  }
+ ]
+}

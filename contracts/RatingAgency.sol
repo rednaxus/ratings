@@ -295,7 +295,7 @@ contract RatingAgency {
   uint16 constant JURY_SIZE = 6;
   uint16 constant DEFAULT_ROUND_VALUE = 100;
 
-  uint constant INFINITY = 0xffffff;
+  uint32 constant INFINITY = 0xffffff;
   uint16 constant REPUTATION_LEAD = 12;
   
    //string public name;
@@ -309,8 +309,8 @@ contract RatingAgency {
       uint timeperiod;
       address representative;
   }
-  mapping( uint => CoveredToken) covered_tokens;
-  uint public num_tokens = 0;
+  mapping( uint32 => CoveredToken) covered_tokens;
+  uint32 public num_tokens = 0;
 
   mapping (uint16 => address) cycles; // RoundCycle
   uint16 public num_cycles = 0;
@@ -335,22 +335,33 @@ contract RatingAgency {
     bootstrap_dummy_tokens(4);
   }
 
-  
   function cover_token(address _tokenContract,uint _timeperiod) public {  // only specify period if different
     covered_tokens[num_tokens++] = CoveredToken(_tokenContract,_timeperiod,msg.sender);
   }
-
-  function findToken(address _tokenContract) public constant returns (uint) {
+  
+  function getTokenById(uint32 idx) public constant returns (address) {
+      return covered_tokens[idx].token_addr;
+  }
+    
+  function apiTokenList() public view returns (string r) {
+    r = "[";
+    for ( uint32 i=0; i<num_tokens; i++ ) {
+      r = Aleph.strConcat(r,i==0?"\"":",\"","0x",Aleph.toAsciiString(covered_tokens[i].token_addr),"\"");
+    }
+    r = Aleph.strConcat(r,"]");
+  }
+  
+  function findToken(address _tokenContract) public constant returns (uint32) {
     //if (token.token_addr == _tokenContract && msg.sender == token.representative) {
-    for(uint idx=0;idx<num_tokens;idx++) 
+    for(uint32 idx=0;idx<num_tokens;idx++) 
         if (covered_tokens[idx].token_addr == _tokenContract) return idx;
     return INFINITY;
   }
   function removeToken(address _tokenContract) public {
-    uint idx = findToken(_tokenContract);
+    uint32 idx = findToken(_tokenContract);
     require(idx!=INFINITY);
     delete covered_tokens[idx];
-    for (uint jdx=idx;jdx<num_tokens-1;jdx++) covered_tokens[jdx] = covered_tokens[jdx+1];
+    for (uint32 jdx=idx;jdx<num_tokens-1;jdx++) covered_tokens[jdx] = covered_tokens[jdx+1];
     num_tokens--;
   }
   

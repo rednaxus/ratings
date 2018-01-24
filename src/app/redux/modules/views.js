@@ -33,6 +33,8 @@ const ENTER_BREADCRUMB_VIEW = 'ENTER_BREADCRUMB_VIEW';
 const LEAVE_BREADCRUMB_VIEW = 'LEAVE_BREADCRUMB_VIEW';
 const ENTER_STAT_VIEW = 'ENTER_STAT_VIEW';
 const LEAVE_STAT_VIEW = 'LEAVE_STAT_VIEW';
+const ENTER_ANALYST_STAT_VIEW = 'ENTER_ANALYST_STAT_VIEW';
+const LEAVE_ANALYST_STAT_VIEW = 'LEAVE_ANALYST_STAT_VIEW';
 const ENTER_BASIC_PROGRESS_BAR_VIEW = 'ENTER_BASIC_PROGRESS_BAR_VIEW';
 const LEAVE_BASIC_PROGRESS_BAR_VIEW = 'LEAVE_BASIC_PROGRESS_BAR_VIEW';
 const ENTER_TAB_PANEL_VIEW = 'ENTER_TAB_PANEL_VIEW';
@@ -69,6 +71,7 @@ export default function views(state = initialState, action) {
   case ENTER_TODO_LIST_VIEW:
   case ENTER_BREADCRUMB_VIEW:
   case ENTER_STAT_VIEW:
+  case ENTER_ANALYST_STAT_VIEW:
   case ENTER_BASIC_PROGRESS_BAR_VIEW:
   case ENTER_TAB_PANEL_VIEW:
   case ENTER_STRIPED_PROGRESS_BAR_VIEW:
@@ -101,6 +104,7 @@ export default function views(state = initialState, action) {
   case LEAVE_TODO_LIST_VIEW:
   case LEAVE_BREADCRUMB_VIEW:
   case LEAVE_STAT_VIEW:
+  case LEAVE_ANALYST_STAT_VIEW:
   case LEAVE_BASIC_PROGRESS_BAR_VIEW:
   case LEAVE_TAB_PANEL_VIEW:
   case LEAVE_STRIPED_PROGRESS_BAR_VIEW:
@@ -371,6 +375,24 @@ export function leaveStat(time = moment().format()) {
   return {
     type:         LEAVE_STAT_VIEW,
     currentView:  'StatView',
+    enterTime:    null,
+    leaveTime:    time
+  };
+}
+
+export function enterAnalystStat(time = moment().format()) {
+  return {
+    type:         ENTER_ANALYST_STAT_VIEW,
+    currentView:  'AnalystStatView',
+    enterTime:    time,
+    leaveTime:    null
+  };
+}
+
+export function leaveAnalystStat(time = moment().format()) {
+  return {
+    type:         LEAVE_ANALYST_STAT_VIEW,
+    currentView:  'AnalystStatView',
     enterTime:    null,
     leaveTime:    time
   };

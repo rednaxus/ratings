@@ -1,11 +1,12 @@
 import { store } from '../Root'
+import TokenERC20Contract from '../../../build/contracts/TokenERC20.json'
 import RatingAgencyContract from '../../../build/contracts/RatingAgency.json'
 import RegistryContract from '../../../build/contracts/Registry.json'
 import AuthenticationContract from '../../../build/contracts/Authentication.json' // to deprecate in favor of registry
 
 const contract = require('truffle-contract')
 
-export const getContractInstance = (contractDesc) => 
+export const getContractInstance = (contractDesc, addr = null) => 
 	new Promise((resolve, reject) => {
 		let web3 = store.getState().web3.web3Instance
   	if (typeof web3 === 'undefined' ) { // Double-check web3's status.
@@ -18,12 +19,14 @@ export const getContractInstance = (contractDesc) =>
     web3.eth.getCoinbase((error, coinbase) => { // Get current ethereum wallet.
       if (error) reject(console.error(error));
 
-      instanceContract.deployed().then(instance => {
-        resolve(instance)
-      })
+      if (addr)
+        instanceContract.at(addr).then(instance => resolve(instance))
+      else 
+        instanceContract.deployed().then(instance => resolve(instance))
     })
   })
 
+export const getTokenERC20 = (addr) => getContractInstance( TokenERC20Contract, addr )
 export const getRatingAgency = () => getContractInstance( RatingAgencyContract )
 export const getRegistry = () => getContractInstance( RegistryContract )
 export const getAuthentication = () => getContractInstance( AuthenticationContract )

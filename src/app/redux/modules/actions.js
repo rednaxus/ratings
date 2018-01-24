@@ -15,6 +15,9 @@ export {fetchTeamMatesDataIfNeeded}    from './teamMates';
 export {fetchUserInfoDataIfNeeded}     from './userInfos';
 // views:
 export {
+  enterAnalystStat,
+  leaveAnalystStat,
+
   enterHome,
   leaveHome,
 

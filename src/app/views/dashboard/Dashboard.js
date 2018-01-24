@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import TokenList from '../tokenList'
 import UserStatus from '../../components/userStatus/UserStatus'
+import AnalystStat from '../analystStat'
 import { AnimatedView } from '../../components'
 
 class Dashboard extends Component {
@@ -22,7 +23,7 @@ class Dashboard extends Component {
           <div className="pure-g">
             <div className="pure-u-1-1">
               <h1>Dashboard</h1>
-              <p><strong>Congratulations {userFullName}!</strong> Welcome to the <span className="dog">Veva Ratings Agency</span> smart contract.</p>
+              <AnalystStat />
               <h2>Current Shares listed:</h2>
               <TokenList />
             </div>

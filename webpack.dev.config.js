@@ -1,7 +1,7 @@
 const webpack           = require('webpack');
 const path              = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const assetsDir       = path.resolve(__dirname, 'docs/public/assets');
 const nodeModulesDir  = path.resolve(__dirname, 'node_modules');
 const indexFile       = path.resolve(__dirname, 'src/app/index.js');
@@ -113,6 +113,9 @@ const config = {
     new webpack.optimize.CommonsChunkPlugin({
       name:     'vendor',
       filename: 'app.vendor.bundle.js'
+    }),
+    new HtmlWebpackPlugin({   
+      favicon: 'src/app/img/favicon.ico'
     })
   ]
 };

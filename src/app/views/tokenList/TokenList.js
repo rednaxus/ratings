@@ -1,7 +1,7 @@
 import React from 'react'
 //import { Grid } from 'react-redux-grid'
 //import Griddle from 'griddle-react';
-
+// https://etherscan.io/token/0xf6f61f70ae1c4559459899300b17d2b2c77d39b5
 const TokenList = ({ tokens, onTokenListClick }) => {
 	console.log('tokens in component',tokens)
   return(
@@ -18,7 +18,7 @@ const TokenList = ({ tokens, onTokenListClick }) => {
 				  </ul>
 			  </div>
 	    </div>
-	   	{/*<div className="panel">
+	   	<div className="panel">
 		    <header className="panel-heading">
 		      Tokens Covered <span className="dog small pull-right">Number of tokens: {tokens.tokensData.length }</span>
 		    </header>
@@ -63,7 +63,7 @@ const TokenList = ({ tokens, onTokenListClick }) => {
 		            <td>3.</td>
 		            <td>Cron job running</td>
 		            <td>
-		              <div className="progress xs progress-striped active">
+		              <div className="progress xs progress-striped">
 		                <div
 		                  className="progress-bar progress-bar-primary"
 		                  style={{width: '30%'}}>
@@ -76,7 +76,7 @@ const TokenList = ({ tokens, onTokenListClick }) => {
 		            <td>4.</td>
 		            <td>Fix and squish bugs</td>
 		            <td>
-		              <div className="progress xs progress-striped active">
+		              <div className="progress xs progress-striped">
 		                <div
 		                  className="progress-bar progress-bar-success"
 		                  style={{width: '90%'}}>
@@ -88,7 +88,7 @@ const TokenList = ({ tokens, onTokenListClick }) => {
 		        </tbody>
 		      </table>
 		    </div>
-		  </div>*/}
+		  </div>
 		</div>
   )
 }

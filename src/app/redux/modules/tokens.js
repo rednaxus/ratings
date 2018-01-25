@@ -30,9 +30,9 @@ export const fetchTokens = () =>
         //var tokensData = [{id:0,name:'a'},{id:1,name:'b'},{id:2,name:'c'},{id:3,name:'d'}]
 
         var tokensData = tokenAddrs.map((addr,i) => {
-        	return {id:i,name:addr}
+        	return {id:i,addr:addr,name:addr}
         })
-        TokenERC20(tokensData[0].name).then((tokenERC20) => {
+        TokenERC20(tokensData[0].addr).then((tokenERC20) => {
         	tokenERC20.name()
         	.then(result => {
         		console.log('got token with name',result)

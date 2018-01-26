@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 import "./Aleph.sol";
 //import "./Owned.sol";
-import "./erc20-api.sol";
+//import "./erc20-api.sol";
 
 
 
@@ -295,7 +295,7 @@ contract RatingAgency {
   uint16 constant JURY_SIZE = 6;
   uint16 constant DEFAULT_ROUND_VALUE = 100;
 
-  uint32 constant INFINITY = 0xffffff;
+  uint constant INFINITY = 0xffffff;
   uint16 constant REPUTATION_LEAD = 12;
   
    //string public name;
@@ -309,7 +309,7 @@ contract RatingAgency {
       uint timeperiod;
       address representative;
   }
-  mapping( uint32 => CoveredToken) covered_tokens;
+  mapping( uint => CoveredToken) covered_tokens;
   uint32 public num_tokens = 0;
 
   mapping (uint16 => address) cycles; // RoundCycle
@@ -321,50 +321,51 @@ contract RatingAgency {
   Aleph.itMapUintUint rounds_scheduled; // scheduled rounds by id
   Aleph.itMapUintUint rounds_active; // active round ids
   
-  /**
-   * Constructor 
-   */
- 
-  address testregistry1 = 0x4ae719438e1061b0912457caaf7002898a369637;
-  function RatingAgency(
-    address _registry
-  ) public {
-    if (_registry == 0) _registry = testregistry1;
-    registry = Registry(_registry);
-    lasttime = ZERO_BASE_TIME;
-    bootstrap_dummy_tokens(4);
-  }
-
-  function cover_token(address _tokenContract,uint _timeperiod) public {  // only specify period if different
-    covered_tokens[num_tokens++] = CoveredToken(_tokenContract,_timeperiod,msg.sender);
-  }
-  
-  function getTokenById(uint32 idx) public constant returns (address) {
-      return covered_tokens[idx].token_addr;
-  }
-    
-  function apiTokenList() public view returns (string r) {
-    r = "[";
-    for ( uint32 i=0; i<num_tokens; i++ ) {
-      r = Aleph.strConcat(r,i==0?"\"":",\"","0x",Aleph.toAsciiString(covered_tokens[i].token_addr),"\"");
+    /**
+     * Constructor 
+    */
+    address testregistry1 = 0x4ae719438e1061b0912457caaf7002898a369637;
+    function RatingAgency(
+        address _registry
+    ) public {
+        if (_registry == 0) _registry = testregistry1;
+        registry = Registry(_registry);
+        lasttime = ZERO_BASE_TIME;
+        bootstrap_dummy_tokens(4);
     }
-    r = Aleph.strConcat(r,"]");
-  }
-  
-  function findToken(address _tokenContract) public constant returns (uint32) {
+
+    event TokenAdd(uint32,address);
+    function cover_token(address _tokenContract,uint _timeperiod) public {  // only specify period if different
+        covered_tokens[num_tokens] = CoveredToken(_tokenContract,_timeperiod,msg.sender);
+        TokenAdd(num_tokens,_tokenContract);
+        num_tokens++;
+    }
+    function get_token_addr(uint32 idx) public view returns (uint32,address){
+        return (idx,covered_tokens[idx].token_addr);
+    }
+    /*
+    event TokenList(uint32 idx,address token);
+    function apiTokenList(uint32 _num) public returns (uint32 num) {
+        num = _num == 0 ? num_tokens: _num;
+        for ( uint32 i = 0; i < num; i++ ) {
+            TokenList(i,covered_tokens[i].token_addr);        
+        }
+    }
+    
+  function findToken(address _tokenContract) public constant returns (uint) {
     //if (token.token_addr == _tokenContract && msg.sender == token.representative) {
-    for(uint32 idx=0;idx<num_tokens;idx++) 
+    for(uint idx=0;idx<num_tokens;idx++) 
         if (covered_tokens[idx].token_addr == _tokenContract) return idx;
     return INFINITY;
   }
   function removeToken(address _tokenContract) public {
-    uint32 idx = findToken(_tokenContract);
+    uint idx = findToken(_tokenContract);
     require(idx!=INFINITY);
     delete covered_tokens[idx];
-    for (uint32 jdx=idx;jdx<num_tokens-1;jdx++) covered_tokens[jdx] = covered_tokens[jdx+1];
+    for (uint jdx=idx;jdx<num_tokens-1;jdx++) covered_tokens[jdx] = covered_tokens[jdx+1];
     num_tokens--;
   }
-  
+  */
   function activate_round( uint16 _roundidx ) public {
      Round round = Round( rounds[_roundidx] );
      round.activate();

@@ -27,6 +27,7 @@ import Dashboard  from '../views/dashboard'
 import Rules from '../views/rules'
 import Availability from '../views/availability'
 import About from '../views/about'
+import Token from '../views/token'
 
 export const MainRoutes = () => (
   <Switch>
@@ -40,6 +41,7 @@ export const MainRoutes = () => (
     <Route path="/Dashboard/teamMates" component={TeamMatesViewConnected} />
     <Route path="/Dashboard/todoList" component={TodoListViewConnected} />
     <Route path="/Dashboard/home" component={ HomeConnected } />
+    <Route path="/token/:token_id" component={ Token } />
 
     <Route exact path="/simpleTables" component={SimpleTablesConnected} />
 

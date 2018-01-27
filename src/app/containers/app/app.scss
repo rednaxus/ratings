@@ -43,3 +43,96 @@
   text-align:center;
 }
 
+
+/*--------------Users Widget--------------*/
+
+.user-content {
+    margin-bottom: 30px;
+}
+
+.users-widget .user-content:after {
+  clear: both;
+}
+
+.users-widget .user-footer  {
+  margin-top: 5px;
+}
+
+.users-widget .user-footer:after,
+.users-widget .user-footer:before {
+  content: "";
+  display: table;
+  line-height: 0;
+}
+
+.users-widget .user-footer:after {
+  clear: both;
+}
+
+.users-widget  .user-list {
+  padding:0;
+  margin:0;
+}
+ul.user-list {
+  list-style: none;
+}
+
+.users-widget .user-list > li {
+  position:relative;
+  padding:10px 5px;
+  border-bottom:1px dashed #eaeaea;
+}
+
+.users-widget .user-list  li.last-line {
+  border-bottom:none;
+}
+
+.users-widget .user-list  li > .user-bell  {
+  margin-left:10px;
+}
+
+.users-widget .user-list  li > .user-checkbox {
+  float:left;
+  width:30px;
+}
+
+.users-widget .user-list  li > .user-title  {
+  overflow:hidden;
+  margin-right:10px;
+}
+
+.users-widget .user-list  li > .user-config {
+  position:absolute;
+  top:10px;
+  right:10px;
+}
+
+.users-widget .user-list  li .user-title .user-title-sp  {
+  margin-right:5px;
+}
+
+.users-widget .user-list  li.user-done .user-title-sp  {
+  text-decoration:line-through;
+  color: #bbbbbb;
+}
+
+.users-widget .user-list  li.user-done  {
+  background:#f6f6f6;
+}
+
+.users-widget .user-list  li.user-done:hover {
+  background:#f4f4f4;
+}
+
+.users-widget .user-list  li:hover  {
+  background:#f9f9f9;
+}
+
+.users-widget .user-list  li .user-config {
+  display:none;
+}
+
+.users-widget .user-list  li:hover > .user-config {
+  display:block;
+  margin-bottom:0 !important;
+}

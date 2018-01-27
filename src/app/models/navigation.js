@@ -19,6 +19,24 @@ export const navigation = {
     // group menu #1
     {
       id: 1,
+      group: 'Admin',
+      menus: [
+        {
+          name: 'Analysts',
+          linkTo: '/admin/userList',
+          faIconName: 'fa-user-circle-o'
+        },
+        {
+          name: 'RoundCycs',
+          linkTo: '/admin/roundCycles',
+          faIconName: 'fa-columns'
+        }
+      ]
+    },
+
+    // group menu #2
+    {
+      id: 2,
       group: 'Analyst',
       menus: [
         {
@@ -33,9 +51,9 @@ export const navigation = {
         }
       ]
     },
-    // group menu #2
+    // group menu #3
     {
-      id: 2,
+      id: 3,
       group: 'Info',
       menus: [
         {
@@ -55,9 +73,9 @@ export const navigation = {
         }
       ]
     },
-    // group menu #3
+    // group menu #4
     {
-      id: 3,
+      id: 4,
       group: 'Tests1',
       menus: [
         {
@@ -112,9 +130,9 @@ export const navigation = {
         }
       ]
     },
-    // group menu #4
+    // group menu #5
     {
-      id: 4,
+      id: 5,
       group: 'Tests2',
       menus: [
          {

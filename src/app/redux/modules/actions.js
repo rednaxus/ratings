@@ -54,6 +54,9 @@ export {
   enterTodoListView,
   leaveTodoListView,
 
+  enterUserListView,
+  leaveUserListView,
+  
   enterToken,
   leaveToken,
   enterTokenList,

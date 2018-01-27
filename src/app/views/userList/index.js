@@ -3,7 +3,7 @@
 import { bindActionCreators } from 'redux';
 import { connect }            from 'react-redux';
 import * as actions           from '../../redux/modules/actions';
-import TodoListView           from './TodoListView';
+import UserListView           from './UserListView';
 
 const mapStateToProps = (state) => {
   return {
@@ -15,8 +15,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     actions : bindActionCreators(
       {
-        enterTodoListView: actions.enterTodoListView,
-        leaveTodoListView: actions.leaveTodoListView
+        enterUserListView: actions.enterUserListView,
+        leaveUserListView: actions.leaveUserListView
       },
       dispatch)
   };
@@ -25,4 +25,4 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(TodoListView);
+)(UserListView);

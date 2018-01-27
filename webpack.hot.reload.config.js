@@ -1,6 +1,8 @@
-const webpack      = require('webpack');
-const path         = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack      = require('webpack')
+const path         = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
+
 
 const assetsDir   = path.resolve(__dirname, 'public/assets');
 const vendorsDir  = path.resolve(__dirname, 'src/app/vendors');
@@ -65,8 +67,9 @@ const config = {
     getImplicitGlobals(),
     setNodeEnv(),
     new HtmlWebpackPlugin({   
-      favicon: 'src/app/img/favicon.ico'
-    })
+      favicon: 'src/app/img/favicon.png'
+    }),
+    //new FaviconsWebpackPlugin('favicon.png')
   ]
 };
 /*

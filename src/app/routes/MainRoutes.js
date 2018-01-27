@@ -28,6 +28,8 @@ import Rules from '../views/rules'
 import Availability from '../views/availability'
 import About from '../views/about'
 import Token from '../views/token'
+import UserListViewConnected        from '../views/userList'
+import RoundCycles from '../views/roundCycles'
 
 export const MainRoutes = () => (
   <Switch>
@@ -42,8 +44,11 @@ export const MainRoutes = () => (
     <Route path="/Dashboard/todoList" component={TodoListViewConnected} />
     <Route path="/Dashboard/home" component={ HomeConnected } />
     <Route path="/token/:token_id" component={ Token } />
+    
+    <Route path="/admin/userList" component={ UserListViewConnected } />
+    <Route path="/admin/roundCycles" component={ RoundCycles } />
 
-    <Route exact path="/simpleTables" component={SimpleTablesConnected} />
+    <Route exact path="/simpleTables" component={ SimpleTablesConnected } />
 
     <Route exact path="/basicElements" component={BasicElementsConnected} />
 

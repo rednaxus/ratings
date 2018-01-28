@@ -3,7 +3,7 @@ Veva One Ratings Agency
 
 
 ## Preview
-![preview](https://raw.githubusercontent.com/rednaxus/vevaone/master/docs/screenshot.png)
+![preview](docs/screenshot.png)
 
 
 ## Content

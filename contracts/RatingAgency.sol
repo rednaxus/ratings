@@ -14,6 +14,7 @@ contract Brief {
 contract Analyst {
   //string firstname;
   bytes32 public name;
+  bytes32 public password;
   uint32 public auth_status;  // user authentication status
   address public invited_round;
   address public active_round;
@@ -47,6 +48,11 @@ contract Registry {
     analysts.insert(user,new_analyst);    // for test purposes, use my address as key instead of user address
     return new_analyst;
   }
+  /*
+  function login(bytes32 _name, bytes32 _password) public view returns (address) {
+    
+  }
+  */
   function getByAddress( address _user ) public constant returns (address) {
       return analysts.get(_user);
   }
@@ -96,15 +102,35 @@ contract Registry {
   }
   
   
-  function size() public constant returns (uint32) {
+  function num_analysts() public constant returns (uint32) {
       return uint32(analysts.size());
+  }
+  function apiAnalystsInfo() public view returns (uint32,uint32){
+      return (num_analysts(),num_leads());
+  }
+  function apiAnalyst(uint32 idx) public view 
+    returns (
+        bytes32 name,
+        uint32 auth_status,
+        uint32 reputation, 
+        uint32 token_balance,
+        address invited_round,
+        address active_round
+    ) {
+    Analyst analyst = Analyst(getById(idx));
+    name = analyst.name();
+    auth_status = analyst.auth_status();
+    reputation = analyst.reputation();
+    token_balance = analyst.token_balance();
+    invited_round = analyst.invited_round();
+    active_round = analyst.active_round();
   }
 
   // create some analysts
   function bootstrap(uint32 _numanalysts,uint32 _numleads) public {
     uint32 new_analysts = _numanalysts == 0 ? 12 : _numanalysts;
     uint32 new_leads = _numleads == 0 ? 2 : _numleads;
-    uint32 new_start = uint32(analysts.size());
+    uint32 new_start = uint32(num_analysts());
     for (uint32 i=new_start;i<new_start+new_analysts;i++) {
         address addr = register(0,bytes32(i));
         Analyst analyst = Analyst(addr);
@@ -542,7 +568,7 @@ contract RatingAgency {
   event Availability_Add( uint16 cycle, uint32 analyst, bool lead );
   function generate_availabilities( uint16 _cycleIdx ) public {
     RoundCycle cycle = RoundCycle( cycles[_cycleIdx] );
-    for ( uint32 id = 0; id < registry.size(); id++ ) { // add everybody to cycle
+    for ( uint32 id = 0; id < registry.num_analysts(); id++ ) { // add everybody to cycle
         Analyst analyst = Analyst( registry.getById(id) );
         cycle.add_availability( id, analyst.reputation() >= REPUTATION_LEAD ); 
         Availability_Add( _cycleIdx, id, analyst.reputation() >= REPUTATION_LEAD );

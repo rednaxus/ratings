@@ -5,7 +5,10 @@ Veva One Ratings Agency
 ## Preview
 ![preview](docs/veva-screenshot.png)
 
-
+## Warning
+This is a work very much in progress...use with caution
+ -- the collaborators
+ 
 ## Content
 
 - admin template

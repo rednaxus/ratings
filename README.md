@@ -1,14 +1,10 @@
 Veva One Ratings Agency
 ==========
 
-[![Build Status](https://travis-ci.org/MacKentoch/react-director-admin-template.svg?branch=master)](https://travis-ci.org/MacKentoch/react-director-admin-template)
-
 
 ## Preview
-![preview](https://raw.githubusercontent.com/MacKentoch/react-director-admin-template/master/preview/preview.png)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FMacKentoch%2Freact-director-admin-template.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FMacKentoch%2Freact-director-admin-template?ref=badge_shield)
+![preview](https://raw.githubusercontent.com/rednaxus/vevaone/master/docs/screenshot.png)
 
-[Launch preview here](https://mackentoch.github.io/react-director-admin-template)
 
 ## Content
 

@@ -1,8 +1,8 @@
 import { store } from '../Root'
 import TokenERC20Contract from '../../../build/contracts/TokenERC20.json'
 import RatingAgencyContract from '../../../build/contracts/RatingAgency.json'
-import RegistryContract from '../../../build/contracts/Registry.json'
-import AuthenticationContract from '../../../build/contracts/Authentication.json' // to deprecate in favor of registry
+import AnalystRegistryContract from '../../../build/contracts/AnalystRegistry.json'
+//import AuthenticationContract from '../../../build/contracts/Authentication.json' // to deprecate in favor of registry
 
 const contract = require('truffle-contract')
 
@@ -28,8 +28,8 @@ export const getContractInstance = (contractDesc, addr = null) =>
 
 export const getTokenERC20 = (addr) => getContractInstance( TokenERC20Contract, addr )
 export const getRatingAgency = () => getContractInstance( RatingAgencyContract )
-export const getRegistry = () => getContractInstance( RegistryContract )
-export const getAuthentication = () => getContractInstance( AuthenticationContract )
+export const getAnalystRegistry = () => getContractInstance( AnalystRegistryContract )
+//export const getAuthentication = () => getContractInstance( AuthenticationContract )
 
 export const promisify = (inner) =>
   new Promise((resolve, reject) =>

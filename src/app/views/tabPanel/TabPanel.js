@@ -2,8 +2,8 @@
 
 import React, {
   PureComponent
-}                         from 'react';
-import PropTypes          from 'prop-types';
+}                         from 'react'
+import PropTypes          from 'prop-types'
 import {
   AnimatedView,
   Panel,
@@ -11,8 +11,7 @@ import {
   TabPanelHeader      as TabPanelHeaderComponent,
   TabPanelBody        as TabPanelBodyComponent,
   TabPanelBodyContent as TabPanelBodyContentComponent
-}                         from '../../components';
-import Highlight          from 'react-highlight';
+}                         from '../../components'
 
 
 class TabPanel extends PureComponent {
@@ -37,43 +36,6 @@ class TabPanel extends PureComponent {
 
   render() {
     const { mockHeader } = this.state;
-
-    const source = `
-      // import
-      import {
-        TabPanel,
-        TabPanelHeader,
-        TabPanelBody,
-        TabPanelBodyContent
-      } from './_SOMEWHERE_/components';
-
-      // tab headers (in state for example):
-      state = {
-        headers: [
-          {name: 'Home', tablink: 'home', isActive: true},
-          {name: 'About', tablink: 'about', isActive: false},
-          {name: 'Profile', tablink: 'profile', isActive: false},
-          {name: 'Contact', tablink: 'contact', isActive: false}
-        ]
-      };
-
-      // in render():
-        <TabPanel>
-          <TabPanelHeader tabItems={this.state.headers}/>
-          <TabPanelBody>
-            <TabPanelBodyContent id="home">
-              &nbsp;Home
-            </TabPanelBodyContent>
-            <TabPanelBodyContent id="about">
-              &nbsp;About
-            </TabPanelBodyContent>
-            <TabPanelBodyContent id="profile">
-              &nbsp;Profile
-            </TabPanelBodyContent>
-          </TabPanelBody>
-        </TabPanel>
-      `;
-
     return(
       <AnimatedView>
         {/* preview: */}
@@ -103,18 +65,6 @@ class TabPanel extends PureComponent {
                   </TabPanelBodyContentComponent>
                 </TabPanelBodyComponent>
               </TabPanelComponent>
-            </Panel>
-          </div>
-        </div>
-        {/* source: */}
-        <div className="row">
-          <div className="col-xs-12">
-            <Panel
-              title="Source"
-              hasTitle={true}>
-              <Highlight className="javascript">
-                {source}
-              </Highlight>
             </Panel>
           </div>
         </div>

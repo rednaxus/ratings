@@ -5,8 +5,8 @@ import React      from 'react';
 import PropTypes  from 'prop-types';
 import cx         from 'classnames';
 import UserPanel  from './userPanel/UserPanel';
-import SearchForm from './searchForm/SearchForm';
-import Horloge    from '../../horloge/Horloge';
+//import SearchForm from './searchForm/SearchForm';
+//import Horloge    from '../../horloge/Horloge';
 import Menu       from './menu/Menu';
 
 
@@ -49,11 +49,14 @@ const AsideLeft = ({
         userPicture={userPicture}
         showUserPicture={showPicture}
       />
+      {/* take out these for veva -- ak
       <Horloge />
 
       <SearchForm
         onSearchSubmit={(value) => console.log('searching: ', value)}
-      />
+      />*/
+      }
+
       {
         sideMenu.map(
           ({id, group, menus}, menuIdx) => {

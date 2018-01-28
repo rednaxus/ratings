@@ -10,7 +10,6 @@ import {
   Pagination as PaginationComponent,
   Pager as PagerComponent
 }                         from '../../components';
-import Highlight          from 'react-highlight';
 
 
 class PaginationView extends PureComponent {
@@ -32,56 +31,6 @@ class PaginationView extends PureComponent {
   }
 
   render() {
-    const source = `
-      // in render():
-      <div className="text-center">
-        <Pagination
-          size="large"
-          numberOfPagination={5}
-        />
-      </div>
-      <div className="text-center">
-        <Pagination
-          numberOfPagination={5}
-        />
-      </div>
-      <div className="text-center">
-        <Pagination
-          size="small"
-          numberOfPagination={5}
-        />
-      </div>
-      <div>
-        <h3>Default Example</h3>
-        <Pager
-          aligned={false}
-          previous={'Previous'}
-          next={'Next'}
-        />
-      </div>
-      <div>
-        <h3>Aligned links</h3>
-        <Pager
-          aligned={true}
-          previous={
-            <div>
-              <span aria-hidden="true">
-                &larr;
-              </span>
-              Older
-            </div>
-          }
-          next={(
-            <div>
-              Newer
-              <span aria-hidden="true">
-                &rarr;
-              </span>
-            </div>
-          )}
-        />
-      </div>
-      `;
 
     return(
       <AnimatedView>
@@ -145,18 +94,7 @@ class PaginationView extends PureComponent {
             </Panel>
           </div>
         </div>
-        {/* source: */}
-        <div className="row">
-          <div className="col-xs-12">
-            <Panel
-              title="Source"
-              hasTitle={true}>
-              <Highlight className="javascript">
-                {source}
-              </Highlight>
-            </Panel>
-          </div>
-        </div>
+
       </AnimatedView>
     );
   }

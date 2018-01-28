@@ -9,7 +9,6 @@ import {
   Panel,
   Breadcrumb as BreadcrumbComponent
 }                         from '../../components';
-import Highlight          from 'react-highlight';
 
 
 class Breadcrumb extends PureComponent {
@@ -35,21 +34,6 @@ class Breadcrumb extends PureComponent {
   render() {
     const { path } = this.state;
 
-    const source = `
-      // import
-      import { Breadcrumb } from './_SOMEWHERE_/components';
-
-      // path (in state for example):
-      state = {
-        path: ['home', 'breadcrumb']
-      };
-
-      // in render():
-      <BreadcrumbComponent
-        path={this.state.path}
-      />
-      `;
-
     return(
       <AnimatedView>
         {/* preview: */}
@@ -66,18 +50,6 @@ class Breadcrumb extends PureComponent {
                   />
                 </div>
               </div>
-            </Panel>
-          </div>
-        </div>
-        {/* source: */}
-        <div className="row">
-          <div className="col-xs-12">
-            <Panel
-              title="Source"
-              hasTitle={true}>
-              <Highlight className="javascript">
-                {source}
-              </Highlight>
             </Panel>
           </div>
         </div>

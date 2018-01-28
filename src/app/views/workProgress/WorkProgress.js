@@ -13,7 +13,6 @@ import {
   TableRow,
   TableCol
 }                         from '../../components';
-import Highlight          from 'react-highlight';
 
 
 class WorkProgress extends PureComponent {
@@ -46,35 +45,6 @@ class WorkProgress extends PureComponent {
       headers,
       content
     } = this.state;
-
-    const source = `
-      // import
-      import { EarningGraph } from './_SOMEWHERE_/components';
-
-      // labels and data (in state for example):
-      state = {
-        headers: ['#', 'Project', 'Manager', 'Deadline', 'Status', 'Progress'],
-        content: [
-          ['1', 'Facebook', 'Mark', '10/10/2014', <span className="label label-danger">in progress</span>, <span className="badge badge-info">50%</span>],
-          ['2', 'Twitter', 'Evan', '10/8/2014', <span className="label label-success">completed</span>, <span className="badge badge-success">100%</span>],
-          ['3', 'Google', 'Larry', '10/12/2014', <span className="label label-warning">in progress</span>, <span className="badge badge-warning">75%</span>],
-          ['4', 'LinkedIn', 'Allen', '10/01/2015', <span className="label label-info">in progress</span>, <span className="badge badge-info">65%</span>],
-          ['5', 'Tumblr', 'David', '01/11/2014', <span className="label label-warning">in progress</span>, <span className="badge badge-danger">95%</span>],
-          ['6', 'Tesla', 'Musk', '01/11/2014', <span className="label label-info">in progress</span>, <span className="badge badge-success">95%</span>],
-          ['7', 'Ghost', 'XXX', '01/11/2014', <span className="label label-info">in progress</span>, <span className="badge badge-success">95%</span>]
-        ]
-      };
-
-      // in render():
-      <div className="row">
-        <div className="col-md-8 col-md-offset-2">
-          <EarningGraphComponent
-            labels={this.state.labels}
-            datasets={this.state.datasets}
-          />
-        </div>
-      </div>
-      `;
 
     return(
       <AnimatedView>
@@ -123,18 +93,6 @@ class WorkProgress extends PureComponent {
             </TableBody>
           </Table>
         </Panel>
-        {/* source: */}
-        <div className="row">
-          <div className="col-xs-12">
-            <Panel
-              title="Source"
-              hasTitle={true}>
-              <Highlight className="javascript">
-                {source}
-              </Highlight>
-            </Panel>
-          </div>
-        </div>
       </AnimatedView>
     );
   }

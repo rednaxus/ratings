@@ -3,7 +3,7 @@ Veva One Ratings Agency
 
 
 ## Preview
-![preview](docs/screenshot.png)
+![preview](docs/veva-screenshot.png)
 
 
 ## Content

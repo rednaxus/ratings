@@ -2,7 +2,7 @@ Veva One Decentralized Token Ratings Agency
 ==========
 
 ## Website
-https://www.veva.one
+[Veva-One](https://www.veva.one)
 
 ## Preview
 ![preview](preview/preview.png)
@@ -78,10 +78,8 @@ npm run prod-server
 
 
 ## What's next?
-- [ ] get rid of jQuery (*use of react-bootstrap only*)
-- [ ] add react-bootstrap-table
-- [ ] add redux-form
-- [ ] add authentication examples
+- [ ] lots of work on everything
+- [ ] add authentication
 - [ ] tests
 - [ ] optimize image import
 

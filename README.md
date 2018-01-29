@@ -1,8 +1,8 @@
-Veva One Ratings Agency
+Veva One Decentralized Token Ratings Agency
 ==========
 
 ## Website
-![Veva-One] https://www.veva.one
+https://www.veva.one
 
 ## Preview
 ![preview](preview/preview.png)

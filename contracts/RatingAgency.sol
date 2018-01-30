@@ -179,7 +179,7 @@ contract RatingAgency {
     /**
      * Constructor 
     */
-    address constant testregistry1 = 0x9ac0f6eeab23a5f36d54fc895367fe98b75b9e00;
+    address constant testregistry1 = 0xced97c2e4eaffab6432498ce4c6f30736fa3c353;
     function RatingAgency(
         address _registry
     ) public {
@@ -208,19 +208,9 @@ contract RatingAgency {
         return ( _idx, covered_tokens[ _idx ].token_addr );
     }
     
-    /*
-    event TokenList(uint32 idx,address token);
-    function apiTokenList(uint32 _num) public returns (uint32 num) {
-        num = _num == 0 ? num_tokens: _num;
-        for ( uint32 i = 0; i < num; i++ ) {
-            TokenList(i,covered_tokens[i].token_addr);        
-        }
-    }
-    */
     
-    // Round Cycle methods
-    
-      // get start time
+    /* *** Round Cycle methods  *** */
+    // start time for a cycle
     function cycleTime( uint16 _idx ) public pure returns ( uint ){
         return CYCLE_PERIOD * _idx / 4 + ZERO_BASE_TIME;    // cycles offset
     }
@@ -231,7 +221,7 @@ contract RatingAgency {
     }
   
     event CycleAdded( uint16 cycle );
-    function cycleUpdate( uint _timenow ) internal { 
+    function cycleUpdate( uint _timenow ) public { // can make internal, public for now, testing 
         uint timenow = _timenow == 0? ZERO_BASE_TIME : _timenow;
         uint16 num_target = cycleIdx( timenow ) + CYCLES_AHEAD;
         for ( uint16 i = num_cycles; i < num_target; i++ ) {
@@ -241,20 +231,31 @@ contract RatingAgency {
         num_cycles = num_target;
     }
     
-    function addAvailability( uint16 _cycle, uint32 _analyst, bool lead) public {
+    event AvailabilityAdd( uint16 cycle, uint32 analyst, bool lead, uint16 leads, uint16 jurists  );
+    function addAvailability( uint16 _cycle, uint32 _analyst, bool _lead) public {
         Cycle storage cycle = cycles[ _cycle ];
-        if (lead) {
+        if (_lead) {
             cycle.leads_available[ cycle.num_leads_available++ ] = _analyst;
         } else {
             cycle.jurists_available[ cycle.num_jurists_available++] = _analyst;
         }
+        AvailabilityAdd( _cycle, _analyst, _lead, cycle.num_leads_available, cycle.num_jurists_available );
     }
-    function selectAvailableAnalyst( uint16 _cycle, bool _lead ) internal view returns ( uint16 ){  // returns local reference to an available analyst
+    
+    function selectAvailableAnalyst( uint16 _cycle, bool _lead ) public view returns ( uint16 ) {  // returns local reference to an available analyst
         Cycle storage cycle = cycles[_cycle];
+        require( _lead ? cycle.num_leads_available > 0 : cycle.num_jurists_available > 0 );
         return ( _lead ? 
             uint16( randomIdx( cycle.leads_available[ 0 ], cycle.num_leads_available ) )  
             : uint16( randomIdx( cycle.jurists_available[ 0 ],cycle.num_jurists_available ) )
         );
+    }
+    
+    // for testing, volunteer everybody to cycle
+    function generateAvailabilities( uint16 _cycleId ) public {
+        for ( uint32 id = 0; id < registry.num_analysts(); id++ ) { 
+            addAvailability( _cycleId, id, registry.isLead( id ) );
+        }
     }
     
     // returns analyst so can know what to do with round
@@ -275,6 +276,7 @@ contract RatingAgency {
     }
   
     // assign available analysts from the cycle into the round
+    event RoundPopulated( uint16 _cycle, uint16 _round, uint16 num_analysts, uint16 num_leads );
     function populateRound( uint16 _cycle, uint16 _round ) public {
         uint16 ref;
         uint32 analyst;
@@ -282,8 +284,9 @@ contract RatingAgency {
         for ( uint16 i = 0; i < 2+JURY_SIZE; i++ ) {
             ref = selectAvailableAnalyst( _cycle, i < 2 );  // first two are bull/bear leads
             analyst = assignAnalyst( _cycle, ref, i < 2 );
-            registry.roundPopulated( analyst, _round );
             round.analysts[ round.num_analysts++ ] = RoundAnalyst( analyst, NONE ); 
+            registry.roundPopulated( analyst, _round );
+            RoundPopulated( _cycle, _round, round.num_analysts, 2 );
         }
     }      
   
@@ -300,10 +303,12 @@ contract RatingAgency {
         }
     }
     
+    event RoundScheduled(uint16 cycle, uint16 round, uint32 token);
     function initiateRound( uint16 _cycle, uint32 _tokenId ) public returns( uint16 ) {
         rounds[ num_rounds ] = Round( _tokenId, DEFAULT_ROUND_VALUE, SCHEDULED, msg.sender, 0 );
         rounds_scheduled[ num_rounds_scheduled++ ] = num_rounds;
         populateRound( _cycle, num_rounds );
+        RoundScheduled( _cycle, num_rounds, _tokenId );
         return num_rounds++;
     }
  
@@ -319,25 +324,13 @@ contract RatingAgency {
             }
         }
     }   
-    /*
-  function confirm_round( uint16 _round ) public {
-    uint32 analyst = registry.getId( msg.sender );
-    Round round = Round(rounds[_round]);
-    round.confirm_analyst(analyst);
-  }
-  function cancel_round( uint16 _round ) public {
-    uint32 analyst = registry.getId( msg.sender );
-    Round round = Round( rounds[_round] );
-    round.cancel_analyst( analyst );
-  }
-    */
-    
-    // cron  
-    uint16 cycle_scheduled_idx;   // waiting for analysts start idx
-    uint16 cycle_active_idx;      // active now start
-    uint16 cycle_finished_idx;    // finished now start idx
 
-    event RoundScheduled(uint16 cycle, uint16 round, uint32 token);
+    // cron  
+    //uint16 cycle_scheduled_idx;   // waiting for analysts start idx
+    //uint16 cycle_active_idx;      // active now start
+    //uint16 cycle_finished_idx;    // finished now start idx
+
+
     event Log(string str);
     function cron(uint _timestamp) public returns (string) {
         uint time = _timestamp == 0 ? ZERO_BASE_TIME: _timestamp; // block.timestamp
@@ -352,7 +345,7 @@ contract RatingAgency {
     // if crossed into new round cycles
     
         // new pending rounds
-        cycleUpdate(time);
+        cycleUpdate( time );
 
         uint16 cycle_now_idx = cycleIdx( time );
         uint16 cycle_last_idx = cycleIdx( lasttime );
@@ -369,7 +362,6 @@ contract RatingAgency {
                 // every 4th token at this particular timeperiod
                 if ( (itoken % 4) == cyc4 ) { 
                     round_id = initiateRound( icyc, itoken );
-                    RoundScheduled( icyc, round_id, itoken );
                 }
             }
         }
@@ -436,14 +428,7 @@ contract RatingAgency {
         }
     }
 
-    // for testing
-    event Availability_Add( uint16 cycle, uint32 analyst, bool lead );
-    function generateAvailabilities( uint16 _cycleId ) public {
-        for ( uint32 id = 0; id < registry.num_analysts(); id++ ) { // add everybody to cycle
-            addAvailability( _cycleId, id, registry.isLead( id ) );
-            Availability_Add( _cycleId, id, registry.isLead( id ) );
-        }
-    }
+
     
     // utilities
     function bytesToBytes32(bytes b, uint offset) private pure returns (bytes32 out) {

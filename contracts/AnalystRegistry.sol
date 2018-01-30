@@ -9,13 +9,15 @@ contract AnalystRegistry {
         bytes32 password;
         uint32 auth_status;  // user authentication status
         address user_addr;
-        address invited_round;
-        address active_round;
+        uint16 scheduled_round;
+        uint16 active_round;
         bool is_lead;
         // Round.status public round_status;
         //address public past_rounds;
         uint32 reputation;
         uint32 token_balance;
+        uint16 num_rounds;
+        mapping ( uint16 => uint16 ) rounds;
     }
     mapping (uint32 => Analyst) analysts;
     mapping (address => uint32) address_lookup;
@@ -24,14 +26,18 @@ contract AnalystRegistry {
     mapping (uint32 => uint32) leads;
     uint32 public num_leads;
   
+    function AnalystRegistry() public {
+        bootstrap(12,4);
+    }
+    
     function register(bytes32 _name, bytes32 _pw) public returns (uint32) {
-        analysts[num_analysts++] = Analyst(_name,_pw,0,msg.sender,0,0,false,0,0);
-        address_lookup[msg.sender] = num_analysts;
+        analysts[ num_analysts++ ] = Analyst( _name, _pw, 0, msg.sender, 0, 0, false, 0, 0, 0 );
+        address_lookup[ msg.sender ] = num_analysts;
         return num_analysts;
     }
   
-    function login(bytes32 _password) public view returns (uint32 id) {
-        id = address_lookup[msg.sender];
+    function login(bytes32 _password, address force) public view returns ( uint32 id ) { // force is for testing, so can login with another address
+        id = address_lookup[ force == 0 ? msg.sender : force ];
         require(analysts[id].password == _password);
     }
 
@@ -51,11 +57,27 @@ contract AnalystRegistry {
         }
     }
   
-    function apiAnalyst( uint32 _analystId ) public view returns (bytes32, uint32, uint32, bool, uint32, address, address) {
-        Analyst storage a = analysts[_analystId];
-        return (a.name, a.auth_status, a.reputation, a.is_lead, a.token_balance, a.invited_round, a.active_round );
+    function isLead( uint32 _analystId ) public view returns (bool){
+        return( analysts[ _analystId ].reputation >= REPUTATION_LEAD );
     }
-    
+
+    function analystInfo( uint32 _analystId ) public view returns (bytes32, uint32, uint32, bool, uint32, uint16, uint16, uint16 ) {
+        Analyst storage a = analysts[_analystId];
+        return (a.name, a.auth_status, a.reputation, a.is_lead, a.token_balance, a.scheduled_round, a.active_round, a.num_rounds );
+    }
+    function addRound( uint32 _analystId, uint16 _roundId )  public {
+        Analyst storage a = analysts[ _analystId ];
+        a.rounds[ a.num_rounds++ ] = _roundId;
+    }
+    function setActiveRound( uint32 _analystId, uint16 _roundId ) public {
+        analysts[ _analystId ].active_round = _roundId;
+    }
+    function roundScheduled( uint32 _analystId, uint16 _roundId ) public {  // set scheduled round and add it to rounds list
+        Analyst storage a = analysts[ _analystId ];
+        a.scheduled_round = _roundId;
+        a.rounds[a.num_rounds++] = _roundId;
+    }
+
     // create some analysts
     function bootstrap(uint32 _numanalysts,uint32 _numleads) public {
         uint32 new_analysts = _numanalysts == 0 ? 12 : _numanalysts;

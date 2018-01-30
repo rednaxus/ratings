@@ -122,7 +122,7 @@ contract RatingAgency {
       uint timeperiod;
       address representative;
     }
-    mapping( uint => CoveredToken) covered_tokens;
+    mapping( uint32 => CoveredToken) covered_tokens;
     uint32 public num_tokens = 0;
 
     /* Cycles are the discreet periods when groups of tokens are run as Rounds */
@@ -171,14 +171,15 @@ contract RatingAgency {
     //enum round_state { PENDING, SCHEDULED, ACTIVE, FINISHED, CANCELLED }
     //enum analyst_status { NONE, AVAILABLE, ASSIGNED, CONFIRMED, CANCELLED } 
 
-    //uint16[] rounds_scheduled; // scheduled rounds by id
-    //uint16[] rounds_active; // active round ids
-  
+    mapping ( uint16 => uint16 ) rounds_scheduled; // scheduled rounds by id
+    mapping ( uint16 => uint16 ) rounds_active;
+    uint16 num_rounds_scheduled = 0;
+    uint16 num_rounds_active = 0;
   
     /**
      * Constructor 
     */
-    address constant testregistry1 = 0x130c8c733fcbd692db964c770671521d2b5838b1;
+    address constant testregistry1 = 0x9ac0f6eeab23a5f36d54fc895367fe98b75b9e00;
     function RatingAgency(
         address _registry
     ) public {
@@ -229,6 +230,17 @@ contract RatingAgency {
             0 : uint16( 4 * ( time - ZERO_BASE_TIME ) / CYCLE_PERIOD ) );
     }
   
+    event CycleAdded( uint16 cycle );
+    function cycleUpdate( uint _timenow ) internal { 
+        uint timenow = _timenow == 0? ZERO_BASE_TIME : _timenow;
+        uint16 num_target = cycleIdx( timenow ) + CYCLES_AHEAD;
+        for ( uint16 i = num_cycles; i < num_target; i++ ) {
+            cycles[i] = Cycle( cycleTime( i ), CYCLE_PERIOD, NONE, 0, 0, 0, 0 );
+            CycleAdded( i );
+        }
+        num_cycles = num_target;
+    }
+    
     function addAvailability( uint16 _cycle, uint32 _analyst, bool lead) public {
         Cycle storage cycle = cycles[ _cycle ];
         if (lead) {
@@ -268,29 +280,45 @@ contract RatingAgency {
         uint32 analyst;
         Round storage round = rounds[ _round ];
         for ( uint16 i = 0; i < 2+JURY_SIZE; i++ ) {
-            ref = selectAvailableAnalyst( _cycle, i < 2 );  // first two are lead
+            ref = selectAvailableAnalyst( _cycle, i < 2 );  // first two are bull/bear leads
             analyst = assignAnalyst( _cycle, ref, i < 2 );
-            registry.roundScheduled( analyst, _round );
+            registry.roundPopulated( analyst, _round );
             round.analysts[ round.num_analysts++ ] = RoundAnalyst( analyst, NONE ); 
         }
     }      
   
     function activateRound( uint16 _roundId ) public {
         rounds[ _roundId ].stat = ACTIVE;
+        rounds_active[ num_rounds_active++ ] = _roundId;
+        for (uint16 i = 0; i < num_rounds_scheduled; i++) { // remove from scheduled rounds
+            if ( rounds_scheduled[i] == _roundId ) {
+                num_rounds_scheduled--;
+                for (uint16 j = i; j < num_rounds_scheduled; j++) 
+                    rounds_scheduled[ j ] = rounds_scheduled[ j + 1 ];
+                return;
+            }
+        }
     }
     
-    function scheduleRound( uint16 _cycle, uint16 _coveredtoken_id ) public returns( uint16 ){
-    }
-    /* ???
-    function scheduleRound( uint16 _cycle, uint16 _coveredtoken_id ) public returns( uint16 ){
-        Round storage round = Round( _coveredtoken_id, DEFAULT_ROUND_VALUE );
-        round.schedule();
-        rounds[num_rounds] = address( round );
-    // rounds_scheduled.insert( num_rounds, num_rounds );
-    // populate_round( _cycle, num_rounds );
+    function initiateRound( uint16 _cycle, uint32 _tokenId ) public returns( uint16 ) {
+        rounds[ num_rounds ] = Round( _tokenId, DEFAULT_ROUND_VALUE, SCHEDULED, msg.sender, 0 );
+        rounds_scheduled[ num_rounds_scheduled++ ] = num_rounds;
+        populateRound( _cycle, num_rounds );
         return num_rounds++;
     }
-    */
+ 
+    function finishRound( uint16 _roundId ) public {
+        rounds[ _roundId ].stat = FINISHED;
+        rounds_active[ num_rounds_active++ ] = _roundId;
+        for (uint16 i = 0; i < num_rounds_active; i++){ // remove from active rounds
+            if ( rounds_active[i] == _roundId ) {
+                num_rounds_active--;
+                for (uint16 j = i; j < num_rounds_active; j++) 
+                    rounds_scheduled[ j ] = rounds_active[ j + 1 ];
+                return;
+            }
+        }
+    }   
     /*
   function confirm_round( uint16 _round ) public {
     uint32 analyst = registry.getId( msg.sender );
@@ -309,13 +337,13 @@ contract RatingAgency {
     uint16 cycle_active_idx;      // active now start
     uint16 cycle_finished_idx;    // finished now start idx
 
-    event Round_Scheduled(uint16 cycle, uint16 round, uint16 token);
+    event RoundScheduled(uint16 cycle, uint16 round, uint32 token);
     event Log(string str);
     function cron(uint _timestamp) public returns (string) {
         uint time = _timestamp == 0 ? ZERO_BASE_TIME: _timestamp; // block.timestamp
         uint16 round_id;
         uint16 icyc;
-        uint16 itoken;
+        uint32 itoken;
     // need phase for invite then apply
     
     // changes to analysts, new, reputation updates, promotions
@@ -324,7 +352,7 @@ contract RatingAgency {
     // if crossed into new round cycles
     
         // new pending rounds
-        update_cycles(time);
+        cycleUpdate(time);
 
         uint16 cycle_now_idx = cycleIdx( time );
         uint16 cycle_last_idx = cycleIdx( lasttime );
@@ -340,8 +368,8 @@ contract RatingAgency {
             for ( itoken = 0; itoken < num_tokens; itoken++ ) {
                 // every 4th token at this particular timeperiod
                 if ( (itoken % 4) == cyc4 ) { 
-                    round_id = scheduleRound( icyc, itoken );
-                    Round_Scheduled( icyc, round_id, itoken );
+                    round_id = initiateRound( icyc, itoken );
+                    RoundScheduled( icyc, round_id, itoken );
                 }
             }
         }
@@ -389,6 +417,10 @@ contract RatingAgency {
 
 
     
+
+
+
+
     // for testing:
     address[] tok_addresses  = [
         0xc01cc4ad3bdcffc9c7c7971bece1c7b9d6e73ebb, 
@@ -404,20 +436,6 @@ contract RatingAgency {
         }
     }
 
-    // Round Cycles
-
-    event Cycle_Added(uint16 cycle);
-  
-    function update_cycles(uint _timenow) internal { 
-        uint timenow = _timenow == 0? ZERO_BASE_TIME : _timenow;
-        uint16 num_target = cycleIdx( timenow ) + CYCLES_AHEAD;
-        for ( uint16 i = num_cycles; i < num_target; i++ ) {
-            cycles[i] = Cycle( cycleTime(i), CYCLE_PERIOD, NONE, 0, 0, 0, 0 );
-            Cycle_Added( i );
-        }
-        num_cycles = num_target;
-    }
-
     // for testing
     event Availability_Add( uint16 cycle, uint32 analyst, bool lead );
     function generateAvailabilities( uint16 _cycleId ) public {
@@ -425,6 +443,12 @@ contract RatingAgency {
             addAvailability( _cycleId, id, registry.isLead( id ) );
             Availability_Add( _cycleId, id, registry.isLead( id ) );
         }
+    }
+    
+    // utilities
+    function bytesToBytes32(bytes b, uint offset) private pure returns (bytes32 out) {
+        for (uint i = 0; i < 32; i++) 
+            out |= bytes32(b[offset + i] & 0xFF) >> (i * 8);
     }
 
 }

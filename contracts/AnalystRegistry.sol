@@ -75,7 +75,7 @@ contract AnalystRegistry {
     }
     
     // round adds to analyst rounds list
-    function roundPopulated( uint32 _analystId, uint16 _roundId ) public {  
+    function roundParticipant( uint32 _analystId, uint16 _roundId ) public {  
         Analyst storage a = analysts[ _analystId ];
         a.scheduled_round = _roundId;
         a.rounds[a.num_rounds++] = _roundId;

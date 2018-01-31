@@ -157,6 +157,7 @@ contract RatingAgency {
         bytes32 comment;
     }
     struct Round {
+        uint16 cycle;
         uint32 covered_token;
         uint16 value; // value of the round in veva token
         uint8 stat;
@@ -180,9 +181,7 @@ contract RatingAgency {
      * Constructor 
     */
     address constant testregistry1 = 0xced97c2e4eaffab6432498ce4c6f30736fa3c353;
-    function RatingAgency(
-        address _registry
-    ) public {
+    function RatingAgency( address _registry ) public {
         if ( _registry == 0 ) _registry = testregistry1;
         registry = AnalystRegistry( _registry );
         lasttime = ZERO_BASE_TIME;
@@ -257,6 +256,13 @@ contract RatingAgency {
             addAvailability( _cycleId, id, registry.isLead( id ) );
         }
     }
+    // generate availabilities for all unvolunteered cycles
+    function generateAllAvailabilities() public {
+        for ( uint16 cycleId = 0; cycleId < num_cycles; cycleId++ ) {
+            if ( cycles[ cycleId ].num_leads_assigned == 0 )
+                generateAvailabilities( cycleId );
+        }
+    }
     
     // returns analyst so can know what to do with round
     function assignAnalyst( uint16 _cycle, uint16 _analystRef, bool _lead ) public returns ( uint32 analyst ) {  // move analyst from available to assigned
@@ -285,11 +291,12 @@ contract RatingAgency {
             ref = selectAvailableAnalyst( _cycle, i < 2 );  // first two are bull/bear leads
             analyst = assignAnalyst( _cycle, ref, i < 2 );
             round.analysts[ round.num_analysts++ ] = RoundAnalyst( analyst, NONE ); 
-            registry.roundPopulated( analyst, _round );
-            RoundPopulated( _cycle, _round, round.num_analysts, 2 );
+            registry.roundParticipant( analyst, _round );
         }
+        RoundPopulated( _cycle, _round, round.num_analysts, 2 );
     }      
   
+    event RoundActivated( uint16 _cycle, uint16 _round, uint16 num_rounds_scheduled, uint16 num_rounds_active );
     function activateRound( uint16 _roundId ) public {
         rounds[ _roundId ].stat = ACTIVE;
         rounds_active[ num_rounds_active++ ] = _roundId;
@@ -298,20 +305,22 @@ contract RatingAgency {
                 num_rounds_scheduled--;
                 for (uint16 j = i; j < num_rounds_scheduled; j++) 
                     rounds_scheduled[ j ] = rounds_scheduled[ j + 1 ];
-                return;
+                break;
             }
         }
+        RoundActivated( rounds[ _roundId].cycle, _roundId, num_rounds_scheduled, num_rounds_active );
     }
     
-    event RoundScheduled(uint16 cycle, uint16 round, uint32 token);
-    function initiateRound( uint16 _cycle, uint32 _tokenId ) public returns( uint16 ) {
-        rounds[ num_rounds ] = Round( _tokenId, DEFAULT_ROUND_VALUE, SCHEDULED, msg.sender, 0 );
+    event RoundScheduled( uint16 cycle, uint16 round, uint32 token );
+    function initiateRound( uint16 _cycle, uint32 _token ) public returns( uint16 ) {
+        rounds[ num_rounds ] = Round( _cycle, _token, DEFAULT_ROUND_VALUE, SCHEDULED, msg.sender, 0 );
         rounds_scheduled[ num_rounds_scheduled++ ] = num_rounds;
         populateRound( _cycle, num_rounds );
-        RoundScheduled( _cycle, num_rounds, _tokenId );
+        RoundScheduled( _cycle, num_rounds, _token );
         return num_rounds++;
     }
  
+    event RoundFinished( uint16 _cycle, uint16 _round, uint16 num_rounds_scheduled, uint16 num_rounds_active );
     function finishRound( uint16 _roundId ) public {
         rounds[ _roundId ].stat = FINISHED;
         rounds_active[ num_rounds_active++ ] = _roundId;
@@ -320,96 +329,62 @@ contract RatingAgency {
                 num_rounds_active--;
                 for (uint16 j = i; j < num_rounds_active; j++) 
                     rounds_scheduled[ j ] = rounds_active[ j + 1 ];
-                return;
+                break;
             }
         }
+        RoundFinished( rounds[ _roundId ].cycle, _roundId, num_rounds_scheduled, num_rounds_active );
     }   
 
-    // cron  
-    //uint16 cycle_scheduled_idx;   // waiting for analysts start idx
-    //uint16 cycle_active_idx;      // active now start
-    //uint16 cycle_finished_idx;    // finished now start idx
-
-
     event Log(string str);
+    
+    // cron
     function cron(uint _timestamp) public returns (string) {
-        uint time = _timestamp == 0 ? ZERO_BASE_TIME: _timestamp; // block.timestamp
+        uint time = _timestamp == 0 ? ZERO_BASE_TIME : _timestamp; // block.timestamp
         uint16 round_id;
-        uint16 icyc;
-        uint32 itoken;
-    // need phase for invite then apply
+        uint16 i;
+        Cycle storage cycle; 
     
-    // changes to analysts, new, reputation updates, promotions
+        cycleUpdate( time ); // start new cycles if needed
 
-    // rounds selected to mail to round participants
-    // if crossed into new round cycles
-    
-        // new pending rounds
-        cycleUpdate( time );
-
-        uint16 cycle_now_idx = cycleIdx( time );
-        uint16 cycle_last_idx = cycleIdx( lasttime );
+        uint16 cycle_now = cycleIdx( time );
+        // uint16 cycle_last = cycleIdx( lasttime );
         uint16 cycle_schedule_idx = cycleIdx( time + SCHEDULE_TIME );
         uint16 cycle_last_schedule_idx = cycleIdx( lasttime + SCHEDULE_TIME );
     
-
-        uint16 num_done = 0;
-        for ( icyc = cycle_last_schedule_idx+1; icyc <= cycle_schedule_idx; icyc++ ) { 
-            // schedule new rounds...covered tokens coming into play
+        
+        // schedule new rounds...covered tokens
+        for ( uint16 icyc = cycle_last_schedule_idx + 1; icyc <= cycle_schedule_idx; icyc++ ) { 
             //uint cyc_time = cycle_time( icyc );
-            uint16 cyc4 = (icyc-1) % 4; // first cycle used is 1 so can pre-schedule, no activity cycle 0
-            for ( itoken = 0; itoken < num_tokens; itoken++ ) {
-                // every 4th token at this particular timeperiod
-                if ( (itoken % 4) == cyc4 ) { 
-                    round_id = initiateRound( icyc, itoken );
-                }
+            uint16 cyc4 = ( icyc-1 ) % 4; // first cycle used is 1 so can pre-schedule, no activity cycle 0
+            for ( uint16 itoken = 0; itoken < num_tokens; itoken++ ) {
+                if ( ( itoken % 4 ) == cyc4 )  // every 4th token at this particular timeperiod 
+                    initiateRound( icyc, itoken );
             }
         }
-/*
-    // finish active rounds due to finish
-    for ( i=0; i<rounds_active.size(); i++ ) {
-      uint16 round_id = rounds.getKeyByIndex(i);
-      round = Round(round_addr);
-      if (round.timestart()+round.timeperiod() < time) { // deactivate the round
-        round.finish();
-        rounds_active.remove(  );
-        // event!
-      }
-    }
-    
-    // activate rounds due to start
-    for (i=0;i<scheduled_rounds.size();i++){
-      round_addr = rounds.getKeyByIndex(i);
-      round = Round(round_addr);
-      // check round for activation, change any user statuses
-      if (round.timestart() < time && round.timestart()+round.timeperiod() >= time) {
-            scheduled_rounds.remove(round);
-            // !check on whether confirmations are done
-            if (round.isReady()) {
-              round.setStatus(Round.round_status.ACTIVE);
-              active_rounds.insert(round,round);
-            } else { // cancel the round
-              round.setStatus(Round.round_status.CANCELLED);
-            }
 
-            // event!
+        // finish active rounds due to finish
+        for ( i = 0; i < num_rounds_active; i++ ) {
+            round_id = rounds_active[ i ];
+            cycle = cycles[ rounds[ round_id ].cycle ];
+            if (cycle.timestart + cycle.period <= time) 
+            // if ( rounds[ round_id ].cycle < cycle_now )
+                finishRound ( round_id );
+        }
+
+        // activate rounds due to start
+        for ( i = 0; i < num_rounds_scheduled; i++ ) {
+            round_id = rounds_scheduled[ i ];
+            //cycle = cycles[ rounds[ round_id ].cycle ];
+            // if ( cycle.timestart < time && cycle.timestart + cycle.period >= time ) 
+            if ( rounds[ round_id ].cycle <= cycle_now)
+                activateRound( round_id );
         }
       
-    }
-    // move active cycle if needed
-    
-   
-    */
-    
         lasttime = time;
         return '{"status":"done"}';
           
     }   
   
-
-
-    
-
 
 
 
@@ -421,7 +396,8 @@ contract RatingAgency {
         0xc98da5a39438f5a533de8705c0db19717f6d0274 
     ];
 
-    function bootstrapDummyTokens(uint8 _num) public { 
+
+    function bootstrapDummyTokens( uint8 _num ) public { 
         uint8 num = _num == 0 ? 4 : _num;
         for ( uint8 i = 0; i< num; i++ ){
             coverToken( tok_addresses[ i % 4 ], 0 );

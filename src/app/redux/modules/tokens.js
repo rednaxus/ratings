@@ -32,7 +32,7 @@ export const fetchTokens = () =>
         var numFetch = 0
         var tokensData = []
         for (var i = 0; i < numTokens; i++) {
-          ratingAgency.get_token_addr(i).then( raToken => { // idx, addr
+          ratingAgency.coveredTokenInfo(i).then( raToken => { // idx, addr
             var res = {id:raToken[0].toNumber(),addr:raToken[1]}
             console.log('got address',res)
             TokenERC20(res.addr).then( tokenERC20 => {

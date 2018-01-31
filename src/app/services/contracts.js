@@ -2,7 +2,6 @@ import { store } from '../Root'
 import TokenERC20Contract from '../../../build/contracts/TokenERC20.json'
 import RatingAgencyContract from '../../../build/contracts/RatingAgency.json'
 import AnalystRegistryContract from '../../../build/contracts/AnalystRegistry.json'
-//import AuthenticationContract from '../../../build/contracts/Authentication.json' // to deprecate in favor of registry
 
 const contract = require('truffle-contract')
 

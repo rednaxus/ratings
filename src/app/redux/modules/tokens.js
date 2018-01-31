@@ -1,62 +1,108 @@
-import { 
-  getRatingAgency as RatingAgency,
-  getTokenERC20 as TokenERC20 
-} from '../../services/contracts'
+// @flow weak
 
-export const TOKENS_FETCHED = 'TOKENS_FETCHED'
+/* eslint no-console:0 */
+/* eslint consistent-return:0 */
+import moment               from 'moment';
+import { appConfig }        from '../../config';
+import {  fetchMockTokensData } from '../../services';
+import { getTokensData } from '../../services/API';
 
-const initialState = { tokens: { tokensData:[{id:'',name:''}], numTokens:0 } }
 
-const tokens = (state = initialState, action) => {
-  if ( action.type === TOKENS_FETCHED ) {
-    console.log('tokens fetch',action,state)
-    return {...state,tokens:action.payload }
+const REQUEST_TOKENS_DATA   = 'REQUEST_TOKENS_DATA';
+const RECEIVED_TOKENS_DATA  = 'RECEIVED_TOKENS_DATA';
+const ERROR_TOKENS_DATA     = 'ERROR_TOKENS_DATA';
+
+
+const initialState = {
+  isFetching: false,
+  data:       [],
+  time:       null
+};
+
+export default function tokens(state = initialState, action) {
+  switch (action.type) {
+
+  case 'REQUEST_TOKENS_DATA':
+    return {
+      ...state,
+      isFetching: action.isFetching,
+      time:       action.time
+    };
+
+  case 'RECEIVED_TOKENS_DATA':
+    return {
+      ...state,
+      isFetching: action.isFetching,
+      data:     [...action.data],
+      time:       action.time
+    };
+
+  case 'ERROR_TOKENS_DATA':
+    return {
+      ...state,
+      isFetching: action.isFetching,
+      time:       action.time
+    };
+
+  default:
+    return state;
   }
-  return state
 }
 
-const tokensFetched = tokens => {
+
+export function fetchTokensDataIfNeeded() {
+  return (dispatch, getState) => {
+    if (shouldFetchTokensData(getState())) {
+      return dispatch(fetchTokensData());
+    }
+  };
+}
+function requestTokensData(time = moment().format()) {
   return {
-    type: TOKENS_FETCHED,
-    payload: tokens
+    type:       REQUEST_TOKENS_DATA,
+    isFetching: true,
+    time
+  };
+}
+function receivedTokensData(data, time = moment().format()) {
+  return {
+    type:       RECEIVED_TOKENS_DATA,
+    isFetching: false,
+    data,
+    time
+  };
+}
+function errorTokensData(time = moment().format()) {
+  return {
+    type:       ERROR_TOKENS_DATA,
+    isFetching: false,
+    time
+  };
+}
+function fetchTokensData() {
+  return dispatch => {
+    dispatch(requestTokensData());
+    if (appConfig.DEV_MODE) {
+      fetchMockTokensData()
+        .then(
+          data => dispatch(receivedTokensData(data))
+        );
+    } else {
+      getTokensData()
+      .then(
+        data => dispatch(receivedTokensData(data)))
+      .catch(
+        error => dispatch(errorTokensData(error))
+      );
+    }
+  };
+}
+function shouldFetchTokensData(state) {
+  const tokensStore = state.tokens;
+  // just check wether fetching (assuming data could be refreshed and should not persist in store)
+  if (tokensStore.isFetching) {
+    return false;
+  } else {
+    return true;
   }
 }
-
-export const fetchTokens = () => 
-  dispatch => 
-    RatingAgency().then((ratingAgency) => {
-      ratingAgency.num_tokens()
-      .then(result => {
-        var numTokens = result.toNumber();
-        console.log("result was:",numTokens);
-        var numFetch = 0
-        var tokensData = []
-        for (var i = 0; i < numTokens; i++) {
-          ratingAgency.coveredTokenInfo(i).then( raToken => { // idx, addr
-            var res = {id:raToken[0].toNumber(),addr:raToken[1]}
-            console.log('got address',res)
-            TokenERC20(res.addr).then( tokenERC20 => {
-              tokenERC20.name().then( name => {
-                res.name = name
-                tokensData.push(res)
-                console.log('got token with name',name)
-                if (++numFetch === numTokens) {
-                  tokensData.sort( (a,b) => a.id - b.id)  
-                  dispatch(tokensFetched({"numTokens": numTokens, "tokensData": tokensData } ))
-                }
-              })
-            })
-          })
-        }
-        // var tokensData = [{id:0,name:'a'},{id:1,name:'b'},{id:2,name:'c'},{id:3,name:'d'}]
-
-        // console.log('dummy tokens data',tokensData)
-        // dispatch(tokensFetched({"numTokens": numTokens, "tokensData": tokensData } ))
-      })
-      .catch(result => { console.error("Error from server:"  + result); })
-    })
-
-
-export default tokens
-
-

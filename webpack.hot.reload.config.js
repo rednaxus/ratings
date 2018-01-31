@@ -10,7 +10,7 @@ const srcInclude  = path.join(__dirname, 'src/app');
 const indexFile   = path.join(__dirname, 'src/app/index.js');
 
 const config = {
-  devtool: 'cheap-module-source-map',
+  devtool: 'inline-source-map', //cheap-module-source-map',
   entry: [
     'babel-polyfill',
     'react-hot-loader/patch',

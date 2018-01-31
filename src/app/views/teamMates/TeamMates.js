@@ -92,7 +92,7 @@ class TeamMatesView extends PureComponent {
                   )
                 }
               </TeamMates>
-              <TeamMateAddButton />
+              <TeamMateAddButton onAdd={ ()=> console.log('hello') }/>
             </Panel>
           </div>
         </div>

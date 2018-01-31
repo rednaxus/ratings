@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import TokenList from '../tokenList'
+import TokenListView from '../tokenList'
 import UserStatus from '../../components/userStatus/UserStatus'
 import AnalystStat from '../analystStat'
 import { AnimatedView } from '../../components'
@@ -25,7 +25,7 @@ class Dashboard extends Component {
               <h1>Dashboard</h1>
               <AnalystStat />
               <h2>Current Shares listed:</h2>
-              <TokenList />
+              <TokenListView />
             </div>
           </div>
         </main>

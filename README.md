@@ -76,6 +76,11 @@ npm run prod-server
 ```
 > Then go to localhost:8081
 
+### build and deploy contracts with Truffle
+> rm -rf build
+> truffle compile
+> truffle migrate
+
 
 ## What's next?
 - [ ] lots of work on everything

@@ -32,7 +32,7 @@ const TeamMatesDemo = ({
         )
       }
     </TeamMates>
-    <TeamMateAddButton />
+    <TeamMateAddButton onAdd={ ()=> console.log('hello') } />
   </Panel>
 );
 

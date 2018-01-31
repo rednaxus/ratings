@@ -12,11 +12,13 @@ export {
 export {
   fetchMockEarningGraphData,
   fetchMockUserInfosData,
-  fetchMockTeamMatesData
+  fetchMockTeamMatesData,
+  fetchMockTokensData
 }                             from './fetchMocks';
 // API:
 export {
   getEarningGraphData,
   getTeamMatesData,
+  getTokensData,
   getUserInfoData
 }                             from './API';

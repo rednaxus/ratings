@@ -49,6 +49,8 @@ const ENTER_PAGINATION_VIEW = 'ENTER_PAGINATION_VIEW';
 const LEAVE_PAGINATION_VIEW = 'LEAVE_PAGINATION_VIEW';
 const ENTER_PROTECTED_VIEW = 'ENTER_PROTECTED_VIEW';
 const LEAVE_PROTECTED_VIEW = 'LEAVE_PROTECTED_VIEW';
+const ENTER_TOKEN_LIST_VIEW = 'ENTER_TOKEN_LIST_VIEW'
+const LEAVE_TOKEN_LIST_VIEW = 'LEAVE_TOKEN_LIST_VIEW'
 
 const initialState = {
   currentView:  'home',
@@ -80,6 +82,7 @@ export default function views(state = initialState, action) {
   case ENTER_STRIPED_PROGRESS_BAR_VIEW:
   case ENTER_ALERT_VIEW:
   case ENTER_PAGINATION_VIEW:
+  case ENTER_TOKEN_LIST_VIEW:
   case ENTER_PROTECTED_VIEW:
     // can't enter if you are already inside
     if (state.currentView !== action.currentView) {
@@ -114,6 +117,7 @@ export default function views(state = initialState, action) {
   case LEAVE_STRIPED_PROGRESS_BAR_VIEW:
   case LEAVE_ALERT_VIEW:
   case LEAVE_PAGINATION_VIEW:
+  case LEAVE_TOKEN_LIST_VIEW:
   case LEAVE_PROTECTED_VIEW:
     // can't leave if you aren't already inside
     if (state.currentView === action.currentView) {
@@ -544,4 +548,22 @@ export function leaveProtected(time = moment().format()) {
     enterTime:    null,
     leaveTime:    time
   };
+}
+
+export function enterTokenListView(time = moment().format()) {
+  return {
+    type:         ENTER_TOKEN_LIST_VIEW,
+    currentView:  'TokenListView',
+    enterTime:    time,
+    leaveTime:    null
+  }
+}
+
+export function leaveTokenListView(time = moment().format()) {
+  return {
+    type:         LEAVE_TOKEN_LIST_VIEW,
+    currentView:  'TokenListView',
+    enterTime:    null,
+    leaveTime:    time
+  }
 }

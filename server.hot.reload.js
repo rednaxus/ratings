@@ -34,7 +34,7 @@ app.listen(3001, (err) => {
   console.log(
     `
       =====================================================
-      -> Server (${chalk.bgBlue('Hot reload')}) 🏃 (running) on ${chalk.green('localhost')}:${chalk.green('3001')}
+      -> Ratings Server (${chalk.bgBlue('Hot reload')}) 🏃 (running) on ${chalk.green('localhost')}:${chalk.green('3001')}
       =====================================================
     `
   );

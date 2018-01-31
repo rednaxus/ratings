@@ -27,7 +27,11 @@ export const appConfig = {
       API: 'api/teamMates'
     }
   },
-
+  tokens:{
+    data: {
+      API: 'api/tokens'
+    }
+  },
   // userInfos config
   userInfos: {
     data: {

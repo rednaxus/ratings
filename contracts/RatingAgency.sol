@@ -1,91 +1,8 @@
 pragma solidity ^0.4.18;
 
-//import "./Aleph.sol";
-//import "./Owned.sol";
-//import "./erc20-api.sol";
 
 import "./AnalystRegistry.sol";
 
-/*
-
-contract OldRound {
-  
-  //uint8 constant BULL = 0;
-  //uint8 constant BEAR = 1;
-
-  
-
-  //Eval[20] first_eval;
-  //Eval[20] second_eval;
-
-
-
-  function Round( uint16 _coveredtoken, uint _value ) public {
-    covered_token = _coveredtoken;  
-    round_value = _value;
-    state = round_state.PENDING;
-    analysts[0] = RoundAnalyst(0,analyst_status.NONE); // bull
-    analysts[1] = RoundAnalyst(0,analyst_status.NONE); // bear
-  }
-  
-  function submit_eval(bytes32 questions, bytes32 comment, uint8 recommendation, bool qual1, bool qual2) public pure {
-      // parse it
-  }
-  
-  function influence() public constant returns (int8){
-      int8 composite_diff = 0;
-      for (uint8 i=0;i<24;i++){
-       //   composite_diff += second_eval[i].recommendation - first_eval[i].recommendation;
-      }
-      return composite_diff;
-  }
-  
-
-  function count_jury_confirmed() constant internal returns (uint) {
-    uint8 num = 0;
-    for ( uint8 i = 2; i < num_analysts; i++ ) {
-      if ( analysts[i].status == analyst_status.CONFIRMED ) num++; 
-    }    
-    return num;
-  }
-
-  function is_ready() public constant returns (bool) {
-      return (analysts[0].analyst_id != 0 && analysts[1].analyst_id != 0 && count_jury_confirmed() > JURISTS_MIN);
-  }
-
-  function set_lead( uint32 _analyst, bool _bull ) public {
-    analysts[_bull ? 0 : 1] = RoundAnalyst( _analyst, analyst_status.NONE );
-  }
-
-  function add_jurist(uint32 _analyst) public {
-    analysts[num_analysts++] = RoundAnalyst( _analyst, analyst_status.NONE );
-  }
-
-  function find_analyst( uint32 _analyst ) public constant returns (uint8) {
-    for ( uint8 i = 0; i < num_analysts; i++ ) {
-      if ( analysts[i].analyst_id == _analyst  ) return i;
-    }
-    require(false); 
-  }
-  function cancel_analyst( uint32 _analyst ) public {
-    uint8 ref = find_analyst( _analyst );
-    analysts[ref].status = analyst_status.CANCELLED;
-  }
-  function confirm_analyst( uint32 _analyst ) public {
-      analysts[ find_analyst( _analyst ) ].status = analyst_status.CONFIRMED;
-  }
-  function schedule() public {
-      state = round_state.SCHEDULED;
-  }
-  function activate() public {
-      state = round_state.ACTIVE;      
-  }
-  function finish() public {
-      state = round_state.FINISHED; 
-  }
-}
-
-  */
   
 contract RatingAgency {
   
@@ -169,8 +86,6 @@ contract RatingAgency {
     }
     mapping ( uint16 => Round ) rounds;
     uint16 public num_rounds = 0;
-    //enum round_state { PENDING, SCHEDULED, ACTIVE, FINISHED, CANCELLED }
-    //enum analyst_status { NONE, AVAILABLE, ASSIGNED, CONFIRMED, CANCELLED } 
 
     mapping ( uint16 => uint16 ) rounds_scheduled; // scheduled rounds by id
     mapping ( uint16 => uint16 ) rounds_active;
@@ -180,7 +95,7 @@ contract RatingAgency {
     /**
      * Constructor 
     */
-    address constant testregistry1 = 0xced97c2e4eaffab6432498ce4c6f30736fa3c353;
+    address constant testregistry1 = 0x29804b5353159262fb996a638e09dd528f3ac330;
     function RatingAgency( address _registry ) public {
         if ( _registry == 0 ) _registry = testregistry1;
         registry = AnalystRegistry( _registry );

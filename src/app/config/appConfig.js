@@ -3,6 +3,8 @@
 export const appConfig = {
   // dev mode to mock async data for instance
   DEV_MODE: true,
+  DEV_MODE_ALT: false,  // make it possible to mock some data, not others
+
   // When you need some kind "console spam" to debug
   DEBUG_ENABLED: true,
   // fake delay to mock async

@@ -49,9 +49,9 @@ export default function tokens(state = initialState, action) {
   }
 }
 
-
 export function fetchTokensDataIfNeeded() {
   return (dispatch, getState) => {
+    console.log('fetch tokens data if needed')
     if (shouldFetchTokensData(getState())) {
       return dispatch(fetchTokensData());
     }
@@ -80,14 +80,16 @@ function errorTokensData(time = moment().format()) {
   };
 }
 function fetchTokensData() {
+  console.log('fetch tokens data')
   return dispatch => {
     dispatch(requestTokensData());
-    if (appConfig.DEV_MODE) {
+    if (appConfig.DEV_MODE_ALT) {
       fetchMockTokensData()
         .then(
           data => dispatch(receivedTokensData(data))
         );
     } else {
+      console.log('getting tokens data from api')
       getTokensData()
       .then(
         data => dispatch(receivedTokensData(data)))
@@ -99,6 +101,7 @@ function fetchTokensData() {
 }
 function shouldFetchTokensData(state) {
   const tokensStore = state.tokens;
+  console.log('should fetch',tokensStore)
   // just check wether fetching (assuming data could be refreshed and should not persist in store)
   if (tokensStore.isFetching) {
     return false;

@@ -61,9 +61,9 @@ contract AnalystRegistry {
         return( analysts[ _analystId ].reputation >= REPUTATION_LEAD );
     }
 
-    function analystInfo( uint32 _analystId ) public view returns (bytes32, uint32, uint32, bool, uint32, uint16, uint16, uint16 ) {
+    function analystInfo( uint32 _analystId ) public view returns (uint32, bytes32, uint32, uint32, bool, uint32, uint16, uint16, uint16 ) {
         Analyst storage a = analysts[_analystId];
-        return (a.name, a.auth_status, a.reputation, a.is_lead, a.token_balance, a.scheduled_round, a.active_round, a.num_rounds );
+        return (_analystId, a.name, a.auth_status, a.reputation, a.is_lead, a.token_balance, a.scheduled_round, a.active_round, a.num_rounds );
     }
     function addRound( uint32 _analystId, uint16 _roundId )  public {
         Analyst storage a = analysts[ _analystId ];
@@ -96,3 +96,4 @@ contract AnalystRegistry {
         }
     }
 }
+

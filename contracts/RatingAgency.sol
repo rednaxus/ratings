@@ -95,7 +95,7 @@ contract RatingAgency {
     /**
      * Constructor 
     */
-    address constant testregistry1 = 0x29804b5353159262fb996a638e09dd528f3ac330;
+    address constant testregistry1 = 0x889082ed72e0b7afd16b395d51b316b9b607bcc1;
     function RatingAgency( address _registry ) public {
         if ( _registry == 0 ) _registry = testregistry1;
         registry = AnalystRegistry( _registry );

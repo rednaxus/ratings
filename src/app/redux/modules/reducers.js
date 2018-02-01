@@ -9,8 +9,9 @@ import teamMates            from './teamMates'
 import views                from './views'
 import userAuth             from './userAuth'
 import users                from './users'
+import cycles               from './cycles'
 import web3                 from './web3'
-import tokens from './tokens'
+import tokens               from './tokens'
 
 export const reducers = {
   earningGraph,
@@ -21,6 +22,7 @@ export const reducers = {
   views,
   userAuth,
   users,
+  cycles,
   web3
 }
 

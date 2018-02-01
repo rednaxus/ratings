@@ -19,6 +19,7 @@ import './style/index.style.scss';
 import Root from './Root';
 // #endregion
 
+
 const ELEMENT_TO_BOOTSTRAP  = 'root';
 const BootstrapedElement    = document.getElementById(ELEMENT_TO_BOOTSTRAP);
 
@@ -43,7 +44,10 @@ const renderApp = RootComponent => {
   );
 };
 
-renderApp(Root);
+// Initialize web3 and set in Redux. fix this! breaks hot loading, but unless initialize cannot run web3 from landing page
+// Delay needed to give web3 time to load
+// Some relationship with metamask too
+setTimeout(() => {renderApp(Root)},1000);
 
 if (module.hot) {
   module.hot.accept(

@@ -5,3 +5,4 @@ export { getTeamMatesData }     from './teamMates';
 export { getTokensData }     from './tokens';
 export { getUserInfoData }      from './userInfos';
 export { getUsersData } from './users';
+export { getCyclesData } from './cycles';

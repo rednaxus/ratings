@@ -3,7 +3,7 @@
 import React      from 'react';
 import PropTypes  from 'prop-types';
 
-const UserListItemButtonValid = ({
+const CycleListItemButtonValid = ({
   onClick
 }) => (
   <button
@@ -13,8 +13,8 @@ const UserListItemButtonValid = ({
   </button>
 );
 
-UserListItemButtonValid.propTypes = {
+CycleListItemButtonValid.propTypes = {
   onClick: PropTypes.func
 };
 
-export default UserListItemButtonValid;
+export default CycleListItemButtonValid;

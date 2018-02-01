@@ -11,5 +11,7 @@ export {
   userInfosMockData,
   teamMatesMock,
   tokensMock,
-  usersMock
+  usersMock,
+  cyclesMock
 };
+

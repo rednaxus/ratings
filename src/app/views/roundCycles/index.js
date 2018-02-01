@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react'
 import { AnimatedView } from '../../components'
+import CycleListView from '../cycleList'
 
 export class RoundCycles extends PureComponent {
 
@@ -9,7 +10,8 @@ export class RoundCycles extends PureComponent {
         <main className="container">
           <div className="pure-g">
             <div className="pure-u-1-1">
-              <h1>Round Cycles (TBI placeholder)</h1>
+              <h1>Round Cycles</h1>
+              <CycleListView />
             </div>
           </div>
           <div className="panel panel-default">

@@ -42,6 +42,6 @@ const mapDispatchToProps = (dispatch) => {
 
 // we use here compose (from redux) just for conveniance (since compose(f,h, g)(args) looks better than f(g(h(args))))
 export default compose(
-  withRouter, // IMPORTANT: witRouter is "needed here" to avoid blocking routing:
+  withRouter, // IMPORTANT: withRouter is "needed here" to avoid blocking routing:
   connect(mapStateToProps, mapDispatchToProps)
 )(App);

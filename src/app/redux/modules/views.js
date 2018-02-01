@@ -29,8 +29,7 @@ const ENTER_TEAM_MATES_VIEW = 'ENTER_TEAM_MATES_VIEW';
 const LEAVE_TEAM_MATES_VIEW = 'LEAVE_TEAM_MATES_VIEW';
 const ENTER_TODO_LIST_VIEW = 'ENTER_TODO_LIST_VIEW';
 const LEAVE_TODO_LIST_VIEW = 'LEAVE_TODO_LIST_VIEW';
-const ENTER_USER_LIST_VIEW = 'ENTER_USER_LIST_VIEW';
-const LEAVE_USER_LIST_VIEW = 'LEAVE_USER_LIST_VIEW';
+
 const ENTER_BREADCRUMB_VIEW = 'ENTER_BREADCRUMB_VIEW';
 const LEAVE_BREADCRUMB_VIEW = 'LEAVE_BREADCRUMB_VIEW';
 const ENTER_STAT_VIEW = 'ENTER_STAT_VIEW';
@@ -49,8 +48,13 @@ const ENTER_PAGINATION_VIEW = 'ENTER_PAGINATION_VIEW';
 const LEAVE_PAGINATION_VIEW = 'LEAVE_PAGINATION_VIEW';
 const ENTER_PROTECTED_VIEW = 'ENTER_PROTECTED_VIEW';
 const LEAVE_PROTECTED_VIEW = 'LEAVE_PROTECTED_VIEW';
+
 const ENTER_TOKEN_LIST_VIEW = 'ENTER_TOKEN_LIST_VIEW'
 const LEAVE_TOKEN_LIST_VIEW = 'LEAVE_TOKEN_LIST_VIEW'
+const ENTER_USER_LIST_VIEW = 'ENTER_USER_LIST_VIEW'
+const LEAVE_USER_LIST_VIEW = 'LEAVE_USER_LIST_VIEW'
+const ENTER_CYCLE_LIST_VIEW = 'ENTER_CYCLE_LIST_VIEW'
+const LEAVE_CYCLE_LIST_VIEW = 'LEAVE_CYCLE_LIST_VIEW'
 
 const initialState = {
   currentView:  'home',
@@ -83,6 +87,8 @@ export default function views(state = initialState, action) {
   case ENTER_ALERT_VIEW:
   case ENTER_PAGINATION_VIEW:
   case ENTER_TOKEN_LIST_VIEW:
+  case ENTER_USER_LIST_VIEW:
+  case ENTER_CYCLE_LIST_VIEW:
   case ENTER_PROTECTED_VIEW:
     // can't enter if you are already inside
     if (state.currentView !== action.currentView) {
@@ -118,6 +124,8 @@ export default function views(state = initialState, action) {
   case LEAVE_ALERT_VIEW:
   case LEAVE_PAGINATION_VIEW:
   case LEAVE_TOKEN_LIST_VIEW:
+  case LEAVE_USER_LIST_VIEW:
+  case LEAVE_CYCLE_LIST_VIEW:
   case LEAVE_PROTECTED_VIEW:
     // can't leave if you aren't already inside
     if (state.currentView === action.currentView) {
@@ -364,6 +372,24 @@ export function enterUserListView(time = moment().format()) {
 export function leaveUserListView(time = moment().format()) {
   return {
     type:         LEAVE_USER_LIST_VIEW,
+    currentView:  'UserListView',
+    enterTime:    null,
+    leaveTime:    time
+  };
+}
+
+export function enterCycleListView(time = moment().format()) {
+  return {
+    type:         ENTER_CYCLE_LIST_VIEW,
+    currentView:  'UserListView',
+    enterTime:    time,
+    leaveTime:    null
+  };
+}
+
+export function leaveCycleListView(time = moment().format()) {
+  return {
+    type:         LEAVE_CYCLE_LIST_VIEW,
     currentView:  'UserListView',
     enterTime:    null,
     leaveTime:    time

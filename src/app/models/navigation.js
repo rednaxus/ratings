@@ -62,6 +62,11 @@ export const navigation = {
           faIconName: 'fa-eye'
         },
         {
+          name: 'Tokens',
+          linkTo: '/general/tokens',
+          faIconName: 'fa-columns'
+        },
+        {
           name: 'Rules',
           linkTo: '/general/rules',
           faIconName: 'fa-columns'

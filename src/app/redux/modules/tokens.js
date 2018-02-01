@@ -22,14 +22,14 @@ const initialState = {
 export default function tokens(state = initialState, action) {
   switch (action.type) {
 
-  case 'REQUEST_TOKENS_DATA':
+  case REQUEST_TOKENS_DATA:
     return {
       ...state,
       isFetching: action.isFetching,
       time:       action.time
     };
 
-  case 'RECEIVED_TOKENS_DATA':
+  case RECEIVED_TOKENS_DATA:
     return {
       ...state,
       isFetching: action.isFetching,
@@ -37,7 +37,7 @@ export default function tokens(state = initialState, action) {
       time:       action.time
     };
 
-  case 'ERROR_TOKENS_DATA':
+  case ERROR_TOKENS_DATA:
     return {
       ...state,
       isFetching: action.isFetching,

@@ -44,6 +44,7 @@ export {
   TodoListAddTask,
   TodoListSeeAllTask
 }                                     from './todoList';
+
 export {
   UserList,
   UserListItem,
@@ -51,6 +52,15 @@ export {
   UserListAddUser,
   UserListSeeAllUser
 }                                     from './userList';
+
+export {
+  CycleList,
+  CycleListItem,
+  CycleListCommands,
+  CycleListAddCycle,
+  CycleListSeeAllCycle
+}                                     from './cycleList';
+
 export { default as ProgressBar }     from './progressBar/ProgressBar';
 export { default as ToolTip }         from './toolTip/Tooltip';
 export { default as Pagination }      from './pagination/Pagination';

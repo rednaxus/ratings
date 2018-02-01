@@ -27,6 +27,7 @@ import Dashboard  from '../views/dashboard'
 import Rules from '../views/rules'
 import Availability from '../views/availability'
 import About from '../views/about'
+import Tokens from '../views/tokens'
 import Token from '../views/token'
 import UserListViewConnected        from '../views/userList'
 import RoundCycles from '../views/roundCycles'
@@ -53,6 +54,7 @@ export const MainRoutes = () => (
     <Route exact path="/basicElements" component={BasicElementsConnected} />
 
     <Route exact path="/general" component={ GeneralConnected } />
+    <Route path="/general/tokens" component={ Tokens } /> 
     <Route path="/general/rules" component={ Rules } />
     <Route path="/general/about" component={ About } />
     <Route path="/general/breadcrumb" component={ BreadcrumbViewConnected } />

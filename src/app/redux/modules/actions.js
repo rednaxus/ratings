@@ -9,10 +9,13 @@ export {
   toggleSideMenu,
   getSideMenuCollpasedStateFromLocalStorage
 }                                      from './sideMenu';
-// teamMates:
-export {fetchTeamMatesDataIfNeeded}    from './teamMates';
-// userInfos:
-export {fetchUserInfoDataIfNeeded}     from './userInfos';
+
+export { fetchTeamMatesDataIfNeeded }    from './teamMates'
+export { fetchUserInfoDataIfNeeded }     from './userInfos'
+export { fetchTokensDataIfNeeded }       from './tokens'
+export { fetchUsersDataIfNeeded }       from './users'
+export { fetchCyclesDataIfNeeded }       from './cycles'
+
 // views:
 export {
   enterAnalystStat,
@@ -57,6 +60,9 @@ export {
   enterUserListView,
   leaveUserListView,
   
+  enterCycleListView,
+  leaveCycleListView,
+
   enterToken,
   leaveToken,
   enterTokenList,

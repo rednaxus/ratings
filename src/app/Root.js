@@ -19,12 +19,14 @@ import PageNotFound             from './views/pageNotFound';
 
 import getWeb3 from './services/getWeb3'
 
+
 // #region flow types
 type Props = any;
 type State = any;
 // #endregion
 
 export const store = configureStore();
+
 
 
 class Root extends Component<Props, State> {

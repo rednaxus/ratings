@@ -1,5 +1,6 @@
 import { store } from '../Root'
 import Web3 from 'web3'
+import { appConfig } from '../config'
 
 export const WEB3_INITIALIZED = 'WEB3_INITIALIZED'
 function web3Initialized(results) {
@@ -31,7 +32,7 @@ let getWeb3 = new Promise(function(resolve, reject) {
 
       // Fallback to localhost if no web3 injection.
 
-      var provider = new Web3.providers.HttpProvider('http://localhost:8545')
+      var provider = new Web3.providers.HttpProvider(appConfig.ETHEREUM_PROVIDER)
 
       web3 = new Web3(provider)
 

@@ -134,6 +134,20 @@ contract RatingAgency {
             0 : uint16( 4 * ( time - ZERO_BASE_TIME ) / CYCLE_PERIOD ) );
     }
   
+    function cycleInfo ( uint16 _cycle ) public view returns ( uint16, uint, uint, uint8, uint8, uint8, uint8, uint8 ) {
+        Cycle storage cycle = cycles[ _cycle ];
+        return (
+            _cycle,
+            cycleTime( _cycle ), 
+            cycle.period, 
+            cycle.stat, 
+            cycle.num_jurists_available,
+            cycle.num_jurists_assigned,
+            cycle.num_leads_available, 
+            cycle.num_leads_assigned
+        );
+    }
+    
     event CycleAdded( uint16 cycle );
     function cycleUpdate( uint _timenow ) public { // can make internal, public for now, testing 
         uint timenow = _timenow == 0? ZERO_BASE_TIME : _timenow;

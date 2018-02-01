@@ -25,7 +25,7 @@ export const getUsersData = () => {
             console.log('got analyst info',rAnalyst)
             var res = {
               id:i, 
-              name: rAnalyst[0],
+              name: rAnalyst[0].slice(48),
               status:rAnalyst[1].toNumber(),
               reputation:rAnalyst[2].toNumber(),  
               is_lead:rAnalyst[3], 

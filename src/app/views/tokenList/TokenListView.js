@@ -39,7 +39,7 @@ class TokenListView extends PureComponent {
   }
 
   componentDidMount() {
-    console.log('did mount here')
+    console.log('did mounts ')
     store.dispatch(fetchTokensDataIfNeeded())
   }
  
@@ -61,13 +61,13 @@ class TokenListView extends PureComponent {
     return(
       <AnimatedView>
         <div className="row">
-          <a 
+          {/*<a 
             href="#" 
             className="pure-link" 
             onClick={(event) => this.onTokenListClick(event)}
-          >Fetch</a>
+          >Fetch</a>*/}
 
-          <div className="col-xs-8 col-xs-offset-2">
+          <div className="col-xs-8">
             <Panel
               hasTitle={true}
               title={'Token list'}

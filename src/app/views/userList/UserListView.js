@@ -25,7 +25,7 @@ class UserListView extends PureComponent {
   }
 
   componentDidMount() {
-    console.log('users component mount')
+    console.log('users component mounted')
     store.dispatch(fetchUsersDataIfNeeded())
   }
 

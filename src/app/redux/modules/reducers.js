@@ -8,6 +8,7 @@ import userInfos            from './userInfos'
 import teamMates            from './teamMates'
 import views                from './views'
 import userAuth             from './userAuth'
+import users                from './users'
 import web3                 from './web3'
 import tokens from './tokens'
 
@@ -19,6 +20,7 @@ export const reducers = {
   tokens,
   views,
   userAuth,
+  users,
   web3
 }
 

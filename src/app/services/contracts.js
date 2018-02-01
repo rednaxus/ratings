@@ -1,7 +1,10 @@
 import { store } from '../Root'
+import { appConfig } from '../config'
 import TokenERC20Contract from '../../../build/contracts/TokenERC20.json'
 import RatingAgencyContract from '../../../build/contracts/RatingAgency.json'
 import AnalystRegistryContract from '../../../build/contracts/AnalystRegistry.json'
+
+console.log( 'using analyst registry at: ' + appConfig.ANALYST_REGISTRY )
 
 const contract = require('truffle-contract')
 
@@ -27,8 +30,7 @@ export const getContractInstance = (contractDesc, addr = null) =>
 
 export const getTokenERC20 = (addr) => getContractInstance( TokenERC20Contract, addr )
 export const getRatingAgency = () => getContractInstance( RatingAgencyContract )
-export const getAnalystRegistry = () => getContractInstance( AnalystRegistryContract )
-//export const getAuthentication = () => getContractInstance( AuthenticationContract )
+export const getAnalystRegistry = () => getContractInstance( AnalystRegistryContract, appConfig.ANALYST_REGISTRY )
 
 export const promisify = (inner) =>
   new Promise((resolve, reject) =>

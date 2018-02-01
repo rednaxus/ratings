@@ -7,7 +7,8 @@ import UserListView           from './UserListView';
 
 const mapStateToProps = (state) => {
   return {
-    currentView:  state.views.currentView
+    currentView:  state.views.currentView,
+    users: state.users
   };
 };
 

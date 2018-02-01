@@ -1,72 +1,32 @@
 // @flow weak
 
-import React, {
-  PureComponent
-}                         from 'react';
+import React, {  PureComponent } from 'react';
 import PropTypes          from 'prop-types';
 import {
   AnimatedView,
   Panel,
   UserList,
-  UserListItem,
-  UserListCommands,
-  UserListAddUser,
-  UserListSeeAllUser
+  UserListItem
+  //UserListCommands,
+  //UserListAddUser,
+  //UserListSeeAllUser
 }                         from '../../components';
+
+import { fetchUsersDataIfNeeded } from '../../redux/modules/users'
+import { store } from '../../Root'
 
 class UserListView extends PureComponent {
   enterAnimationTimer = null;
-  
-  state = {
-    users: [
-      {
-        label: 'Director is Modern Dashboard',
-        done: false,
-        statusLabel: '2 days',
-        statusLevel: 'label-success'
-      },
-      {
-        label: 'Fully Responsive & Bootstrap 3.0.2 Compatible',
-        done: false,
-        statusLabel: 'done',
-        statusLevel: 'label-danger'
-      },
-      {
-        label: 'Latest Design Concept',
-        done: false,
-        statusLabel: 'Company',
-        statusLevel: 'label-warning'
-      },
-      {
-        label: 'Director is Modern Dashboard',
-        done: false,
-        statusLabel: '2 days',
-        statusLevel: 'label-success'
-      },
-      {
-        label: 'Director is Modern Dashboard',
-        done: false,
-        statusLabel: '2 days',
-        statusLevel: 'label-success'
-      },
-      {
-        label: 'Director is Modern Dashboard',
-        done: false,
-        statusLabel: '2 days',
-        statusLevel: 'label-success'
-      },
-      {
-        label: 'Director is Modern Dashboard',
-        done: false,
-        statusLabel: '2 days',
-        statusLevel: 'label-success'
-      }
-    ]
-  };
+
 
   componentWillMount() {
     const { actions: { enterUserListView } } = this.props;
     enterUserListView();
+  }
+
+  componentDidMount() {
+    console.log('users component mount')
+    store.dispatch(fetchUsersDataIfNeeded())
   }
 
   componentWillUnmount() {
@@ -76,38 +36,38 @@ class UserListView extends PureComponent {
   }
 
   render() {
-    const { users } = this.state;
+    const { users } = this.props
 
     return(
       <AnimatedView>
-        {/* preview: */}
         <div className="row">
-          <div className="col-xs-8 col-xs-offset-2">
+          <div className="col-xs-12">
             <Panel
               hasTitle={true}
               title={'User list'}
               sectionCustomClass="tasks-widget">
               <UserList>
                 {
-                  users.map(
-                    ({label, done, statusLabel, statusLevel}, userIdx) => {
+                  users.data.map(
+                    ({id, name, status, reputation, is_lead, token_balance, scheduled_round, active_round, num_rounds }, userIdx) => {
                       return (
                         <UserListItem
                           key={userIdx}
-                          label={label}
-                          done={done}
-                          statusLabel={statusLabel}
-                          statusLabelStyle={statusLevel}
+                          id={id} 
+                          name={name}
+                          status={status} 
+                          reputation={reputation}
+                          is_lead={is_lead}
+                          token_balance={token_balance}
+                          scheduled_round={scheduled_round}
+                          active_round={active_round}
+                          num_rounds={num_rounds}
                         />
                       );
                     }
                   )
                 }
               </UserList>
-             <UserListCommands>
-               <UserListAddUser />
-               <UserListSeeAllUser />
-             </UserListCommands>
            </Panel>
           </div>
         </div>
@@ -121,6 +81,6 @@ UserListView.propTypes= {
     enterUserListView: PropTypes.func.isRequired,
     leaveUserListView: PropTypes.func.isRequired
   })
-};
+}
 
-export default UserListView;
+export default UserListView

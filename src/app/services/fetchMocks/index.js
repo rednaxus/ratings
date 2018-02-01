@@ -5,7 +5,8 @@ import {
   earningGraphMockData,
   userInfosMockData,
   teamMatesMock,
-  tokensMock
+  tokensMock,
+  usersMock
 }                       from '../../models';
 
 export const fetchMockEarningGraphData = (
@@ -63,3 +64,15 @@ export const fetchMockTokensData = (
   );
 };
 
+export const fetchMockUsersData = (
+  timeToWait: number = appConfig.FAKE_ASYNC_DELAY
+): Promise<any> => {
+  return new Promise(
+    resolve => {
+      setTimeout(
+        () => resolve([...usersMock]),
+        timeToWait
+      );
+    }
+  );
+};

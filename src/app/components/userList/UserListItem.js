@@ -5,25 +5,25 @@ import React, {
   PureComponent,
 }                               from 'react';
 import PropTypes                from 'prop-types';
-import UserListItemButtonEdit   from '../userListItemButtonEdit/UserListItemButtonEdit';
-import UserListItemButtonValid  from '../userListItemButtonValid/UserListItemButtonValid';
-import UserListItemButtonCancel from '../userListItemButtonCancel/UserListItemButtonCancel';
+//import UserListItemButtonEdit   from '../userListItemButtonEdit/UserListItemButtonEdit';
+//import UserListItemButtonValid  from '../userListItemButtonValid/UserListItemButtonValid';
+//import UserListItemButtonCancel from '../userListItemButtonCancel/UserListItemButtonCancel';
 
 
 class UserListItem extends PureComponent {
   static propTypes = {
     id:               PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    label:            PropTypes.string,
-    done:             PropTypes.bool,
-    statusLabel:      PropTypes.string,
-    statusLabelStyle: PropTypes.oneOf(['label-success', 'label-danger', 'label-warning', 'label-primary', 'label-inverse']),
-    onListValidEdit:  PropTypes.func
+    name:             PropTypes.string,
+    status:           PropTypes.number,
+    reputation:       PropTypes.number,
+    is_lead:          PropTypes.bool,
+    token_balance:    PropTypes.number, 
+    scheduled_round:  PropTypes.number,
+    active_round:     PropTypes.number,
+    num_rounds:       PropTypes.number
   };
 
   static defaultProps = {
-    label:            '',
-    statusLabelStyle: 'label-success',
-    done:             false
   };
 
   state = {
@@ -44,9 +44,18 @@ class UserListItem extends PureComponent {
   }
 
   render() {
-    const { label, statusLabel, statusLabelStyle } = this.props;
+    const { 
+      id, 
+      name, 
+      status, 
+      reputation, 
+      is_lead, 
+      token_balance, 
+      scheduled_round, 
+      active_round, 
+      num_rounds 
+    } = this.props;
     const { isChecked, isEditing } = this.state;
-
     return (
       <li>
         <div className="task-checkbox">
@@ -57,25 +66,30 @@ class UserListItem extends PureComponent {
           />
         </div>
         <div className="task-title">
-
           <span className="task-title-sp">
-            {label}
+            {name}
           </span>
-
-          <span className={`label ${statusLabelStyle}`}>
-            {statusLabel}
+          <span className="task-title-sp">
+            {status}
           </span>
-
-          <div className="pull-right hidden-phone">
-            {
-              isEditing
-              ? <div>
-                  <UserListItemButtonValid onClick={this.handlesOnListValidEdit} />
-                  <UserListItemButtonCancel onClick={this.handlesOnListCancelEdit} />
-                </div>
-              : <UserListItemButtonEdit onClick={this.handlesOnListEdit} />
-            }
-          </div>
+          <span className="task-title-sp">
+            {reputation}
+          </span>
+          <span className="task-title-sp">
+            {is_lead?'lead':'jurist'}
+          </span>
+          <span className="task-title-sp">
+            {token_balance}
+          </span>
+          <span className="task-title-sp">
+            {scheduled_round}
+          </span>
+          <span className="task-title-sp">
+            {active_round}
+          </span>
+          <span className="task-title-sp">
+            {num_rounds}
+          </span>
         </div>
       </li>
     )
@@ -87,6 +101,7 @@ class UserListItem extends PureComponent {
     }
   }
 
+  /*
   handlesOnListEdit = () => {
     this.setState({ isEditing: true});
   }
@@ -102,6 +117,7 @@ class UserListItem extends PureComponent {
     // onListValidEdit(isChecked); enable this to use
     this.setState({ isEditing: false});
   }
+  */
 }
 
 export default UserListItem

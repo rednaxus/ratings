@@ -41,6 +41,7 @@ export const appConfig = {
     }
   },
 
-  HELLO_WORD: ''
-
+  HELLO_WORD: '',
+  
+  ANALYST_REGISTRY: '0x29804b5353159262fb996a638e09dd528f3ac330'
 };

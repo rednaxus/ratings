@@ -12,6 +12,7 @@ import users                from './users'
 import cycles               from './cycles'
 import web3                 from './web3'
 import tokens               from './tokens'
+import survey               from './survey'
 
 export const reducers = {
   earningGraph,
@@ -23,6 +24,7 @@ export const reducers = {
   userAuth,
   users,
   cycles,
+  survey,
   web3
 }
 

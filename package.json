@@ -166,6 +166,7 @@
     "redux-thunk": "^2.2.0",
     "serialize-javascript": "^1.4.0",
     "smoothscroll-polyfill": "^0.4.0",
+    "survey-react": "^1.0.5",
     "truffle-contract": "^1.1.11",
     "web3": "^0.20.4"
   },

@@ -48,6 +48,11 @@ export const navigation = {
           name: 'Availability',
           linkTo: '/Dashboard/availability',
           faIconName: 'fa-eye'
+        },
+        {
+          name: 'Survey',
+          linkTo: '/Analyst/survey',
+          faIconName: 'fa-eye'
         }
       ]
     },

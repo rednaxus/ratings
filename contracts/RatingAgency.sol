@@ -185,10 +185,11 @@ contract RatingAgency {
             addAvailability( _cycleId, id, registry.isLead( id ) );
         }
     }
-    // generate availabilities for all unvolunteered cycles
+
+    // generate availabilities for all unvolunteered current and future cycles
     function generateAllAvailabilities() public {
-        for ( uint16 cycleId = 0; cycleId < num_cycles; cycleId++ ) {
-            if ( cycles[ cycleId ].num_leads_assigned == 0 )
+        for ( uint16 cycleId = cycleIdx(lasttime); cycleId < num_cycles; cycleId++ ) {
+            if ( cycles[ cycleId ].num_leads_assigned == 0 && cycles[ cycleId ].num_leads_available == 0 )
                 generateAvailabilities( cycleId );
         }
     }
@@ -267,7 +268,7 @@ contract RatingAgency {
     event Log(string str);
     
     // cron
-    function cron(uint _timestamp) public returns (string) {
+    function cron(uint _timestamp) public returns (uint16, uint16, uint) {
         uint time = _timestamp == 0 ? ZERO_BASE_TIME : _timestamp; // block.timestamp
         uint16 round_id;
         uint16 i;
@@ -310,7 +311,7 @@ contract RatingAgency {
         }
       
         lasttime = time;
-        return '{"status":"done"}';
+        return (num_cycles,num_rounds,time);
           
     }   
   

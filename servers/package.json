@@ -1,7 +1,7 @@
 {
-  "name": "ethereum-gateway",
+  "name": "rating-agency",
   "author": "alan",
-  "homepage": "http://www.social-liberty.com",
+  "homepage": "https://www.veva.one",
   "private": true,
   "scripts": {},
   "dependencies": {
@@ -15,7 +15,7 @@
     "node-uuid": "^1.4.8",
     "parse-numeric-range": "0.0.2",
     "solc": "^0.4.19",
-    "web3": "^1.0.0-beta.26"
+    "web3": "^0.20.4"
   },
   "devDependencies": {}
 }

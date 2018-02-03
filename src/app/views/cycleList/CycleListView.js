@@ -1,18 +1,19 @@
 // @flow weak
 
-import React, {  PureComponent } from 'react';
-import PropTypes          from 'prop-types';
+import React, {  PureComponent } from 'react'
+import Moment                    from 'react-moment'
+import PropTypes                 from 'prop-types'
 import {
   AnimatedView,
   Panel,
   CycleList,
-  CycleListItem
-  //CycleListCommands,
-  //CycleListAddCycle,
+  CycleListItem,
+  CycleListCommands,
+  CycleListAddCycle
   //CycleListSeeAllCycle
 }                         from '../../components';
 
-import { fetchCyclesDataIfNeeded } from '../../redux/modules/cycles'
+import { fetchCyclesDataIfNeeded, fetchCronInfo } from '../../redux/modules/cycles'
 import { store } from '../../Root'
 
 class CycleListView extends PureComponent {
@@ -28,6 +29,7 @@ class CycleListView extends PureComponent {
     console.log('cycles component mounted')
     //const { actions: { fetchCyclesDataIfNeeded } } = this.props;
     store.dispatch(fetchCyclesDataIfNeeded())
+    store.dispatch(fetchCronInfo())
     //fetchCyclesDataIfNeeded()
   }
 
@@ -69,6 +71,10 @@ class CycleListView extends PureComponent {
                   )
                 }
               </CycleList>
+              <div className="row">Last cron run: <span className="text-red"><Moment date={new Date(cycles.cronInfo)} /></span></div>
+              <CycleListCommands>
+               <CycleListAddCycle />
+             </CycleListCommands>
            </Panel>
           </div>
         </div>

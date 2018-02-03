@@ -14,7 +14,7 @@ export { fetchTeamMatesDataIfNeeded }    from './teamMates'
 export { fetchUserInfoDataIfNeeded }     from './userInfos'
 export { fetchTokensDataIfNeeded }       from './tokens'
 export { fetchUsersDataIfNeeded }       from './users'
-export { fetchCyclesDataIfNeeded }       from './cycles'
+export { fetchCyclesDataIfNeeded, fetchCronInfo }       from './cycles'
 
 // views:
 export {

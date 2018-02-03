@@ -265,7 +265,9 @@ contract RatingAgency {
         RoundFinished( rounds[ _roundId ].cycle, _roundId, num_rounds_scheduled, num_rounds_active );
     }   
 
-    event Log(string str);
+    event CycleScheduled(uint16 _cycle, uint time);
+    event CycleActivated(uint16 _cycle, uint time);
+    event CycleFinished(uint16 _cycle, uint time);
     
     // cron
     function cron(uint _timestamp) public returns (uint16, uint16, uint) {
@@ -290,6 +292,7 @@ contract RatingAgency {
                 if ( ( itoken % 4 ) == cyc4 )  // every 4th token at this particular timeperiod 
                     initiateRound( icyc, itoken );
             }
+            CycleScheduled(icyc,time);
         }
 
         // finish active rounds due to finish

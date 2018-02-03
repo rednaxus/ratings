@@ -153,6 +153,7 @@
     "react-collapse": "^4.0.3",
     "react-dom": "^16.2.0",
     "react-height": "^3.0.0",
+    "react-moment": "^0.7.0",
     "react-motion": "^0.5.2",
     "react-notification": "^6.8.2",
     "react-overdrive": "^0.0.9",

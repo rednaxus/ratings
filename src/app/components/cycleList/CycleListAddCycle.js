@@ -6,8 +6,8 @@ const CycleListAddCycle = () => (
   <a
     className="btn btn-success btn-sm pull-left"
     href="#">
-    Add New Cycles
+    Run Cron Now
   </a>
 )
 
-export default UserListAddUser
+export default CycleListAddCycle

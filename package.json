@@ -163,6 +163,7 @@
     "react-svg-morph": "^0.2.1",
     "react-tap-event-plugin": "^3.0.2",
     "react-test-renderer": "^16.2.0",
+    "react-web3": "^0.4.4",
     "redux": "^3.7.2",
     "redux-devtools-extension": "^2.13.2",
     "redux-thunk": "^2.2.0",

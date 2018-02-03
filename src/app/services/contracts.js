@@ -10,11 +10,13 @@ const contract = require('truffle-contract')
 
 export const getContractInstance = (contractDesc, addr = null) => 
 	new Promise((resolve, reject) => {
-		let web3 = store.getState().web3.web3Instance
+		/*let web3 = store.getState().web3.web3Instance
   	if (typeof web3 === 'undefined' ) { // Double-check web3's status.
     	console.error('Web3 is not initialized.'); 
     	reject('error');
   	}
+    */
+    let web3 = window.web3
     const instanceContract = contract(contractDesc)
     instanceContract.setProvider(web3.currentProvider)
 

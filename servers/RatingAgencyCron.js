@@ -13,7 +13,7 @@ var RatingAgency = artifacts.require("RatingAgency")
 
 var config = {
 	ANALYST_REGISTRY:"0x889082ed72e0b7afd16b395d51b316b9b607bcc1",
-	gas: 3500000,
+	gas:4500000,
 	gasPrice: '30000000000000'
 }
 
@@ -65,9 +65,28 @@ web3.eth.getCoinbase( (error,coinbase) => {
 		console.log('rating agency address',ratingAgencyAddress)
 		let transactObj = { from: account, gas: config.gas, gasPrice: config.gasPrice}
 
+		RatingAgency.TokenAdd({ fromBlock: 0, toBlock: 'latest' }, (error, event) => {
+  		console.log(error?error:'', event);
+		})
 		RatingAgency.CycleAdded({ fromBlock: 0, toBlock: 'latest' }, (error, event) => {
   		console.log(error?error:'', event);
 		})
+		RatingAgency.AvailabilityAdd({ fromBlock: 0, toBlock: 'latest' }, (error, event) => {
+  		console.log(error?error:'', event);
+		})
+		RatingAgency.RoundPopulated({ fromBlock: 0, toBlock: 'latest' }, (error, event) => {
+  		console.log(error?error:'', event);
+		})
+		RatingAgency.RoundActivated({ fromBlock: 0, toBlock: 'latest' }, (error, event) => {
+  		console.log(error?error:'', event);
+		})
+		RatingAgency.RoundScheduled({ fromBlock: 0, toBlock: 'latest' }, (error, event) => {
+  		console.log(error?error:'', event);
+		})
+		RatingAgency.RoundFinished({ fromBlock: 0, toBlock: 'latest' }, (error, event) => {
+  		console.log(error?error:'', event);
+		})
+
 
 		const readline = require('readline');
 		const rl = readline.createInterface(process.stdin, process.stdout);
@@ -116,16 +135,16 @@ web3.eth.getCoinbase( (error,coinbase) => {
   		}
   		else if ( line.startsWith("r") ) {
 				console.log('at time:',runTime)
-				RatingAgency.generateAllAvailabilities.call(transactObj,console.log)
-				console.log('generated availabilities')
-				RatingAgency.cron.call(runTime,console.log)
-				runTime += runInterval
+				RatingAgency.generateAllAvailabilities.call(transactObj, result => {
+					console.log('generated availabilities',result)
+					RatingAgency.cron.call(runTime,transactObj,console.log)
+					runTime += runInterval
+  			})
   		}
   		else if (line === "cron") {
 				const cronjob = new Cron('*/1 * * * *', () => {
-					console.log('cron running...',new Date(), contractAddress)
- 					RatingAgency.cron.call(runTime,{ from: account, gas: config.gas, gasPrice: config.gasPrice }
-					,console.log) 				
+					console.log('cron running...',new Date(), ratingAgencyAddress)
+ 					RatingAgency.cron.call(runTime,transactObj,console.log) 				
   			}, null, true, 'America/Los_Angeles')
   		}
   		rl.prompt();

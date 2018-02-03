@@ -10,6 +10,7 @@ import {
 }                               from 'react-router-dom';
 import { ConnectedRouter }      from 'react-router-redux';
 import { Provider }             from 'react-redux';
+import { Web3Provider }         from 'react-web3'
 import configureStore           from './redux/store/configureStore';
 import { history }              from './redux/store/configureStore';
 import App                      from './containers/app';
@@ -17,8 +18,8 @@ import ScrollTop                from './components/scrollToTop/ScrollToTop';
 import Login                    from './views/login/index';
 import PageNotFound             from './views/pageNotFound';
 
-import getWeb3 from './services/getWeb3'
-
+//import getWeb3 from './services/getWeb3'
+ 
 
 // #region flow types
 type Props = any;
@@ -33,17 +34,19 @@ class Root extends Component<Props, State> {
   render() {
     return (
       <Provider store={store}>
-        <div>
-          <ConnectedRouter history={history}>
-            <ScrollTop>
-              <Switch>
-                <Route exact path="/login" component={Login} />
-                <App />
-                <Route component={PageNotFound} />
-              </Switch>
-            </ScrollTop>
-          </ConnectedRouter>
-        </div>
+        <Web3Provider >
+          <div>
+            <ConnectedRouter history={history}>
+              <ScrollTop>
+                <Switch>
+                  <Route exact path="/login" component={Login} />
+                  <App />
+                  <Route component={PageNotFound} />
+                </Switch>
+              </ScrollTop>
+            </ConnectedRouter>
+          </div>
+        </Web3Provider>
       </Provider>
     );
   }

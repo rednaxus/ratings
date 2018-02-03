@@ -47,7 +47,9 @@ const renderApp = RootComponent => {
 // Initialize web3 and set in Redux. fix this! breaks hot loading, but unless initialize cannot run web3 from landing page
 // Delay needed to give web3 time to load
 // Some relationship with metamask too
-setTimeout(() => {renderApp(Root)},1000);
+//setTimeout(() => {renderApp(Root)},1000);
+
+renderApp(Root)
 
 if (module.hot) {
   module.hot.accept(

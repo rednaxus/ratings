@@ -14,6 +14,7 @@
     "node-cron": "^1.2.1",
     "node-uuid": "^1.4.8",
     "parse-numeric-range": "0.0.2",
+    "react-web3": "^0.4.4",
     "solc": "^0.4.19",
     "web3": "^0.20.4"
   },

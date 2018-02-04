@@ -5,11 +5,6 @@ const fs = require('fs');
 // Contract descriptions from truffle
 const RatingAgencyObj = require("../build/contracts/RatingAgency.json");
 const AnalystRegistryObj = require("../build/contracts/AnalystRegistry.json");
-/*
-var TokenERC20 = artifacts.require("TokenERC20")
-var AnalystRegistry = artifacts.require("AnalystRegistry")
-var RatingAgency = artifacts.require("RatingAgency")
-*/
 
 var config = {
 	ANALYST_REGISTRY:"0x889082ed72e0b7afd16b395d51b316b9b607bcc1",
@@ -21,32 +16,15 @@ const Cron = require('cron').CronJob;
 console.log('started at ',new Date())
 let web3 = new Web3('ws://localhost:8546');
 //web3.setProvider(new web3.providers.HttpProvider('http://localhost:8545'));
-console.log("Talking with a geth server", Web3);
+//console.log("Talking with a geth server", Web3);
 
 const runInterval = 86400 	// e.g. 4 days
 let runTime = 1514764800 
+var account;
+var deploy = false;
 
-setTimeout(()=> {
-	/*
+setTimeout(()=> { // needed because of a bug in web3 1.0
 
-	let input = {
-	//	'hello.sol':'contract Hello{ string h = "hello from joad"; function g() constant returns(string){ return h; } }'
-		'RatingAgency.sol': fs.readFileSync('../contracts/RatingAgency.sol','utf8')
-	}
-
-	const findImports = (path) => {
-		let p = path.startsWith('./') ? path.substring(2):path;
-		return { contents: fs.readFileSync('../contracts/'+p,'utf8')}
-	}
-
-	console.log('compiling contracts')//,input['RatingAgency.sol']);
-	var output = solc.compile({ sources: input }, 1, findImports )
-	for (var contractName in output.contracts)
-		console.log(contractName)// + ' -->: ' + output.contracts[contractName].bytecode)
-	*/
-
-	var account;
-	var deploy = false;
 	
 	//console.log('web3',web3.eth.personal);
 	web3.eth.getCoinbase().then( coinbase => { 
@@ -65,9 +43,6 @@ setTimeout(()=> {
 			console.log('rating agency address',ratingAgencyAddress)
 
 			let RatingAgency = new web3.eth.Contract(RatingAgencyObj.abi,ratingAgencyAddress,transactObj);
-			console.log('compiled contract:',RatingAgency);
-
-			//let RatingAgency = RatingAgencyContract.at(ratingAgencyAddress);
 
 			RatingAgency.events.TokenAdd({ fromBlock: 0, toBlock: 'latest' }, (error, event) => {
 	  		console.log(error?error:'', event);
@@ -90,7 +65,6 @@ setTimeout(()=> {
 			RatingAgency.events.RoundFinished({ fromBlock: 0, toBlock: 'latest' }, (error, event) => {
 	  		console.log(error?error:'', event);
 			})
-
 
 			const readline = require('readline');
 			const rl = readline.createInterface(process.stdin, process.stdout);
@@ -142,7 +116,7 @@ setTimeout(()=> {
 					RatingAgency.methods.generateAllAvailabilities().send(transactObj)
 					.on('transactionHash', console.log)
 					.on('receipt', receipt => {
-    				console.log('got receipt')
+    				//console.log('got receipt')
 					})
 					.on('confirmation', (confirmationNumber, receipt) => {
 						//console.log('got confirmation',confirmationNumber, receipt)
@@ -151,7 +125,7 @@ setTimeout(()=> {
 					.then( result => {
 						console.log('generated availabilities',result)
 						RatingAgency.methods.cron(runTime).send(transactObj).then( result => {
-							console.log('cron finished',result)
+							console.log('cron run finished',result)
 							runTime += runInterval
 						})
 	  			})
@@ -159,7 +133,9 @@ setTimeout(()=> {
 	  		else if (line === "cron") {
 					const cronjob = new Cron('*/1 * * * *', () => {
 						console.log('cron running...',new Date(), ratingAgencyAddress)
-	 					RatingAgency.cron(runTime).then(console.log) 				
+	 					RatingAgency.cron(runTime)
+	 					.on('error',console.error)
+	 					.then(console.log) 				
 	  			}, null, true, 'America/Los_Angeles')
 	  		}
 	  		rl.prompt();
@@ -176,4 +152,4 @@ setTimeout(()=> {
 			console.log(error,'error getting coinbase')
 	})
 
-},1000)
+},1000) 	

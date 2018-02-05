@@ -275,7 +275,8 @@ contract RatingAgency {
         uint16 round_id;
         uint16 i;
         Cycle storage cycle; 
-    
+
+        if (time <= lasttime) return (num_cycles,num_rounds,lasttime); // don't run for earlier times than already run
         cycleUpdate( time ); // start new cycles if needed
 
         uint16 cycle_now = cycleIdx( time );
@@ -314,7 +315,7 @@ contract RatingAgency {
         }
       
         lasttime = time;
-        return (num_cycles,num_rounds,time);
+        return (num_cycles,num_rounds,lasttime);
           
     }   
   

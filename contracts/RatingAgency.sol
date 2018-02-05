@@ -270,13 +270,15 @@ contract RatingAgency {
     event CycleFinished(uint16 _cycle, uint time);
     
     // cron
-    function cron(uint _timestamp) public returns (uint16, uint16, uint) {
+    event Cron(uint _lasttime, uint _timestamp);
+    function cron(uint _timestamp) public {
         uint time = _timestamp == 0 ? ZERO_BASE_TIME : _timestamp; // block.timestamp
         uint16 round_id;
         uint16 i;
         Cycle storage cycle; 
 
-        if (time <= lasttime) return (num_cycles,num_rounds,lasttime); // don't run for earlier times than already run
+        Cron(lasttime,time);
+        if (time <= lasttime) return; // don't run for earlier times than already run
         cycleUpdate( time ); // start new cycles if needed
 
         uint16 cycle_now = cycleIdx( time );
@@ -315,7 +317,7 @@ contract RatingAgency {
         }
       
         lasttime = time;
-        return (num_cycles,num_rounds,lasttime);
+        //return (num_cycles,num_rounds,lasttime);
           
     }   
   

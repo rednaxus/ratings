@@ -32,6 +32,7 @@ import Token from '../views/token'
 import UserListViewConnected        from '../views/userList'
 import RoundCycles from '../views/roundCycles'
 import Survey from '../views/survey'
+import FileUploader from '../views/briefUpload/FileUploader'
 
 export const MainRoutes = () => (
   <Switch>
@@ -56,6 +57,7 @@ export const MainRoutes = () => (
 
     <Route exact path="/basicElements" component={BasicElementsConnected} />
 
+    <Route exact path="/fileUpload" component={ FileUploader } />
     <Route exact path="/general" component={ GeneralConnected } />
     <Route path="/general/tokens" component={ Tokens } /> 
     <Route path="/general/rules" component={ Rules } />

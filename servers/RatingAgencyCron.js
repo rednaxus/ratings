@@ -77,7 +77,7 @@ setTimeout(()=> { // needed because of a bug in web3 1.0
 			RatingAgency.events.Cron(evtRange, (error, event) => {
 	  		eventlog(error?error:'', JSON.stringify(event));
 	  		console.log('return value', event.returnValues);
-				runTime = event.returnValues._timestamp + runInterval	// adjust next interval to last time ran
+				// don't do here, not dependable runTime = event.returnValues._timestamp + runInterval	// adjust next interval to last time ran
 			})
 			const doRun = () => {
 				cronlog('at time:',runTime)
@@ -101,7 +101,7 @@ setTimeout(()=> { // needed because of a bug in web3 1.0
 
 			const readline = require('readline');
 			const rl = readline.createInterface(process.stdin, process.stdout);
-			rl.setPrompt('[deploy,run,cron] > ');
+			rl.setPrompt(runTime+':[deploy,run,cron] > ');
 			rl.prompt();
 			rl.on('line', function(line) {
 	  		if (line === "exit") rl.close();

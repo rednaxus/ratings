@@ -6,6 +6,7 @@ import * as viewsActions      from '../../redux/modules/views';
 import * as userAuthActions   from '../../redux/modules/userAuth';
 import Login                  from './Login';
 
+
 const mapStateToProps = (state) => {
   return {
     // views:

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import { AnimatedView } from '../../components'
 import FileInput from '../../components/file/FileInput'
 import SimpleForm from '../../components/file/SimpleForm'
-
+import Particles from 'react-particles-js'
 
 export class FileUploader extends PureComponent {
 
@@ -11,36 +11,33 @@ export class FileUploader extends PureComponent {
   }
 
   render() {
-    return(      
-      <AnimatedView>
-        <main className="container">
-          <div className="pure-g">
-            <div className="pure-u-1-1">
-              <h1>Upload Brief</h1>
-              <p>Drop your briefs here</p>
-            </div>
-          </div>
-          <div className="panel panel-default">
-            <div className="panel-heading">
-            Test simple forms
-            </div>
-            <div className="panel-body">
+    return(
+      <main className="container">
 
-              <SimpleForm onSubmit={this.handleSubmit} />
-            </div>
+        <div className="pure-g">
+          <div className="pure-u-1-1">
+            <h1>Upload Brief</h1>
+            <p>Drop your briefs here</p>
           </div>
-          <div className="panel panel-default">
-            <div className="panel-heading">
-            Drop them
-            </div>
-            <div className="panel-body">
-              <FileInput onChange={(files)=>console.log("here i am",files)}/>
-            </div>
+        </div>
+        <div className="panel panel-default">
+          <div className="panel-heading">
+          Test simple forms
           </div>
+          <div className="panel-body">
 
-
-        </main>
-      </AnimatedView>
+            <SimpleForm onSubmit={this.handleSubmit} />
+          </div>
+        </div>
+        <div className="panel panel-default">
+          <div className="panel-heading">
+          Drop them
+          </div>
+          <div className="panel-body">
+            <FileInput onChange={(files)=>console.log("here i am",files)}/>
+          </div>
+        </div>
+      </main>
     )
   }
 }

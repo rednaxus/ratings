@@ -1,10 +1,10 @@
 /* eslint-disable */
-import React, { Component } from 'react';
-import { Grid, Actions } from 'react-redux-grid';
-import { connect } from 'react-redux';
-import BulkPager from './BulkPager'; 
-import store from '../../../redux/configureStore';
-import Api from './..//data/Api';
+import React, { Component } from 'react'
+import { Grid, Actions } from 'react-redux-grid'
+import { connect } from 'react-redux'
+import BulkPager from './BulkPager'
+import { store } from '../../../Root'
+import Api from './..//data/Api'
 
 import {
     columns,

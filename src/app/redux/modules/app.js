@@ -72,8 +72,23 @@ export const switchFeature = (featureTitle) => {
   }
 }
 
-export function ready() {
+export const ready = () => {
   return {
     type: APP_READY
+  }
+}
+
+export const bulkDisplay = newData => {
+  return {
+    type: BULK_DISPLAY,
+    recordsRemaining: newData.removed,
+    recordsRemoved: newData.remaining
+  }
+}
+
+export const changePageLimit = newPageLimit => {
+  return {
+    type: PAGING_CHANGE_LIMIT,
+    newPageLimit
   }
 }

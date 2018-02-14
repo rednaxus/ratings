@@ -16,6 +16,13 @@ export { fetchTokensDataIfNeeded }       from './tokens'
 export { fetchUsersDataIfNeeded }       from './users'
 export { fetchCyclesDataIfNeeded, fetchCronInfo }       from './cycles'
 
+export { 
+  switchFeature, 
+  ready, 
+  bulkDisplay, 
+  changePageLimit 
+}                                       from './app'
+
 // views:
 export {
   enterAnalystStat,

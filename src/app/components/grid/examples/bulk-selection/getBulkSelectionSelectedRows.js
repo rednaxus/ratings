@@ -1,9 +1,9 @@
 /* eslint-disable */
-import React from 'react';
-import * as _ from "lodash";   
-import store from './../../../redux/configureStore'; 
-import { events } from '../data/demodata';
-import { Grid } from 'react-redux-grid';
+import React from 'react'
+import * as _ from "lodash"
+import { store } from '../../../../Root'
+import { events } from '../data/demodata'
+import { Grid } from 'react-redux-grid'
 
 // the BulkSelection example will display a message after you select several rows and click the Bulk Action button
 const getBulkSelectionSelectedRows = props => {

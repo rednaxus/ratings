@@ -13,9 +13,9 @@ import {
     dataSource
 } from './..//data/demodata'
 
-export const CustomFooter = ({ store }) => {
+export const CustomPager = ({ store }) => {
 
-    const customFooter = {
+    const customPager = {
         columns,
         dataSource: Api,
         plugins: {
@@ -35,15 +35,15 @@ export const CustomFooter = ({ store }) => {
         stateKey: 'custom-pager'
     };
 
-    return <Grid { ...customFooter } />;
+    return <Grid { ...customPager } />;
 };
 
 const { object } = PropTypes;
 
-CustomFooter.propTypes = {
+CustomPager.propTypes = {
     store: object.isRequired
 };
 
-CustomFooter.defaultProps = {};
+CustomPager.defaultProps = {};
 
-export default CustomFooter;
+export default CustomPager

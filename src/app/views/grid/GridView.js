@@ -12,6 +12,8 @@ import { store } from '../../Root'
 
 import Simple   from '../../components/grid/examples/Simple'
 import CustomPager  from '../../components/grid/examples/custom-pager/CustomPager'
+import getBulkSelectionSelectedRows 
+  from '../../components/grid/examples/bulk-selection/getBulkSelectionSelectedRows'
 
 class GridView extends Component {
   static propTypes= {
@@ -21,13 +23,36 @@ class GridView extends Component {
     })
   }
 
+  constructor(props){
+    super(props)
+    this.loaded = false
+  }
+
   componentWillReceiveProps(nextProps, nextState){
+    // do this here because called on route change
+    const capitalizeFirstLetter = string => {
+      return string.charAt(0).toUpperCase() + string.slice(1)
+    }
+
+    if (!this.loaded || (nextProps.routing.location !== this.props.routing.location)) {
+      this.loaded = true
+      let feature = nextProps.routing.location.pathname.split('/')[2]
+      //console.log('feature from route, app',feature, this.props.app.featureTitle)
+      if (nextProps.app.featureTitle != feature) {
+        this.props = nextProps
+        this.props.actions.switchFeature(capitalizeFirstLetter(feature))
+        return
+      }
+    }
+    
     this.props = nextProps
+
   }
 
   shouldComponentUpdate(){
     return true
   }
+
 
   componentWillMount() {
     const { actions: { enterGridView } } = this.props
@@ -79,7 +104,7 @@ class GridView extends Component {
       <AnimatedView>
         <div className="simpleContainer">
           <h2 className="gridH2">{this.props.app.featureTitle}</h2>
-          { /*getBulkSelectionSelectedRows(this.props) */}
+          { getBulkSelectionSelectedRows(this.props) }
           { getGrid(title) }
         </div>
       </AnimatedView>

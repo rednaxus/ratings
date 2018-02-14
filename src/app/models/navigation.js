@@ -191,6 +191,23 @@ export const navigation = {
           faIconName: 'fa-hand-o-up'
         }
       ]
+    },
+        // group menu #6
+    {
+      id: 6,
+      group: 'GridTests',
+      menus: [
+         {
+          name: 'Simple',
+          linkTo: '/grid/simple',
+          faIconName: 'fa-bars'
+        },
+        {
+          name: 'CustomPager',
+          linkTo: '/grid/customPager',
+          faIconName: 'fa-bar-chart'
+        }
+      ]
     }
   ]
 };

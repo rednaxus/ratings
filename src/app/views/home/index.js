@@ -1,9 +1,9 @@
 // @flow weak
 
-import { bindActionCreators } from 'redux';
-import { connect }            from 'react-redux';
-import * as actions           from '../../redux/modules/actions';
-import Home                   from './Home';
+import { bindActionCreators } from 'redux'
+import { connect }            from 'react-redux'
+import * as actions           from '../../redux/modules/actions'
+import Home                   from './Home'
 
 const mapStateToProps = (state) => {
   return {
@@ -14,8 +14,8 @@ const mapStateToProps = (state) => {
     earningGraphDatasets:   state.earningGraph.datasets,
     teamMatesIsFetching:    state.teamMates.isFetching,
     teamMates:              state.teamMates.data
-  };
-};
+  }
+}
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -28,10 +28,8 @@ const mapDispatchToProps = (dispatch) => {
         fetchTeamMatesDataIfNeeded:     actions.fetchTeamMatesDataIfNeeded
       },
       dispatch)
-  };
-};
+  }
+}
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Home);
+export default connect( mapStateToProps, mapDispatchToProps )( Home )
+

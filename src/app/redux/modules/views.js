@@ -1,6 +1,6 @@
 // @flow weak
 
-import moment from 'moment';
+import moment from 'moment'
 
 const ENTER_LOGIN_VIEW  = 'ENTER_LOGIN_VIEW';
 const LEAVE_LOGIN_VIEW  = 'LEAVE_LOGIN_VIEW';
@@ -56,13 +56,16 @@ const LEAVE_USER_LIST_VIEW = 'LEAVE_USER_LIST_VIEW'
 const ENTER_CYCLE_LIST_VIEW = 'ENTER_CYCLE_LIST_VIEW'
 const LEAVE_CYCLE_LIST_VIEW = 'LEAVE_CYCLE_LIST_VIEW'
 
+const ENTER_GRID_VIEW_SIMPLE = 'ENTER_GRID_VIEW_SIMPLE'
+const LEAVE_GRID_VIEW_SIMPLE = 'LEAVE_GRID_VIEW_SIMPLE'
+
 const initialState = {
   currentView:  'home',
   enterTime:    null,
   leaveTime:    null
-};
+}
 
-export default function views(state = initialState, action) {
+const views = (state = initialState, action) => {
   switch (action.type) {
   case ENTER_HOME_VIEW:
   case ENTER_LOGIN_VIEW:
@@ -89,6 +92,7 @@ export default function views(state = initialState, action) {
   case ENTER_TOKEN_LIST_VIEW:
   case ENTER_USER_LIST_VIEW:
   case ENTER_CYCLE_LIST_VIEW:
+  case ENTER_GRID_VIEW_SIMPLE:
   case ENTER_PROTECTED_VIEW:
     // can't enter if you are already inside
     if (state.currentView !== action.currentView) {
@@ -126,6 +130,7 @@ export default function views(state = initialState, action) {
   case LEAVE_TOKEN_LIST_VIEW:
   case LEAVE_USER_LIST_VIEW:
   case LEAVE_CYCLE_LIST_VIEW:
+  case LEAVE_GRID_VIEW_SIMPLE:
   case LEAVE_PROTECTED_VIEW:
     // can't leave if you aren't already inside
     if (state.currentView === action.currentView) {
@@ -142,7 +147,7 @@ export default function views(state = initialState, action) {
     return state;
   }
 }
-
+export default views
 
 export function enterHome(time = moment().format()) {
   return {
@@ -592,4 +597,22 @@ export function leaveTokenListView(time = moment().format()) {
     enterTime:    null,
     leaveTime:    time
   }
+}
+
+export const enterGridViewSimple = (time = moment().format()) => {
+  return {
+    type:         ENTER_GRID_VIEW_SIMPLE,
+    currentView:  'GridViewSimple',
+    enterTime:    time,
+    leaveTime:    null
+  }
+}
+
+export const leaveGridViewSimple = (time = moment().format()) => {
+  return {
+    type:         LEAVE_GRID_VIEW_SIMPLE,
+    currentView:  'GridViewSimple',
+    enterTime:    null,
+    leaveTime:    time
+  };
 }

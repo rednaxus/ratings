@@ -1,7 +1,7 @@
 // flow weak
 
 // earningGraph:
-export {fetchEarningGraphDataIfNeeded} from './earningGraph';
+export {fetchEarningGraphDataIfNeeded} from './earningGraph'
 // sideMenu:
 export {
   openSideMenu,
@@ -90,5 +90,8 @@ export {
   leaveAlert,
 
   enterPagination,
-  leavePagination
-}                                     from './views';
+  leavePagination,
+
+  enterGridViewSimple,
+  leaveGridViewSimple
+}                                     from './views'

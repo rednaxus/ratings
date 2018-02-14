@@ -5,6 +5,8 @@ import { combineReducers }  from 'redux'
 
 import { reducer as formReducer } from 'redux-form'
 
+import { Reducers as gridReducers } from 'react-redux-grid'
+
 import earningGraph         from './earningGraph'
 import sideMenu             from './sideMenu'
 import userInfos            from './userInfos'
@@ -33,6 +35,7 @@ export const reducers = {
 
 export default combineReducers({
   ...reducers,
+  ...gridReducers,
   form: formReducer,
   routing: routerReducer
 })

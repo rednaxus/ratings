@@ -56,8 +56,8 @@ const LEAVE_USER_LIST_VIEW = 'LEAVE_USER_LIST_VIEW'
 const ENTER_CYCLE_LIST_VIEW = 'ENTER_CYCLE_LIST_VIEW'
 const LEAVE_CYCLE_LIST_VIEW = 'LEAVE_CYCLE_LIST_VIEW'
 
-const ENTER_GRID_VIEW_SIMPLE = 'ENTER_GRID_VIEW_SIMPLE'
-const LEAVE_GRID_VIEW_SIMPLE = 'LEAVE_GRID_VIEW_SIMPLE'
+const ENTER_GRID_VIEW = 'ENTER_GRID_VIEW'
+const LEAVE_GRID_VIEW = 'LEAVE_GRID_VIEW'
 
 const initialState = {
   currentView:  'home',
@@ -92,7 +92,7 @@ const views = (state = initialState, action) => {
   case ENTER_TOKEN_LIST_VIEW:
   case ENTER_USER_LIST_VIEW:
   case ENTER_CYCLE_LIST_VIEW:
-  case ENTER_GRID_VIEW_SIMPLE:
+  case ENTER_GRID_VIEW:
   case ENTER_PROTECTED_VIEW:
     // can't enter if you are already inside
     if (state.currentView !== action.currentView) {
@@ -130,7 +130,7 @@ const views = (state = initialState, action) => {
   case LEAVE_TOKEN_LIST_VIEW:
   case LEAVE_USER_LIST_VIEW:
   case LEAVE_CYCLE_LIST_VIEW:
-  case LEAVE_GRID_VIEW_SIMPLE:
+  case LEAVE_GRID_VIEW:
   case LEAVE_PROTECTED_VIEW:
     // can't leave if you aren't already inside
     if (state.currentView === action.currentView) {
@@ -581,7 +581,7 @@ export function leaveProtected(time = moment().format()) {
   };
 }
 
-export function enterTokenListView(time = moment().format()) {
+export const enterTokenListView = (time = moment().format()) => {
   return {
     type:         ENTER_TOKEN_LIST_VIEW,
     currentView:  'TokenListView',
@@ -590,7 +590,7 @@ export function enterTokenListView(time = moment().format()) {
   }
 }
 
-export function leaveTokenListView(time = moment().format()) {
+export const leaveTokenListView = (time = moment().format()) => {
   return {
     type:         LEAVE_TOKEN_LIST_VIEW,
     currentView:  'TokenListView',
@@ -599,19 +599,19 @@ export function leaveTokenListView(time = moment().format()) {
   }
 }
 
-export const enterGridViewSimple = (time = moment().format()) => {
+export const enterGridView = (time = moment().format()) => {
   return {
-    type:         ENTER_GRID_VIEW_SIMPLE,
-    currentView:  'GridViewSimple',
+    type:         ENTER_GRID_VIEW,
+    currentView:  'GridView',
     enterTime:    time,
     leaveTime:    null
   }
 }
 
-export const leaveGridViewSimple = (time = moment().format()) => {
+export const leaveGridView = (time = moment().format()) => {
   return {
-    type:         LEAVE_GRID_VIEW_SIMPLE,
-    currentView:  'GridViewSimple',
+    type:         LEAVE_GRID_VIEW,
+    currentView:  'GridView',
     enterTime:    null,
     leaveTime:    time
   };

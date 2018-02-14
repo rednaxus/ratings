@@ -34,7 +34,7 @@ import RoundCycles from '../views/roundCycles'
 import Survey from '../views/survey'
 import FileUploader from '../views/briefUpload/FileUploader'
 
-import GridViewSimple from '../views/grid/GridViewSimple'
+import GridView from '../views/grid'
 
 export const MainRoutes = () => (
   <Switch>
@@ -72,8 +72,9 @@ export const MainRoutes = () => (
     <Route path="/general/alerts" component={ AlertConnected } />
     <Route path="/general/pagination" component={ PaginationViewConnected } />
 
-    <Route path="/grid/simple" component={ GridViewSimple } />
-    
+    <Route path="/grid/simple" component={ GridView } />
+    <Route path="/grid/customPager" component={ GridView } />
+
     {/* private views: need user to be authenticated */}
     <PrivateRoute path="/protected" component={ ProtectedConnected } />
 

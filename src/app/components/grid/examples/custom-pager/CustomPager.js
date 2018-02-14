@@ -1,16 +1,17 @@
 /* eslint-disable */
-import React, { PropTypes } from 'react';
-import { Grid } from 'react-redux-grid';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { Grid } from 'react-redux-grid'
 
-import Pager from './Pager';
-import Api from './..//data/Api';
+import Pager from './Pager'
+import Api from './..//data/Api'
 
 import {
     columns,
     data,
     events,
     dataSource
-} from './..//data/demodata';
+} from './..//data/demodata'
 
 export const CustomFooter = ({ store }) => {
 

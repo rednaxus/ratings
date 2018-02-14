@@ -92,6 +92,6 @@ export {
   enterPagination,
   leavePagination,
 
-  enterGridViewSimple,
-  leaveGridViewSimple
+  enterGridView,
+  leaveGridView
 }                                     from './views'

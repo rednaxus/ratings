@@ -23,12 +23,12 @@ export const navigation = {
       menus: [
         {
           name: 'Analysts',
-          linkTo: '/admin/userList',
+          linkTo: '/admin/analysts',
           faIconName: 'fa-user-circle-o'
         },
         {
-          name: 'RoundCycs',
-          linkTo: '/admin/roundCycles',
+          name: 'Round Cycles',
+          linkTo: '/admin/cycles',
           faIconName: 'fa-columns'
         }
       ]
@@ -205,6 +205,11 @@ export const navigation = {
         {
           name: 'CustomPager',
           linkTo: '/grid/customPager',
+          faIconName: 'fa-bar-chart'
+        },
+        {
+          name: 'Cycles',
+          linkTo: '/admin/cycles',
           faIconName: 'fa-bar-chart'
         }
       ]

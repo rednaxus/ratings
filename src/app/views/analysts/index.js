@@ -3,7 +3,7 @@
 import { bindActionCreators } from 'redux'
 import { connect }            from 'react-redux'
 import * as actions           from '../../redux/modules/actions'
-import TokensView               from './TokensView'
+import AnalystsView               from './AnalystsView'
 
 const mapStateToProps = state => {
   return {
@@ -13,7 +13,7 @@ const mapStateToProps = state => {
     bulkSelection:      state.bulkSelection,
     selection:          state.selection,
     app:                state.app,
-    tokens:             state.tokens
+    analysts:           state.analysts
   }
 }
 
@@ -21,11 +21,11 @@ const mapDispatchToProps = dispatch => {
   return {
     actions : bindActionCreators(
       {
-        enterTokensView: actions.enterTokensView,
-        leaveTokensView: actions.leaveTokensView
+        enterAnalystsView: actions.enterAnalystsView,
+        leaveAnalystsView: actions.leaveAnalystsView
       },
       dispatch)
   }
 }
 
-export default connect( mapStateToProps, mapDispatchToProps )( TokensView )
+export default connect( mapStateToProps, mapDispatchToProps )( AnalystsView )

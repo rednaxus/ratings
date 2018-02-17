@@ -56,6 +56,15 @@ const LEAVE_USER_LIST_VIEW = 'LEAVE_USER_LIST_VIEW'
 const ENTER_CYCLE_LIST_VIEW = 'ENTER_CYCLE_LIST_VIEW'
 const LEAVE_CYCLE_LIST_VIEW = 'LEAVE_CYCLE_LIST_VIEW'
 
+const ENTER_ANALYSTS_VIEW = 'ENTER_ANALYSTS_VIEW'
+const LEAVE_ANALYSTS_VIEW = 'LEAVE_ANALYSTS_VIEW'
+
+const ENTER_CYCLES_VIEW = 'ENTER_CYCLES_VIEW'
+const LEAVE_CYCLES_VIEW = 'LEAVE_CYCLES_VIEW'
+
+const ENTER_TOKENS_VIEW = 'ENTER_TOKENS_VIEW'
+const LEAVE_TOKENS_VIEW = 'LEAVE_TOKENS_VIEW'
+
 const ENTER_GRID_VIEW = 'ENTER_GRID_VIEW'
 const LEAVE_GRID_VIEW = 'LEAVE_GRID_VIEW'
 
@@ -92,6 +101,9 @@ const views = (state = initialState, action) => {
   case ENTER_TOKEN_LIST_VIEW:
   case ENTER_USER_LIST_VIEW:
   case ENTER_CYCLE_LIST_VIEW:
+  case ENTER_ANALYSTS_VIEW:
+  case ENTER_CYCLES_VIEW:
+  case ENTER_TOKENS_VIEW:
   case ENTER_GRID_VIEW:
   case ENTER_PROTECTED_VIEW:
     // can't enter if you are already inside
@@ -130,6 +142,9 @@ const views = (state = initialState, action) => {
   case LEAVE_TOKEN_LIST_VIEW:
   case LEAVE_USER_LIST_VIEW:
   case LEAVE_CYCLE_LIST_VIEW:
+  case LEAVE_ANALYSTS_VIEW:
+  case LEAVE_CYCLES_VIEW:
+  case LEAVE_TOKENS_VIEW:
   case LEAVE_GRID_VIEW:
   case LEAVE_PROTECTED_VIEW:
     // can't leave if you aren't already inside
@@ -386,7 +401,7 @@ export function leaveUserListView(time = moment().format()) {
 export function enterCycleListView(time = moment().format()) {
   return {
     type:         ENTER_CYCLE_LIST_VIEW,
-    currentView:  'UserListView',
+    currentView:  'CycleListView',
     enterTime:    time,
     leaveTime:    null
   };
@@ -395,10 +410,65 @@ export function enterCycleListView(time = moment().format()) {
 export function leaveCycleListView(time = moment().format()) {
   return {
     type:         LEAVE_CYCLE_LIST_VIEW,
-    currentView:  'UserListView',
+    currentView:  'CycleListView',
     enterTime:    null,
     leaveTime:    time
-  };
+  }
+}
+
+
+export const enterAnalystsView = (time = moment().format()) => {
+  return {
+    type:         ENTER_ANALYSTS_VIEW,
+    currentView:  'AnalystsView',
+    enterTime:    time,
+    leaveTime:    null
+  }
+}
+
+export const leaveAnalystsView = (time = moment().format()) => {
+  return {
+    type:         LEAVE_ANALYSTS_VIEW,
+    currentView:  'AnalystsView',
+    enterTime:    null,
+    leaveTime:    time
+  }
+}
+
+export const enterCyclesView = (time = moment().format()) => {
+  return {
+    type:         ENTER_CYCLES_VIEW,
+    currentView:  'CyclesView',
+    enterTime:    time,
+    leaveTime:    null
+  }
+}
+
+export const leaveCyclesView = (time = moment().format()) => {
+  return {
+    type:         LEAVE_CYCLES_VIEW,
+    currentView:  'CyclesView',
+    enterTime:    null,
+    leaveTime:    time
+  }
+}
+
+export const enterTokensView = (time = moment().format()) => {
+  return {
+    type:         ENTER_TOKENS_VIEW,
+    currentView:  'TokensView',
+    enterTime:    time,
+    leaveTime:    null
+  }
+}
+
+export const leaveTokensView = (time = moment().format()) => {
+  return {
+    type:         LEAVE_TOKENS_VIEW,
+    currentView:  'TokensView',
+    enterTime:    null,
+    leaveTime:    time
+  }
 }
 
 export function enterBreadcrumb(time = moment().format()) {

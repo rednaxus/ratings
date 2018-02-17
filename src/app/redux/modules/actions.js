@@ -70,6 +70,13 @@ export {
   enterCycleListView,
   leaveCycleListView,
 
+  enterAnalystsView,
+  leaveAnalystsView,
+  enterCyclesView,
+  leaveCyclesView,
+  enterTokensView,
+  leaveTokensView,
+  
   enterToken,
   leaveToken,
   enterTokenList,

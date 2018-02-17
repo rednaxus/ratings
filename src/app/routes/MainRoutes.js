@@ -35,6 +35,8 @@ import Survey from '../views/survey'
 import FileUploader from '../views/briefUpload/FileUploader'
 
 import GridView from '../views/grid'
+import Cycles from '../views/cycles'
+import Analysts from '../views/analysts'
 
 export const MainRoutes = () => (
   <Switch>
@@ -55,12 +57,16 @@ export const MainRoutes = () => (
     <Route path="/admin/userList" component={ UserListViewConnected } />
     <Route path="/admin/roundCycles" component={ RoundCycles } />
 
+    <Route path="/admin/analysts" component={ Analysts } />
+    <Route path="/admin/cycles" component = { Cycles } />
+    
     <Route exact path="/simpleTables" component={ SimpleTablesConnected } />
 
     <Route exact path="/basicElements" component={BasicElementsConnected} />
 
     <Route exact path="/fileUpload" component={ FileUploader } />
     <Route exact path="/general" component={ GeneralConnected } />
+    
     <Route path="/general/tokens" component={ Tokens } /> 
     <Route path="/general/rules" component={ Rules } />
     <Route path="/general/about" component={ About } />

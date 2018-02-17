@@ -104,7 +104,7 @@ class GridView extends Component {
       <AnimatedView>
         <div className="simpleContainer">
           <h2 className="gridH2">{this.props.app.featureTitle}</h2>
-          { getBulkSelectionSelectedRows(this.props) }
+          { /*getBulkSelectionSelectedRows(this.props) */ }
           { getGrid(title) }
         </div>
       </AnimatedView>

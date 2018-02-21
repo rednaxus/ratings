@@ -7,6 +7,7 @@ contract AnalystRegistry {
         //string firstname;
         bytes32 name;
         bytes32 password;
+        bytes32 email;
         uint32 auth_status;  // user authentication status
         address user_addr;
         uint16 scheduled_round;
@@ -31,17 +32,31 @@ contract AnalystRegistry {
         bootstrap(12,4);
     }
     
-    event Register(uint32 id, bytes32 name);
-    function register(bytes32 _name, bytes32 _pw) public {
-        analysts[ num_analysts ] = Analyst( _name, _pw, 0, msg.sender, 0, 0, false, 0, 0, 0 );
+    event Register(uint32 id, bytes32 name, bytes32 email);
+    function register(bytes32 _name, bytes32 _pw, bytes32 _email ) public {
+        analysts[ num_analysts ] = Analyst( 
+            _name, 
+            _pw, 
+            _email, 
+            0, 
+            msg.sender, 
+            0, 
+            0, 
+            false, 
+            0, 
+            0, 
+            0 
+        );
         address_lookup[ msg.sender ] = num_analysts;
         name_lookup[ _name ] = num_analysts;
-        Register( num_analysts++, _name );
+        Register( num_analysts++, _name, _email );
     }
   
-    function login(bytes32 _name, bytes32 _pw) public view returns (uint32 id) {
-        id = name_lookup[ _name ];
-        require(analysts[id].password == _pw);
+    function login(bytes32 _name, bytes32 _pw) public view returns (uint32, bytes32, uint32, uint32) {
+        uint32 id = name_lookup[ _name ];
+        Analyst storage analyst = analysts[id];
+        require(analyst.password == _pw);
+        return (id,analyst.email,analyst.reputation,analyst.token_balance);
     }
     
     function loginByAddress(bytes32 _password, address force) public view returns ( uint32 id ) { // force is for testing, so can login with another address
@@ -95,8 +110,14 @@ contract AnalystRegistry {
         uint32 new_leads = _numleads == 0 ? 2 : _numleads;
         uint32 start = num_analysts;
         uint32 finish = num_analysts+new_analysts;
+        bytes32 basename = 'alan'; // alan1
+        bytes32 emailbase = 'alan_@veva.one';
+        uint32 startat = 0x30;  // '0'
         for ( uint32 i = start; i < finish; i++ ) {
-            register(bytes32(i),'veva123'); // make up phony name based on id
+            bytes32 appendname = bytes32(i+startat);
+            bytes32 name = (appendname << 216) | basename;
+            bytes32 email = emailbase;
+            register(name,'veva',email); // make up phony name based on id
             if (new_leads > 0) {
                 increaseReputation( i, REPUTATION_LEAD);
                 new_leads--;

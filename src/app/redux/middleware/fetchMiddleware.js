@@ -110,7 +110,7 @@ const fetchMiddleware = store => next => action => {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Acces-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': '*',
         ...headers
       },
       ...options
@@ -135,18 +135,42 @@ const fetchMiddleware = store => next => action => {
 
     // request
     store.dispatch({ type: request });
+    
+    let web3 = window.web3
 
     // fetch server (success or fail)
     // returns a Promise
     return new Promise((resolve,reject) => {
 
       AnalystRegistry().then( analystRegistry => {
-        analystRegistry.login(options.login,options.password).then( id => {
-          store.dispatch( {type: success, payload: { token:'blah', data: { id: id, name: options.login } } } )
-          resolve('done')
-        } )
-      } )
-    } )
+        console.log('logging in with user',options.data.login,web3.fromAscii(options.data.login),web3.fromAscii(options.data.password))
+        analystRegistry.login(
+          web3.fromAscii(options.data.login),
+          web3.fromAscii(options.data.password)
+        ).then( response => {
+          console.log('response',response)
+          let id = response[0].toNumber()
+          let email = web3.toAscii(response[1])
+          let reputation = response[2].toNumber()
+          let token_balance = response[3].toNumber()
+          console.log('results',id,email,reputation,token_balance)
+          store.dispatch( {
+            type: success, 
+            payload: { 
+              token:'blah', 
+              data: { 
+                id: id, 
+                login: options.data.login, 
+                email: email, 
+                reputation:reputation, 
+                token_balance:token_balance 
+              } 
+            } 
+          })
+          //resolve('done')
+        })
+      })
+    })
   }
 
   return next(action);

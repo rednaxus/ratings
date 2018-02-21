@@ -12,6 +12,7 @@ export const dataSource = function getData({
 }) {
   return new Promise((resolve,reject) => {
     //console.log(' beginning users fetch')
+    web3 = window.web3
 
     AnalystRegistry()
     .then( analystRegistry => {
@@ -23,17 +24,18 @@ export const dataSource = function getData({
         var usersData = []
         for (var i = 0; i < numAnalysts; i++) {
           analystRegistry.analystInfo(i).then( rAnalyst => { // idx, addr
-            //console.log('got analyst info',rAnalyst)
+            console.log('got analyst info',rAnalyst)
             var res = {
               id:rAnalyst[0].toNumber(), 
-              name: rAnalyst[1].slice(48),
-              status:rAnalyst[2].toNumber(),
-              reputation:rAnalyst[3].toNumber(),  
-              is_lead:rAnalyst[4], 
-              token_balance:rAnalyst[5].toNumber(),
-              scheduled_round:rAnalyst[6].toNumber(),
-              active_round:rAnalyst[7].toNumber(),
-              num_rounds:rAnalyst[8].toNumber()
+              name: web3.toAscii(rAnalyst[1]).replace(/\W/g,''),
+              password: web3.toAscii(rAnalyst[2]).replace(/\W/g,''),
+              status:rAnalyst[3].toNumber(),
+              reputation:rAnalyst[4].toNumber(),  
+              is_lead:rAnalyst[5], 
+              token_balance:rAnalyst[6].toNumber(),
+              scheduled_round:rAnalyst[7].toNumber(),
+              active_round:rAnalyst[8].toNumber(),
+              num_rounds:rAnalyst[9].toNumber()
             }
             //console.log('got analyst',res)
             usersData.push(res)

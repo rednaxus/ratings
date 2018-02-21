@@ -2,9 +2,7 @@ import React, { PureComponent } from 'react'
 
 class UserStatus extends PureComponent {
   render() {
-    console.log('user status props:',this.props)
     const { user } = this.props
-    console.log('user',user)
     const userFullName = `${user.firstname} ${user.lastname.toUpperCase()}`;
   	return (
         <div className="user-status-container">

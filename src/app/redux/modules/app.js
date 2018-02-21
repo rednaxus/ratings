@@ -22,7 +22,6 @@ export const PAGING_CHANGE_LIMIT = 'PAGING_CHANGE_LIMIT'
 // BULK SELECTION
 export const BULK_DISPLAY = 'BULK_DISPLAY'
 
-
 const getFeatures = (featureTitle) => {
   let key = featureTitle.toLowerCase() + "Features"
   return features[key]

@@ -15,7 +15,8 @@ const mapStateToProps = (state) => {
     // useAuth:
     isAuthenticated: state.userAuth.isAuthenticated,
     isFetching:      state.userAuth.isFetching,
-    isLogging:       state.userAuth.isLogging
+    isLogging:       state.userAuth.isLogging,
+    userAuth: state.userAuth 
 
   };
 };

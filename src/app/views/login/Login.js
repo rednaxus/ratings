@@ -253,6 +253,9 @@ class Login extends PureComponent<Props, State> {
     try {
       const response = await logUserIfNeeded(email, password);
       console.log('response: ', response);
+      console.log('state',this.state)
+      console.log('props',this.props)
+      /*
       const { data } = response.payload;
       const { token } = data;
       const {
@@ -269,8 +272,25 @@ class Login extends PureComponent<Props, State> {
         picture,
         showPicture
       };
-      auth.setToken(token);
-      auth.setUserInfo(user);
+      */ 
+      const { 
+        token, 
+        login, 
+        firstname,
+        lastname,
+        picture,
+        showPicture 
+      } = this.props.userAuth
+      const user = {
+        login, 
+        firstname, 
+        lastname, 
+        picture, 
+        showPicture 
+      }
+      console.log('setting token and user',token,user)
+      auth.setToken( token )
+      auth.setUserInfo( user )
 
       history.push({ pathname: '/' }); // back to Home
     } catch (error) {

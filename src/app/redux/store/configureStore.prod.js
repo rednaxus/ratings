@@ -13,6 +13,7 @@ import createHistory            from 'history/createHashHistory';
 // #endregion
 import reducer                  from '../modules/reducers';
 import { localStorageManager }  from '../middleware';
+import fetchMiddleware          from '../middleware/fetchMiddleware';
 
 export const history = createHistory();
 
@@ -21,6 +22,7 @@ export const history = createHistory();
 const enhancer = compose(
   applyMiddleware(
     localStorageManager,
+    fetchMiddleware,
     routerMiddleware(history),
     thunkMiddleware
   )

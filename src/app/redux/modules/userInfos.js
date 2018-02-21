@@ -77,6 +77,7 @@ export function fetchUserInfoDataIfNeeded() {
     dispatch: (action: any) => any,
     getState: () => any
   ) => {
+    console.log('in fetchuser data')
     if (shouldFetchUserInfoData(getState())) {
       return dispatch(fetchUserInfosData());
     }

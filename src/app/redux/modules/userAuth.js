@@ -81,8 +81,8 @@ export default function (
     };
 
   case RECEIVED_LOG_USER: {
-    const userLogged = action.userInfos;
-
+    const userLogged = action.payload.data;
+    console.log('in reducer',userLogged)
     return {
       ...state,
       actionTime:      currentTime,
@@ -191,9 +191,9 @@ function logUser(
   password: string
 ) {
   return async (dispatch) => {
-    const FETCH_TYPE  = appConfig.DEV_MODE ? 'FETCH_MOCK' : 'FETCH';
+    //const FETCH_TYPE  = appConfig.DEV_MODE ? 'FETCH_MOCK' : 'FETCH';
+    const FETCH_TYPE = 'FETCH_ETHER'
     const __SOME_LOGIN_API__ = 'login';
-
     const mockResult  = { token: userInfosMockData.token, data: {...userInfosMockData}}; // will be fetch_mock data returned (in case FETCH_TYPE = 'FETCH_MOCK', otherwise cata come from server)
     const url         = `${getLocationOrigin()}/${__SOME_LOGIN_API__}`;
     const method      = 'post';
@@ -228,6 +228,7 @@ function logUser(
     });
   };
 }
+
 export function logUserIfNeeded(
   email: string,
   password: string
@@ -237,7 +238,11 @@ export function logUserIfNeeded(
     getState: () => boolean
   ): any => {
     if (shouldLogUser(getState())) {
-      return dispatch(logUser(email, password));
+      //return dispatch(logUser(email, password));
+      dispatch(logUser(email, password));
+      console.log('luin:',getState())
+      console.trace()
+      return Promise.resolve(getState())
     }
     return Promise.resolve('already loggin in...');
   };

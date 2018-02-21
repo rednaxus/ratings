@@ -1,9 +1,14 @@
 // @flow weak
 
 import axios  from 'axios';
+import { 
+  getRatingAgency as RatingAgency,
+  getAnalystRegistry as AnalystRegistry
+} from '../../services/contracts'
 
 export const FETCH_MOCK = 'FETCH_MOCK';
 export const FETCH      = 'FETCH';
+export const FETCH_ETHER = 'FETCH_ETHER'
 //
 // FETCH_MOCK mode
 // in any action just add fetch object like:
@@ -47,10 +52,11 @@ const fetchMiddleware = store => next => action => {
 
   if (!action.fetch.type ||
       !action.fetch.type === FETCH_MOCK ||
-      !action.fetch.type === FETCH) {
+      !action.fetch.type === FETCH || 
+      !action.fetch.type === FETCH_ETHER) {
     return next(action);
   }
-
+  console.log('fetch middlewares',action)
   if (!action.fetch.actionTypes) {
     return next(action);
   }
@@ -70,9 +76,11 @@ const fetchMiddleware = store => next => action => {
     } = action.fetch;
 
     // request
+    console.log('dispatching with type:',request)
     store.dispatch({ type: request });
 
     // received successful for mock
+    console.log('fetch middle resolve',mockResult)
     return Promise.resolve(
       store.dispatch({
         type:     success,
@@ -115,7 +123,33 @@ const fetchMiddleware = store => next => action => {
         }
       );
   }
+
+  if (action.fetch.type === FETCH_ETHER) {
+    const {
+      actionTypes: {request, success, fail},
+      url,
+      method,
+      headers,
+      options
+    } = action.fetch;
+
+    // request
+    store.dispatch({ type: request });
+
+    // fetch server (success or fail)
+    // returns a Promise
+    return new Promise((resolve,reject) => {
+
+      AnalystRegistry().then( analystRegistry => {
+        analystRegistry.login(options.login,options.password).then( id => {
+          store.dispatch( {type: success, payload: { token:'blah', data: { id: id, name: options.login } } } )
+          resolve('done')
+        } )
+      } )
+    } )
+  }
+
   return next(action);
 };
 
-export default fetchMiddleware;
+export default fetchMiddleware

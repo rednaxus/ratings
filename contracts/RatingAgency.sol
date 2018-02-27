@@ -92,13 +92,16 @@ contract RatingAgency {
     uint16 num_rounds_scheduled = 0;
     uint16 num_rounds_active = 0;
   
+    address public registryAddress;
     /**
      * Constructor 
     */
     address constant testregistry1 = 0xdf6ea7200b7fd34f4f7449775cbfe3d1acd3c939;
     function RatingAgency( address _registry ) public {
         if ( _registry == 0 ) _registry = testregistry1;
+        registryAddress = _registry;
         registry = AnalystRegistry( _registry );
+        
         lasttime = ZERO_BASE_TIME;
         bootstrapDummyTokens( 4 );
     }

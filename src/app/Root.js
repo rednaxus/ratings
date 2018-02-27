@@ -16,6 +16,7 @@ import { history }              from './redux/store/configureStore';
 import App                      from './containers/app';
 import ScrollTop                from './components/scrollToTop/ScrollToTop';
 import Login                    from './views/login/index';
+import Register                 from './views/register'
 import PageNotFound             from './views/pageNotFound';
 
 //import getWeb3 from './services/getWeb3'
@@ -40,6 +41,7 @@ class Root extends Component<Props, State> {
               <ScrollTop>
                 <Switch>
                   <Route exact path="/login" component={Login} />
+                  <Route exact path="/register" component={Register} />
                   <App />
                   <Route component={PageNotFound} />
                 </Switch>

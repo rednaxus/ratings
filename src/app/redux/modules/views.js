@@ -2,6 +2,8 @@
 
 import moment from 'moment'
 
+const ENTER_REGISTER_VIEW  = 'ENTER_REGISTER_VIEW';
+const LEAVE_REGISTER_VIEW  = 'LEAVE_REGISTER_VIEW';
 const ENTER_LOGIN_VIEW  = 'ENTER_LOGIN_VIEW';
 const LEAVE_LOGIN_VIEW  = 'LEAVE_LOGIN_VIEW';
 
@@ -77,6 +79,7 @@ const initialState = {
 const views = (state = initialState, action) => {
   switch (action.type) {
   case ENTER_HOME_VIEW:
+  case ENTER_REGISTER_VIEW:
   case ENTER_LOGIN_VIEW:
   case ENTER_SIMPLE_TABLES_VIEW:
   case ENTER_BASIC_ELEMENTS_VIEW:
@@ -118,6 +121,7 @@ const views = (state = initialState, action) => {
     return state;
 
   case LEAVE_HOME_VIEW:
+  case LEAVE_REGISTER_VIEW:
   case LEAVE_LOGIN_VIEW:
   case LEAVE_SIMPLE_TABLES_VIEW:
   case LEAVE_BASIC_ELEMENTS_VIEW:
@@ -610,6 +614,24 @@ export function leavePagination(time = moment().format()) {
   return {
     type:         LEAVE_PAGINATION_VIEW,
     currentView:  'PaginationView',
+    enterTime:    null,
+    leaveTime:    time
+  };
+}
+
+export function enterRegister(time = moment().format()) {
+  return {
+    type:         ENTER_REGISTER_VIEW,
+    currentView:  'Register',
+    enterTime:    time,
+    leaveTime:    null
+  };
+}
+
+export function leaveRegister(time = moment().format()) {
+  return {
+    type:         LEAVE_REGISTER_VIEW,
+    currentView:  'Register',
     enterTime:    null,
     leaveTime:    time
   };

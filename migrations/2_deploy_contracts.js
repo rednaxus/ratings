@@ -4,7 +4,9 @@ var RatingAgency = artifacts.require("RatingAgency")
 
 module.exports = function(deployer) {
   deployer.deploy(TokenERC20,10000,"dummy_name","dummy_token")
-  deployer.deploy(AnalystRegistry)
-  deployer.deploy(RatingAgency,0)
+  deployer.deploy(AnalystRegistry).then( () => {
+  	deployer.deploy(RatingAgency,AnalystRegistry.address)
+  })
+
 }
 

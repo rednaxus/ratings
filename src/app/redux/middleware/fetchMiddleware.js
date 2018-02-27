@@ -133,6 +133,7 @@ const fetchMiddleware = store => next => action => {
       options
     } = action.fetch;
 
+
     // request
     store.dispatch({ type: request });
     
@@ -141,35 +142,75 @@ const fetchMiddleware = store => next => action => {
     // fetch server (success or fail)
     // returns a Promise
     return new Promise((resolve,reject) => {
+      if (request === 'REQUEST_REGISTER_USER') {
+        let transactObj = { from: web3.eth.coinbase }
+        AnalystRegistry().then( analystRegistry => {
 
-      AnalystRegistry().then( analystRegistry => {
-        console.log('logging in with user',options.data.login,web3.fromAscii(options.data.login),web3.fromAscii(options.data.password))
-        analystRegistry.login(
-          web3.fromAscii(options.data.login),
-          web3.fromAscii(options.data.password)
-        ).then( response => {
-          console.log('response',response)
-          let id = response[0].toNumber()
-          let email = web3.toAscii(response[1])
-          let reputation = response[2].toNumber()
-          let token_balance = response[3].toNumber()
-          console.log('results',id,email,reputation,token_balance)
-          store.dispatch( {
-            type: success, 
-            payload: { 
-              token:'blah', 
-              data: { 
-                id: id, 
-                login: options.data.login, 
-                email: email, 
-                reputation:reputation, 
-                token_balance:token_balance 
+          console.log('register',options.data)
+          
+          analystRegistry.register.sendTransaction(
+            web3.fromAscii(options.data.user),
+            web3.fromAscii(options.data.email),
+            web3.fromAscii(options.data.password), 
+            transactObj,
+            (error,response) => {
+              console.log('response',response)
+            }
+          )
+            /*let id = response[0].toNumber()
+            let email = web3.toAscii(response[1])
+            let reputation = response[2].toNumber()
+            let token_balance = response[3].toNumber()
+            console.log('results',id,email,reputation,token_balance)
+            store.dispatch( {
+              type: success, 
+              payload: { 
+                token:'blah', 
+                data: { 
+                  id: id, 
+                  login: options.data.user, 
+                  email: email, 
+                  reputation:reputation, 
+                  token_balance:token_balance 
+                } 
               } 
-            } 
-          })
-          //resolve('done')
+            })
+            //resolve('done')
+            */
         })
-      })
+          
+
+      } else if (request === 'REQUEST_LOG_USER') {
+        AnalystRegistry().then( analystRegistry => {
+
+          console.log('logging in with user',options.data.login,options.data.login,options.data.password)
+          analystRegistry.login(
+            web3.fromAscii(options.data.login),
+            web3.fromAscii(options.data.password)
+          ).then( response => {
+            console.log('response',response)
+            let id = response[0].toNumber()
+            let email = web3.toAscii(response[1])
+            let reputation = response[2].toNumber()
+            let token_balance = response[3].toNumber()
+            console.log('results',id,email,reputation,token_balance)
+            store.dispatch( {
+              type: success, 
+              payload: { 
+                token:'blah', 
+                data: { 
+                  id: id, 
+                  login: options.data.login, 
+                  email: email, 
+                  reputation:reputation, 
+                  token_balance:token_balance 
+                } 
+              } 
+            })
+            //resolve('done')
+          })
+        })
+      }
     })
   }
 

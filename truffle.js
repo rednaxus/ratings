@@ -5,7 +5,7 @@ module.exports = {
       host: "localhost", // veva.one"
       port: 8545,
       network_id: "*", // Match any network id
-      from: "0x7e5bce8ee498f6c29e4ddad10cb816d6e2f139f7",
+      from: "0x627306090abaB3A6e1400e9345bC60c78a8BEf57",
       gas: 4700000
     }
   }

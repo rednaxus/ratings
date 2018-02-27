@@ -13,6 +13,10 @@ const REQUEST_USER_INFOS_DATA:         string = 'REQUEST_USER_INFOS_DATA';
 const RECEIVED_USER_INFOS_DATA:        string = 'RECEIVED_USER_INFOS_DATA';
 const ERROR_USER_INFOS_DATA:           string = 'ERROR_USER_INFOS_DATA';
 
+const REQUEST_REGISTER_USER:                string = 'REQUEST_REGISTER_USER';
+const RECEIVED_REGISTER_USER:               string = 'RECEIVED_REGISTER_USER';
+const ERROR_REGISTER_USER:                  string = 'ERROR_REGISTER_USER';
+
 const REQUEST_LOG_USER:                string = 'REQUEST_LOG_USER';
 const RECEIVED_LOG_USER:               string = 'RECEIVED_LOG_USER';
 const ERROR_LOG_USER:                  string = 'ERROR_LOG_USER';
@@ -250,6 +254,89 @@ function shouldLogUser(
 ): boolean {
   const isLogging = state.userAuth.isLogging;
   if (isLogging) {
+    return false;
+  }
+  return true;
+}
+
+
+/**
+ *
+ *  user login
+ *
+ * @param {string} login user login
+ * @param {string} password usepasswordr
+ * @returns {Promise<any>} promised action
+ */
+function registerUser(
+  user: string,
+  email: string,
+  password: string
+) {
+  console.log('register user',user,email,password)
+  return async (dispatch) => {
+    //const FETCH_TYPE  = appConfig.DEV_MODE ? 'FETCH_MOCK' : 'FETCH';
+    const FETCH_TYPE = 'FETCH_ETHER'
+    const __SOME_REGISTER_API__ = 'register';
+    const mockResult  = { token: userInfosMockData.token, data: {...userInfosMockData}}; // will be fetch_mock data returned (in case FETCH_TYPE = 'FETCH_MOCK', otherwise cata come from server)
+    const url         = `${getLocationOrigin()}/${__SOME_REGISTER_API__}`;
+    const method      = 'post';
+    const headers     = {};
+    const options     = {
+      credentials: 'same-origin',
+      data: {
+        user,
+        email,
+        password
+      }
+    };
+
+    // fetchMiddleware (does: fetch mock, real fetch, dispatch 3 actions... for a minimum code on action creator!)
+    return dispatch({
+      type: 'FETCH_MIDDLEWARE',
+      fetch: {
+        // common props:
+        type: FETCH_TYPE,
+        actionTypes: {
+          request:  REQUEST_REGISTER_USER,
+          success:  RECEIVED_REGISTER_USER,
+          fail:     ERROR_REGISTER_USER
+        },
+        // mock fetch props:
+        mockResult,
+        // real fetch props:
+        url,
+        method,
+        headers,
+        options
+      }
+    });
+  };
+}
+
+export function registerUserIfNeeded(
+  user: string,
+  email: string,
+  password: string
+): (...any) => Promise<any> {
+  return (
+    dispatch: (any) => any,
+    getState: () => boolean
+  ): any => {
+    if (shouldRegisterUser(getState())) {
+      //return dispatch(logUser(email, password));
+      dispatch(registerUser(user, email, password));
+      return Promise.resolve('done')
+    }
+    return Promise.resolve('already loggin in...');
+  };
+}
+
+function shouldRegisterUser(
+  state: any
+): boolean {
+  const isRegistering = state.userAuth.isRegistering;
+  if (isRegistering) {
     return false;
   }
   return true;

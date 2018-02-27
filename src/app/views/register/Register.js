@@ -16,24 +16,25 @@ type Props = {
 
   // views props:
   currentView: string,
-  enterLogin: () => void,
-  leaveLogin: () => void,
+  enterRegister: () => void,
+  leaveRegister: () => void,
 
   // userAuth:
   isAuthenticated: boolean,
   isFetching: boolean,
-  isLogging: boolean,
+  isRegistering: boolean,
   disconnectUser: () => any,
-  logUserIfNeeded: () => any
+  registerUserIfNeeded: () => any
 };
 
 type State = {
+  user: string,
   email: string,
   password: string
 }
 // #endregion
 
-class Login extends PureComponent<Props, State> {
+class Register extends PureComponent<Props, State> {
   // #region propTypes
   static propTypes= {
     // react-router 4:
@@ -42,25 +43,26 @@ class Login extends PureComponent<Props, State> {
     history:  PropTypes.object.isRequired,
 
     // views props:
-    currentView: PropTypes.string.isRequired,
-    enterLogin:  PropTypes.func.isRequired,
-    leaveLogin:  PropTypes.func.isRequired,
+    currentView:    PropTypes.string.isRequired,
+    enterRegister:  PropTypes.func.isRequired,
+    leaveRegister:  PropTypes.func.isRequired,
 
     // userAuth:
     isAuthenticated: PropTypes.bool,
     isFetching:      PropTypes.bool,
-    isLogging:       PropTypes.bool,
+    isRegistering:       PropTypes.bool,
     disconnectUser:  PropTypes.func.isRequired,
-    logUserIfNeeded: PropTypes.func.isRequired
+    registerUserIfNeeded: PropTypes.func.isRequired
   };
   // #endregion
 
   static defaultProps = {
     isFetching:      false,
-    isLogging:       false
+    isRegistering:       false
   }
 
   state = {
+    user:           '',
     email:          '',
     password:       ''
   };
@@ -69,27 +71,28 @@ class Login extends PureComponent<Props, State> {
   // #region lifecycle methods
   componentDidMount() {
     const {
-      enterLogin,
+      enterRegister,
       disconnectUser
     } = this.props;
 
     disconnectUser(); // diconnect user: remove token and user info
-    enterLogin();
+    enterRegister();
   }
 
   componentWillUnmount() {
-    const { leaveLogin } = this.props;
-    leaveLogin();
+    const { leaveRegister } = this.props;
+    leaveRegister();
   }
 
   render() {
     const {
+      user,
       email,
       password
     } = this.state;
 
     const {
-      isLogging
+      isRegistering
     } = this.props;
 
     return (
@@ -113,9 +116,27 @@ class Login extends PureComponent<Props, State> {
                         <i className="fa fa-3x fa-user-circle" aria-hidden="true" />
                       </h1>
                       <h2>
-                        Login
+                        Register
                       </h2>
                     </legend>
+
+                    <div className="form-group">
+                      <label
+                        htmlFor="inputUser"
+                        className="col-lg-2 control-label">
+                        User
+                      </label>
+                      <div className="col-lg-10">
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="inputUser"
+                          placeholder="User name"
+                          value={user}
+                          onChange={this.handlesOnUserChange}
+                        />
+                      </div>
+                    </div>
 
                     <div className="form-group">
                       <label
@@ -160,13 +181,13 @@ class Login extends PureComponent<Props, State> {
                         <Button
                           className="login-button btn-block"
                           bsStyle="primary"
-                          disabled={isLogging}
-                          onClick={this.handlesOnLogin}>
+                          disabled={isRegistering}
+                          onClick={this.handlesOnRegister}>
                           {
-                            isLogging
+                            isRegistering
                               ?
                               <span>
-                                  login in...
+                                  registering...
                                   &nbsp;
                                 <i
                                   className="fa fa-spinner fa-pulse fa-fw"
@@ -174,7 +195,7 @@ class Login extends PureComponent<Props, State> {
                               </span>
                               :
                               <span>
-                                  Login
+                                  Register
                               </span>
                           }
                         </Button>
@@ -196,9 +217,9 @@ class Login extends PureComponent<Props, State> {
                 >
                   <Button
                     bsStyle="default"
-                    onClick={this.goRegister}
+                    onClick={this.goLogin}
                   >
-                    register new user
+                    login
                   </Button>
                 </div>
               </Col>
@@ -210,6 +231,18 @@ class Login extends PureComponent<Props, State> {
   // #endregion
 
   // #region form inputs change callbacks
+  handlesOnUserChange = (
+    event: SyntheticEvent<>
+  ) => {
+    if (event) {
+      event.preventDefault();
+      console.log('on user change')
+      // should add some validator before setState in real use cases
+      this.setState({ user: event.target.value.trim() });
+      console.log('state',this.state)
+    }
+  }
+
   handlesOnEmailChange = (
     event: SyntheticEvent<>
   ) => {
@@ -232,8 +265,8 @@ class Login extends PureComponent<Props, State> {
   // #endregion
 
 
-  // #region on login button click callback
-  handlesOnLogin = async (
+  // #region on register button click callback
+  handlesOnRegister = async (
     event: SyntheticEvent<>
   ) => {
     if (event) {
@@ -242,16 +275,17 @@ class Login extends PureComponent<Props, State> {
 
     const {
       history,
-      logUserIfNeeded
+      registerUserIfNeeded
     } = this.props;
 
     const {
+      user,
       email,
       password
     } = this.state;
-
+    console.log('state now',this.state)
     try {
-      const response = await logUserIfNeeded(email, password);
+      const response = await registerUserIfNeeded(user, email, password);
       console.log('response: ', response);
       console.log('state',this.state)
       console.log('props',this.props)
@@ -273,6 +307,7 @@ class Login extends PureComponent<Props, State> {
         showPicture
       };
       */ 
+      /*
       const { 
         token, 
         login, 
@@ -291,8 +326,8 @@ class Login extends PureComponent<Props, State> {
       console.log('setting token and user',token,user)
       auth.setToken( token )
       auth.setUserInfo( user )
-
-      history.push({ pathname: '/' }); // back to Home
+      */
+      history.push({ pathname: '/login' }); // go to login screen
     } catch (error) {
       /* eslint-disable no-console */
       console.log('login went wrong..., error: ', error);
@@ -302,7 +337,7 @@ class Login extends PureComponent<Props, State> {
   // #endregion
 
   // #region on go back home button click callback
-  goHome = (
+  goLogin = (
     event: SyntheticEvent<>
   ) => {
     if (event) {
@@ -313,22 +348,9 @@ class Login extends PureComponent<Props, State> {
       history
     } = this.props;
 
-    history.push({ pathname: '/' });
-  }
-  goRegister = (
-    event: SyntheticEvent<>
-  ) => {
-    if (event) {
-      event.preventDefault();
-    }
-
-    const {
-      history
-    } = this.props;
-
-    history.push({ pathname: '/register' });
+    history.push({ pathname: '/login' });
   }
   // #endregion
 }
 
-export default Login;
+export default Register

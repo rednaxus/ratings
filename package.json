@@ -182,8 +182,8 @@
     "smoothscroll-polyfill": "^0.4.0",
     "solc": "^0.4.19",
     "survey-react": "^1.0.5",
-    "truffle-contract": "^1.1.11",
-    "web3": "^0.20.4"
+    "truffle-contract": "^3.0.4",
+    "web3": "^0.20.5"
   },
   "jest": {
     "setupTestFrameworkScriptFile": "<rootDir>/src/setupTests.js",

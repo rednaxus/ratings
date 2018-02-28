@@ -22,6 +22,26 @@ export const getCronInfo = () => {
   })
 }
 
+export const pulseCron = () => {
+  return new Promise( (resolve,reject) => {
+    //console.log(' beginning cycles fetch')
+
+    RatingAgency()
+    .then((ratingAgency) => {
+      ratingAgency.lasttime()
+      .then(result => {
+        let lasttime = result.toNumber()
+        lasttime += 20
+        ratingAgency.cron(lasttime).then( cronResult => console.log('cron result',cronResult) )
+        resolve(1000*result.toNumber())
+      })
+    })
+    .catch(result => { 
+        console.error("Error from server on cron:"  + result) 
+        reject(result)
+    })
+  })
+}
 
 export const dataSource = function getData({
     pageIndex, pageSize

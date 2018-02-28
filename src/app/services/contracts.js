@@ -17,11 +17,14 @@ export const getContractInstance = (contractDesc, addr = null) =>
   	}
     */
     let web3 = window.web3
+    console.log('web3 version',web3.version.api)
     const instanceContract = contract(contractDesc)
     instanceContract.setProvider(web3.currentProvider)
     instanceContract.setNetwork(7)
     console.log('getting coinbase','contract addr',instanceContract.address)
     web3.eth.getCoinbase((error, coinbase) => { // Get current ethereum wallet.
+      instanceContract.defaults({from:coinbase}) 
+
       console.log('got ',coinbase)
       if (error) reject(console.error(error));
 

@@ -103,7 +103,7 @@ contract RatingAgency {
         registry = AnalystRegistry( _registry );
         
         lasttime = ZERO_BASE_TIME;
-        bootstrapDummyTokens( 4 );
+        //bootstrapDummyTokens( 4 );
     }
 
    /* Generates a random number from 0 to n-1 (based on the last block hash) */
@@ -327,7 +327,7 @@ contract RatingAgency {
 
 
 
-    // for testing:
+    /* for testing:
     address[] tok_addresses  = [
         0xc01cc4ad3bdcffc9c7c7971bece1c7b9d6e73ebb, 
         0xb0b21c80097d12a350e2e973a08ac79772eb91ad,
@@ -342,7 +342,7 @@ contract RatingAgency {
             coverToken( tok_addresses[ i % 4 ], 0 );
         }
     }
-
+    */
 
     
     // utilities

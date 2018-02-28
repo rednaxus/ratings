@@ -35,7 +35,7 @@ class Root extends Component<Props, State> {
   render() {
     return (
       <Provider store={store}>
-        <Web3Provider >
+        <Web3Provider > 
           <div>
             <ConnectedRouter history={history}>
               <ScrollTop>

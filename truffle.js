@@ -1,33 +1,35 @@
 module.exports = {
   migrations_directory: "./migrations",
-  networks: {
+  networks: { 
     development: {
       host: "localhost", // veva.one"
       port: 8545,
       network_id: "*", // Match any network id
-      from: "0xa7602a071EBBF80496Af0E630917bCba9B0BE617",
+      from: "0x048A0a93F00E58d7AB103c1ac85B20b80769C6cF",
       gas: 4700000
     }
   }
 };
 // ethereum typical gas: 3141592
 /*
-Saving successful migration to network...
-  ... 0x511526650492e6003703abc300e83d2c029b211446d4f7b8f69d241e31b40c39
-  ... 0x6ce5793f99a4cba50a62a84e740e6f2c204a3c5d37888e3619238892a38584ae
-  ... 0xc268e945d06dbfc8cf37c135f404f61f8e6f0a2dc099dae51e5b27b037dd0fa2
-  ... 0xb4c9b6433e4f182e9349894494c954c77ef89782c74141df02defa92717eb483
-  ... 0x14088f5ced6b6a9caf7f041a8756768b693feb86ca4ab07caf1e03e9a4b65f17
-Saving artifacts...
   Deploying AnalystRegistry...
-  ... 0x287a0e0a2d00115e3dd5c4b533fdf7ffc46115817850daf529148abef45341a7
-  AnalystRegistry: 0xb350d3e0fd4724a920b80ce00cecc222a8afa2ce
+  ... 0xa396fa78efc333e32fad362985b9cf0935061910319cddeada7a85327717e816
+  AnalystRegistry: 0x82b0827145d8833db0675bf802479dae839c2eb6
+  Deploying RatingAgency...
+  ... 0x11fde3e90b1c9b1ec447a8ebda0d4bffec326eeaaa2aebabc99a54ca749375f7
+  RatingAgency: 0xf7179b052816957c89b8baf57362a0f4e0df6a95
   Running step...
-  ... 0x9ac790483122465143cdca27fe81dbc022bed7ba6e039d009f907ca8c7c81380
-rating agency instance 0xae430411298a339e391444d49a4d39233de70ff7
-erc address 0x491d1260a898a4334c0abbfd049d2a97a7601f6e
-erc address 0x76465e5ec7e8abd6daa8b2f39224b2b3618c82cb
-erc address 0x8a2769f8c99235946d74b125a3428fade52ce06e
-erc address 0x919f20f55a7537fd880165075ab650d6f68a0a90
+Saving successful migration to network...
+  ... 0x363418607c20bce7ab3017e013da2cbe61a2082e07879db2708f705f6cd7d4c6
+  ... 0xe1197d1d62df23d53a846033c8fbaa362d96ac2d8e2e0cc38c9d03cbc70ca2bf
+  ... 0x6062594030eb85f14db728f61bcb95cfd519b417eb214ffc6212add05c70b6b3
+  ... 0x4935be891ded569ebffa497862252a050df5516f1d766fe080a8de8d24167150
+  ... 0xaca4d8e0eb53bdcaafef713cbac77bbba69dd9d1eb351be515d71a24d8ee0d1d
+Saving artifacts...
+erc address 0x9fa989c64a23effaf8408a2071c85ab9e34d9c25
+erc address 0x5fb66c52cfa0c1c5b291a180dc370ed3f58328f2
+erc address 0x3669f0845c614885073451422473f0796974dd30
+erc address 0x8f5a1e2c9a2a57b5ddd1660e7876fddf67363a60
+
 
 */

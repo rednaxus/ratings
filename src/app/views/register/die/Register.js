@@ -19,10 +19,12 @@ type Props = {
   enterRegister: () => void,
   leaveRegister: () => void,
 
+  // userAuth:
+  isAuthenticated: boolean,
   isFetching: boolean,
-  registering: boolean,
-  logout: () => any,
-  register: () => any
+  isRegistering: boolean,
+  disconnectUser: () => any,
+  registerUserIfNeeded: () => any
 };
 
 type State = {
@@ -45,16 +47,18 @@ class Register extends PureComponent<Props, State> {
     enterRegister:  PropTypes.func.isRequired,
     leaveRegister:  PropTypes.func.isRequired,
 
+    // userAuth:
+    isAuthenticated: PropTypes.bool,
     isFetching:      PropTypes.bool,
-    registering:       PropTypes.bool,
-    logout:  PropTypes.func.isRequired,
-    register: PropTypes.func.isRequired
+    isRegistering:       PropTypes.bool,
+    disconnectUser:  PropTypes.func.isRequired,
+    registerUserIfNeeded: PropTypes.func.isRequired
   };
   // #endregion
 
   static defaultProps = {
     isFetching:      false,
-    registering:       false
+    isRegistering:       false
   }
 
   state = {
@@ -66,20 +70,30 @@ class Register extends PureComponent<Props, State> {
   
   // #region lifecycle methods
   componentDidMount() {
-    const { enterRegister, logout } = this.props
-    logout() // diconnect user: remove token and user info
-    enterRegister()
+    const {
+      enterRegister,
+      disconnectUser
+    } = this.props;
+
+    disconnectUser(); // diconnect user: remove token and user info
+    enterRegister();
   }
 
   componentWillUnmount() {
-    const { leaveRegister } = this.props
-    leaveRegister()
+    const { leaveRegister } = this.props;
+    leaveRegister();
   }
 
   render() {
-    const { user, email, password } = this.state
+    const {
+      user,
+      email,
+      password
+    } = this.state;
 
-    const { registering } = this.props
+    const {
+      isRegistering
+    } = this.props;
 
     return (
       <div>
@@ -138,10 +152,10 @@ class Register extends PureComponent<Props, State> {
                       <Button
                         className="login-button btn-block"
                         bsStyle="primary"
-                        disabled={registering}
+                        disabled={isRegistering}
                         onClick={this.handlesOnRegister} >
                         {
-                          registering
+                          isRegistering
                             ?
                             <span>registering...&nbsp;<i className="fa fa-spinner fa-pulse fa-fw" /></span>
                             :
@@ -203,22 +217,89 @@ class Register extends PureComponent<Props, State> {
 
 
   // #region on register button click callback
-  handlesOnRegister = async ( event: SyntheticEvent<> ) => {
-    if (event) event.preventDefault()
+  handlesOnRegister = async (
+    event: SyntheticEvent<>
+  ) => {
+    if (event) event.preventDefault();
 
-    const { register } = this.props
-    console.log('state on register',this.state)
-    const { user, email, password } = this.state
+    const {
+      history,
+      registerUserIfNeeded
+    } = this.props;
 
-    register(user, email, password)
+    const {
+      user,
+      email,
+      password
+    } = this.state;
+    console.log('state now',this.state)
+    try {
+      const response = await registerUserIfNeeded(user, email, password);
+      console.log('response: ', response);
+      console.log('state',this.state)
+      console.log('props',this.props)
+      /*
+      const { data } = response.payload;
+      const { token } = data;
+      const {
+        login,
+        firstname,
+        lastname,
+        picture,
+        showPicture
+      } = data;
+      const user = {
+        login,
+        firstname,
+        lastname,
+        picture,
+        showPicture
+      };
+      */ 
+      /*
+      const { 
+        token, 
+        login, 
+        firstname,
+        lastname,
+        picture,
+        showPicture 
+      } = this.props.userAuth
+      const user = {
+        login, 
+        firstname, 
+        lastname, 
+        picture, 
+        showPicture 
+      }
+      console.log('setting token and user',token,user)
+      auth.setToken( token )
+      auth.setUserInfo( user )
+      */
+      history.push({ pathname: '/login' }); // go to login screen
+    } catch (error) {
+      /* eslint-disable no-console */
+      console.log('login went wrong..., error: ', error);
+      /* eslint-enable no-console */
+    }
   }
+  // #endregion
 
-  goLogin = ( event: SyntheticEvent<> ) => {
-    if (event) event.preventDefault()
-    const { history } = this.props
+  // #region on go back home button click callback
+  goLogin = (
+    event: SyntheticEvent<>
+  ) => {
+    if (event) {
+      event.preventDefault();
+    }
 
-    history.push({ pathname: '/login' })
+    const {
+      history
+    } = this.props;
+
+    history.push({ pathname: '/login' });
   }
+  // #endregion
 }
 
 export default Register

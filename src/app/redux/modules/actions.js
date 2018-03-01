@@ -10,6 +10,7 @@ export {
   getSideMenuCollpasedStateFromLocalStorage
 }                                      from './sideMenu';
 
+export { alertActions } from './alert'
 export { userActions } from './user'
 
 export { fetchTeamMatesDataIfNeeded }    from './teamMates'

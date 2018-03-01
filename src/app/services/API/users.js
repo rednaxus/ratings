@@ -26,21 +26,22 @@ const login = (username, password) => new Promise((resolve,reject) => {
       resolve(user) // should push user data
     })
   }).catch(result => { 
-    console.error("Error from server:"  + result) 
+    console.error("Error from server on login:"  + result) 
     reject(result)
   })
 })
 
 
 const register = (user,email,password) => new Promise( (resolve,reject) => {
-    //console.log(' register')
-
+  console.log(' register',user,password,email)
+  web3 = window.web3
   AnalystRegistry().then((analystRegistry) => {
-    analystRegistry.register(user,email,password).then(result => { // transaction object
+    analystRegistry.register(user,password,email).then(result => { // transaction object
+      console.log('result',result)
       resolve(result)
     })
   }).catch(result => { 
-    console.error("Error from server on cron:"  + result) 
+    console.error("Error from server on register:"  + result) 
     reject(result)
   })
 })

@@ -3,19 +3,21 @@
 import { bindActionCreators } from 'redux'
 import { connect }            from 'react-redux'
 import * as viewsActions      from '../../redux/modules/views'
-//import * as userAuthActions   from '../../redux/modules/userAuth'
-
-import { userActions } from '../../redux/modules/actions'
+import * as userAuthActions   from '../../redux/modules/userAuth'
 import Register                  from './Register'
 
 
 const mapStateToProps = (state) => {
   return {
-    currentView:      state.views.currentView,
+    // views:
+    currentView:  state.views.currentView,
 
-    isFetching:       state.user.isFetching,
-    registering:      state.user.registering,
-    user:             state.user 
+    // useAuth:
+    isAuthenticated: state.userAuth.isAuthenticated,
+    isFetching:      state.userAuth.isFetching,
+    isRegistering:       state.userAuth.isRegistering,
+    userAuth: state.userAuth 
+
   }
 }
 
@@ -23,7 +25,7 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
       ...viewsActions,
-      ...userActions
+      ...userAuthActions
     },
     dispatch
   )

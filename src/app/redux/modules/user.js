@@ -1,7 +1,8 @@
 import { combineReducers }  from 'redux'
+import { push } from 'react-router-redux'
 import { userService } from '../../services/API/users'
 import auth            from '../../services/auth'
-import { push } from 'react-router-redux'
+import { alertActions } from './actions'
 
 const userConstants = {
   REGISTER_REQUEST: 'USERS_REGISTER_REQUEST',
@@ -57,7 +58,7 @@ const register = (user,email,password) => {
 
   return dispatch => {
     dispatch(request(user))
-    userService.register(user).then(
+    userService.register(user,email,password).then(
       user => { 
         dispatch(success());
         dispatch(push('/login'))

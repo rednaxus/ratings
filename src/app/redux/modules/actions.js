@@ -10,6 +10,8 @@ export {
   getSideMenuCollpasedStateFromLocalStorage
 }                                      from './sideMenu';
 
+export { userActions } from './user'
+
 export { fetchTeamMatesDataIfNeeded }    from './teamMates'
 export { fetchUserInfoDataIfNeeded }     from './userInfos'
 export { fetchTokensDataIfNeeded }       from './tokens'

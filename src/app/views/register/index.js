@@ -1,10 +1,10 @@
 // @flow weak
 
-import { bindActionCreators } from 'redux';
-import { connect }            from 'react-redux';
-import * as viewsActions      from '../../redux/modules/views';
-import * as userAuthActions   from '../../redux/modules/userAuth';
-import Register                  from './Register';
+import { bindActionCreators } from 'redux'
+import { connect }            from 'react-redux'
+import * as viewsActions      from '../../redux/modules/views'
+import * as userAuthActions   from '../../redux/modules/userAuth'
+import Register                  from './Register'
 
 
 const mapStateToProps = (state) => {
@@ -18,22 +18,17 @@ const mapStateToProps = (state) => {
     isRegistering:       state.userAuth.isRegistering,
     userAuth: state.userAuth 
 
-  };
-};
+  }
+}
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
-      // views:
       ...viewsActions,
-      // userAuth:
       ...userAuthActions
     },
     dispatch
-  );
-};
+  )
+}
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Register)
+export default connect( mapStateToProps, mapDispatchToProps )(Register)

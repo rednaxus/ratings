@@ -27,8 +27,8 @@ type Props = any;
 type State = any;
 // #endregion
 
-export const store = configureStore();
-
+export const store = configureStore()
+export { history } from './redux/store/configureStore'
 
 
 class Root extends Component<Props, State> {

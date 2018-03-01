@@ -2,4 +2,4 @@
 
 export {localStorageManager} from './localStorage';
 
-export {fetchMiddleware} from './fetchMiddleware';
+//export {fetchMiddleware} from './fetchMiddleware';

@@ -11,7 +11,7 @@ import createHistory            from 'history/createHashHistory'
 // #endregion
 import reducer                  from '../modules/reducers'
 import { localStorageManager }  from '../middleware'
-import fetchMiddleware  from '../middleware/fetchMiddleware'
+//import fetchMiddleware  from '../middleware/fetchMiddleware'
 
 const loggerMiddleware = createLogger({
   level     : 'info',
@@ -24,7 +24,7 @@ export const history = createHistory();
 const enhancer = composeWithDevTools(
   applyMiddleware(
     localStorageManager,
-    fetchMiddleware,
+//    fetchMiddleware,
     thunkMiddleware,
     routerMiddleware(history),
     loggerMiddleware

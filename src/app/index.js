@@ -21,7 +21,7 @@ import Root from './Root';
 
 
 const ELEMENT_TO_BOOTSTRAP  = 'root';
-const BootstrapedElement    = document.getElementById(ELEMENT_TO_BOOTSTRAP);
+const BootstrappedElement    = document.getElementById(ELEMENT_TO_BOOTSTRAP);
 
 // #region polyfills initializations
 // tap events
@@ -40,7 +40,7 @@ const renderApp = RootComponent => {
     >
       <RootComponent />
     </AppContainer>,
-    BootstrapedElement
+    BootstrappedElement
   );
 };
 

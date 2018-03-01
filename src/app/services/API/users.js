@@ -1,11 +1,60 @@
 // @flow weak
 
-import { appConfig }  from '../../config';
+//import { appConfig }  from '../../config';
 
-import { 
-  getRatingAgency as RatingAgency,
-  getAnalystRegistry as AnalystRegistry
-} from '../contracts'
+import auth                   from '../auth'
+import { getAnalystRegistry as AnalystRegistry } from '../contracts'
+
+
+const login = (username, password) => new Promise((resolve,reject) => {
+    //console.log(' beginning users fetch')
+  
+  web3 = window.web3
+  AnalystRegistry().then( analystRegistry => {
+    analystRegistry.login(username,password).then(result => {
+      // id,email,reputation,token_balance
+      console.log('login result',result)
+      let user = { 
+        id: result[0].toNumber(),
+        name: username,
+        email: web3.toAscii(result[1]).replace(/\W/g,''),
+        reputation: result[2].toNumber(),
+        token_balance: result[3].toNumber()
+      }
+      auth.setToken( 'mock token' )
+      auth.setUserInfo( user )
+      resolve(user) // should push user data
+    })
+  }).catch(result => { 
+    console.error("Error from server:"  + result) 
+    reject(result)
+  })
+})
+
+
+const register = (user,email,password) => new Promise( (resolve,reject) => {
+    //console.log(' register')
+
+  AnalystRegistry().then((analystRegistry) => {
+    analystRegistry.register(user,email,password).then(result => { // transaction object
+      resolve(result)
+    })
+  }).catch(result => { 
+    console.error("Error from server on cron:"  + result) 
+    reject(result)
+  })
+})
+
+function logout() {
+  // remove user from local storage to log user out
+  localStorage.removeItem('user');
+}
+
+export const userService = {
+  login,
+  logout,
+  register
+}
 
 export const getUsersData = () => {
 

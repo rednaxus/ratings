@@ -11,7 +11,7 @@ class Dashboard extends Component {
   }
 
   render() {
-    const { userInfos, userIsConnected } = this.props;
+    const { userInfos, userIsConnected, user } = this.props;
     const { currentView } = this.props;
 
     const userFullName = `${userInfos.firstname} ${userInfos.lastname.toUpperCase()}`;

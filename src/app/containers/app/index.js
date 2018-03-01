@@ -18,7 +18,8 @@ const mapStateToProps = (state) => {
     sideMenuIsCollapsed: state.sideMenu.isCollapsed,
     // userInfos:
     userInfos:           state.userInfos.data,
-    userIsConnected:     state.userInfos.isConnected
+    userIsConnected:     state.userInfos.isConnected,
+    alert:               state.alert
   };
 };
 
@@ -34,14 +35,12 @@ const mapDispatchToProps = (dispatch) => {
         ...sidemenuActions,
         // eaning graph
         ...earningGraphActions
-      },
-      dispatch
-    )
-  };
-};
+      },dispatch)
+  }
+}
 
 // we use here compose (from redux) just for conveniance (since compose(f,h, g)(args) looks better than f(g(h(args))))
 export default compose(
   withRouter, // IMPORTANT: withRouter is "needed here" to avoid blocking routing:
   connect(mapStateToProps, mapDispatchToProps)
-)(App);
+)(App)

@@ -13,7 +13,8 @@ const mapStateToProps = (state) => {
     currentView:         state.views.currentView,
     // userInfos:
     userInfos:           state.userInfos.data,
-    userIsConnected:     state.userInfos.isConnected
+    userIsConnected:     state.userInfos.isConnected,
+    //user:                state.user.authenticated.user 
   }
 }
 

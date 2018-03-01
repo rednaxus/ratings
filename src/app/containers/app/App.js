@@ -16,9 +16,12 @@ import { appConfig }          from '../../config';
 import { navigation }         from '../../models';
 import MainRoutes             from '../../routes/MainRoutes';
 import auth                   from '../../services/auth';
+
 import UserIMG                from '../../img/user.jpg';
 // #endregion
+import { alertActions }       from '../../redux/modules/alert'
 
+import { store } from '../../Root'
 
 class App extends Component {
   static propTypes = {
@@ -55,14 +58,23 @@ class App extends Component {
     helloWord:        appConfig.HELLO_WORD
   };
 
+
   // #region lifecycle methods
   componentDidMount() {
+    console.log('props',this.props)
     const {
       actions: {
         fetchUserInfoDataIfNeeded,
         getSideMenuCollpasedStateFromLocalStorage
-      }
+      },
+      history
     } = this.props;
+
+    history.listen((location, action) => {
+      // clear alert on location change
+      console.log('location change in app',location,action,alertActions)
+      store.dispatch(alertActions.clear());
+    })
 
     fetchUserInfoDataIfNeeded();
     getSideMenuCollpasedStateFromLocalStorage();
@@ -70,8 +82,13 @@ class App extends Component {
 
   render() {
     const { appName, connectionStatus, helloWord } = this.state;
-    const { userInfos, userIsConnected } = this.props;
-    const { sideMenuIsCollapsed, currentView } = this.props;
+    const { 
+      userInfos, 
+      userIsConnected, 
+      sideMenuIsCollapsed, 
+      currentView, 
+      alert
+    } = this.props;
 
     const userFullName = `${userInfos.firstname} ${userInfos.lastname.toUpperCase()}`;
     return (
@@ -100,9 +117,10 @@ class App extends Component {
             userPicture={userInfos.picture}
             showPicture={userInfos.showPicture}
           />
-          <AsideRight
-            isAnimated={true}
-            isExpanded={sideMenuIsCollapsed}>
+          <AsideRight isAnimated={true} isExpanded={sideMenuIsCollapsed} >
+            {alert.message &&
+              <div className={`alert ${alert.type}`}>{alert.message}</div>
+            }
             <MainRoutes />
           </AsideRight>
         </div>

@@ -22,9 +22,9 @@ type Props = {
   // userAuth:
   isAuthenticated: boolean,
   isFetching: boolean,
-  loggingIn: boolean,
-  logout: () => any,
-  login: () => any
+  isLogging: boolean,
+  disconnectUser: () => any,
+  logUserIfNeeded: () => any
 };
 
 type State = {
@@ -46,18 +46,18 @@ class Login extends PureComponent<Props, State> {
     enterLogin:  PropTypes.func.isRequired,
     leaveLogin:  PropTypes.func.isRequired,
 
-    // user:
-    isAuthenticated:  PropTypes.bool,
-    isFetching:       PropTypes.bool,
-    loggingIn:        PropTypes.bool,
-    logout:           PropTypes.func.isRequired,
-    login:            PropTypes.func.isRequired
+    // userAuth:
+    isAuthenticated: PropTypes.bool,
+    isFetching:      PropTypes.bool,
+    isLogging:       PropTypes.bool,
+    disconnectUser:  PropTypes.func.isRequired,
+    logUserIfNeeded: PropTypes.func.isRequired
   };
   // #endregion
 
   static defaultProps = {
     isFetching:      false,
-    loggingIn:       false
+    isLogging:       false
   }
 
   state = {
@@ -68,36 +68,61 @@ class Login extends PureComponent<Props, State> {
   
   // #region lifecycle methods
   componentDidMount() {
-    const {  enterLogin, logout } = this.props // disconnectUser    
+    const {
+      enterLogin,
+      disconnectUser
+    } = this.props;
 
-    logout() // diconnect user: remove token and user info
-    enterLogin()
+    disconnectUser(); // diconnect user: remove token and user info
+    enterLogin();
   }
 
   componentWillUnmount() {
-    const { leaveLogin } = this.props
-    leaveLogin()
+    const { leaveLogin } = this.props;
+    leaveLogin();
   }
 
   render() {
-    const { email, password } = this.state
+    const {
+      email,
+      password
+    } = this.state;
 
-    const { loggingIn } = this.props
+    const {
+      isLogging
+    } = this.props;
 
     return (
       <div>
           <div className="content">
             <Row>
-              <Col md={4} mdOffset={4} xs={10} xsOffset={1} >
-                <form className="form-horizontal" noValidate>
+              <Col
+                md={4}
+                mdOffset={4}
+                xs={10}
+                xsOffset={1}
+              >
+                <form
+                  className="form-horizontal"
+                  noValidate>
                   <fieldset>
-                    <legend className="text-center" >
-                      <h1><i className="fa fa-3x fa-user-circle" aria-hidden="true" /></h1>
-                      <h2>Login</h2>
+                    <legend
+                      className="text-center"
+                    >
+                      <h1>
+                        <i className="fa fa-3x fa-user-circle" aria-hidden="true" />
+                      </h1>
+                      <h2>
+                        Login
+                      </h2>
                     </legend>
 
                     <div className="form-group">
-                      <label htmlFor="inputEmail" className="col-lg-2 control-label">Email</label>
+                      <label
+                        htmlFor="inputEmail"
+                        className="col-lg-2 control-label">
+                        Email
+                      </label>
                       <div className="col-lg-10">
                         <input
                           type="text"
@@ -111,7 +136,9 @@ class Login extends PureComponent<Props, State> {
                     </div>
 
                     <div className="form-group">
-                      <label htmlFor="inputPassword" className="col-lg-2 control-label">
+                      <label
+                        htmlFor="inputPassword"
+                        className="col-lg-2 control-label">
                         Password
                       </label>
                       <div className="col-lg-10">
@@ -125,18 +152,30 @@ class Login extends PureComponent<Props, State> {
                         />
                       </div>
                     </div>
-                    <div className="form-group" >
-                      <Col lg={10} lgOffset={2} >
+                    <div className="form-group">
+                      <Col
+                        lg={10}
+                        lgOffset={2}
+                      >
                         <Button
                           className="login-button btn-block"
                           bsStyle="primary"
-                          disabled={loggingIn}
+                          disabled={isLogging}
                           onClick={this.handlesOnLogin}>
                           {
-                            loggingIn ?
-                              <span>login in...&nbsp;<i className="fa fa-spinner fa-pulse fa-fw" /></span>
+                            isLogging
+                              ?
+                              <span>
+                                  login in...
+                                  &nbsp;
+                                <i
+                                  className="fa fa-spinner fa-pulse fa-fw"
+                                />
+                              </span>
                               :
-                              <span>Login</span>
+                              <span>
+                                  Login
+                              </span>
                           }
                         </Button>
                       </Col>
@@ -146,9 +185,19 @@ class Login extends PureComponent<Props, State> {
               </Col>
             </Row>
             <Row>
-              <Col md={4} mdOffset={4} xs={10} xsOffset={1} >
-                <div className="pull-right" >
-                  <Button bsStyle="default" onClick={this.goRegister} >
+              <Col
+                md={4}
+                mdOffset={4}
+                xs={10}
+                xsOffset={1}
+              >
+                <div
+                  className="pull-right"
+                >
+                  <Button
+                    bsStyle="default"
+                    onClick={this.goRegister}
+                  >
                     register new user
                   </Button>
                 </div>
@@ -184,16 +233,71 @@ class Login extends PureComponent<Props, State> {
 
 
   // #region on login button click callback
-  handlesOnLogin = async ( event: SyntheticEvent<> ) => {
-    if (event) event.preventDefault()
+  handlesOnLogin = async (
+    event: SyntheticEvent<>
+  ) => {
+    if (event) {
+      event.preventDefault();
+    }
 
-    console.log('props')
-    const { login } = this.props
+    const {
+      history,
+      logUserIfNeeded
+    } = this.props;
 
-    const { email, password } = this.state
+    const {
+      email,
+      password
+    } = this.state;
 
-    login(email, password)
+    try {
+      const response = await logUserIfNeeded(email, password);
+      console.log('response: ', response);
+      console.log('state',this.state)
+      console.log('props',this.props)
+      /*
+      const { data } = response.payload;
+      const { token } = data;
+      const {
+        login,
+        firstname,
+        lastname,
+        picture,
+        showPicture
+      } = data;
+      const user = {
+        login,
+        firstname,
+        lastname,
+        picture,
+        showPicture
+      };
+      */ 
+      const { 
+        token, 
+        login, 
+        firstname,
+        lastname,
+        picture,
+        showPicture 
+      } = this.props.userAuth
+      const user = {
+        login, 
+        firstname, 
+        lastname, 
+        picture, 
+        showPicture 
+      }
+      console.log('setting token and user',token,user)
+      auth.setToken( token )
+      auth.setUserInfo( user )
 
+      history.push({ pathname: '/' }); // back to Home
+    } catch (error) {
+      /* eslint-disable no-console */
+      console.log('login went wrong..., error: ', error);
+      /* eslint-enable no-console */
+    }
   }
   // #endregion
 

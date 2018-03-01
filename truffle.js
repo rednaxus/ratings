@@ -5,31 +5,32 @@ module.exports = {
       host: "localhost", // veva.one"
       port: 8545,
       network_id: "*", // Match any network id
-      from: "0x048A0a93F00E58d7AB103c1ac85B20b80769C6cF",
+      from: "0x98692a01576A169028cBc4552b3bd14fc8EEeeF4",
       gas: 4700000
     }
   }
 };
 // ethereum typical gas: 3141592
 /*
+Running migration: 2_deploy_contracts.js
   Deploying AnalystRegistry...
-  ... 0xa396fa78efc333e32fad362985b9cf0935061910319cddeada7a85327717e816
-  AnalystRegistry: 0x82b0827145d8833db0675bf802479dae839c2eb6
+  ... 0x12e689511a599aaa000fedc0eb979cb9518a64f26ff8724bfd4a415d5a0bbce4
+  AnalystRegistry: 0x0424c9c56a9e119706ce23e35d0ecf9fc841acdc
   Deploying RatingAgency...
-  ... 0x11fde3e90b1c9b1ec447a8ebda0d4bffec326eeaaa2aebabc99a54ca749375f7
-  RatingAgency: 0xf7179b052816957c89b8baf57362a0f4e0df6a95
+  ... 0x83ab887ad4ac36b61c216dd6d7d6740a3d4636fc2176dccd3f46a688462649df
+  RatingAgency: 0x3cd8359ca1653c80bf52347dbcadc17235fa9655
   Running step...
 Saving successful migration to network...
-  ... 0x363418607c20bce7ab3017e013da2cbe61a2082e07879db2708f705f6cd7d4c6
-  ... 0xe1197d1d62df23d53a846033c8fbaa362d96ac2d8e2e0cc38c9d03cbc70ca2bf
-  ... 0x6062594030eb85f14db728f61bcb95cfd519b417eb214ffc6212add05c70b6b3
-  ... 0x4935be891ded569ebffa497862252a050df5516f1d766fe080a8de8d24167150
-  ... 0xaca4d8e0eb53bdcaafef713cbac77bbba69dd9d1eb351be515d71a24d8ee0d1d
+  ... 0xec4fea162f438927b6ab9603d89e379a46e2d9c325926b3fd1a61d1e8086576f
+  ... 0x9e82124042297326bfda92058cbf4176fb5734c60b768e32c0ffbc3bbe1005f8
+  ... 0x2dee87d9bc60ae290de2bb8429d99579042e07a10c6ad828a4fd0acdd50b7966
+  ... 0x551fc45db5d479578b9eaae129ce6b012f7358d5d35a897a55cb90ee2181a270
+  ... 0x4e49aa8a53fa1fdfdd9365084fe39f2ec281bdb1357f1dd7413216e83d72a142
 Saving artifacts...
-erc address 0x9fa989c64a23effaf8408a2071c85ab9e34d9c25
-erc address 0x5fb66c52cfa0c1c5b291a180dc370ed3f58328f2
-erc address 0x3669f0845c614885073451422473f0796974dd30
-erc address 0x8f5a1e2c9a2a57b5ddd1660e7876fddf67363a60
+erc address 0x212741036e02424bb297c63145be5e54a2a2b53e
+erc address 0xd654c8cdda019de6994c29b0b02940c22ba2d200
+erc address 0x110d8848fd7ae8128342fd6ebc6d44b539295cf9
+erc address 0xfc7b77a574f6cf230e9bdcddb9e7ee7e02ea6166
 
 
 */

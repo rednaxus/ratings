@@ -9,19 +9,25 @@ import { Reducers as gridReducers } from 'react-redux-grid'
 
 import app                  from './app'
 
-import earningGraph         from './earningGraph'
+import alert                from './alert'
+import user                 from './user'
+
 import sideMenu             from './sideMenu'
+
+import earningGraph         from './earningGraph'
 import userInfos            from './userInfos'
 import teamMates            from './teamMates'
 import views                from './views'
-import userAuth             from './userAuth'
-import users                from './users'
+import userAuth             from './userAuth' // to die
+import users                from './users' // to die
 import cycles               from './cycles'
 import web3                 from './web3'
 import tokens               from './tokens'
 import survey               from './survey'
 
 export const reducers = {
+  alert,
+  user,
   earningGraph,
   sideMenu,
   userInfos,

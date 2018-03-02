@@ -13,7 +13,7 @@ import { store } from '../../Root'
 import Cycles from '../../components/cycles/Cycles'
 
 class CyclesView extends Component {
-  static propTypes= {
+  static propTypes = {
     actions: PropTypes.shape({
       enterCyclesView: PropTypes.func,
       leaveCyclesView: PropTypes.func
@@ -51,11 +51,29 @@ class CyclesView extends Component {
     return (
       <AnimatedView>
         <div className="simpleContainer">
-          <h2 className="gridH2">Cycles -- Last cron run: <span className="text-red"><Moment date={new Date(cycles.cronInfo)} /></span></h2>
+          <h2 className="gridH2">
+            Cycles -- Last cron run: 
+            <span className="text-red"><Moment date={new Date(cycles.cronInfo)} /></span>
+            <button 
+              className="pull-right" 
+              bsStyle="primary"
+              onClick={this.pulseCron} >
+              pulse cron
+            </button>
+          </h2>
+
           <Cycles { ...{ store } } />
         </div>
       </AnimatedView>
     );
+  }
+
+  pulseCron = ( event: SyntheticEvent<> ) => {
+    if (event) event.preventDefault()
+
+    console.log('pulse cron, props',this.props)
+    const { actions: { pulseCron } } = this.props
+    pulseCron()
   }
 }
 

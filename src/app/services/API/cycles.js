@@ -1,24 +1,22 @@
 // @flow weak
 
-import { 
-  getRatingAgency as RatingAgency
-} from '../contracts'
+import { getRatingAgency as RatingAgency } from '../contracts'
+import { appConfig }        from '../../config';
 
 export const getCronInfo = () => {
   return new Promise( (resolve,reject) => {
     //console.log(' beginning cycles fetch')
 
-    RatingAgency()
-    .then((ratingAgency) => {
-      ratingAgency.lasttime()
-      .then(result => {
+    RatingAgency().then((ratingAgency) => {
+      ratingAgency.lasttime().then(result => {
         resolve(1000*result.toNumber())
       })
-    })
-    .catch(result => { 
+      .catch(result => { 
         console.error("Error from server on cron:"  + result) 
         reject(result)
+      })
     })
+    
   })
 }
 
@@ -26,20 +24,26 @@ export const pulseCron = () => {
   return new Promise( (resolve,reject) => {
     //console.log(' beginning cycles fetch')
 
-    RatingAgency()
-    .then((ratingAgency) => {
-      ratingAgency.lasttime()
-      .then(result => {
+    RatingAgency().then((ratingAgency) => {
+      ratingAgency.lasttime().then( result => {
         let lasttime = result.toNumber()
-        lasttime += 20
-        ratingAgency.cron(lasttime).then( cronResult => console.log('cron result',cronResult) )
-        resolve(1000*result.toNumber())
+        console.log('pulsing cron from ' + lasttime + ' to '+ (lasttime+appConfig.CRON_INTERVAL))
+        lasttime += appConfig.CRON_INTERVAL
+        ratingAgency.cron(lasttime).then( cronResult => {
+          console.log('cron result',cronResult)
+          resolve( 1000*result.toNumber() )
+        })
+        .catch(result => { 
+          console.error("Error cron on cron:"  + result) 
+          reject(result)
+        })
+      })    
+      .catch(result => { 
+        console.error("Error lasttime on cron:"  + result) 
+        reject(result)
       })
     })
-    .catch(result => { 
-        console.error("Error from server on cron:"  + result) 
-        reject(result)
-    })
+
   })
 }
 

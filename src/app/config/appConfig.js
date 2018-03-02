@@ -45,5 +45,8 @@ export const appConfig = {
   
   ETHEREUM_PROVIDER: 'http://localhost:8545',
 
-  ANALYST_REGISTRY: '0x0424c9c56a9e119706ce23e35d0ecf9fc841acdc'
+  ANALYST_REGISTRY: '0xa5a4f84827fc7854ce6bd77221b9c4f3a5367627',
+  RATING_AGENCY: '0x44ef55e4c8fce81b72ad0f3d78246629ebaa3549',
+
+  CRON_INTERVAL: 2*24*60*60
 };

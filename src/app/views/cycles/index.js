@@ -3,7 +3,8 @@
 import { bindActionCreators } from 'redux'
 import { connect }            from 'react-redux'
 import * as actions           from '../../redux/modules/actions'
-import CyclesView               from './CyclesView'
+import CyclesView             from './CyclesView'
+import { cycleActions }       from '../../redux/modules/cycles'
 
 const mapStateToProps = state => {
   return {
@@ -18,11 +19,13 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => {
+  console.log('cycle actions pulse',cycleActions.pulseCron)
   return {
     actions : bindActionCreators(
       {
         enterCyclesView: actions.enterCyclesView,
-        leaveCyclesView: actions.leaveCyclesView
+        leaveCyclesView: actions.leaveCyclesView,
+        pulseCron: cycleActions.pulseCron
       },
       dispatch)
   }

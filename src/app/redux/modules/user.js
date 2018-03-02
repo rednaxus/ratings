@@ -61,8 +61,8 @@ const register = (user,email,password) => {
     userService.register(user,email,password).then(
       user => { 
         dispatch(success());
-        dispatch(push('/login'))
         dispatch(alertActions.success('Registration successful'))
+        dispatch(push('/login'))
       },
       error => {
         dispatch(failure(error))

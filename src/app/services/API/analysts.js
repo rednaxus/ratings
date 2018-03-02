@@ -14,8 +14,7 @@ export const dataSource = function getData({
     //console.log(' beginning users fetch')
     web3 = window.web3
 
-    AnalystRegistry()
-    .then( analystRegistry => {
+    AnalystRegistry().then( analystRegistry => {
       analystRegistry.num_analysts()
       .then(result => {
         var numAnalysts = result.toNumber();

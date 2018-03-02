@@ -12,6 +12,7 @@ export {
 
 export { alertActions } from './alert'
 export { userActions } from './user'
+export { cycleActions } from './cycles'
 
 export { fetchTeamMatesDataIfNeeded }    from './teamMates'
 export { fetchUserInfoDataIfNeeded }     from './userInfos'

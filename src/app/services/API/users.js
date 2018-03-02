@@ -4,7 +4,65 @@
 
 import auth                   from '../auth'
 import { getAnalystRegistry as AnalystRegistry } from '../contracts'
+import { getRatingAgency as RatingAgency } from '../contracts'
 
+// cycle statuses :
+/*
+0: no status
+1: lead available
+2: lead assigned
+3: jurist available
+4: jurist assigned
+*/
+const info = userId => new Promise((resolve,reject) => {
+  console.log(' beginning user info fetch')
+  
+  web3 = window.web3
+  let userInfo = {
+    id:userId,
+    cycleInfo: []
+  }
+  AnalystRegistry().then( analystRegistry => {
+    RatingAgency().then( ratingAgency => {    
+      analystRegistry.analystInfo(userId).then( result => {
+        //  _analystId, name, password, auth_status, reputation, is_lead, token_balance, scheduled_round, active_round, num_rounds );
+        userInfo = { 
+          ...userInfo,
+          id: result[0].toNumber(),
+          name: web3.toAscii(result[1]).replace(/\W/g,''),
+          email: web3.toAscii(result[1]).replace(/\W/g,''),
+          auth_status: result[3].toNumber(),
+          reputation: result[4].toNumber(),
+          lead: result[5],
+          token_balance: result[6].toNumber(),
+          scheduled_round: result[7].toNumber(),
+          active_round: result[8].toNumber(),
+          num_rounds: result[9].toNumber()
+        }
+        console.log('got user info',userInfo)
+        console.log('rating agency',ratingAgency)
+        ratingAgency.num_cycles().then( result => { // check for availabilities
+          let numCycles = result.toNumber()
+          if (numCycles === 0) resolve(userInfo)
+          let numFetch = 0
+          for (var i = 0; i < numCycles; i++) {
+            ratingAgency.getAnalystCycleInfo(i,userId).then( result => {
+              userInfo.cycleInfo.push( result.toNumber() )
+              if (++numFetch === numCycles) {
+                console.log('got user info',userInfo)
+                resolve(userInfo)
+              }
+            })
+          }
+        })
+      })
+      .catch(result => { 
+        console.error("Error on info check:"  + result) 
+        reject(result)
+      })
+    })
+  })
+})
 
 const login = (username, password) => new Promise((resolve,reject) => {
     //console.log(' beginning users fetch')
@@ -25,7 +83,12 @@ const login = (username, password) => new Promise((resolve,reject) => {
       auth.setUserInfo( user )
       resolve(user) // should push user data
     })
-  }).catch(result => { 
+    .catch(result => { 
+      console.error("login failed:"  + result) 
+      reject(result)
+    })
+  })
+  .catch(result => { 
     console.error("Error from server on login:"  + result) 
     reject(result)
   })
@@ -54,7 +117,8 @@ function logout() {
 export const userService = {
   login,
   logout,
-  register
+  register,
+  info
 }
 
 export const getUsersData = () => {

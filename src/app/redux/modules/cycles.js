@@ -123,6 +123,7 @@ export const pulseCron = () => {
       dispatch( success(cron) ) 
       console.log('dispatching fetchCronInfo')
       dispatch( fetchCronInfo() )
+      dispatch( fetchCyclesDataIfNeeded() )
     })
     .catch( error => dispatch( failure(error) ) )
   }

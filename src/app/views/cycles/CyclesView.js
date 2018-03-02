@@ -57,7 +57,7 @@ class CyclesView extends Component {
             <button 
               className="pull-right" 
               bsStyle="primary"
-              onClick={this.pulseCron} >
+              onClick={this.handlePulseCron} >
               pulse cron
             </button>
           </h2>
@@ -68,7 +68,7 @@ class CyclesView extends Component {
     );
   }
 
-  pulseCron = ( event: SyntheticEvent<> ) => {
+  handlePulseCron = ( event: SyntheticEvent<> ) => {
     if (event) event.preventDefault()
 
     console.log('pulse cron, props',this.props)

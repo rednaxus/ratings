@@ -3,9 +3,9 @@
 import { connect } from 'react-redux'
 import { bindActionCreators, compose } from 'redux'
 import * as viewsActions        from '../../redux/modules/views'
-import * as userInfosActions    from '../../redux/modules/userInfos'
+//import * as userInfosActions    from '../../redux/modules/userInfos'
 import Dashboard                      from './Dashboard'
-
+import { userActions } from '../../redux/modules/actions'
 
 const mapStateToProps = (state) => {
   return {
@@ -14,7 +14,7 @@ const mapStateToProps = (state) => {
     // userInfos:
     userInfos:           state.userInfos.data,
     userIsConnected:     state.userInfos.isConnected,
-    //user:                state.user.authenticated.user 
+    user:                state.user.info.user
   }
 }
 
@@ -25,10 +25,10 @@ const mapDispatchToProps = (dispatch) => {
         // views:
         ...viewsActions,
         // userInfos
-        ...userInfosActions,
+        //...userInfosActions,
+        ...userActions
       },
-      dispatch
-    )
+      dispatch)
   }
 }
 

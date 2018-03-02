@@ -15,6 +15,10 @@ const userConstants = {
   
   LOGOUT: 'USERS_LOGOUT',
 
+  INFO_REQUEST: 'USERS_INFO_REQUEST',
+  INFO_SUCCESS: 'USERS_INFO_SUCCESS',
+  INFO_FAILURE: 'USERS_INFO_FAILURE',
+
   GETALL_REQUEST: 'USERS_GETALL_REQUEST',
   GETALL_SUCCESS: 'USERS_GETALL_SUCCESS',
   GETALL_FAILURE: 'USERS_GETALL_FAILURE',
@@ -24,6 +28,26 @@ const userConstants = {
   DELETE_FAILURE: 'USERS_DELETE_FAILURE'    
 }
 
+const getInfo = (user_id) => { // get from id
+  const request = userInfo => { return { type: userConstants.INFO_REQUEST, userInfo } }
+  const success = userInfo => { return { type: userConstants.INFO_SUCCESS, userInfo } }
+  const failure = error => { return { type: userConstants.INFO_FAILURE, error } }
+
+  return dispatch => {
+    dispatch(request({ user_id }))
+    userService.info(user_id).then(
+      userInfo => {
+        dispatch(success(userInfo))
+        dispatch(push('/')) //history.push
+      },
+      error => {
+        dispatch(failure(error))
+        dispatch(alertActions.error(error))
+      }
+    )
+  }
+
+}
 
 const login = (username, password) => {
   const request = user => { return { type: userConstants.LOGIN_REQUEST, user } }
@@ -35,6 +59,7 @@ const login = (username, password) => {
     userService.login(username, password).then(
       user => {
         dispatch(success(user))
+        dispatch(getInfo(user.id))
         dispatch(push('/')) //history.push
       },
       error => {
@@ -102,6 +127,20 @@ const authentication = (state = initialAuthState, action) => {
   }
 }
 
+const initialInfoState = { infoFetching: false, user:{} }
+const info = (state = initialInfoState, action) => {
+  switch (action.type) {
+    case userConstants.INFO_REQUEST:
+      return { infoFetching: true }
+    case userConstants.INFO_SUCCESS:
+      return { infoFetching: false, user:action.userInfo }
+    case userConstants.INFO_FAILURE:
+      return {}
+    default:
+      return state
+  }
+}
+
 function registration(state = {}, action) {
   switch (action.type) {
     case userConstants.REGISTER_REQUEST:
@@ -117,7 +156,8 @@ function registration(state = {}, action) {
 
 const reducer = combineReducers({
   authentication,
-  registration
+  registration,
+  info
 })
 
 export default reducer

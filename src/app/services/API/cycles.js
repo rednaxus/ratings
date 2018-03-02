@@ -51,14 +51,12 @@ export const dataSource = function getData({
     pageIndex, pageSize
 }) {
   return new Promise((resolve,reject) => {
-    //console.log(' beginning cycles fetch')
-
-    RatingAgency()
-    .then((ratingAgency) => {
+    console.log(' beginning cycles fetch')
+    RatingAgency().then((ratingAgency) => {
       ratingAgency.num_cycles()
       .then(result => {
         var numCycles = result.toNumber();
-        //console.log("result was:",numCycles);
+        console.log("result was:",numCycles);
         var numFetch = 0
         var cyclesData = []
         for (var i = 0; i < numCycles; i++) {
@@ -73,9 +71,9 @@ export const dataSource = function getData({
               num_leads_available: rCycle[6].toNumber(),
               num_leads_assigned: rCycle[7].toNumber()
             }
-            //console.log('got cycle',res)
+            console.log('got cycle',res)
             cyclesData.push(res)
-            //console.log('got cycle starting',res.timestart)
+            console.log('got cycle starting',res.timestart)
             if (++numFetch === numCycles) {
               cyclesData.sort( (a,b) => a.id - b.id)  
               resolve( { data:cyclesData, total:numCycles } )

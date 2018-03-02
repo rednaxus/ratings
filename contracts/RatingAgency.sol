@@ -173,6 +173,19 @@ contract RatingAgency {
         AvailabilityAdd( _cycle, _analyst, _lead, cycle.num_leads_available, cycle.num_jurists_available );
     }
     
+    function getAnalystCycleInfo( uint16 _cycle, uint32 _analyst ) public view returns (uint16) {
+        Cycle storage cycle = cycles[ _cycle ];
+        for ( uint8 i = 0; i < cycle.num_leads_available; i++ )
+            if (cycle.leads_available[i] == _analyst) return 1;
+        for ( i = 0; i < cycle.num_leads_assigned; i++ )
+            if (cycle.leads_assigned[i] == _analyst) return 2;
+        for ( i = 0; i < cycle.num_jurists_available; i++ )
+            if (cycle.jurists_available[i] == _analyst) return 3;
+        for ( i = 0; i < cycle.num_jurists_assigned; i++ )
+            if (cycle.jurists_assigned[i] == _analyst) return 4;
+        return 0;
+    }
+
     function selectAvailableAnalyst( uint16 _cycle, bool _lead ) public view returns ( uint16 ) {  // returns local reference to an available analyst
         Cycle storage cycle = cycles[_cycle];
         require( _lead ? cycle.num_leads_available > 0 : cycle.num_jurists_available > 0 );

@@ -81,8 +81,13 @@ This is a work very much in progress...use with caution
  -- the collaborators
 
 ## Content
+- Veva admin screens
+- Veva analyst screens
+- Veva Tokens browser 
 
-- admin template
+Tools
+- Truffle
+- Geth private server
 - ReactJS 16+
 - Redux
 - react-hot-reload 3.1+
@@ -105,11 +110,6 @@ This is a work very much in progress...use with caution
 npm install
 ```
 
-or 
-
-```bash
-yarn install
-```
 
 ### bundle dev mode
 
@@ -125,7 +125,7 @@ Development mode = best dev experience (*hot reload, redux devtools extension...
 npm run start
 ```
 
-> Then go to [localhost:3000](http://localhost:3001)
+> Then go to [localhost:3001](http://localhost:3001)
 
 ### bundle production mode
 
@@ -153,9 +153,11 @@ npm run prod-server
 
 ## What's next?
 - [ ] lots of work on everything
-- [ ] add authentication
+- [ ] analyst dashboard of upcoming issues and suggestions
+- [ ] rounds assessments and scoring
+- [ ] event notifications connected to Slack and Email
 - [ ] tests
-- [ ] optimize image import
+- [ ] veva token contract
 
 
 

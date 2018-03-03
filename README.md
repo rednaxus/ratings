@@ -1,5 +1,6 @@
 # Veva One Decentralized Token Ratings Agency
 
+## Motivation
 Peer-to-peer distributed Blockchain with autonomous contracts offers anyone the ability to issue Tokens for exchange on distributed networks, represented as "Currencies" in the traditional money fiat sense, or as "Securities" in the traditional stock sense
 
 Tokens can be moved by anyone with access to transfer rights.  

@@ -14,7 +14,7 @@ const mapStateToProps = (state) => {
     // userInfos:
     userInfos:           state.userInfos.data,
     userIsConnected:     state.userInfos.isConnected,
-    user:                state.user.info.user
+    user:                state.user
   }
 }
 

@@ -60,7 +60,7 @@ const login = (username, password) => {
       user => {
         dispatch(success(user))
         dispatch(getInfo(user.id))
-        dispatch(push('/')) //history.push
+        //dispatch(push('/')) //history.push
       },
       error => {
         dispatch(failure(error))

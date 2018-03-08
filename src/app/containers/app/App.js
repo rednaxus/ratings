@@ -87,17 +87,21 @@ class App extends Component {
       userIsConnected, 
       sideMenuIsCollapsed, 
       currentView, 
-      alert
+      alert,
+      user
     } = this.props;
+    console.log('props in app',this.props)
 
-    const userFullName = `${userInfos.firstname} ${userInfos.lastname.toUpperCase()}`;
+    //const userFullName = `${userInfos.firstname} ${userInfos.lastname.toUpperCase()}`;
+    const userFullName = user.info.user && user.info.user.name ? user.info.user.name : '' // should not get here if not logged in but during testing
+    const username = user.info.user && user.info.user.name ? user.info.user.name: ''
     return (
       <div>
         <Header
           appName={appName}
-          userLogin={userInfos.login}
-          userFirstname={userInfos.firstname}
-          userLastname={userInfos.lastname}
+          userLogin={username}
+          userFirstname={userFullName}
+          userLastname={""}
           userPicture={UserIMG}
           showPicture={userInfos.showPicture}
           currentView={currentView}

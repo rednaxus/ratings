@@ -22,7 +22,7 @@ const ERROR_CRON = 'ERROR_CRON'
 const initialState = {
   isFetching: false,
   data:       [],
-  croninfo:    0,
+  cronInfo:    0,
   cron:       "", 
   time:       null
 };

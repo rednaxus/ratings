@@ -19,7 +19,7 @@ var config = {
 const Cron = require('cron').CronJob;
 console.log('started at ',new Date())
 let web3 = new Web3('ws://localhost:8546');
-//web3.setProvider(new web3.providers.HttpProvider('http://localhost:8545'));
+web3.setProvider(new web3.providers.HttpProvider('http://localhost:8545'));
 //console.log("Talking with a geth server", Web3);
 
 const runInterval = 86400 	// e.g. 4 days
@@ -37,8 +37,8 @@ setTimeout(()=> { // needed because of a bug in web3 1.0
 		console.log('got coinbase, unlocking ',account)
 		let transactObj = { from: account, gas: config.gas, gasPrice: config.gasPrice}
 
-		web3.eth.personal.unlockAccount(account, 'alman').then(() => { 
-	  	console.log('Account unlocked.'); 
+		//web3.eth.personal.unlockAccount(account, 'alman').then(() => { 
+	  //	console.log('Account unlocked.'); 
 	  	//const contractName = 'RatingAgency.sol:RatingAgency';
 	  	//var iface = JSON.parse(output.contracts[contractName].interface)
 	  	//console.log('inteface:',iface)
@@ -47,38 +47,41 @@ setTimeout(()=> { // needed because of a bug in web3 1.0
 			console.log('rating agency address',ratingAgencyAddress)
 
 			let RatingAgency = new web3.eth.Contract(RatingAgencyObj.abi,ratingAgencyAddress,transactObj);
-			
-			let evtRange = { fromBlock: 0, toBlock: 'latest' }
+			const events = () => {
+				let evtRange = { fromBlock: 0, toBlock: 'latest' }
 
-			RatingAgency.events.TokenAdd(evtRange, (error, event) => {
-	  		eventlog(error?error:'', JSON.stringify(event));
-			})
-			RatingAgency.events.CycleAdded(evtRange, (error, event) => {
-	  		eventlog(error?error:'', event);
-			})
-			/*
-			RatingAgency.events.AvailabilityAdd(evtRange, (error, event) => {
-	  		eventlog(error?error:'', JSON.stringify(event));
-			})
-			*/
-			RatingAgency.events.RoundPopulated(evtRange, (error, event) => {
-	  		eventlog(error?error:'', JSON.stringify(event));
-			})
-			RatingAgency.events.RoundActivated(evtRange, (error, event) => {
-	  		eventlog(error?error:'', JSON.stringify(event));
-			})
-			RatingAgency.events.RoundScheduled(evtRange, (error, event) => {
-	  		eventlog(error?error:'', JSON.stringify(event));
-			})
-			RatingAgency.events.RoundFinished(evtRange, (error, event) => {
-	  		console.log(error?error:'', JSON.stringify(event));
-			})
+				RatingAgency.events.TokenAdd(evtRange, (error, event) => {
+		  		eventlog(error?error:'', JSON.stringify(event));
+				})
+				RatingAgency.events.CycleAdded(evtRange, (error, event) => {
+		  		eventlog(error?error:'', event);
+				})
+				/*
+				RatingAgency.events.AvailabilityAdd(evtRange, (error, event) => {
+		  		eventlog(error?error:'', JSON.stringify(event));
+				})
+				*/
+				RatingAgency.events.RoundPopulated(evtRange, (error, event) => {
+		  		eventlog(error?error:'', JSON.stringify(event));
+				})
+				RatingAgency.events.RoundActivated(evtRange, (error, event) => {
+		  		eventlog(error?error:'', JSON.stringify(event));
+				})
+				RatingAgency.events.RoundScheduled(evtRange, (error, event) => {
+		  		eventlog(error?error:'', JSON.stringify(event));
+				})
+				RatingAgency.events.RoundFinished(evtRange, (error, event) => {
+		  		console.log(error?error:'', JSON.stringify(event));
+				})
 
-			RatingAgency.events.Cron(evtRange, (error, event) => {
-	  		eventlog(error?error:'', JSON.stringify(event));
-	  		console.log('return value', event.returnValues);
-				// don't do here, not dependable runTime = event.returnValues._timestamp + runInterval	// adjust next interval to last time ran
-			})
+				RatingAgency.events.Cron(evtRange, (error, event) => {
+		  		eventlog(error?error:'', JSON.stringify(event));
+		  		console.log('return value', event.returnValues);
+					// don't do here, not dependable runTime = event.returnValues._timestamp + runInterval	// adjust next interval to last time ran
+				})
+			}
+			//events()
+
 			const doRun = () => {
 				cronlog('at time:',runTime)
 				RatingAgency.methods.generateAllAvailabilities().send(transactObj)
@@ -155,10 +158,10 @@ setTimeout(()=> { // needed because of a bug in web3 1.0
 	  		process.exit(0);
 			});
 
-	  })
-	  .catch( error => {
-	  	console.log(error, 'error unlocking personal')
-	  })
+	  //})
+	  //.catch( error => {
+	  //	console.log(error, 'error unlocking personal')
+	  //})
 	})
 	.catch( error => {	
 			console.log(error,'error getting coinbase')

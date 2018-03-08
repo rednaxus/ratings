@@ -3,16 +3,18 @@ var AnalystRegistry = artifacts.require("AnalystRegistry")
 var RatingAgency = artifacts.require("RatingAgency")
 
 module.exports = function(deployer) {
-	deployer.deploy(AnalystRegistry)
-	.then( () => AnalystRegistry.deployed() )
-	.then( registry => deployer.deploy(RatingAgency,registry.address)  )
-	
-  deployer.then( () => {
-		let tpromises = [1,2,3,4].map( id => TokenERC20.new(10000,"MOOLAH"+id,"MOO"+id))
+	deployer.deploy(AnalystRegistry).then( () => AnalystRegistry.deployed() )
+	.then( registry => deployer.deploy(RatingAgency,registry.address) ).then( () => RatingAgency.deployed() )
+
+	deployer.deploy(TokenERC20,10000,"MOOLAH","MOO").then( () => TokenERC20.deployed() )
+  .then( () => {
+		let tpromises = [1,2,3,4,5,6,7,8].map( id => TokenERC20.new(10000,"MOOLAH"+id,"MOO"+id))
 		Promise.all(tpromises).then( tokens => {
   		tokens.map( token => console.log('erc address',token.address)  )			
-		})
+  	})
 	})
+	
+
 
 			/*	
 		  deployer.deploy(AnalystRegistry).then( () => {

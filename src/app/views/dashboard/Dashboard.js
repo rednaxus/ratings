@@ -5,9 +5,10 @@ import AnalystStat from '../analystStat'
 import { AnimatedView } from '../../components'
 
 class Dashboard extends Component {
-  constructor(props, { user }) {
+  //constructor(props, { user }) {
+  constructor(props) {
     super(props)
-    user = this.props
+    //user = this.props
   }
 
   render() {
@@ -19,7 +20,7 @@ class Dashboard extends Component {
     return(
       <AnimatedView>
         <main className="container">
-          { /*<UserStatus user={ user }/> take out until fixed*/ }
+          <UserStatus user={ user.info.user }/>
           <div className="pure-g">
             <div className="pure-u-1-1">
               <h1>Dashboard</h1>

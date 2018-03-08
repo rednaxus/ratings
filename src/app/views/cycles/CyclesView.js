@@ -48,12 +48,16 @@ class CyclesView extends Component {
 
   render() {
     const { cycles } = this.props
+    const { cronInfo } = this.props.cycles
+    let crondate = new Date(cronInfo)
+
+    console.log('rendering cycles',this.props)
     return (
       <AnimatedView>
         <div className="simpleContainer">
           <h2 className="gridH2">
             Cycles -- Last cron run: 
-            <span className="text-red"><Moment date={new Date(cycles.cronInfo)} /></span>
+            <span className="text-red"><Moment date={crondate} /></span>
             <button 
               className="pull-right" 
               bsStyle="primary"
@@ -65,7 +69,7 @@ class CyclesView extends Component {
           <Cycles { ...{ store } } />
         </div>
       </AnimatedView>
-    );
+    )
   }
 
   handlePulseCron = ( event: SyntheticEvent<> ) => {

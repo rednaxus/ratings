@@ -49,7 +49,7 @@ contract AnalystRegistry {
         );
         address_lookup[ msg.sender ] = num_analysts;
         name_lookup[ _name ] = num_analysts;
-        Register( num_analysts++, _name, _email );
+        emit Register( num_analysts++, _name, _email );
     }
   
     function login(bytes32 _name, bytes32 _pw) public view returns (uint32, bytes32, uint32, uint32) {

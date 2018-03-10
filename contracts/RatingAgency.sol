@@ -67,12 +67,13 @@ contract RatingAgency {
         uint32 analyst_id;
         uint8 stat;
     }
-    struct RoundEval {// Round evaluations
-        bytes32 questions;  // 1-5, qualitatives at 24,25, qualitatives at 
-        bool[2] qualitatives; // yes / no
-        int8 recommendation; // 1-10
+    struct RoundSurvey {
+        bytes32 answers;  // 1-5, qualitatives at 24,25, qualitatives at 
+        byte qualitatives; // yes / no
+        uint8 recommendation; // 1-10
         bytes32 comment;
     }
+
     struct Round {
         uint16 cycle;
         uint32 covered_token;
@@ -80,9 +81,16 @@ contract RatingAgency {
         uint8 stat;
         address representative;
         uint8 num_analysts;
+        
+        bytes32 avg_answer;
+        uint8 r1_avg;  // scaled 0->100 
+        uint8 r2_avg;
+        uint8 sways;
+        uint8 winner;
+        
         mapping ( uint8 => RoundBrief ) briefs; // submitted briefs... 0 is bull, 1 is bear
         mapping ( uint8 => RoundAnalyst ) analysts;
-        mapping ( uint8 => RoundEval ) evaluations;     // 0 for pre, 1 for post
+        mapping ( uint8 => RoundSurvey[2] ) surveys;     // 0 for pre, 1 for post
     }
     mapping ( uint16 => Round ) rounds;
     uint16 public num_rounds = 0;
@@ -96,7 +104,7 @@ contract RatingAgency {
     /**
      * Constructor 
     */
-    address constant testregistry1 = 0xdf6ea7200b7fd34f4f7449775cbfe3d1acd3c939;
+    address constant testregistry1 = 0x0; //0xdf6ea7200b7fd34f4f7449775cbfe3d1acd3c939;
     function RatingAgency( address _registry ) public {
         if ( _registry == 0 ) _registry = testregistry1;
         registryAddress = _registry;
@@ -111,22 +119,28 @@ contract RatingAgency {
         return(uint(keccak256(block.blockhash(block.number-1), seed ))%(n-1));
     }
     
-    
-    
+    /* 
+     *   Token methods 
+    */
     
     event TokenAdd( uint32, address);
     function coverToken( address _tokenContract, uint _timeperiod ) public {  // only specify period if different
         covered_tokens[ num_tokens ] = CoveredToken( _tokenContract, _timeperiod, msg.sender );
-        TokenAdd( num_tokens, _tokenContract );
+        emit TokenAdd( num_tokens, _tokenContract );
         num_tokens++;
     }
-    
+  
+    event Log( string str, address addr );
+
     function coveredTokenInfo( uint32 _idx ) public view returns ( uint32, address ){
         return ( _idx, covered_tokens[ _idx ].token_addr );
     }
     
     
-    /* *** Round Cycle methods  *** */
+    /* 
+     ***   Round Cycler  *** 
+    */
+    
     // start time for a cycle
     function cycleTime( uint16 _idx ) public pure returns ( uint ){
         return CYCLE_PERIOD * _idx / 4 + ZERO_BASE_TIME;    // cycles offset
@@ -157,7 +171,7 @@ contract RatingAgency {
         uint16 num_target = cycleIdx( timenow ) + CYCLES_AHEAD;
         for ( uint16 i = num_cycles; i < num_target; i++ ) {
             cycles[i] = Cycle( cycleTime( i ), CYCLE_PERIOD, NONE, 0, 0, 0, 0 );
-            CycleAdded( i );
+            emit CycleAdded( i );
         }
         num_cycles = num_target;
     }
@@ -170,7 +184,7 @@ contract RatingAgency {
         } else {
             cycle.jurists_available[ cycle.num_jurists_available++] = _analyst;
         }
-        AvailabilityAdd( _cycle, _analyst, _lead, cycle.num_leads_available, cycle.num_jurists_available );
+        emit AvailabilityAdd( _cycle, _analyst, _lead, cycle.num_leads_available, cycle.num_jurists_available );
     }
     
     function getAnalystCycleInfo( uint16 _cycle, uint32 _analyst ) public view returns (uint16) {
@@ -227,6 +241,10 @@ contract RatingAgency {
         }
     }
   
+    /*
+     ***** Round ****
+    */
+    
     // assign available analysts from the cycle into the round
     event RoundPopulated( uint16 _cycle, uint16 _round, uint16 num_analysts, uint16 num_leads );
     function populateRound( uint16 _cycle, uint16 _round ) public {
@@ -239,7 +257,7 @@ contract RatingAgency {
             round.analysts[ round.num_analysts++ ] = RoundAnalyst( analyst, NONE ); 
             registry.roundParticipant( analyst, _round );
         }
-        RoundPopulated( _cycle, _round, round.num_analysts, 2 );
+        emit RoundPopulated( _cycle, _round, round.num_analysts, 2 );
     }      
   
     event RoundActivated( uint16 _cycle, uint16 _round, uint16 num_rounds_scheduled, uint16 num_rounds_active );
@@ -254,15 +272,22 @@ contract RatingAgency {
                 break;
             }
         }
-        RoundActivated( rounds[ _roundId].cycle, _roundId, num_rounds_scheduled, num_rounds_active );
+        emit RoundActivated( rounds[ _roundId].cycle, _roundId, num_rounds_scheduled, num_rounds_active );
     }
     
     event RoundScheduled( uint16 cycle, uint16 round, uint32 token );
     function initiateRound( uint16 _cycle, uint32 _token ) public returns( uint16 ) {
-        rounds[ num_rounds ] = Round( _cycle, _token, DEFAULT_ROUND_VALUE, SCHEDULED, msg.sender, 0 );
+        rounds[ num_rounds ] = Round( 
+            _cycle, 
+            _token, 
+            DEFAULT_ROUND_VALUE, 
+            SCHEDULED, 
+            msg.sender, 
+            0,0,0,0,0,0
+        );
         rounds_scheduled[ num_rounds_scheduled++ ] = num_rounds;
         populateRound( _cycle, num_rounds );
-        RoundScheduled( _cycle, num_rounds, _token );
+        emit RoundScheduled( _cycle, num_rounds, _token );
         return num_rounds++;
     }
  
@@ -278,22 +303,81 @@ contract RatingAgency {
                 break;
             }
         }
-        RoundFinished( rounds[ _roundId ].cycle, _roundId, num_rounds_scheduled, num_rounds_active );
+        emit RoundFinished( rounds[ _roundId ].cycle, _roundId, num_rounds_scheduled, num_rounds_active );
     }   
 
-    event CycleScheduled(uint16 _cycle, uint time);
-    event CycleActivated(uint16 _cycle, uint time);
-    event CycleFinished(uint16 _cycle, uint time);
+    function tallyRound( uint16 _round ) public {
+        Round storage round = rounds[ _round ];
+        /* sway of answers , not used right now
+        int[] memory sway = new int[](32);
+        for (uint i; i < 32; i++) {
+            for (uint8 a; a < round.num_analysts; a++) {
+                sway[i] = ( sway[i] * int(i) + int(round.surveys[1][a].answers[i]) - int(round.surveys[0][a].answers[i]) ) / ( i+1 ) ;
+            }
+            round.avg_sway[ i ] = byte( sway[ i ] );
+        }
+        */
+        for ( uint8 a; a < round.num_analysts; a++ ) {
+            round.r1_avg = (round.r1_avg*a + 10*round.surveys[0][a].recommendation) / (a+1);
+            round.r2_avg = (round.r2_avg*a + 10*round.surveys[1][a].recommendation) / (a+1);
+        }
+        
+        if ( round.r2_avg > round.r1_avg + 20) round.winner = 0;
+        else if ( round.r2_avg < round.r1_avg - 20) round.winner = 1;
+        else if ( round.r2_avg > 50 ) round.winner = 0;
+        else round.winner = 1;
+        
+    }
+    function roundInfo ( uint16 _round ) public view returns ( 
+        uint16, uint32, uint16, uint8, uint8
+    ) {
+        Round storage round = rounds[ _round ];
+        return (
+            round.cycle,
+            round.covered_token,
+            round.value, // value of the round in veva token
+            round.stat,
+            round.num_analysts
+        );
+    }  
+    function roundSummary ( uint16 _round ) public view returns ( 
+        bytes32, uint8, uint8, uint8, uint8
+    ) {
+        Round storage round = rounds[ _round ];
+        return (
+            round.avg_answer,
+            round.r1_avg,  // scaled 0->100 
+            round.r2_avg,
+            round.sways,
+            round.winner        
+        );
+    }  
+    event SurveySubmitted( uint16 _round, uint32 _analyst, bool _idx, bytes32 _answers, byte _qualitatives, int8 _recommendation );
+    function submitSurvey( 
+        uint16 _round, 
+        uint8 _analyst, // analyst by round index
+        uint8 _idx,              // pre (0), or post (1)
+        bytes32 _answers, 
+        byte _qualitatives, 
+        uint8 _recommendation,
+        bytes32 _comment
+    ) public {
+        Round storage round = rounds[ _round ];
+        round.surveys[_idx][_analyst] = RoundSurvey( _answers, _qualitatives, _recommendation, _comment );
+    }
+    
+    event CycleScheduled( uint16 _cycle, uint time );
+    event CycleActivated( uint16 _cycle, uint time );
+    event CycleFinished( uint16 _cycle, uint time );
     
     // cron
-    event Cron(uint _lasttime, uint _timestamp);
-    function cron(uint _timestamp) public {
+    event Cron( uint _lasttime, uint _timestamp );
+    function cron( uint _timestamp ) public {
         uint time = _timestamp == 0 ? ZERO_BASE_TIME : _timestamp; // block.timestamp
         uint16 round_id;
         uint16 i;
-        Cycle storage cycle; 
 
-        Cron(lasttime,time);
+        emit Cron( lasttime,time );
         if (time <= lasttime) return; // don't run for earlier times than already run
         cycleUpdate( time ); // start new cycles if needed
 
@@ -311,13 +395,13 @@ contract RatingAgency {
                 if ( ( itoken % 4 ) == cyc4 )  // every 4th token at this particular timeperiod 
                     initiateRound( icyc, itoken );
             }
-            CycleScheduled(icyc,time);
+            emit CycleScheduled( icyc, time );
         }
 
         // finish active rounds due to finish
         for ( i = 0; i < num_rounds_active; i++ ) {
             round_id = rounds_active[ i ];
-            cycle = cycles[ rounds[ round_id ].cycle ];
+            Cycle storage cycle = cycles[ rounds[ round_id ].cycle ];
             if (cycle.timestart + cycle.period <= time) 
             // if ( rounds[ round_id ].cycle < cycle_now )
                 finishRound ( round_id );
@@ -340,22 +424,6 @@ contract RatingAgency {
 
 
 
-    /* for testing:
-    address[] tok_addresses  = [
-        0xc01cc4ad3bdcffc9c7c7971bece1c7b9d6e73ebb, 
-        0xb0b21c80097d12a350e2e973a08ac79772eb91ad,
-        0x0203aa677b449d252fcce5582317e9f5f8785289,
-        0xc98da5a39438f5a533de8705c0db19717f6d0274 
-    ];
-
-
-    function bootstrapDummyTokens( uint8 _num ) public { 
-        uint8 num = _num == 0 ? 4 : _num;
-        for ( uint8 i = 0; i< num; i++ ){
-            coverToken( tok_addresses[ i % 4 ], 0 );
-        }
-    }
-    */
 
     
     // utilities

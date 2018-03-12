@@ -96,34 +96,31 @@ contract test2 {
     //event TokenInfo( uint32 token_id, address token_addr, string token_name, string token_symbol );
     event LogRound( uint cycle, uint round, uint token, uint num_analysts);
     function bootstrapRound( uint16 _cycle, uint32 _token ) public {
-        //address token_addr;
-        //ratingAgency.generateAvailabilities( _cycle );
-        //ratingAgency.initiateRound( _cycle, _token );
+        ratingAgency.generateAvailabilities( _cycle );
+        ratingAgency.initiateRound( _cycle, _token );
         uint16 round = ratingAgency.num_rounds() - 1;  
         ( cycle, token, value, stat, num_analysts) = ratingAgency.roundInfo( round ); 
-        emit LogRound(cycle, round, token, num_analysts );
+        emit LogRound(cycle, round, token, num_analysts );        
+    }
+    function bootstrapSurveys( uint16 _round ) public {
+        ( cycle, token, value, stat, num_analysts) = ratingAgency.roundInfo( _round ); 
+        emit LogRound(cycle, _round, token, num_analysts );
         /* generate surveys */
         for ( uint8 a = 2; a < num_analysts; a++ ) {
             bytes32 answers = "hello";
             byte qualitatives = 6;
-            uint8 recommendation = 3;
+            uint8 recommendation = 1;
             bytes32 comment = "wow";
-            ratingAgency.submitSurvey( round, a, 0, answers, qualitatives, recommendation, comment );
-            ratingAgency.submitSurvey( round, a, 1, answers, qualitatives, recommendation, comment );
+            ratingAgency.submitSurvey( _round, a, 0, answers, qualitatives, recommendation, comment );
+            recommendation = 4;
+            ratingAgency.submitSurvey( _round, a, 1, answers, qualitatives, recommendation, comment );
         }
-        // ratingAgency.tallyRound( round );
-        //( avg_answer, r1_avg, r2_avg, sways, winner ) = ratingAgency.roundSummary( round );
-        //emit RoundSummary( round, num_analysts, avg_answer, r1_avg, r2_avg, sways, winner );
-        //( token, token_addr ) = ratingAgency.coveredTokenInfo( token );
-        //TokenERC20 tokenContract = TokenERC20( token_addr );
-        //emit TokenInfo( token, token_addr, tokenContract.name(), tokenContract.symbol() );        
-        // generate surveys and submit them
-        
+        ratingAgency.tallyRound( _round );
     }
     
     function coverToken( uint i ) public {
-        address token = tokens[ i ];
-        ratingAgency.coverToken( token, 0 );
+        address tokenAddr = tokens[ i ];
+        ratingAgency.coverToken( tokenAddr, 0 );
     }
     function uint2str(uint i) internal pure returns (string){
         if (i == 0) return "0";

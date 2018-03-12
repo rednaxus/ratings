@@ -104,7 +104,7 @@ contract RatingAgency {
     /**
      * Constructor 
     */
-    address constant testregistry1 = 0x0; //0xdf6ea7200b7fd34f4f7449775cbfe3d1acd3c939;
+    address constant testregistry1 = 0x3dac6baecd2846aced5b514f3ef85cd547bea6bb; 
     function RatingAgency( address _registry ) public {
         if ( _registry == 0 ) _registry = testregistry1;
         registryAddress = _registry;
@@ -306,6 +306,8 @@ contract RatingAgency {
         emit RoundFinished( rounds[ _roundId ].cycle, _roundId, num_rounds_scheduled, num_rounds_active );
     }   
 
+    event TallyLog( uint16 round, uint8 analyst, uint8 recommendation);
+    event TallyWin( uint16 round, uint8 winner );
     function tallyRound( uint16 _round ) public {
         Round storage round = rounds[ _round ];
         /* sway of answers , not used right now
@@ -317,16 +319,27 @@ contract RatingAgency {
             round.avg_sway[ i ] = byte( sway[ i ] );
         }
         */
-        for ( uint8 a; a < round.num_analysts; a++ ) {
-            round.r1_avg = (round.r1_avg*a + 10*round.surveys[0][a].recommendation) / (a+1);
-            round.r2_avg = (round.r2_avg*a + 10*round.surveys[1][a].recommendation) / (a+1);
+        uint8 n = 0;
+        for ( uint8 a = 2; a < round.num_analysts; a++ ) {
+            emit TallyLog( _round, a, round.surveys[a][0].recommendation );
+            emit TallyLog( _round, a, round.surveys[a][1].recommendation );
+
+            //if (round.surveys[a][0] && round.surveys[a][1] ) {        
+                round.r1_avg = (round.r1_avg*n + 10*round.surveys[a][0].recommendation) / (n+1);
+                round.r2_avg = (round.r2_avg*n + 10*round.surveys[a][1].recommendation) / (n+1);
+                n++;
+
+            //}
         }
+        emit TallyLog( _round, 100, round.r1_avg );
+        emit TallyLog( _round, 101, round.r2_avg );
         
         if ( round.r2_avg > round.r1_avg + 20) round.winner = 0;
         else if ( round.r2_avg < round.r1_avg - 20) round.winner = 1;
         else if ( round.r2_avg > 50 ) round.winner = 0;
         else round.winner = 1;
-        
+        emit TallyWin( _round, round.winner );
+
     }
     function roundInfo ( uint16 _round ) public view returns ( 
         uint16, uint32, uint16, uint8, uint8
@@ -352,7 +365,7 @@ contract RatingAgency {
             round.winner        
         );
     }  
-    event SurveySubmitted( uint16 _round, uint32 _analyst, bool _idx, bytes32 _answers, byte _qualitatives, int8 _recommendation );
+    event SurveySubmitted( uint16 _round, uint32 _analyst, uint8 _idx, bytes32 _answers, byte _qualitatives, uint8 _recommendation );
     function submitSurvey( 
         uint16 _round, 
         uint8 _analyst, // analyst by round index
@@ -363,7 +376,8 @@ contract RatingAgency {
         bytes32 _comment
     ) public {
         Round storage round = rounds[ _round ];
-        round.surveys[_idx][_analyst] = RoundSurvey( _answers, _qualitatives, _recommendation, _comment );
+        round.surveys[_analyst][_idx] = RoundSurvey( _answers, _qualitatives, _recommendation, _comment );
+        emit SurveySubmitted( _round, _analyst, _idx, _answers, _qualitatives, _recommendation );
     }
     
     event CycleScheduled( uint16 _cycle, uint time );

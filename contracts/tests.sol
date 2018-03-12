@@ -15,7 +15,7 @@ import "./TokenERC20.sol";
 import "./RatingAgency.sol";
 
 contract test2 {
-    address defaultRa = 0x1390df34a12f2a8b16289d584c8785ada1f798bb;
+    address defaultRa = 0x0af2ee5c1c1a2e9109d246e04374271e601bbc5d;
     using strings for *;
     RatingAgency ratingAgency;
     mapping( uint => address ) tokens;
@@ -36,6 +36,7 @@ contract test2 {
 
     
     event Log( string str, uint num1, uint num2 );
+    event Log4( string str, uint num1, uint num2, uint num3, uint num4 );
     function test2(address _ra) public {
         address ra = _ra == 0 ? defaultRa: _ra;
         ratingAgency = RatingAgency( ra );
@@ -93,19 +94,26 @@ contract test2 {
         uint8 winner
     );
     //event TokenInfo( uint32 token_id, address token_addr, string token_name, string token_symbol );
+    event LogRound( uint cycle, uint round, uint token, uint num_analysts);
     function bootstrapRound( uint16 _cycle, uint32 _token ) public {
         //address token_addr;
-        ratingAgency.generateAvailabilities( _cycle );
-        ratingAgency.initiateRound( _cycle, _token );
+        //ratingAgency.generateAvailabilities( _cycle );
+        //ratingAgency.initiateRound( _cycle, _token );
         uint16 round = ratingAgency.num_rounds() - 1;  
-        emit Log('got round',cycle, round);
         ( cycle, token, value, stat, num_analysts) = ratingAgency.roundInfo( round ); 
+        emit LogRound(cycle, round, token, num_analysts );
         /* generate surveys */
-        
-        
+        for ( uint8 a = 2; a < num_analysts; a++ ) {
+            bytes32 answers = "hello";
+            byte qualitatives = 6;
+            uint8 recommendation = 3;
+            bytes32 comment = "wow";
+            ratingAgency.submitSurvey( round, a, 0, answers, qualitatives, recommendation, comment );
+            ratingAgency.submitSurvey( round, a, 1, answers, qualitatives, recommendation, comment );
+        }
         // ratingAgency.tallyRound( round );
-        ( avg_answer, r1_avg, r2_avg, sways, winner ) = ratingAgency.roundSummary( round );
-        emit RoundSummary( round, num_analysts, avg_answer, r1_avg, r2_avg, sways, winner );
+        //( avg_answer, r1_avg, r2_avg, sways, winner ) = ratingAgency.roundSummary( round );
+        //emit RoundSummary( round, num_analysts, avg_answer, r1_avg, r2_avg, sways, winner );
         //( token, token_addr ) = ratingAgency.coveredTokenInfo( token );
         //TokenERC20 tokenContract = TokenERC20( token_addr );
         //emit TokenInfo( token, token_addr, tokenContract.name(), tokenContract.symbol() );        

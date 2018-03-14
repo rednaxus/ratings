@@ -13,7 +13,7 @@ import events from './events'
     status:           PropTypes.number,
     reputation:       PropTypes.number,
     is_lead:          PropTypes.bool,
-    token_balance:    PropTypes.number, 
+    token_balance:    PropTypes.number,
     scheduled_round:  PropTypes.number,
     active_round:     PropTypes.number,
     num_rounds:       PropTypes.number

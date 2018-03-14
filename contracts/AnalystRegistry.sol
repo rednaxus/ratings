@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
 
 contract AnalystRegistry {
     uint32 constant REPUTATION_LEAD = 12;
@@ -10,15 +10,15 @@ contract AnalystRegistry {
         bytes32 email;
         uint32 auth_status;  // user authentication status
         address user_addr;
-        uint16 scheduled_round;
-        uint16 active_round;
         bool is_lead;
-        // Round.status public round_status;
-        //address public past_rounds;
         uint32 reputation;
         uint32 token_balance;
-        uint16 num_rounds;
-        mapping ( uint16 => uint16 ) rounds;
+        uint16 num_rounds_scheduled;
+        uint16 num_rounds_active;
+        uint16 num_rounds_finished;
+        mapping ( uint16 => uint16 ) rounds_scheduled;
+        mapping ( uint16 => uint16 ) rounds_active;
+        mapping ( uint16 => uint16 ) rounds_finished;
     }
     mapping (uint32 => Analyst) analysts;
     mapping (address => uint32) address_lookup;
@@ -34,22 +34,10 @@ contract AnalystRegistry {
     
     event Register(uint32 id, bytes32 name, bytes32 email);
     function register(bytes32 _name, bytes32 _pw, bytes32 _email ) public {
-        analysts[ num_analysts ] = Analyst( 
-            _name, 
-            _pw, 
-            _email, 
-            0, 
-            msg.sender, 
-            0, 
-            0, 
-            false, 
-            0, 
-            0, 
-            0 
-        );
+        analysts[ num_analysts ] = Analyst( _name, _pw, _email, 0, msg.sender, false, 0, 0, 0, 0, 0 );
         address_lookup[ msg.sender ] = num_analysts;
         name_lookup[ _name ] = num_analysts;
-        emit Register( num_analysts++, _name, _email );
+        Register( num_analysts++, _name, _email );
     }
   
     function login(bytes32 _name, bytes32 _pw) public view returns (uint32, bytes32, uint32, uint32) {
@@ -86,22 +74,57 @@ contract AnalystRegistry {
 
     function analystInfo( uint32 _analystId ) public view returns (uint32, bytes32, bytes32, uint32, uint32, bool, uint32, uint16, uint16, uint16 ) {
         Analyst storage a = analysts[_analystId];
-        return (_analystId, a.name, a.password, a.auth_status, a.reputation, a.is_lead, a.token_balance, a.scheduled_round, a.active_round, a.num_rounds );
+        return (_analystId, a.name, a.password, a.auth_status, a.reputation, a.is_lead, a.token_balance, a.num_rounds_scheduled, a.num_rounds_active, a.num_rounds_finished );
     }
-    function addRound( uint32 _analystId, uint16 _roundId )  public {
-        Analyst storage a = analysts[ _analystId ];
-        a.rounds[ a.num_rounds++ ] = _roundId;
+    function scheduleRound( uint32 _analyst, uint16 _round )  public {
+        Analyst storage a = analysts[ _analyst ];
+        a.rounds_scheduled[ a.num_rounds_scheduled++ ] = _round;
+    }
+    function scheduledRound( uint32 _analyst, uint8 _roundRef ) public view returns (uint16) {
+        Analyst storage a = analysts[ _analyst ];
+        require( _roundRef <= a.num_rounds_scheduled );
+        return a.rounds_scheduled[ _roundRef ];
+    }
+    function activeRound( uint32 _analyst, uint8 _roundRef ) public view returns (uint16) {
+        Analyst storage a = analysts[ _analyst ];
+        require( _roundRef <= a.num_rounds_active );        
+        return a.rounds_active[ _roundRef ];
+    }
+    function finishedRound( uint32 _analyst, uint8 _roundRef ) public view returns (uint16) {
+        Analyst storage a = analysts[ _analyst ];
+        require( _roundRef <= a.num_rounds_finished );         
+        return a.rounds_finished[ _roundRef ];
     }
     
-    function setActiveRound( uint32 _analystId, uint16 _roundId ) public {
-        analysts[ _analystId ].active_round = _roundId;
+    function activateRound( uint32 _analyst, uint16 _round ) public {
+        Analyst storage a = analysts[ _analyst ];
+        for( uint16 i = 0; i < a.num_rounds_scheduled; i++ ) {
+            if (a.rounds_scheduled[ i ] == _round ){
+                a.rounds_active[ a.num_rounds_active++ ] = _round;
+                while (i < a.num_rounds_scheduled ){
+                    a.rounds_scheduled[ i ] = a.rounds_scheduled[ i + 1 ];                    
+                    i++;
+                }
+                a.num_rounds_scheduled--;
+                return;                
+            }
+        }
+        require(false); // error, called with round not scheduled
     }
     
-    // round adds to analyst rounds list
-    function roundParticipant( uint32 _analystId, uint16 _roundId ) public {  
+    function finishRound( uint32 _analystId, uint16 _roundId ) public {  
         Analyst storage a = analysts[ _analystId ];
-        a.scheduled_round = _roundId;
-        a.rounds[a.num_rounds++] = _roundId;
+        for( uint16 i = 0; i < a.num_rounds_active; i++ ) {
+            if (a.rounds_active[ i ] == _roundId ){
+                a.rounds_finished[ a.num_rounds_finished++ ] = _roundId;
+                while (i++ < a.num_rounds_active ){
+                    a.rounds_active[ i - 1 ] = a.rounds_active[ i ];                    
+                }
+                a.num_rounds_active--;
+                return;                
+            }
+        }
+        require(false); // error, called without active round
     }
 
     // create some analysts

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
 
 
 import "./AnalystRegistry.sol";
@@ -104,7 +104,7 @@ contract RatingAgency {
     /**
      * Constructor 
     */
-    address constant testregistry1 = 0x3dac6baecd2846aced5b514f3ef85cd547bea6bb; 
+    address constant testregistry1 = 0xa6308e97435ebba53c6da8bdb23333f8e49f1935; 
     function RatingAgency( address _registry ) public {
         if ( _registry == 0 ) _registry = testregistry1;
         registryAddress = _registry;
@@ -126,7 +126,7 @@ contract RatingAgency {
     event TokenAdd( uint32, address);
     function coverToken( address _tokenContract, uint _timeperiod ) public {  // only specify period if different
         covered_tokens[ num_tokens ] = CoveredToken( _tokenContract, _timeperiod, msg.sender );
-        emit TokenAdd( num_tokens, _tokenContract );
+        TokenAdd( num_tokens, _tokenContract );
         num_tokens++;
     }
   
@@ -151,8 +151,9 @@ contract RatingAgency {
             0 : uint16( 4 * ( time - ZERO_BASE_TIME ) / CYCLE_PERIOD ) );
     }
   
-    function cycleInfo ( uint16 _cycle ) public view returns ( uint16, uint, uint, uint8, uint8, uint8, uint8, uint8 ) {
+    function cycleInfo ( uint16 _cycle, uint32 _analyst ) public view returns ( uint16, uint, uint, uint8, uint8, uint8, uint8, uint8, uint16 ) {
         Cycle storage cycle = cycles[ _cycle ];
+        uint16 analystInfo = _analyst == 0 ? 0 : getAnalystCycleInfo( _cycle, _analyst );
         return (
             _cycle,
             cycleTime( _cycle ), 
@@ -161,7 +162,8 @@ contract RatingAgency {
             cycle.num_jurists_available,
             cycle.num_jurists_assigned,
             cycle.num_leads_available, 
-            cycle.num_leads_assigned
+            cycle.num_leads_assigned,
+            analystInfo
         );
     }
     
@@ -171,7 +173,7 @@ contract RatingAgency {
         uint16 num_target = cycleIdx( timenow ) + CYCLES_AHEAD;
         for ( uint16 i = num_cycles; i < num_target; i++ ) {
             cycles[i] = Cycle( cycleTime( i ), CYCLE_PERIOD, NONE, 0, 0, 0, 0 );
-            emit CycleAdded( i );
+            CycleAdded( i );
         }
         num_cycles = num_target;
     }
@@ -184,7 +186,7 @@ contract RatingAgency {
         } else {
             cycle.jurists_available[ cycle.num_jurists_available++] = _analyst;
         }
-        emit AvailabilityAdd( _cycle, _analyst, _lead, cycle.num_leads_available, cycle.num_jurists_available );
+        AvailabilityAdd( _cycle, _analyst, _lead, cycle.num_leads_available, cycle.num_jurists_available );
     }
     
     function getAnalystCycleInfo( uint16 _cycle, uint32 _analyst ) public view returns (uint16) {
@@ -255,28 +257,32 @@ contract RatingAgency {
             ref = selectAvailableAnalyst( _cycle, i < 2 );  // first two are bull/bear leads
             analyst = assignAnalyst( _cycle, ref, i < 2 );
             round.analysts[ round.num_analysts++ ] = RoundAnalyst( analyst, NONE ); 
-            registry.roundParticipant( analyst, _round );
+            registry.scheduleRound( analyst, _round );
         }
-        emit RoundPopulated( _cycle, _round, round.num_analysts, 2 );
+        RoundPopulated( _cycle, _round, round.num_analysts, 2 );
     }      
   
     event RoundActivated( uint16 _cycle, uint16 _round, uint16 num_rounds_scheduled, uint16 num_rounds_active );
-    function activateRound( uint16 _roundId ) public {
-        rounds[ _roundId ].stat = ACTIVE;
-        rounds_active[ num_rounds_active++ ] = _roundId;
+    function activateRound( uint16 _round ) public {
+        Round storage round = rounds[ _round ];
+        round.stat = ACTIVE;
+        rounds_active[ num_rounds_active++ ] = _round;
+        for (uint8 a = 0; a < round.num_analysts; a++ ) {
+            registry.activateRound( round.analysts[ a ].analyst_id, _round );
+        }
         for (uint16 i = 0; i < num_rounds_scheduled; i++) { // remove from scheduled rounds
-            if ( rounds_scheduled[i] == _roundId ) {
+            if ( rounds_scheduled[i] == _round ) {
                 num_rounds_scheduled--;
                 for (uint16 j = i; j < num_rounds_scheduled; j++) 
                     rounds_scheduled[ j ] = rounds_scheduled[ j + 1 ];
                 break;
             }
         }
-        emit RoundActivated( rounds[ _roundId].cycle, _roundId, num_rounds_scheduled, num_rounds_active );
+        RoundActivated( round.cycle, _round, num_rounds_scheduled, num_rounds_active );
     }
     
     event RoundScheduled( uint16 cycle, uint16 round, uint32 token );
-    function initiateRound( uint16 _cycle, uint32 _token ) public returns( uint16 ) {
+    function scheduleRound( uint16 _cycle, uint32 _token ) public returns( uint16 ) {
         rounds[ num_rounds ] = Round( 
             _cycle, 
             _token, 
@@ -287,7 +293,7 @@ contract RatingAgency {
         );
         rounds_scheduled[ num_rounds_scheduled++ ] = num_rounds;
         populateRound( _cycle, num_rounds );
-        emit RoundScheduled( _cycle, num_rounds, _token );
+        RoundScheduled( _cycle, num_rounds, _token );
         return num_rounds++;
     }
  
@@ -303,9 +309,15 @@ contract RatingAgency {
                 break;
             }
         }
-        emit RoundFinished( rounds[ _roundId ].cycle, _roundId, num_rounds_scheduled, num_rounds_active );
+        RoundFinished( rounds[ _roundId ].cycle, _roundId, num_rounds_scheduled, num_rounds_active );
     }   
 
+    function getAnalystNextRound( uint16 _lastRound, uint32 _analyst ) public { // shortcut to iterate rounds for analyst
+        
+    }
+    function getAnalystRoundInfo( uint16 _round, uint32 _analyst ) public {
+        
+    }
     event TallyLog( uint16 round, uint8 analyst, uint8 recommendation);
     event TallyWin( uint16 round, uint8 winner );
     function tallyRound( uint16 _round ) public {
@@ -321,8 +333,8 @@ contract RatingAgency {
         */
         uint8 n = 0;
         for ( uint8 a = 2; a < round.num_analysts; a++ ) {
-            emit TallyLog( _round, a, round.surveys[a][0].recommendation );
-            emit TallyLog( _round, a, round.surveys[a][1].recommendation );
+            TallyLog( _round, a, round.surveys[a][0].recommendation );
+            TallyLog( _round, a, round.surveys[a][1].recommendation );
 
             //if (round.surveys[a][0] && round.surveys[a][1] ) {        
                 round.r1_avg = (round.r1_avg*n + 10*round.surveys[a][0].recommendation) / (n+1);
@@ -331,21 +343,22 @@ contract RatingAgency {
 
             //}
         }
-        emit TallyLog( _round, 100, round.r1_avg );
-        emit TallyLog( _round, 101, round.r2_avg );
+        TallyLog( _round, 100, round.r1_avg );
+        TallyLog( _round, 101, round.r2_avg );
         
         if ( round.r2_avg > round.r1_avg + 20) round.winner = 0;
         else if ( round.r2_avg < round.r1_avg - 20) round.winner = 1;
         else if ( round.r2_avg > 50 ) round.winner = 0;
         else round.winner = 1;
-        emit TallyWin( _round, round.winner );
+        TallyWin( _round, round.winner );
 
     }
     function roundInfo ( uint16 _round ) public view returns ( 
-        uint16, uint32, uint16, uint8, uint8
+        uint16, uint16, uint32, uint16, uint8, uint8
     ) {
         Round storage round = rounds[ _round ];
         return (
+            _round,
             round.cycle,
             round.covered_token,
             round.value, // value of the round in veva token
@@ -377,7 +390,7 @@ contract RatingAgency {
     ) public {
         Round storage round = rounds[ _round ];
         round.surveys[_analyst][_idx] = RoundSurvey( _answers, _qualitatives, _recommendation, _comment );
-        emit SurveySubmitted( _round, _analyst, _idx, _answers, _qualitatives, _recommendation );
+        SurveySubmitted( _round, _analyst, _idx, _answers, _qualitatives, _recommendation );
     }
     
     event CycleScheduled( uint16 _cycle, uint time );
@@ -391,7 +404,7 @@ contract RatingAgency {
         uint16 round_id;
         uint16 i;
 
-        emit Cron( lasttime,time );
+        Cron( lasttime,time );
         if (time <= lasttime) return; // don't run for earlier times than already run
         cycleUpdate( time ); // start new cycles if needed
 
@@ -407,9 +420,9 @@ contract RatingAgency {
             uint16 cyc4 = ( icyc-1 ) % 4; // first cycle used is 1 so can pre-schedule, no activity cycle 0
             for ( uint16 itoken = 0; itoken < num_tokens; itoken++ ) {
                 if ( ( itoken % 4 ) == cyc4 )  // every 4th token at this particular timeperiod 
-                    initiateRound( icyc, itoken );
+                    scheduleRound( icyc, itoken );
             }
-            emit CycleScheduled( icyc, time );
+            CycleScheduled( icyc, time );
         }
 
         // finish active rounds due to finish

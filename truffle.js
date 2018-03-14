@@ -5,7 +5,7 @@ module.exports = {
       host: "localhost", //10.0.0.3", // veva.one"
       port: 8545,
       network_id: "*", // Match any network id
-      from: "0x7e5bce8ee498f6c29e4ddad10cb816d6e2f139f7",
+      from: "0x9F943eD85fb1B63b2a68aF79290e5023D32F5E96",
       gas: 4700000
     }
   }
@@ -48,46 +48,42 @@ HD Wallet
 Mnemonic:      noodle library tide trial funny cricket fork bonus receive away protect found
 Base HD Path:  m/44'/60'/0'/0/{account_index}
 
-Using network 'development'.
-
-Running migration: 1_initial_migration.js
+URunning migration: 1_initial_migration.js
   Deploying Migrations...
-  ... 0xfa820ae6910db7c9676e87268950be3969bfe92efb57619cab337210ba5c745a
-  Migrations: 0x380cb3e3fc13e0728170a8299fd85085269bfef8
+  ... 0xe1dcc7db753169c6d2f4f40d6e092d21e8bc467e8c7cbd55ebc2bb8572924788
+  Migrations: 0xe0ba8bebe2a9f06871005460c6a5bef056dcbe92
 Saving successful migration to network...
-  ... 0xdb5f4da617661528f0460f361e8ee6621c0c0388bd7a79314614bbd145706589
+  ... 0xd7b8d8157d7e98c970cb886b0c2822e10d2f65555ccb3b2fd53e370ef7a4feec
 Saving artifacts...
 Running migration: 2_deploy_contracts.js
   Deploying AnalystRegistry...
-  ... 0x12e689511a599aaa000fedc0eb979cb9518a64f26ff8724bfd4a415d5a0bbce4
-  AnalystRegistry: 0x5fcc303fc970394afadff52a1c5224ad0a677c4d
+  ... 0xf13bfe99e69ffef30bad5d5589ab221b69a10da6077342afee20e181a8073aa3
+  AnalystRegistry: 0x71550fb9f99430404870295a56a166d6858dc899
   Deploying RatingAgency...
-  ... 0x0f6e49d8ef4baa3072bf8821df761ea6482139dd0e64631d9ab9d9232a099dcd
-  RatingAgency: 0x594274b7619fd1b9ce9b83b771bcf6ec4a4efa95
+  ... 0xba71cb5a188bd960ffc1996cc1561361620aa91217e5a1daf8aad259447f4112
+  RatingAgency: 0xadd48aac37be1d4bdc70bf8a26ac103fa4f800a7
   Deploying TokenERC20...
-  ... 0xfd2868ed48e6a78fe99ecd6db0ae2617369d5becfd03177f1ef5b07097263b86
-  TokenERC20: 0x3ae851d5780725853de7118c73d0bd2a303c7fff
+  ... 0xe93de0647ce1f5fc7189e60a9d2b53ba6fba59359af6f84f7bbb27d2d73e0497
+  TokenERC20: 0x1ce3ba215d09207b12a9052bdbd8a396bdae5cb3
 Saving successful migration to network...
-  ... 0x9e82124042297326bfda92058cbf4176fb5734c60b768e32c0ffbc3bbe1005f8
-  ... 0x2dee87d9bc60ae290de2bb8429d99579042e07a10c6ad828a4fd0acdd50b7966
-  ... 0x551fc45db5d479578b9eaae129ce6b012f7358d5d35a897a55cb90ee2181a270
-  ... 0x4e49aa8a53fa1fdfdd9365084fe39f2ec281bdb1357f1dd7413216e83d72a142
-  ... 0xd35d5cb734ec2aedae92a9fbdeb8a70d5d7ca28bdd67d83b37bd6f1a002f13a6
-  ... 0x21560b1caeb9bbf1c82c54adc73ee7ec62c7b82e7dd3b72000961fd5b0cf76a8
-  ... 0x66eddaf17e1399136afdcab1668916ee7207934badda6e82bf89496f4c5d924f
-  ... 0x021235065b69b5cd47b2a46debad362388b4cbdd2b78c1a52da68011938c0581
-  ... 0x417225660e96505fc3a25665a3d28a39491924340428ae7b3477cf6fd1cbefc7
+  ... 0xe932dd29fa3e419c80141ee7e337b128cb103b3df58327fab8e91ac5858717c6
+  ... 0x3cd2e42be02f4def66e2e02be2518420d63f6ead4e5946684e64cc1d68e5f822
+  ... 0x0aeb86b230c19d6cea124470f1db9f1f8c2ad8fc9c256f93d0586cbb6f16cf79
+  ... 0x4965b2b0e412d6a6db1be4dc47cb4fc4583a2e6fe7be68ce2a9a26c4a5ebaa48
+  ... 0x82b04ff8978237dcb825298d8239dab8aae56183427666b1984e7589fa156f95
+  ... 0xe327eb68808cceb59dde71deb4414647b9ac31db4945fa5fb2c7192eef63fc4e
+  ... 0x5a7d4efa71efdd4e710c8cfc4f9466935c8a6f1e6fc7f88f0abbe3e5e6916262
+  ... 0x603781f5824840aff42121a957e7729341fdfbb89d0d781a3babd27d0e8f315c
+  ... 0xbb4d41572827dbbfb2c7d3d572ec054704d63e0426d09ca5b5fad20ef039775a
 Saving artifacts...
-erc address 0xaa9bceb2d84ded2147e971de3c579ffee2a677ce
-erc address 0x4d42601f5b28db47399b53bb733d983db92150af
-erc address 0xc2dbef2e183c87decca0e7d2dec03626a238b976
-erc address 0x1febab846f93bdd6d52f2ee0c2efbfba48e5fca4
-erc address 0x94cddd6267919e75f0d41dbc63cafa3a3c5bac26
-erc address 0x8f47d813663af0c146a7dc72d842072cd5bef787
-erc address 0xa6308e97435ebba53c6da8bdb23333f8e49f1935
-erc address 0x44ea6933b03ce304c81c81eca4b8515b7793d884
-
-
+erc address 0xf2cb4e553610dc1057edfc922a80dfe2e28fc782
+erc address 0x5b15b3ea7b91056cb4cdab1ffe0de6b9724ce629
+erc address 0xd1bf271b3dc7e17ca7db370cf6c8c9f56cda16c1
+erc address 0xede1506ef5367b6ff14fba2e0e702757abf8c5b8
+erc address 0xda3838c9f12e2518c6c1ea328d6f7cb463cd5b0d
+erc address 0x42b96babe718a97e2b3f04baf92187352d09396b
+erc address 0xfc604af8aae8958071902ed5ad365a43e31d83ed
+erc address 0xc6e3faec99ab636c990e6b53d2b9554539363712
 
 
 

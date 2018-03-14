@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
-import "github.com/Arachnid/solidity-stringutils/strings.sol";
-
+//import "github.com/Arachnid/solidity-stringutils/strings.sol";
+/*
 contract C {
   using strings for *;
   string public s;
@@ -10,7 +10,8 @@ contract C {
     s = s1.toSlice().concat(s2.toSlice());
   }
 }
-
+*/
+import "./strings.sol";
 import "./TokenERC20.sol";
 import "./RatingAgency.sol";
 
@@ -41,10 +42,10 @@ contract test2 {
         address ra = _ra == 0 ? defaultRa: _ra;
         ratingAgency = RatingAgency( ra );
     }
-    
+  
     function SetRatingAgency(address ra) public {
         ratingAgency = RatingAgency( ra );
-        emit Log( "", ratingAgency.num_tokens(), ratingAgency.num_cycles()  );
+        Log( "", ratingAgency.num_tokens(), ratingAgency.num_cycles()  );
     }
     /*
     function TokenERC20(
@@ -64,7 +65,7 @@ contract test2 {
             string memory symbol = basesymbol.toSlice().concat(uint2str(num_tokens).toSlice());
             address token = new TokenERC20( 10000, name, symbol );
             tokens[ num_tokens++ ] = token;
-            emit TokenCreated( name, symbol, token );
+            TokenCreated( name, symbol, token );
             ratingAgency.coverToken( token, 0 );
         }
     }
@@ -97,14 +98,14 @@ contract test2 {
     event LogRound( uint cycle, uint round, uint token, uint num_analysts);
     function bootstrapRound( uint16 _cycle, uint32 _token ) public {
         ratingAgency.generateAvailabilities( _cycle );
-        ratingAgency.initiateRound( _cycle, _token );
+        ratingAgency.scheduleRound( _cycle, _token );
         uint16 round = ratingAgency.num_rounds() - 1;  
-        ( cycle, token, value, stat, num_analysts) = ratingAgency.roundInfo( round ); 
-        emit LogRound(cycle, round, token, num_analysts );        
+        ( round, cycle, token, value, stat, num_analysts) = ratingAgency.roundInfo( round ); 
+        LogRound(cycle, round, token, num_analysts );        
     }
     function bootstrapSurveys( uint16 _round ) public {
-        ( cycle, token, value, stat, num_analysts) = ratingAgency.roundInfo( _round ); 
-        emit LogRound(cycle, _round, token, num_analysts );
+        ( _round, cycle, token, value, stat, num_analysts) = ratingAgency.roundInfo( _round ); 
+        LogRound(cycle, _round, token, num_analysts );
         /* generate surveys */
         for ( uint8 a = 2; a < num_analysts; a++ ) {
             bytes32 answers = "hello";
@@ -177,7 +178,7 @@ contract test1 {
         bytes32 out;
 
         for (uint i = 0; i < 32; i++) {
-            emit showbyte(b[offset+i]);
+            showbyte(b[offset+i]);
             out |= bytes32(b[offset + i] & 0xFF) >> (i * 8);
         }
         return out;

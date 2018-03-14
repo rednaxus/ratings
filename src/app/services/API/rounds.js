@@ -5,9 +5,8 @@ import { appConfig }        from '../../config'
 
 import { store } from '../../Root'
 
-export const getCronInfo = () => {
+export const getRoundInfo = ( round ) => {
   return new Promise( (resolve,reject) => {
-    //console.log(' beginning cycles fetch')
 
     RatingAgency().then((ratingAgency) => {
       ratingAgency.lasttime().then(result => {
@@ -22,67 +21,37 @@ export const getCronInfo = () => {
   })
 }
 
-export const pulseCron = () => {
-  return new Promise( (resolve,reject) => {
-    //console.log(' beginning cycles fetch')
-
-    RatingAgency().then((ratingAgency) => {
-      ratingAgency.lasttime().then( result => {
-        let lasttime = result.toNumber()
-        console.log('pulsing cron from ' + lasttime + ' to '+ (lasttime+appConfig.CRON_INTERVAL))
-        lasttime += appConfig.CRON_INTERVAL
-        ratingAgency.cron(lasttime).then( cronResult => {
-          console.log('cron result',cronResult)
-          resolve( 1000*result.toNumber() )
-        })
-        .catch(result => { 
-          console.error("Error cron on cron:"  + result) 
-          reject(result)
-        })
-      })    
-      .catch(result => { 
-        console.error("Error lasttime on cron:"  + result) 
-        reject(result)
-      })
-    })
-
-  })
-}
 
 export const dataSource = function getData({
     pageIndex, pageSize
 }) {
   return new Promise((resolve,reject) => {
-    console.log(' beginning cycles fetch')
+    console.log(' beginning rounds fetch')
     RatingAgency().then((ratingAgency) => {
-      ratingAgency.num_cycles()
+      ratingAgency.num_rounds()
       .then(result => {
-        var numCycles = result.toNumber()
-        console.log("result was:",numCycles)
+        var numRounds = result.toNumber()
+        console.log("number of rounds:",numRounds)
         var numFetch = 0
-        var cyclesData = []
+        var roundsData = []
         let user = store.getState().user.info.user
         let analyst = user && user.id ?  user.id : 0
 
-        for (var i = 0; i < numCycles; i++) {
-          ratingAgency.cycleInfo( i, analyst ).then( rCycle => { // idx, addr
+        for (var i = 0; i < numRounds; i++) {
+          ratingAgency.roundInfo( i ).then( rRound => { 
             var res = {
-              id:rCycle[0].toNumber(),   
-              timestart: rCycle[1].toNumber(),
-              period: rCycle[2].toNumber(),
-              status: rCycle[3].toNumber(),
-              num_jurists_available: rCycle[4].toNumber(),
-              num_jurists_assigned: rCycle[5].toNumber(),
-              num_leads_available: rCycle[6].toNumber(),
-              num_leads_assigned: rCycle[7].toNumber(),
-              analyst_status: rCycle[8].toNumber()
+              id:rRound[0].toNumber(), 
+              cycle: rRound[1].toNumber()  
+              covered_token: rRound[2].toNumber(),
+              value: rRound[3].toNumber(),
+              status: rRound[4].toNumber(),
+              num_analysts: rRound[5].toNumber()
             }
-            console.log('got cycle',res)
-            cyclesData.push(res)
-            console.log('got cycle starting',res.timestart)
-            if (++numFetch === numCycles) {
-              cyclesData.sort( (a,b) => a.id - b.id)  
-              resolve( { data:cyclesData, total:numCycles } )
+            console.log('got round',res)
+            roundsData.push(res)
+            if (++numFetch === numRounds) {
+              roundsData.sort( (a,b) => a.id - b.id)  
+              resolve( { data:roundsData, total:numRounds } )
             }
           })
           .catch(result => { 

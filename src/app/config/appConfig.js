@@ -43,7 +43,7 @@ export const appConfig = {
 
 
   HELLO_WORD: '',
-  
+
   ETHEREUM_PROVIDER: 'http://localhost:8545',
 
   ANALYST_REGISTRY: '0xa66e306716edde1f3dc1d0b688e4809ea4f98606',
@@ -75,4 +75,5 @@ export const appConfig = {
 
   DEFAULT_ROUND_VALUE: 100
 }
+
 

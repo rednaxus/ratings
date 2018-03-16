@@ -48,43 +48,34 @@ HD Wallet
 Mnemonic:      noodle library tide trial funny cricket fork bonus receive away protect found
 Base HD Path:  m/44'/60'/0'/0/{account_index}
 
-URunning migration: 1_initial_migration.js
-  Deploying Migrations...
-  ... 0xe1dcc7db753169c6d2f4f40d6e092d21e8bc467e8c7cbd55ebc2bb8572924788
-  Migrations: 0xe0ba8bebe2a9f06871005460c6a5bef056dcbe92
-Saving successful migration to network...
-  ... 0xd7b8d8157d7e98c970cb886b0c2822e10d2f65555ccb3b2fd53e370ef7a4feec
-Saving artifacts...
-Running migration: 2_deploy_contracts.js
+ Running migration: 2_deploy_contracts.js
   Deploying AnalystRegistry...
-  ... 0xf13bfe99e69ffef30bad5d5589ab221b69a10da6077342afee20e181a8073aa3
-  AnalystRegistry: 0x71550fb9f99430404870295a56a166d6858dc899
+  ... 0xdd2aa68431035fb1ced3dd1aca6ce20ac2849d90397967027681da07bafda339
+  AnalystRegistry: 0xa66e306716edde1f3dc1d0b688e4809ea4f98606
   Deploying RatingAgency...
-  ... 0xba71cb5a188bd960ffc1996cc1561361620aa91217e5a1daf8aad259447f4112
-  RatingAgency: 0xadd48aac37be1d4bdc70bf8a26ac103fa4f800a7
+  ... 0xa3e433ac84647955f7905a0eb274f614cedb95209969303ef2a43d92f42102c4
+  RatingAgency: 0x20f5f3ec573b626b74c4ef0e22a3fd6e228d8f71
   Deploying TokenERC20...
-  ... 0xe93de0647ce1f5fc7189e60a9d2b53ba6fba59359af6f84f7bbb27d2d73e0497
-  TokenERC20: 0x1ce3ba215d09207b12a9052bdbd8a396bdae5cb3
+  ... 0x0d31694c4397159df8721e4ded0cbe6d28f33834e40e4453d7fd367f0cce795e
+  TokenERC20: 0x016668daaed7fce158f02b91804ad1f1d74dc8c6
 Saving successful migration to network...
-  ... 0xe932dd29fa3e419c80141ee7e337b128cb103b3df58327fab8e91ac5858717c6
-  ... 0x3cd2e42be02f4def66e2e02be2518420d63f6ead4e5946684e64cc1d68e5f822
-  ... 0x0aeb86b230c19d6cea124470f1db9f1f8c2ad8fc9c256f93d0586cbb6f16cf79
-  ... 0x4965b2b0e412d6a6db1be4dc47cb4fc4583a2e6fe7be68ce2a9a26c4a5ebaa48
-  ... 0x82b04ff8978237dcb825298d8239dab8aae56183427666b1984e7589fa156f95
-  ... 0xe327eb68808cceb59dde71deb4414647b9ac31db4945fa5fb2c7192eef63fc4e
-  ... 0x5a7d4efa71efdd4e710c8cfc4f9466935c8a6f1e6fc7f88f0abbe3e5e6916262
-  ... 0x603781f5824840aff42121a957e7729341fdfbb89d0d781a3babd27d0e8f315c
-  ... 0xbb4d41572827dbbfb2c7d3d572ec054704d63e0426d09ca5b5fad20ef039775a
+  ... 0xf5444180b32d87eaedf826326b24d6538d2d5ca2fdd4753aa7a90f3ac38f0704
+  ... 0xe5aa2b85a717f4ff4ce7f474cc79ad2994e2e61e0ac17980f5060136e4c827c6
+  ... 0xf9c97f840b8f4180a92a5c780311f77e6a6ef032eafa26908d9384138045c2cc
+  ... 0x921f03faf473e55e90cedacf4d52ba925c80a001850cd32b93553b988f86964a
+  ... 0x0b7265831c09a5df46650cccb7fc68b7d3f15fce6c39814e3bbdbf81485ecefe
+  ... 0xf63bce36dba2ebaf102d08151337270985f5ecefc1f0ca120c04b2f8ce92b552
+  ... 0xc1800a3f5f6fef6c89dfa29f7b52e630e135a6547c7a507bca4736b5b0013f5e
+  ... 0xdaf8c3d08f6429d057ca13d8674f8ea4989df75bd0320335ae37dafdce3609f8
+  ... 0x4b4fba251af849dad22d942462488d8a591fe87384d94ed4f7a697f57d634c5b
 Saving artifacts...
-erc address 0xf2cb4e553610dc1057edfc922a80dfe2e28fc782
-erc address 0x5b15b3ea7b91056cb4cdab1ffe0de6b9724ce629
-erc address 0xd1bf271b3dc7e17ca7db370cf6c8c9f56cda16c1
-erc address 0xede1506ef5367b6ff14fba2e0e702757abf8c5b8
-erc address 0xda3838c9f12e2518c6c1ea328d6f7cb463cd5b0d
-erc address 0x42b96babe718a97e2b3f04baf92187352d09396b
-erc address 0xfc604af8aae8958071902ed5ad365a43e31d83ed
-erc address 0xc6e3faec99ab636c990e6b53d2b9554539363712
-
-
+erc address 0x7136648d25166a64b43352215d4aa6faeaf2a3be
+erc address 0x20d7ab6936c7952b67e170377337b11833a715a0
+erc address 0xdc61cb51b71dab7eab65fb5a053f9f87ace678cc
+erc address 0xf235db98d9edb45010a3a0840fc59e13314a6ff1
+erc address 0xbe6fbd9a56368ee04365e5432f35084afe0d3454
+erc address 0x66641b2ba5983e36d5b02445024b7b971490e9f5
+erc address 0x52ec5cedb37ae2b15daf71979791e697e396ca1a
+erc address 0xb36957c5601027e4dcc16fed84b02e3d5c900f50
 
 */

@@ -21,3 +21,5 @@ export { default as TabPanel }            from './tabPanel'
 export { default as StripedProgressBar }  from './stripedProgressBar'
 export { default as AlertView   }         from './alert'
 export { default as PaginationView }      from './pagination'
+
+export { default as Round }               from './round'

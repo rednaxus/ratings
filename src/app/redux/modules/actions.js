@@ -19,6 +19,7 @@ export { fetchUserInfoDataIfNeeded }     from './userInfos'
 export { fetchTokensDataIfNeeded }       from './tokens'
 export { fetchUsersDataIfNeeded }       from './users'
 export { fetchCyclesDataIfNeeded, fetchCronInfo }       from './cycles'
+export { fetchRoundInfo }  from './rounds'
 
 export { 
   switchFeature, 
@@ -111,5 +112,8 @@ export {
   leavePagination,
 
   enterGridView,
-  leaveGridView
+  leaveGridView,
+
+  enterRound,
+  leaveRound
 }                                     from './views'

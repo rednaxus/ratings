@@ -70,6 +70,9 @@ const LEAVE_TOKENS_VIEW = 'LEAVE_TOKENS_VIEW'
 const ENTER_GRID_VIEW = 'ENTER_GRID_VIEW'
 const LEAVE_GRID_VIEW = 'LEAVE_GRID_VIEW'
 
+const ENTER_ROUND = 'ENTER_ROUND'
+const LEAVE_ROUND = 'LEAVE_ROUND'
+
 const initialState = {
   currentView:  'home',
   enterTime:    null,
@@ -108,6 +111,7 @@ const views = (state = initialState, action) => {
   case ENTER_CYCLES_VIEW:
   case ENTER_TOKENS_VIEW:
   case ENTER_GRID_VIEW:
+  case ENTER_ROUND:
   case ENTER_PROTECTED_VIEW:
     // can't enter if you are already inside
     if (state.currentView !== action.currentView) {
@@ -150,6 +154,7 @@ const views = (state = initialState, action) => {
   case LEAVE_CYCLES_VIEW:
   case LEAVE_TOKENS_VIEW:
   case LEAVE_GRID_VIEW:
+  case LEAVE_ROUND:
   case LEAVE_PROTECTED_VIEW:
     // can't leave if you aren't already inside
     if (state.currentView === action.currentView) {
@@ -706,5 +711,23 @@ export const leaveGridView = (time = moment().format()) => {
     currentView:  'GridView',
     enterTime:    null,
     leaveTime:    time
-  };
+  }
+}
+
+export const enterRound = (time = moment().format()) => {
+  return {
+    type:         ENTER_ROUND,
+    currentView:  'Round',
+    enterTime:    time,
+    leaveTime:    null
+  }
+}
+
+export const leaveRound = (time = moment().format()) => {
+  return {
+    type:         LEAVE_ROUND,
+    currentView:  'Round',
+    enterTime:    null,
+    leaveTime:    time
+  }
 }

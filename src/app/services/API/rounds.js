@@ -9,17 +9,27 @@ export const getRoundInfo = ( round ) => {
   return new Promise( (resolve,reject) => {
 
     RatingAgency().then((ratingAgency) => {
-      ratingAgency.lasttime().then(result => {
-        resolve(1000*result.toNumber())
+      ratingAgency.roundInfo( round ).then( rRound => { 
+        var res = {
+          id:rRound[0].toNumber(), 
+          cycle: rRound[1].toNumber(),
+          covered_token: rRound[2].toNumber(),
+          value: rRound[3].toNumber(),
+          status: rRound[4].toNumber(),
+          num_analysts: rRound[5].toNumber()
+        }
+        console.log('got round',res)
+        resolve( res )
       })
       .catch(result => { 
-        console.error("Error from server on cron:"  + result) 
+        console.error("Error from server on fetchRoundInfo:"  + result) 
         reject(result)
       })
     })
     
   })
 }
+
 
 
 export const dataSource = function getData({
@@ -38,16 +48,7 @@ export const dataSource = function getData({
         let analyst = user && user.id ?  user.id : 0
 
         for (var i = 0; i < numRounds; i++) {
-          ratingAgency.roundInfo( i ).then( rRound => { 
-            var res = {
-              id:rRound[0].toNumber(), 
-              cycle: rRound[1].toNumber()  
-              covered_token: rRound[2].toNumber(),
-              value: rRound[3].toNumber(),
-              status: rRound[4].toNumber(),
-              num_analysts: rRound[5].toNumber()
-            }
-            console.log('got round',res)
+          getRoundInfo( i ).then( (res) => {
             roundsData.push(res)
             if (++numFetch === numRounds) {
               roundsData.sort( (a,b) => a.id - b.id)  

@@ -16,6 +16,7 @@ contract AnalystRegistry {
         uint16 num_rounds_scheduled;
         uint16 num_rounds_active;
         uint16 num_rounds_finished;
+        
         mapping ( uint16 => uint16 ) rounds_scheduled;
         mapping ( uint16 => uint16 ) rounds_active;
         mapping ( uint16 => uint16 ) rounds_finished;

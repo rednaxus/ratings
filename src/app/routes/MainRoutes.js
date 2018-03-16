@@ -31,6 +31,8 @@ import Tokens from '../views/tokens'
 import Token from '../views/token'
 import UserListViewConnected        from '../views/userList'
 import RoundCycles from '../views/roundCycles'
+import Round from '../views/round'
+
 import Survey from '../views/survey'
 import FileUploader from '../views/briefUpload/FileUploader'
 
@@ -81,6 +83,7 @@ export const MainRoutes = () => (
     <Route path="/grid/simple" component={ GridView } />
     <Route path="/grid/customPager" component={ GridView } />
 
+    <Route path="/round/:id" component={ Round } />
     {/* private views: need user to be authenticated */}
     <PrivateRoute path="/protected" component={ ProtectedConnected } />
 

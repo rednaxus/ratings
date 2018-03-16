@@ -11,6 +11,7 @@ import { fetchCronInfo } from '../../redux/modules/cycles'
 import { store } from '../../Root'
 
 import Cycles from '../../components/cycles/Cycles'
+import Rounds from '../../components/rounds/Rounds'
 
 class CyclesView extends Component {
   static propTypes = {
@@ -51,22 +52,24 @@ class CyclesView extends Component {
     const { cronInfo } = this.props.cycles
     let crondate = new Date(cronInfo)
 
-    console.log('rendering cycles',this.props)
+    console.log('rendering cycles and rounds',this.props)
     return (
       <AnimatedView>
         <div className="simpleContainer">
           <h2 className="gridH2">
             Cycles -- Last cron run: 
             <span className="text-red"><Moment date={crondate} /></span>
-            <button 
-              className="pull-right" 
-              bsStyle="primary"
-              onClick={this.handlePulseCron} >
+            <button className="pull-right" bsStyle="primary" onClick={this.handlePulseCron} >
               pulse cron
             </button>
           </h2>
-
           <Cycles { ...{ store } } />
+
+          <h2 className="gridH2">
+            Rounds
+          </h2>
+          <Rounds { ...{ store } } />
+
         </div>
       </AnimatedView>
     )

@@ -46,8 +46,33 @@ export const appConfig = {
   
   ETHEREUM_PROVIDER: 'http://localhost:8545',
 
-  ANALYST_REGISTRY: '0x71550fb9f99430404870295a56a166d6858dc899',
-  RATING_AGENCY: '0x886a8b9423ffe0b9ba7fdf3b7017e84b670107a5',
+  ANALYST_REGISTRY: '0xa66e306716edde1f3dc1d0b688e4809ea4f98606',
+  RATING_AGENCY: '0x20f5f3ec573b626b74c4ef0e22a3fd6e228d8f71',
 
-  CRON_INTERVAL: 2*24*60*60
-};
+  CRON_INTERVAL: 2*24*60*60,
+
+
+  STATUSES: [ 
+    'none','pending','scheduled','active','finished','cancelled','available','confirmed','assigned'
+  ],
+  
+  CYCLES_AHEAD: 4,
+
+  CYCLE_PERIOD: 86400 * 28,
+  ACTIVE_TIME: 86400 * 28,
+
+  SCHEDULE_TIME: 86400 * 4,
+
+  ZERO_BASE_TIME: 1514764800,
+  
+  cycleTime: function ( cycle ) {
+    return this.CYCLE_PERIOD * cycle / 4 + this.ZERO_BASE_TIME 
+  },
+
+  JURY_SIZE: 6,
+
+  JURISTS_MIN: 2,
+
+  DEFAULT_ROUND_VALUE: 100
+}
+

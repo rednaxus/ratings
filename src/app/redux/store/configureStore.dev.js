@@ -15,7 +15,7 @@ import { localStorageManager }  from '../middleware'
 
 const loggerMiddleware = createLogger({
   level     : 'info',
-  collapsed : false
+  collapsed : true
 });
 
 export const history = createHistory();

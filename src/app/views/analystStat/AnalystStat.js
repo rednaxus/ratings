@@ -31,27 +31,28 @@ class AnalystStat extends PureComponent {
               bodyBackGndColor={'#F4F5F6'}>
 
               <div className="row">
-                <div className="col-md-2">
+                <div className="col-md-4">
                   <StatComponent
                     statFaIconName="fa-file-o"
                     statIconColor="#fa8564"
-                    statLabel="999 Projects"
+                    statLabel="999 Rounds Completed"
                   />
                 </div>
-                <div className="col-md-2">
+                <div className="col-md-4">
                   <StatComponent
                     statFaIconName="fa-paperclip"
                     statIconColor="#45cf95"
-                    statLabel="999 Documents"
+                    statLabel="999 Veva Tokens Earned"
                   />
                 </div>
-                <div className="col-md-2">
+                <div className="col-md-4">
                   <StatComponent
                     statFaIconName="fa-envelope-o"
                     statIconColor="#AC75F0"
-                    statLabel="999 Messages"
+                    statLabel="5 Recruited Analysts"
                   />
                 </div>
+                { /*
                 <div className="col-md-2">
                   <StatComponent
                     statFaIconName="fa-check-square-o"
@@ -73,7 +74,7 @@ class AnalystStat extends PureComponent {
                     statIconSpin={true}
                     statLabel="Processing...."
                   />
-                </div>
+                </div> */}
               </div>
 
             </Panel>

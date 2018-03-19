@@ -1,6 +1,11 @@
 import React, { Component } from 'react'
 import TokenListView from '../tokenList'
 import UserStatus from '../../components/userStatus/UserStatus'
+
+import { store } from '../../Root'
+
+import AnalystMessages from '../../components/analysts/AnalystMessages'
+
 import AnalystStat from '../analystStat'
 import { AnimatedView } from '../../components'
 
@@ -23,8 +28,9 @@ class Dashboard extends Component {
           <UserStatus user={ user.info.user }/>
           <div className="pure-g">
             <div className="pure-u-1-1">
-              <h1>Dashboard</h1>
+              <h1>Analyst Dashboard</h1>
               <AnalystStat />
+              <AnalystMessages { ...{ store } } />
             </div>
           </div>
         </main>

@@ -2,16 +2,7 @@
     AnalystMessages takes the current state and generates a list display of messages based on the state
 */
 
-const message_types = [
-  roundsUpcoming: { 
-    url: 'analyst/availability'
-    template: <div>{upcoming} upcoming rounds available<span>set your availability</span></div>
-  }
-  roundTokens: {
-    
-  }
 
-]
 
 // ignore everything below right now, just placeholders
 
@@ -19,113 +10,64 @@ const message_types = [
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Grid } from 'react-redux-grid'
-
-import Pager from './Pager'
-import api from '../../services/API/analysts'
-
+import { Notification } from '../../components'
 import events from './events'
-/*
-    id:               PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    name:             PropTypes.string,
-    status:           PropTypes.number,
-    reputation:       PropTypes.number,
-    is_lead:          PropTypes.bool,
-    token_balance:    PropTypes.number, 
-    scheduled_round:  PropTypes.number,
-    active_round:     PropTypes.number,
-    num_rounds:       PropTypes.number
-*/
+
+const message_types = {
+  roundsUpcoming: { 
+    url: '/analyst/availability',
+    template: '<div>{upcoming} upcoming rounds available<span>set your availability</span></div>',
+    type: 'danger'
+  },
+  roundTokens: {
+    
+  }
+
+}
+
 const columns = [
-    {
-        name: 'ID',
-        width: '10%',
-        className: 'additional-class',
-        dataIndex: 'id',
-        HANDLE_CLICK: () => { console.log('Header Click'); }
-    },
-    {
-        name: 'Name',
-        width: '20%',
-        dataIndex: 'name',
-        className: 'additional-class'
-    },
-    {
-        name: 'Status',
-        width: '10%',
-        dataIndex: 'status',
-        className: 'additional-class',
-        defaultSortDirection: 'descend'
-    },
-    {
-        name: 'Reputation',
-        dataIndex: 'reputation',
-        width: '15%',
-        className: 'additional-class'
-    },
-    {
-        name: 'Lead',
-        dataIndex: 'is_lead',
-        width: '10%',
-        className: 'additional-class'
-    },
-    {
-        name: 'Tokens',
-        dataIndex: 'token_balance',
-        width: '15%',
-        className: 'additional-class'
-    },
-    {
-        name: 'Rounds',
-        dataIndex: 'num_rounds',
-        width: '10%',
-        className: 'additional-class'
-    },
-    {
-        name: 'Scheduled',
-        dataIndex: 'scheduled_round',
-        width: '10%',
-        className: 'additional-class'
-    },
-    {
-        name: 'Active',
-        dataIndex: 'active_round',
-        width: '10%',
-        className: 'additional-class'
+  {
+    title: 'Events',
+    width: '100%',
+    className: '',
+    dataIndex: 'text',
+    renderer: ({column,value,row}) => {
+      return <Notification type={'danger'}>
+        <span>
+          {value}
+        </span>
+      </Notification>
     }
+  }
+]
 
-];
+const data = [
+    {text: '3 upcoming rounds available, set your availability', type: 'roundsUpcoming'},
+    {text: 'Currently active on round 3, token XXOH, first survey due by ....', type: 'type2' },
+    {text: 'Round scheduled, awaiting confirmation', type: 'round_confirmation' },
+    {text: 'You have a brief due by xxx for round 4, upload your brief', type: 'brief_upload'}
+]
 
-export const Analysts = ({ store }) => {
+export const AnalystMessages = ({ store }) => {
 
-    const analysts = {
+    const messages = {
         columns,
-        dataSource: api,
-        plugins: {
-            PAGER: {
-                enabled: true,
-                pagingType: 'remote',
-                pagerComponent: (
-                    <Pager
-                        api={api}
-                        store={store}
-                    />
-                )
-            }
-        },
+        data: data,
+        plugins: {},
         events,
         store,
-        stateKey: 'analysts'
-    };
+        stateKey: 'analyst_messages'
+    }
 
-    return <Grid { ...analysts } />;
+    return <Grid { ...messages } />
 };
 
 const { object } = PropTypes
 
-Analysts.propTypes = {
+AnalystMessages.propTypes = {
     store: object.isRequired
 }
 
-Analysts.defaultProps = {}
+AnalystMessages.defaultProps = {}
 
-export default Analysts
+export default AnalystMessages 

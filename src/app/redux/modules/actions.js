@@ -16,7 +16,12 @@ export { cycleActions } from './cycles'
 
 export { fetchTeamMatesDataIfNeeded }    from './teamMates'
 export { fetchUserInfoDataIfNeeded }     from './userInfos'
-export { fetchTokensDataIfNeeded }       from './tokens'
+
+export { 
+  fetchTokensDataIfNeeded,
+  fetchTokenData
+}       from './tokens'
+
 export { fetchUsersDataIfNeeded }       from './users'
 export { fetchCyclesDataIfNeeded, fetchCronInfo }       from './cycles'
 export { fetchRoundInfo }  from './rounds'
@@ -79,11 +84,11 @@ export {
   leaveAnalystsView,
   enterCyclesView,
   leaveCyclesView,
+
   enterTokensView,
   leaveTokensView,
-  
-  enterToken,
-  leaveToken,
+  enterTokenView,
+  leaveTokenView,
   enterTokenList,
   leaveTokenList,
 

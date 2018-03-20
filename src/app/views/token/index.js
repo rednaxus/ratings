@@ -2,24 +2,29 @@
 
 import { bindActionCreators } from 'redux'
 import { connect }            from 'react-redux'
+
+
 import * as actions           from '../../redux/modules/actions'
 import Token           from './Token'
 //import { fetchTokens } from '../../redux/modules/tokens'
+import { AnimatedView } from '../../components'
 
 const mapStateToProps = (state) => {
   console.log('state during mapstate',state)
   return {
     currentView:  state.views.currentView,
-    //tokens: state.tokens.tokens
+    tokens: state.tokens
   }
 }
+
 
 const mapDispatchToProps = (dispatch) => {
   return {
     actions : bindActionCreators(
       {
-        enterToken: actions.enterToken,
-        leaveToken: actions.leaveToken
+        enterTokenView: actions.enterTokenView,
+        leaveTokenView: actions.leaveTokenView,
+        fetchTokenData: actions.fetchTokenData
       },
       dispatch),
 

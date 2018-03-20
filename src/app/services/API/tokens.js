@@ -7,8 +7,7 @@ import {
   getTokenERC20 as TokenERC20 
 } from '../contracts'
 
-
-
+import { getTokenInfo } from './ethplorer'
 
 export const dataSource = function getData({
     pageIndex, pageSize
@@ -54,6 +53,26 @@ export const dataSource = function getData({
 }
 
 export default dataSource
+
+export const getTokenData = ( i ) => {
+  return new Promise((resolve,reject) => {
+    RatingAgency().then( (ratingAgency) => {
+      ratingAgency.coveredTokenInfo( i ).then( raToken => { // idx, addr
+        let token = {id:raToken[0].toNumber(),address:raToken[1]}
+        getTokenInfo( token.address ).then( info => {
+          info.data.id = token.id
+          resolve( info.data )
+        }).catch(result => { 
+          console.error("Error from ethplorer:"  + result) 
+          reject(result)
+        })
+      }).catch(result => { 
+        console.error("Error from server:"  + result) 
+        reject(result)
+      })
+    })
+  })
+}
 
 export const getTokensData = () => {
 

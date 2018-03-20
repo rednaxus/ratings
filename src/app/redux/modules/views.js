@@ -51,8 +51,8 @@ const LEAVE_PAGINATION_VIEW = 'LEAVE_PAGINATION_VIEW';
 const ENTER_PROTECTED_VIEW = 'ENTER_PROTECTED_VIEW';
 const LEAVE_PROTECTED_VIEW = 'LEAVE_PROTECTED_VIEW';
 
-const ENTER_TOKEN_LIST_VIEW = 'ENTER_TOKEN_LIST_VIEW'
-const LEAVE_TOKEN_LIST_VIEW = 'LEAVE_TOKEN_LIST_VIEW'
+
+
 const ENTER_USER_LIST_VIEW = 'ENTER_USER_LIST_VIEW'
 const LEAVE_USER_LIST_VIEW = 'LEAVE_USER_LIST_VIEW'
 const ENTER_CYCLE_LIST_VIEW = 'ENTER_CYCLE_LIST_VIEW'
@@ -66,6 +66,10 @@ const LEAVE_CYCLES_VIEW = 'LEAVE_CYCLES_VIEW'
 
 const ENTER_TOKENS_VIEW = 'ENTER_TOKENS_VIEW'
 const LEAVE_TOKENS_VIEW = 'LEAVE_TOKENS_VIEW'
+const ENTER_TOKEN_LIST_VIEW = 'ENTER_TOKEN_LIST_VIEW'
+const LEAVE_TOKEN_LIST_VIEW = 'LEAVE_TOKEN_LIST_VIEW'
+const ENTER_TOKEN_VIEW = 'ENTER_TOKEN_VIEW'
+const LEAVE_TOKEN_VIEW = 'LEAVE_TOKEN_VIEW'
 
 const ENTER_GRID_VIEW = 'ENTER_GRID_VIEW'
 const LEAVE_GRID_VIEW = 'LEAVE_GRID_VIEW'
@@ -110,6 +114,7 @@ const views = (state = initialState, action) => {
   case ENTER_ANALYSTS_VIEW:
   case ENTER_CYCLES_VIEW:
   case ENTER_TOKENS_VIEW:
+  case ENTER_TOKEN_VIEW:
   case ENTER_GRID_VIEW:
   case ENTER_ROUND:
   case ENTER_PROTECTED_VIEW:
@@ -147,12 +152,14 @@ const views = (state = initialState, action) => {
   case LEAVE_STRIPED_PROGRESS_BAR_VIEW:
   case LEAVE_ALERT_VIEW:
   case LEAVE_PAGINATION_VIEW:
+  case LEAVE_TOKEN_VIEW:
   case LEAVE_TOKEN_LIST_VIEW:
   case LEAVE_USER_LIST_VIEW:
   case LEAVE_CYCLE_LIST_VIEW:
   case LEAVE_ANALYSTS_VIEW:
   case LEAVE_CYCLES_VIEW:
   case LEAVE_TOKENS_VIEW:
+  case LEAVE_TOKEN_VIEW:
   case LEAVE_GRID_VIEW:
   case LEAVE_ROUND:
   case LEAVE_PROTECTED_VIEW:
@@ -480,6 +487,32 @@ export const leaveTokensView = (time = moment().format()) => {
   }
 }
 
+export const enterTokenListView = (time = moment().format()) => {
+  return {
+    type:         ENTER_TOKEN_LIST_VIEW,
+    currentView:  'TokenListView',
+    enterTime:    time,
+    leaveTime:    null
+  }
+}
+
+export const leaveTokenListView = (time = moment().format()) => {
+  return {
+    type:         LEAVE_TOKEN_LIST_VIEW,
+    currentView:  'TokenListView',
+    enterTime:    null,
+    leaveTime:    time
+  }
+}
+
+export const enterTokenView = (time = moment().format()) => {
+  return { type: ENTER_TOKEN_VIEW, currentView:  'TokenView', enterTime: time, leaveTime: null }
+}
+
+export const leaveTokenView = (time = moment().format()) => {
+  return { type: LEAVE_TOKEN_VIEW, currentView: 'TokenView', enterTime: null, leaveTime: time }
+}
+
 export function enterBreadcrumb(time = moment().format()) {
   return {
     type:         ENTER_BREADCRUMB_VIEW,
@@ -678,23 +711,6 @@ export function leaveProtected(time = moment().format()) {
   };
 }
 
-export const enterTokenListView = (time = moment().format()) => {
-  return {
-    type:         ENTER_TOKEN_LIST_VIEW,
-    currentView:  'TokenListView',
-    enterTime:    time,
-    leaveTime:    null
-  }
-}
-
-export const leaveTokenListView = (time = moment().format()) => {
-  return {
-    type:         LEAVE_TOKEN_LIST_VIEW,
-    currentView:  'TokenListView',
-    enterTime:    null,
-    leaveTime:    time
-  }
-}
 
 export const enterGridView = (time = moment().format()) => {
   return {

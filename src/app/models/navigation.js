@@ -63,7 +63,7 @@ export const navigation = {
       menus: [
         {
           name: 'General preview',
-          linkTo: '/general',
+          linkTo: '/examples/general',
           faIconName: 'fa-eye'
         },
         {
@@ -95,47 +95,47 @@ export const navigation = {
         },
         {
           name: 'Dashboard Demo',
-          linkTo: '/Dashboard/home',
+          linkTo: '/examples/home',
           faIconName: 'fa-eye'
         },
         {
           name: 'Basic Elements preview',
-          linkTo: '/basicElements',
+          linkTo: '/examples/basicElements',
           faIconName: 'fa-eye'
         },
         {
           name: 'Simple tables preview',
-          linkTo: '/simpleTables',
+          linkTo: '/examples/simpleTables',
           faIconName: 'fa-eye'
         },
         {
           name: 'StatsCard',
-          linkTo: '/Dashboard/statsCard',
+          linkTo: '/examples/statsCard',
           faIconName: 'fa-check-square-o'
         },
         {
           name: 'EarningGraph',
-          linkTo: '/Dashboard/earningGraph',
+          linkTo: '/examples/earningGraph',
           faIconName: 'fa-area-chart'
         },
         {
           name: 'Notifications',
-          linkTo: '/Dashboard/notifications',
+          linkTo: '/examples/notifications',
           faIconName: 'fa-bell'
         },
         {
           name: 'Work progress',
-          linkTo: '/Dashboard/workProgress',
+          linkTo: '/examples/workProgress',
           faIconName: 'fa-briefcase'
         },
         {
           name: 'Twitter feed',
-          linkTo: '/Dashboard/twitterFeed',
+          linkTo: '/examples/twitterFeed',
           faIconName: 'fa-twitter'
         },
         {
           name: 'Team Mates',
-          linkTo: '/Dashboard/teamMates',
+          linkTo: '/examples/teamMates',
           faIconName: 'fa-user'
         },
         {
@@ -152,42 +152,42 @@ export const navigation = {
       menus: [
          {
           name: 'Breadcrumb',
-          linkTo: '/general/breadcrumb',
+          linkTo: '/examples/breadcrumb',
           faIconName: 'fa-bars'
         },
         {
           name: 'Stat',
-          linkTo: '/general/stat',
+          linkTo: '/examples/stat',
           faIconName: 'fa-bar-chart'
         },
         {
           name: 'Basic progress bars',
-          linkTo: '/general/basicProgressBars',
+          linkTo: '/examples/basicProgressBars',
           faIconName: 'fa-tasks'
         },
         {
           name: 'Tab panels',
-          linkTo: '/general/tabPanels',
+          linkTo: '/examples/tabPanels',
           faIconName: 'fa-columns'
         },
         {
           name: 'Striped progress bar',
-          linkTo: '/general/stripedProgressBars',
+          linkTo: '/examples/stripedProgressBars',
           faIconName: 'fa-tasks'
         },
         {
           name: 'Alerts',
-          linkTo: '/general/alerts',
+          linkTo: '/examples/alerts',
           faIconName: 'fa-exclamation-triangle'
         },
         {
           name: 'Pagination',
-          linkTo: '/general/pagination',
+          linkTo: '/examples/pagination',
           faIconName: 'fa-sort'
         },
         {
           name: 'Default buttons',
-          linkTo: '/general/defaultButtons',
+          linkTo: '/examples/defaultButtons',
           faIconName: 'fa-hand-o-up'
         }
       ]
@@ -199,17 +199,12 @@ export const navigation = {
       menus: [
          {
           name: 'Simple',
-          linkTo: '/grid/simple',
+          linkTo: '/examples/grid/simple',
           faIconName: 'fa-bars'
         },
         {
           name: 'CustomPager',
-          linkTo: '/grid/customPager',
-          faIconName: 'fa-bar-chart'
-        },
-        {
-          name: 'Cycles',
-          linkTo: '/admin/cycles',
+          linkTo: '/examples/grid/customPager',
           faIconName: 'fa-bar-chart'
         }
       ]

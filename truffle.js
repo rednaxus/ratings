@@ -48,34 +48,39 @@ HD Wallet
 Mnemonic:      noodle library tide trial funny cricket fork bonus receive away protect found
 Base HD Path:  m/44'/60'/0'/0/{account_index}
 
- Running migration: 2_deploy_contracts.js
-  Deploying AnalystRegistry...
-  ... 0xdd2aa68431035fb1ced3dd1aca6ce20ac2849d90397967027681da07bafda339
-  AnalystRegistry: 0xa66e306716edde1f3dc1d0b688e4809ea4f98606
-  Deploying RatingAgency...
-  ... 0xa3e433ac84647955f7905a0eb274f614cedb95209969303ef2a43d92f42102c4
-  RatingAgency: 0x20f5f3ec573b626b74c4ef0e22a3fd6e228d8f71
-  Deploying TokenERC20...
-  ... 0x0d31694c4397159df8721e4ded0cbe6d28f33834e40e4453d7fd367f0cce795e
-  TokenERC20: 0x016668daaed7fce158f02b91804ad1f1d74dc8c6
+ Running migration: 1_initial_migration.js
+  Deploying Migrations...
+  ... 0x016467056065db46303c3d0067501075917277a838c145bd8e31c327720e3504
+  Migrations: 0x380cb3e3fc13e0728170a8299fd85085269bfef8
 Saving successful migration to network...
-  ... 0xf5444180b32d87eaedf826326b24d6538d2d5ca2fdd4753aa7a90f3ac38f0704
-  ... 0xe5aa2b85a717f4ff4ce7f474cc79ad2994e2e61e0ac17980f5060136e4c827c6
-  ... 0xf9c97f840b8f4180a92a5c780311f77e6a6ef032eafa26908d9384138045c2cc
-  ... 0x921f03faf473e55e90cedacf4d52ba925c80a001850cd32b93553b988f86964a
-  ... 0x0b7265831c09a5df46650cccb7fc68b7d3f15fce6c39814e3bbdbf81485ecefe
-  ... 0xf63bce36dba2ebaf102d08151337270985f5ecefc1f0ca120c04b2f8ce92b552
-  ... 0xc1800a3f5f6fef6c89dfa29f7b52e630e135a6547c7a507bca4736b5b0013f5e
-  ... 0xdaf8c3d08f6429d057ca13d8674f8ea4989df75bd0320335ae37dafdce3609f8
-  ... 0x4b4fba251af849dad22d942462488d8a591fe87384d94ed4f7a697f57d634c5b
+  ... 0xdb5f4da617661528f0460f361e8ee6621c0c0388bd7a79314614bbd145706589
 Saving artifacts...
-erc address 0x7136648d25166a64b43352215d4aa6faeaf2a3be
-erc address 0x20d7ab6936c7952b67e170377337b11833a715a0
-erc address 0xdc61cb51b71dab7eab65fb5a053f9f87ace678cc
-erc address 0xf235db98d9edb45010a3a0840fc59e13314a6ff1
-erc address 0xbe6fbd9a56368ee04365e5432f35084afe0d3454
-erc address 0x66641b2ba5983e36d5b02445024b7b971490e9f5
-erc address 0x52ec5cedb37ae2b15daf71979791e697e396ca1a
-erc address 0xb36957c5601027e4dcc16fed84b02e3d5c900f50
-
-*/
+Running migration: 2_deploy_contracts.js
+  Deploying AnalystRegistry...
+  ... 0x0a33d13224489a49e5969a1c776d7b92c1403b7ab6344e719569e3b05a532a99
+  AnalystRegistry: 0x5fcc303fc970394afadff52a1c5224ad0a677c4d
+  Deploying RatingAgency...
+  ... 0x565da9921edc48f155b50aba424e06e50107da3b7017409edeb22359ee99cf59
+  RatingAgency: 0x594274b7619fd1b9ce9b83b771bcf6ec4a4efa95
+  Deploying TokenERC20...
+  ... 0x5d00f5903b00185c7b565a6cbb61e3efdaab9205bae222ca82a490384cbfa470
+  TokenERC20: 0x3ae851d5780725853de7118c73d0bd2a303c7fff
+Saving successful migration to network...
+  ... 0x4f2b3fa11ed6d00cdac540af2fd411fd2225157bf2b21db0ceb76db02cfde893
+  ... 0xd66668a31a3e2e1b3f364ee57b5577169acd39da0b1c831b1a0ad53cda59e06b
+  ... 0x4b0f0acd207e707982f0ee41ecfc244c9acfe4a9058f9943bfec93522d6b93eb
+  ... 0xce35cdb7152d9a97130b38aa8dad0acb9528e21e9c644a9b10643ffc416f0495
+  ... 0x4c7d7a3e19bc5ee5dd010f189892905f1339cab1cc1b37610a8800197727f671
+  ... 0xddb1e0a179812bacb3f01d1d71d0435e298c5f25730ffb29cca28d8205c82993
+  ... 0x14a9d0dc59f89716e0f7093fdd05beb5987a3df35f7ec134ebfd5de7c088956c
+  ... 0x0ec19b1d7b173a01a854091cd0fdb8a483609e14fd4f10ca09234f1bb525f61d
+  ... 0x417225660e96505fc3a25665a3d28a39491924340428ae7b3477cf6fd1cbefc7
+Saving artifacts...
+erc address 0xaa9bceb2d84ded2147e971de3c579ffee2a677ce
+erc address 0xc2dbef2e183c87decca0e7d2dec03626a238b976
+erc address 0x4d42601f5b28db47399b53bb733d983db92150af
+erc address 0x1febab846f93bdd6d52f2ee0c2efbfba48e5fca4
+erc address 0x94cddd6267919e75f0d41dbc63cafa3a3c5bac26
+erc address 0x8f47d813663af0c146a7dc72d842072cd5bef787
+erc address 0xa6308e97435ebba53c6da8bdb23333f8e49f1935
+erc address 0x44ea6933b03ce304c81c81eca4b8515b7793d884*/

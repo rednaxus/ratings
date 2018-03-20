@@ -3,24 +3,24 @@
 import React                        from 'react'
 import { Route, Switch }            from 'react-router-dom'
 import PrivateRoute                 from '../components/privateRoute/PrivateRoute'
-import HomeConnected                from '../views/home'
-import AlertConnected               from '../views/alert'
-import BasicElementsConnected       from '../views/basicElements'
-import BasicProgressBarConnected    from '../views/basicProgressBar'
-import BreadcrumbViewConnected      from '../views/breadcrumb'
-import EarningGraphConnected        from '../views/earningGraph'
-import GeneralConnected             from '../views/general'
-import NotificationsConnected       from '../views/notifications'
-import PaginationViewConnected      from '../views/pagination'
-import SimpleTablesConnected        from '../views/simpleTables'
-import StatViewConnected            from '../views/stat'
-import StatsCardConnected           from '../views/statsCard'
-import StripedProgressBarConnected  from '../views/stripedProgressBar'
-import TabPanelConnected            from '../views/tabPanel'
-import TeamMatesViewConnected       from '../views/teamMates'
+import HomeConnected                from '../views/examples/home'
+import AlertConnected               from '../views/examples/alert'
+import BasicElementsConnected       from '../views/examples/basicElements'
+import BasicProgressBarConnected    from '../views/examples/basicProgressBar'
+import BreadcrumbViewConnected      from '../views/examples/breadcrumb'
+import EarningGraphConnected        from '../views/examples/earningGraph'
+import GeneralConnected             from '../views/examples/general'
+import NotificationsConnected       from '../views/examples/notifications'
+import PaginationViewConnected      from '../views/examples/pagination'
+import SimpleTablesConnected        from '../views/examples/simpleTables'
+import StatViewConnected            from '../views/examples/stat'
+import StatsCardConnected           from '../views/examples/statsCard'
+import StripedProgressBarConnected  from '../views/examples/stripedProgressBar'
+import TabPanelConnected            from '../views/examples/tabPanel'
+import TeamMatesViewConnected       from '../views/examples/teamMates'
 import TodoListViewConnected        from '../views/todoList'
-import TwitterFeedConnected         from '../views/twitterFeed'
-import WorkProgressConnected        from '../views/workProgress'
+import TwitterFeedConnected         from '../views/examples/twitterFeed'
+import WorkProgressConnected        from '../views/examples/workProgress'
 import ProtectedConnected           from '../views/protected'
 
 import Dashboard  from '../views/dashboard'
@@ -36,24 +36,38 @@ import Round from '../views/round'
 import Survey from '../views/survey'
 import FileUploader from '../views/briefUpload/FileUploader'
 
-import GridView from '../views/grid'
+import GridView from '../views/examples/grid'
 import Cycles from '../views/cycles'
 import Analysts from '../views/analysts'
 
 export const MainRoutes = () => (
   <Switch>
     <Route exact path="/" component={ Dashboard } />
-    <Route path="/Dashboard/availability" component={ Availability }  />
-    <Route path="/Dashboard/statsCard" component={ StatsCardConnected } />
-    <Route path="/Dashboard/earningGraph" component={ EarningGraphConnected } />
-    <Route path="/Dashboard/notifications" component={NotificationsConnected} />
-    <Route path="/Dashboard/workProgress" component={WorkProgressConnected} />
-    <Route path="/Dashboard/twitterFeed" component={TwitterFeedConnected} />
-    <Route path="/Dashboard/teamMates" component={TeamMatesViewConnected} />
+
+    <Route path="/examples/statsCard" component={ StatsCardConnected } />
+    <Route path="/examples/earningGraph" component={ EarningGraphConnected } />
+    <Route path="/examples/notifications" component={NotificationsConnected} />
+    <Route path="/examples/workProgress" component={WorkProgressConnected} />
+    <Route path="/examples/twitterFeed" component={TwitterFeedConnected} />
+    <Route path="/examples/teamMates" component={TeamMatesViewConnected} />
     <Route path="/Dashboard/todoList" component={TodoListViewConnected} />
-    <Route path="/Dashboard/home" component={ HomeConnected } />
+    <Route path="/examples/home" component={ HomeConnected } />
+    <Route exact path="/examples/simpleTables" component={ SimpleTablesConnected } />
+    <Route exact path="/examples/basicElements" component={BasicElementsConnected} />
+    <Route path="/examples/basicProgressBars" component={ BasicProgressBarConnected} />
+    <Route path="/examples/tabPanels" component={ TabPanelConnected } />
+    <Route path="/examples/stripedProgressBars" component={ StripedProgressBarConnected } />
+    <Route path="/examples/breadcrumb" component={ BreadcrumbViewConnected } />
+    <Route path="/examples/stat" component={ StatViewConnected } />
+    <Route path="/examples/alerts" component={ AlertConnected } />
+    <Route path="/examples/pagination" component={ PaginationViewConnected } />
+
+    <Route path="/examples/grid/simple" component={ GridView } />
+    <Route path="/examples/grid/customPager" component={ GridView } />
+
     <Route path="/token/:token_id" component={ Token } />
     
+    <Route path="/Dashboard/availability" component={ Availability }  />
     <Route path="/Analyst/survey" component={ Survey } />
     
     <Route path="/admin/userList" component={ UserListViewConnected } />
@@ -62,9 +76,7 @@ export const MainRoutes = () => (
     <Route path="/admin/analysts" component={ Analysts } />
     <Route path="/admin/cycles" component = { Cycles } />
     
-    <Route exact path="/simpleTables" component={ SimpleTablesConnected } />
 
-    <Route exact path="/basicElements" component={BasicElementsConnected} />
 
     <Route exact path="/fileUpload" component={ FileUploader } />
     <Route exact path="/general" component={ GeneralConnected } />
@@ -72,16 +84,7 @@ export const MainRoutes = () => (
     <Route path="/general/tokens" component={ Tokens } /> 
     <Route path="/general/rules" component={ Rules } />
     <Route path="/general/about" component={ About } />
-    <Route path="/general/breadcrumb" component={ BreadcrumbViewConnected } />
-    <Route path="/general/stat" component={ StatViewConnected } />
-    <Route path="/general/basicProgressBars" component={ BasicProgressBarConnected} />
-    <Route path="/general/tabPanels" component={ TabPanelConnected } />
-    <Route path="/general/stripedProgressBars" component={ StripedProgressBarConnected } />
-    <Route path="/general/alerts" component={ AlertConnected } />
-    <Route path="/general/pagination" component={ PaginationViewConnected } />
 
-    <Route path="/grid/simple" component={ GridView } />
-    <Route path="/grid/customPager" component={ GridView } />
 
     <Route path="/round/:id" component={ Round } />
     {/* private views: need user to be authenticated */}

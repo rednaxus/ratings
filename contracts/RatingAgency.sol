@@ -104,7 +104,7 @@ contract RatingAgency {
     /**
      * Constructor 
     */
-    address constant testregistry1 = 0xa6308e97435ebba53c6da8bdb23333f8e49f1935; 
+    address constant testregistry1 = 0x5fcc303fc970394afadff52a1c5224ad0a677c4d; 
     function RatingAgency( address _registry ) public {
         if ( _registry == 0 ) _registry = testregistry1;
         registryAddress = _registry;
@@ -393,6 +393,20 @@ contract RatingAgency {
         SurveySubmitted( _round, _analyst, _idx, _answers, _qualitatives, _recommendation );
     }
     
+    /* get next 16 rounds */
+    function roundsForToken ( uint16 _token, uint16 startAt ) public view returns (uint16 _numFound, uint16[16] _rounds){
+        _numFound = 0;
+        for (uint16 i = 0; i < num_rounds; i++){
+            if (rounds[i].covered_token == _token){
+                if (_numFound >= startAt) {
+                    _rounds[_numFound - startAt] = i; 
+                }
+                _numFound++;
+                if (_numFound == 16 + startAt) break;
+            }
+        }
+        _numFound = _numFound % 16;
+    }
     event CycleScheduled( uint16 _cycle, uint time );
     event CycleActivated( uint16 _cycle, uint time );
     event CycleFinished( uint16 _cycle, uint time );

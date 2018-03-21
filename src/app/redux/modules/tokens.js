@@ -6,18 +6,25 @@ import moment from 'moment'
 import * as _ from 'lodash'
 
 import { appConfig }        from '../../config'
-import {  fetchMockTokensData } from '../../services'
-import { getTokensData } from '../../services/API'
-import { getTokenData } from '../../services/API'
+//import {  fetchMockTokensData } from '../../services'
+import { 
+  getTokensData,
+  getTokenData,
+  getTokenRounds
+} from '../../services/API'
 
 const REQUEST_TOKENS_DATA   = 'REQUEST_TOKENS_DATA'
 const RECEIVED_TOKENS_DATA  = 'RECEIVED_TOKENS_DATA'
 const ERROR_TOKENS_DATA     = 'ERROR_TOKENS_DATA'
 
-// from ethPlorer api
+// ethplorer combined with veva
 const REQUEST_TOKEN_DATA   = 'REQUEST_TOKEN_DATA' // getTokenInfo
 const RECEIVED_TOKEN_DATA  = 'RECEIVED_TOKEN_DATA'
 const ERROR_TOKEN_DATA     = 'ERROR_TOKEN_DATA'
+
+const REQUEST_TOKEN_ROUNDS   = 'REQUEST_TOKEN_ROUNDS' // getTokenInfo
+const RECEIVED_TOKEN_ROUNDS  = 'RECEIVED_TOKEN_ROUNDS'
+const ERROR_TOKEN_ROUNDS     = 'ERROR_TOKEN_ROUNDS'
 
 /*
 getAddressInfo
@@ -39,6 +46,8 @@ const initialState = {
 }
 
 export default function tokens(state = initialState, action) {
+  let s, i
+
   switch (action.type) {
 
   case REQUEST_TOKENS_DATA:
@@ -50,18 +59,27 @@ export default function tokens(state = initialState, action) {
 
 
   case REQUEST_TOKEN_DATA:
+  case REQUEST_TOKEN_ROUNDS:
     return {...state, time: action.time }
   case RECEIVED_TOKEN_DATA: // fix me
-    let s = { ...state, time: action.time }
-    let i = _.findIndex(s.data,['id',action.info.id])
+    s = { ...state, time: action.time }
+    i = _.findIndex(s.data,['id',action.info.id])
     if (i==-1)
       s.data.push( action.info ) // add
     else
       s.data[i] = action.info // replace
     return s
+  case RECEIVED_TOKEN_ROUNDS:
+    s = { ...state, time: action.time }
+    i = _.findIndex(s.data,['id',action.info.id])
+    if (i==-1)
+      s.data.push( action.info )
+    else
+      s.data[i].rounds = action.info.rounds
+    return s
   case ERROR_TOKEN_DATA:
+  case ERROR_TOKEN_ROUNDS:
     return { ...state, time: action.time }
-
   default:
     return state
   }
@@ -129,6 +147,28 @@ export const fetchTokenData = ( id ) => {
     dispatch( request( id ) )
     //console.log('getting token info from ethplorer')
     getTokenData( id ).then(
+      info => dispatch( receive( info ) )
+    ).catch(
+      err => dispatch( error( err ) )
+    )
+  }
+}
+
+export const fetchTokenRounds = ( id ) => {
+  const request = ( id, time = moment().format() ) => {
+    return { type: REQUEST_TOKEN_ROUNDS, id, time }
+  }
+  const receive = ( info, time = moment().format() ) => {
+    return { type: RECEIVED_TOKEN_ROUNDS, info, time }
+  }
+  const error = ( time = moment().format() ) => {
+    return { type: ERROR_TOKEN_ROUNDS, time }
+  }
+  console.log('fetch token data',id)
+  return dispatch => {
+    dispatch( request( id ) )
+    //console.log('getting token info from ethplorer')
+    getTokenRounds( id ).then(
       info => dispatch( receive( info ) )
     ).catch(
       err => dispatch( error( err ) )

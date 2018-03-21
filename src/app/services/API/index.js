@@ -2,7 +2,11 @@
 
 export { getEarningGraphData }  from './earningGraph'
 export { getTeamMatesData }     from './teamMates'
-export { getTokensData, getTokenData }     from './tokens'
+export { 
+	getTokensData, 
+	getTokenData, 
+	getTokenRounds 
+}     from './tokens'
 export { getTokenInfo } from './ethplorer'
 export { getUserInfoData }      from './userInfos'
 export { getUsersData } from './users'

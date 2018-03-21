@@ -16,8 +16,6 @@ class Token extends Component {
   }
 
   componentDidMount() {
-    const { actions: { fetchTokenData } } = this.props
-    fetchTokenData( this.props.match.params.token_id )
   }
 
   componentWillMount() {
@@ -29,10 +27,22 @@ class Token extends Component {
     const { actions: { leaveTokenView } } = this.props
     leaveTokenView()
   }
+  componentDidUpdate() {
+    if (this.idx !== this.props.match.params.token_id) {
+      this.idx = this.props.match.params.token_id
+      const { actions: { fetchTokenData, fetchTokenRounds } } = this.props
+      fetchTokenData( this.idx )
+      fetchTokenRounds( this.idx )
+    }
+  }
+
   render() {
     const { currentView, tokens } = this.props
     let idx = _.findIndex(tokens.data,['id',+this.props.match.params.token_id])
-    let token = idx === -1 ? { }: tokens.data[idx] 
+    if (idx === -1) return(
+      <div>fetching....</div>
+    )
+    let token = tokens.data[idx] 
     console.log('props',this.props)
     console.log('token',tokens,idx,token)
     let title = "Token: "+ token.name + " => " + token.symbol
@@ -69,8 +79,11 @@ class Token extends Component {
             </div>
           </Panel>
           <Panel title="Token Rounds History" hasTitle={true} bodyBackGndColor={'#F4F5F6'}>
-            <div>Current status: </div>
-
+            { /*<ul>
+            { token.rounds.map( round => {
+              <li>round</li>
+            })}
+            </ul> */}
           </Panel>
         </div>
       </AnimatedView>

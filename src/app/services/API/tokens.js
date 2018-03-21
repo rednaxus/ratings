@@ -74,6 +74,25 @@ export const getTokenData = ( i ) => {
   })
 }
 
+export const getTokenRounds = ( i, startAt = 0 ) => {
+  return new Promise((resolve,reject) => {
+    RatingAgency().then( (ratingAgency) => {
+      ratingAgency.roundsForToken( i, startAt ).then( raToken => { // idx, addr
+        console.log('raToken',raToken)
+        let num_rounds = raToken[0].toNumber()
+        let raRounds = raToken[1]
+        let rounds = []
+        for (var j = 0; j < num_rounds; j++ )
+          rounds.push(raRounds[j].toNumber())
+        resolve( { id:i, rounds:rounds } )
+      }).catch(result => { 
+        console.error("Error from server:"  + result) 
+        reject(result)
+      })
+    })
+  })
+}
+
 export const getTokensData = () => {
 
   return new Promise((resolve,reject) => {

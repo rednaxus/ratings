@@ -19,7 +19,8 @@ export { fetchUserInfoDataIfNeeded }     from './userInfos'
 
 export { 
   fetchTokensDataIfNeeded,
-  fetchTokenData
+  fetchTokenData,
+  fetchTokenRounds
 }       from './tokens'
 
 export { fetchUsersDataIfNeeded }       from './users'

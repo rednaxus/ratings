@@ -16,7 +16,7 @@ import "./TokenERC20.sol";
 import "./RatingAgency.sol";
 
 contract test2 {
-    address defaultRa = 0x594274b7619fd1b9ce9b83b771bcf6ec4a4efa95;
+    address defaultRa = 0x3dac6baecd2846aced5b514f3ef85cd547bea6bb;
     using strings for *;
     RatingAgency ratingAgency;
     mapping( uint => address ) tokens;

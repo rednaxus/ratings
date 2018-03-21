@@ -24,7 +24,8 @@ const mapDispatchToProps = (dispatch) => {
       {
         enterTokenView: actions.enterTokenView,
         leaveTokenView: actions.leaveTokenView,
-        fetchTokenData: actions.fetchTokenData
+        fetchTokenData: actions.fetchTokenData,
+        fetchTokenRounds: actions.fetchTokenRounds
       },
       dispatch),
 

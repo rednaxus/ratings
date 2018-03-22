@@ -45,7 +45,7 @@ class Token extends Component {
     )
     let token = tokens.data[idx] 
     token.rounds = token.rounds || []
-    let roundItems = token.rounds.map( round_id => <li>{round_id}</li> )
+    let roundItems = token.rounds.map( round_id => <li><Link to={"/round/"+round_id}>{round_id}</Link></li> )
     console.log('props',this.props)
     console.log('token',tokens,idx,token)
     console.log('roundItems',roundItems)

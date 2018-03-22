@@ -3,6 +3,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes          from 'prop-types'
 import Moment from 'react-moment'
+import { Link } from 'react-router-dom'
 import { Panel } from 'react-bootstrap'
 import * as _ from 'lodash'
 
@@ -56,7 +57,7 @@ class Round extends PureComponent {
           <Panel.Heading><Panel.Title>Round</Panel.Title></Panel.Heading>
           <Panel.Body>
             <div>
-              Round { this.idx } for token <span className="text-success">{ token.name }</span> with status <span className="text-danger">{ appConfig.STATUSES[round.status] }</span>
+              Round { this.idx } for token <Link to={"/token/"+token.id}><span className="text-success">{ token.name }</span></Link> with status <span className="text-danger">{ appConfig.STATUSES[round.status] }</span>
             </div>
             <div>
               Start: <Moment className="text-warning" format="YYYY-MM-DD HH:mm" date={ new Date(appConfig.cycleTime(round.cycle,true)) } />

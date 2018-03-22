@@ -6,7 +6,8 @@ import Round             from './Round';
 const mapStateToProps = (state) => {
   return {
     currentView:  state.views.currentView,
-    round: state.rounds.round
+    round: state.rounds.round,
+    tokens: state.tokens
   }
 }
 

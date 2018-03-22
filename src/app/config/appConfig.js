@@ -63,9 +63,10 @@ export const appConfig = {
 
   ZERO_BASE_TIME: 1514764800,
   
-  cycleTime: function ( cycle ) {
-    return this.CYCLE_PERIOD * cycle / 4 + this.ZERO_BASE_TIME 
+  cycleTime: function ( cycle, ms = false ) {
+    return ( ms ? 1000 : 1 ) * ( this.CYCLE_PERIOD * cycle / 4 + this.ZERO_BASE_TIME )
   },
+
 
   JURY_SIZE: 6,
 

@@ -81,3 +81,5 @@ export {
   TokenList,
   TokenListItem
 }                                     from './tokenList';
+
+export { default as TokenSummary }               from './tokens/TokenSummary'

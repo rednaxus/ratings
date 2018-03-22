@@ -1,10 +1,14 @@
 // @flow weak
 
-import React, { PureComponent } from 'react';
-import PropTypes          from 'prop-types';
+import React, { PureComponent } from 'react'
+import PropTypes          from 'prop-types'
+import Moment from 'react-moment'
+import { Panel } from 'react-bootstrap'
+import * as _ from 'lodash'
+
 import {
   AnimatedView,
-  Panel
+  TokenSummary
 }                         from '../../components'
 import { appConfig } from '../../config'
 
@@ -28,31 +32,44 @@ class Round extends PureComponent {
     leaveRound()
   }
 
-  componentDidMount() {
-    console.log('cycles component mounted')
-    const { actions: { fetchRoundInfo } } = this.props
-    fetchRoundInfo( this.props.match.params.id )
-  }
+  componentDidUpdate() {
+    if (this.idx === +this.props.match.params.id) return
 
+    this.idx = +this.props.match.params.id
+    //const { actions: { fetchTokenData, fetchTokenRounds } } = this.props
+    const { actions: { fetchRoundInfo } } = this.props
+    fetchRoundInfo( this.idx )
+    //fetchTokenRounds( this.idx ) 
+
+    //fetchTokenData( this.idx )
+
+  }
   render() {
-    const { match, location } = this.props
-    const { round } = this.props
-    var roundInfo = round ? round : { status:0 }
-    console.log('props',this.props)
+    const { round, tokens } = this.props
+    if (!round) return <div>fetching...</div>
+    let i = _.findIndex(tokens.data,['id',round.covered_token])
+    let token = i == -1 ? {} : tokens.data[ i ]
 
     return(
       <AnimatedView>
-        <div className="row">
-          <div className="col-xs-12">
-            <Panel title="Round" hasTitle={true} bodyBackGndColor={'#F4F5F6'}>
-              <div className="row">
-                <div className="col-xs-12">
-                  Round { match.params.id } with status <span className="red">{ appConfig.STATUSES[roundInfo.status] }</span>
-                </div>
-              </div>
-            </Panel>
-          </div>
-        </div>
+        <Panel>
+          <Panel.Heading><Panel.Title>Round</Panel.Title></Panel.Heading>
+          <Panel.Body>
+            <div>
+              Round { this.idx } for token <span className="text-success">{ token.name }</span> with status <span className="text-danger">{ appConfig.STATUSES[round.status] }</span>
+            </div>
+            <div>
+              Start: <Moment className="text-warning" format="YYYY-MM-DD HH:mm" date={ new Date(appConfig.cycleTime(round.cycle,true)) } />
+            </div>
+            <div>
+              Finish: <Moment className="text-warning" format="YYYY-MM-DD HH:mm" date={ new Date(appConfig.cycleTime(round.cycle+4,true)) } />
+            </div>
+            <div>
+              Number of analysts: {round.num_analysts}
+            </div>
+            <TokenSummary token={token} />
+          </Panel.Body>
+        </Panel>
       </AnimatedView>
     )
   }

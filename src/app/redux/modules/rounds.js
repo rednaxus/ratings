@@ -2,9 +2,12 @@
 
 /* eslint no-console:0 */
 /* eslint consistent-return:0 */
-import moment               from 'moment';
-import { appConfig }        from '../../config';
-import { getRoundInfo } from '../../services/API';
+import moment               from 'moment'
+import { appConfig }        from '../../config'
+import { getRoundInfo } from '../../services/API'
+import { fetchTokenData }  from './tokens'
+
+//import { store } from '../../Root'
 
 const REQUEST_ROUNDS_DATA   = 'REQUEST_ROUNDS_DATA'
 const RECEIVED_ROUNDS_DATA  = 'RECEIVED_ROUNDS_DATA'
@@ -92,8 +95,12 @@ export const fetchRoundInfo = ( round ) => {
     return { type: ERROR_ROUND_INFO, time }
   }
   return dispatch => {
-    dispatch(request())
-    getRoundInfo(round).then( roundInfo => dispatch(success(roundInfo)) )
+    dispatch( request() )
+    getRoundInfo(round).then( roundInfo => {
+      dispatch( success( roundInfo ) ) 
+      dispatch( fetchTokenData( roundInfo.covered_token ) )
+
+    })
     .catch( error => dispatch( failure(error) ) )
   }
 }

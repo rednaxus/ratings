@@ -4,10 +4,10 @@
 import React, { Component } from 'react'
 import PropTypes      from 'prop-types'
 import Moment                    from 'react-moment'
+import { Panel } from 'react-bootstrap'
 
 import { AnimatedView } from '../../components'
 
-import { fetchCronInfo } from '../../redux/modules/cycles'
 import { store } from '../../Root'
 
 import Cycles from '../../components/cycles/Cycles'
@@ -34,7 +34,8 @@ class CyclesView extends Component {
   }
 
   componentDidMount() {
-    store.dispatch(fetchCronInfo())
+    const { actions: { fetchCronInfo } } = this.props
+    fetchCronInfo()
   }
 
   componentWillMount() {
@@ -56,20 +57,27 @@ class CyclesView extends Component {
     return (
       <AnimatedView>
         <div className="simpleContainer">
-          <h2 className="gridH2">
-            Cycles -- Last cron run: 
-            <span className="text-red"><Moment date={crondate} /></span>
-            <button className="pull-right" bsStyle="primary" onClick={this.handlePulseCron} >
-              pulse cron
-            </button>
-          </h2>
-          <Cycles { ...{ store } } />
-
-          <h2 className="gridH2">
-            Rounds
-          </h2>
-          <Rounds { ...{ store } } />
-
+          <Panel>
+            <Panel.Heading>
+              <Panel.Title>Cycles -- Last cron run: 
+                <span className="text-red"><Moment date={crondate} /></span>
+                <button className="pull-right" bsStyle="primary" onClick={this.handlePulseCron} >
+                  pulse cron
+                </button>
+              </Panel.Title>
+            </Panel.Heading>
+            <Panel.Body>
+              <Cycles { ...{ store } } />
+            </Panel.Body>
+          </Panel>
+          <Panel>
+            <Panel.Heading>
+              <Panel.Title>Rounds</Panel.Title>
+            </Panel.Heading>
+            <Panel.Body>
+              <Rounds { ...{ store } } />
+            </Panel.Body>
+          </Panel>
         </div>
       </AnimatedView>
     )

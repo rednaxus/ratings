@@ -6,6 +6,7 @@ module.exports = function(deployer) {
 	deployer.deploy(AnalystRegistry).then( () => AnalystRegistry.deployed() )
 	.then( registry => deployer.deploy(RatingAgency,registry.address) ).then( () => RatingAgency.deployed() )
 
+	/*
 	deployer.deploy(TokenERC20,10000,"MOOLAH","MOO").then( () => TokenERC20.deployed() )
   .then( () => {
 		let tpromises = [1,2,3,4,5,6,7,8].map( id => TokenERC20.new(10000,"MOOLAH"+id,"MOO"+id))
@@ -13,7 +14,7 @@ module.exports = function(deployer) {
   		tokens.map( token => console.log('erc address',token.address)  )			
   	})
 	})
-	
+	*/
 
 
 			/*	

@@ -71,7 +71,7 @@ export const dataSource = function getData({
 
 }
 export default dataSource
-
+/*
 export const getCyclesData = () => {
   return new Promise((resolve,reject) => {
     //console.log(' beginning cycles fetch')
@@ -120,3 +120,5 @@ export const getCyclesData = () => {
 
 
 }
+*/
+

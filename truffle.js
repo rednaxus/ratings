@@ -6,17 +6,12 @@ module.exports = {
       port: 8545,
       network_id: "*", // Match any network id
       from: "0x9F943eD85fb1B63b2a68aF79290e5023D32F5E96",
-      gas: 4700000
+      gas: 5000000 // 4700000  add extra to bootstrap test data
     }
   }
 };
 // ethereum typical gas: 3141592
 /*
-^C^Crednaxus@whitewolf:~/workspace/veva/veva-engr$ ps aux | grep ganache
-rednaxus 19427  0.0  0.0  14228   928 pts/1    S+   13:09   0:00 grep --color=auto ganache
-rednaxus@whitewolf:~/workspace/veva/veva-engr$ ganache-cli --s dog1 --i 7
-Ganache CLI v6.0.3 (ganache-core: 2.0.2)
-
 Available Accounts
 ==================
 (0) 0x9f943ed85fb1b63b2a68af79290e5023d32f5e96
@@ -48,39 +43,4 @@ HD Wallet
 Mnemonic:      noodle library tide trial funny cricket fork bonus receive away protect found
 Base HD Path:  m/44'/60'/0'/0/{account_index}
 
- Running migration: 1_initial_migration.js
-  Deploying Migrations...
-  ... 0x016467056065db46303c3d0067501075917277a838c145bd8e31c327720e3504
-  Migrations: 0x380cb3e3fc13e0728170a8299fd85085269bfef8
-Saving successful migration to network...
-  ... 0xdb5f4da617661528f0460f361e8ee6621c0c0388bd7a79314614bbd145706589
-Saving artifacts...
-Running migration: 2_deploy_contracts.js
-  Deploying AnalystRegistry...
-  ... 0x0a33d13224489a49e5969a1c776d7b92c1403b7ab6344e719569e3b05a532a99
-  AnalystRegistry: 0x5fcc303fc970394afadff52a1c5224ad0a677c4d
-  Deploying RatingAgency...
-  ... 0x565da9921edc48f155b50aba424e06e50107da3b7017409edeb22359ee99cf59
-  RatingAgency: 0x594274b7619fd1b9ce9b83b771bcf6ec4a4efa95
-  Deploying TokenERC20...
-  ... 0x5d00f5903b00185c7b565a6cbb61e3efdaab9205bae222ca82a490384cbfa470
-  TokenERC20: 0x3ae851d5780725853de7118c73d0bd2a303c7fff
-Saving successful migration to network...
-  ... 0x4f2b3fa11ed6d00cdac540af2fd411fd2225157bf2b21db0ceb76db02cfde893
-  ... 0xd66668a31a3e2e1b3f364ee57b5577169acd39da0b1c831b1a0ad53cda59e06b
-  ... 0x4b0f0acd207e707982f0ee41ecfc244c9acfe4a9058f9943bfec93522d6b93eb
-  ... 0xce35cdb7152d9a97130b38aa8dad0acb9528e21e9c644a9b10643ffc416f0495
-  ... 0x4c7d7a3e19bc5ee5dd010f189892905f1339cab1cc1b37610a8800197727f671
-  ... 0xddb1e0a179812bacb3f01d1d71d0435e298c5f25730ffb29cca28d8205c82993
-  ... 0x14a9d0dc59f89716e0f7093fdd05beb5987a3df35f7ec134ebfd5de7c088956c
-  ... 0x0ec19b1d7b173a01a854091cd0fdb8a483609e14fd4f10ca09234f1bb525f61d
-  ... 0x417225660e96505fc3a25665a3d28a39491924340428ae7b3477cf6fd1cbefc7
-Saving artifacts...
-erc address 0xaa9bceb2d84ded2147e971de3c579ffee2a677ce
-erc address 0xc2dbef2e183c87decca0e7d2dec03626a238b976
-erc address 0x4d42601f5b28db47399b53bb733d983db92150af
-erc address 0x1febab846f93bdd6d52f2ee0c2efbfba48e5fca4
-erc address 0x94cddd6267919e75f0d41dbc63cafa3a3c5bac26
-erc address 0x8f47d813663af0c146a7dc72d842072cd5bef787
-erc address 0xa6308e97435ebba53c6da8bdb23333f8e49f1935
-erc address 0x44ea6933b03ce304c81c81eca4b8515b7793d884*/
+*/

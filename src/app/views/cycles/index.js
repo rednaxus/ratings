@@ -19,12 +19,12 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => {
-  console.log('cycle actions pulse',cycleActions.pulseCron)
   return {
     actions : bindActionCreators(
       {
         enterCyclesView: actions.enterCyclesView,
         leaveCyclesView: actions.leaveCyclesView,
+        fetchCronInfo: cycleActions.fetchCronInfo,
         pulseCron: cycleActions.pulseCron
       },
       dispatch)

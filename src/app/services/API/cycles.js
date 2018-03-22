@@ -102,7 +102,7 @@ export const dataSource = function getData({
 }
 export default dataSource
 
-export const getCyclesData = () => {
+export const getCyclesData = (analyst = 0) => {
   return new Promise((resolve,reject) => {
     //console.log(' beginning cycles fetch')
 
@@ -115,7 +115,7 @@ export const getCyclesData = () => {
         var numFetch = 0
         var cyclesData = []
         for (var i = 0; i < numCycles; i++) {
-          ratingAgency.cycleInfo(i).then( rCycle => { // idx, addr
+          ratingAgency.cycleInfo( i, analyst ).then( rCycle => { // idx, addr
             var res = {
               id:rCycle[0].toNumber(),   
               timestart: rCycle[1].toNumber(),

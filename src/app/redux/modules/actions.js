@@ -12,7 +12,6 @@ export {
 
 export { alertActions } from './alert'
 export { userActions } from './user'
-export { cycleActions } from './cycles'
 
 export { fetchTeamMatesDataIfNeeded }    from './teamMates'
 export { fetchUserInfoDataIfNeeded }     from './userInfos'
@@ -24,7 +23,7 @@ export {
 }       from './tokens'
 
 export { fetchUsersDataIfNeeded }       from './users'
-export { fetchCyclesDataIfNeeded, fetchCronInfo }       from './cycles'
+export { cycleActions, fetchCyclesDataIfNeeded, fetchCronInfo, pulseCron }       from './cycles'
 export { fetchRoundInfo }  from './rounds'
 
 export { 
@@ -36,26 +35,19 @@ export {
 
 // views:
 export {
-  enterAnalystStat,
-  leaveAnalystStat,
+  enterAnalystStat, leaveAnalystStat,
 
-  enterHome,
-  leaveHome,
+  enterHome, leaveHome,
 
-  enterSimpleTables,
-  leaveSimpleTables,
+  enterSimpleTables, leaveSimpleTables,
 
-  enterBasicElements,
-  leaveBasicElements,
+  enterBasicElements, leaveBasicElements,
 
-  enterGeneral,
-  leaveGeneral,
+  enterGeneral, leaveGeneral,
 
-  enterPageNotFound,
-  leavePageNotFound,
+  enterPageNotFound, leavePageNotFound,
 
-  enterStatsCard,
-  leaveStatsCard,
+  enterStatsCard, leaveStatsCard,
 
   enterEarningGraph,
   leaveEarningGraph,

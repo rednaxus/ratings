@@ -27,19 +27,15 @@ const rounds = (state = initialState, action) => {
 
   case REQUEST_ROUNDS_DATA:
     return { ...state, isFetching: action.isFetching, time: action.time }
-
   case RECEIVED_ROUNDS_DATA:
     return { ...state, isFetching: action.isFetching, data: [...action.data], time: action.time }
-
   case ERROR_ROUNDS_DATA:
     return { ...state, isFetching: action.isFetching, time: action.time }
 
   case REQUEST_ROUND_INFO:
     return { ...state, time: action.time }
-
   case RECEIVED_ROUND_INFO: // fix me!!
     return {...state, round: action.roundInfo, time: action.time }
-
   case ERROR_ROUND_INFO:
     return {...state, time: action.time }
 

@@ -62,20 +62,20 @@ export default function tokens(state = initialState, action) {
   case REQUEST_TOKEN_ROUNDS:
     return {...state, time: action.time }
   case RECEIVED_TOKEN_DATA: // fix me
-    s = { ...state, time: action.time }
+    s = { data:[], ...state, time: action.time }
     i = _.findIndex(s.data,['id',action.info.id])
     if (i==-1)
       s.data.push( action.info ) // add
     else
-      s.data[i] = action.info // replace
+      s.data[i] = {...s.data[i], ...action.info} // merge
     return s
   case RECEIVED_TOKEN_ROUNDS:
-    s = { ...state, time: action.time }
+    s = { data:[], ...state, time: action.time }
     i = _.findIndex(s.data,['id',action.info.id])
     if (i==-1)
-      s.data.push( action.info )
-    else
-      s.data[i].rounds = action.info.rounds
+      s.data.push( action.info ) // add
+    else 
+      s.data[i].rounds = action.info.rounds // merge
     return s
   case ERROR_TOKEN_DATA:
   case ERROR_TOKEN_ROUNDS:

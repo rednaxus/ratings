@@ -84,7 +84,7 @@ export const getTokenRounds = ( i, startAt = 0 ) => {
         let rounds = []
         for (var j = 0; j < num_rounds; j++ )
           rounds.push(raRounds[j].toNumber())
-        resolve( { id:i, rounds:rounds } )
+        resolve( { id:+i, rounds:rounds } )
       }).catch(result => { 
         console.error("Error from server:"  + result) 
         reject(result)

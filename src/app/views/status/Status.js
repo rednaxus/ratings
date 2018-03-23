@@ -18,7 +18,7 @@ class Status extends Component {
       <AnimatedView>
         <main className="container">
           <UserStatus user={ user.info.user }/>
-          <h1>My Status</h1>
+          <h2>My Status</h2>
           <AnalystStat />
           <div className="row">
             <div className="col-md-6">

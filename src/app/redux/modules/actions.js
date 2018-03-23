@@ -114,5 +114,8 @@ export {
 
   enterRound, leaveRound,
 
-  enterStatus, leaveStatus
+  enterStatus, leaveStatus,
+
+  enterAvailability, leaveAvailability
+
 }                                     from './views'

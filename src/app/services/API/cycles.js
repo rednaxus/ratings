@@ -52,10 +52,11 @@ export const pulseCron = () => {
 export const getCycleInfo = ( cycle, analyst = 0) => new Promise( (resolve, reject ) => {
   RatingAgency().then((ratingAgency) => {
     ratingAgency.cycleInfo( cycle, analyst ).then( rCycle => { // idx, addr
+      let timestart = rCycle[1].toNumber()
       let res = {
         id:rCycle[0].toNumber(),   
-        timestart: rCycle[1].toNumber(),
-        period: rCycle[2].toNumber(),
+        timestart: timestart,
+        timefinish: timestart+rCycle[2].toNumber(),
         status: rCycle[3].toNumber(),
         num_jurists_available: rCycle[4].toNumber(),
         num_jurists_assigned: rCycle[5].toNumber(),

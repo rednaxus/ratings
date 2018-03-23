@@ -54,6 +54,10 @@ export const appConfig = {
     'none','pending','scheduled','active','finished','cancelled','available','confirmed','assigned'
   ],
   
+  CYCLE_STATUSES: [ // note: these should be migrated to the Statuses above
+    'unsubscribed','lead-confirmed','lead-assigned','jurist-confirmed','jurist-assigned'
+  ],
+  
   CYCLES_AHEAD: 4,
 
   CYCLE_PERIOD: 86400 * 28,

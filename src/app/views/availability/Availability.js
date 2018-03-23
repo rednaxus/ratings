@@ -7,41 +7,52 @@ import PropTypes                 from 'prop-types'
 import { Panel } from 'react-bootstrap'
 import { AnimatedView } from '../../components'
 
+import { appConfig } from '../../config'
 
+const dateView = ({value}) =>
+  <Moment className="text-warning" format="YYYY-MM-DD HH:mm" date={ new Date(value*1000) } />
+
+const colDefault = 'col-md-3 col-xs-3 text-center'
 const columns = [
   {
     name: 'Cycle',
-    className: 'col-md-2',
-    dataIndex: 'id',
-    renderer: ({column,value,row}) => {
-      return <Link to={"/round/"+value} >{value}</Link>
-    }
+    className: 'col-md-1 col-xs-1 text-center',
+    dataIndex: 'id'
   },
   {
     name: 'Start',
-    className: 'col-md-2',
-    dataIndex: 'timestart'
+    className: colDefault,
+    dataIndex: 'timestart',
+    //renderer: ({column,value,row}) =>
+    renderer: dateView  
   },
   {
-    name: 'Length',
-    className: 'col-md-2',
-    dataIndex: 'period'
+    name: 'Finish',
+    className: colDefault,
+    dataIndex: 'timefinish',
+    renderer: dateView
   },
   {
     name: 'Status',
-    className: 'col-md-2',
-    dataIndex: 'analyst_status'
+    className: colDefault,
+    dataIndex: 'analyst_status',
+    renderer: ({value}) => 
+      value && appConfig.CYCLE_STATUSES[value] || 
+      <button type="button" className="btn btn-primary btn-xs">
+        <span className="glyphicon glyphicon-star" aria-hidden="true"></span> Sign-Up
+      </button>
   }
 ]
 /*
                           id={id} 
                           timestart={timestart}
-                          period={period} 
+                          timefinish={timefinish} 
                           status={status}
                           num_jurists_available={num_jurists_available}
                           num_jurists_assigned={num_jurists_assigned}
                           num_leads_available={num_leads_available}
                           num_leads_assigned={num_leads_assigned}
+
 */
 
 class Availability extends PureComponent {
@@ -77,14 +88,17 @@ class Availability extends PureComponent {
           </Panel.Heading>
           <Panel.Body>
             <div className="row">
-              { columns.map( col => {
-                  <div className={col.className}>{col.name}</div>
-                })
+              { columns.map( col => <div className={col.className}>{col.name}</div> )
               }
             </div>
-            { cycles.data.map( (cycle,idx) => { 
-                let cols = columns.map( col => 
-                  <div className={col.className}>{cycle[col.dataIndex]}</div> 
+            { cycles.data.map( (cycle,rowIdx) => { 
+                let cols = columns.map( (col,colIdx) => 
+                  <div className={col.className}>
+                    { col.renderer 
+                      && col.renderer({column:colIdx,row:rowIdx, value:cycle[col.dataIndex]}) 
+                      || cycle[col.dataIndex] 
+                    }
+                  </div> 
                 )
                 return <div className="row">{cols}</div>
               })

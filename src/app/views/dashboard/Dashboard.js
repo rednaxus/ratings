@@ -26,11 +26,53 @@ class Dashboard extends Component {
       <AnimatedView>
         <main className="container">
           <UserStatus user={ user.info.user }/>
-          <div className="pure-g">
-            <div className="pure-u-1-1">
-              <h1>Analyst Dashboard</h1>
-              <AnalystStat />
-              <AnalystMessages { ...{ store } } />
+          <h1>Analyst Dashboard</h1>
+          <AnalystStat />
+          <AnalystMessages { ...{ store } } />
+          <hr/>
+          <div className="row">
+            <div className="col-md-6">
+              <div className="card">
+                <img className="card-img-top" src="http://success-at-work.com/wp-content/uploads/2015/04/free-stock-photos.gif"/>
+                <div className="card-block">
+                  <figure className="profile">
+                    <img src="http://success-at-work.com/wp-content/uploads/2015/04/free-stock-photos.gif" className="profile-avatar" alt=""/>
+                  </figure>
+                  <h4 className="card-title mt-3">Doggone Dog</h4>
+                  <div className="meta">
+                    <a>Friends</a>
+                  </div>
+                  <div className="card-text">
+                    Blah blah with some blah blah.
+                  </div>
+                </div>
+                <div className="card-footer">
+                  <small>Last updated 3 mins ago</small>
+                  <button className="btn btn-secondary float-right btn-sm">show</button>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="card">
+                <img className="card-img-top" 
+                  src="https://cdn.history.com/sites/2/2014/02/redscare-H.jpeg"/>
+                <div className="card-block">
+                  <figure className="profile">
+                    <img src="http://success-at-work.com/wp-content/uploads/2015/04/free-stock-photos.gif" className="profile-avatar" alt=""/>
+                  </figure>
+                  <h4 className="card-title mt-3">Doggon Cat</h4>
+                  <div className="meta">
+                    <a>Friends</a>
+                  </div>
+                  <div className="card-text">
+                    Blah blah also some blah blah
+                  </div>
+                </div>
+                <div className="card-footer">
+                  <small>Last updated 3 mins ago</small>
+                  <button className="btn btn-secondary float-right btn-sm">show</button>
+                </div>
+              </div>
             </div>
           </div>
         </main>

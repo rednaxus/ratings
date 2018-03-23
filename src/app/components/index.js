@@ -83,3 +83,6 @@ export {
 }                                     from './tokenList';
 
 export { default as TokenSummary }               from './tokens/TokenSummary'
+
+export { default as UserStatus }                 from './userStatus/UserStatus'
+

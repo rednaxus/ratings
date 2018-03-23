@@ -46,13 +46,18 @@ export const navigation = {
         },
         {
           name: 'Availability',
-          linkTo: '/Dashboard/availability',
+          linkTo: '/Analyst/availability',
           faIconName: 'fa-eye'
         },
         {
           name: 'Survey',
           linkTo: '/Analyst/survey',
           faIconName: 'fa-eye'
+        },
+        {
+          name: 'Statuses',
+          linkTo: '/Analyst/status',
+          faIconName: 'fa-gear'
         }
       ]
     },

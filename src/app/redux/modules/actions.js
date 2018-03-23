@@ -112,6 +112,7 @@ export {
   enterGridView,
   leaveGridView,
 
-  enterRound,
-  leaveRound
+  enterRound, leaveRound,
+
+  enterStatus, leaveStatus
 }                                     from './views'

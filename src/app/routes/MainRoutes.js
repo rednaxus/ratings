@@ -39,6 +39,7 @@ import FileUploader from '../views/briefUpload/FileUploader'
 import GridView from '../views/examples/grid'
 import Cycles from '../views/cycles'
 import Analysts from '../views/analysts'
+import Status from '../views/status'
 
 export const MainRoutes = () => (
   <Switch>
@@ -67,8 +68,9 @@ export const MainRoutes = () => (
 
     <Route path="/token/:token_id" component={ Token } />
     
-    <Route path="/Dashboard/availability" component={ Availability }  />
+    <Route path="/Analyst/availability" component={ Availability }  />
     <Route path="/Analyst/survey" component={ Survey } />
+    <Route path="/Analyst/status" component={ Status } />
     
     <Route path="/admin/userList" component={ UserListViewConnected } />
     <Route path="/admin/roundCycles" component={ RoundCycles } />

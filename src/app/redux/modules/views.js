@@ -77,6 +77,9 @@ const LEAVE_GRID_VIEW = 'LEAVE_GRID_VIEW'
 const ENTER_ROUND = 'ENTER_ROUND'
 const LEAVE_ROUND = 'LEAVE_ROUND'
 
+const ENTER_STATUS = 'ENTER_STATUS'
+const LEAVE_STATUS = 'LEAVE_STATUS'
+
 const initialState = {
   currentView:  'home',
   enterTime:    null,
@@ -117,6 +120,7 @@ const views = (state = initialState, action) => {
   case ENTER_TOKEN_VIEW:
   case ENTER_GRID_VIEW:
   case ENTER_ROUND:
+  case ENTER_STATUS:
   case ENTER_PROTECTED_VIEW:
     // can't enter if you are already inside
     if (state.currentView !== action.currentView) {
@@ -125,9 +129,9 @@ const views = (state = initialState, action) => {
         currentView:  action.currentView,
         enterTime:    action.enterTime,
         leaveTime:    action.leaveTime
-      };
+      }
     }
-    return state;
+    return state
 
   case LEAVE_HOME_VIEW:
   case LEAVE_REGISTER_VIEW:
@@ -162,6 +166,7 @@ const views = (state = initialState, action) => {
   case LEAVE_TOKEN_VIEW:
   case LEAVE_GRID_VIEW:
   case LEAVE_ROUND:
+  case LEAVE_STATUS:
   case LEAVE_PROTECTED_VIEW:
     // can't leave if you aren't already inside
     if (state.currentView === action.currentView) {
@@ -170,12 +175,12 @@ const views = (state = initialState, action) => {
         currentView:  action.currentView,
         enterTime:    action.enterTime,
         leaveTime:    action.leaveTime
-      };
+      }
     }
-    return state;
+    return state
 
   default:
-    return state;
+    return state
   }
 }
 export default views
@@ -747,3 +752,12 @@ export const leaveRound = (time = moment().format()) => {
     leaveTime:    time
   }
 }
+
+export const enterStatus = (time = moment().format()) => {
+  return { type: ENTER_STATUS, currentView: 'Status', enterTime: time, leaveTime: null }
+}
+
+export const leaveStatus = (time = moment().format()) => {
+  return { type: LEAVE_STATUS, currentView: 'Status', enterTime: null, leaveTime: time }
+}
+

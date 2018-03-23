@@ -13,33 +13,33 @@ import { Grid } from 'react-redux-grid'
 import { Notification } from '../../components'
 import events from './events'
 
+const base_message = {
+  url: '',
+  primary: () => {},
+  secondary: () => {},
+  time: 0,
+  type: 'success'
+}
 const message_types = {
-  roundsUpcoming: { 
+  new_round_scheduling: { 
+    ...base_message,
     url: '/analyst/availability',
-    template: '<div>{upcoming} upcoming rounds available<span>set your availability</span></div>',
+    primary: () => { 
+      return <div>Upcoming rounds available<span>set your availability</span></div>
+    },
+    secondary: () => {
+
+    },
+    time: 0,
     type: 'danger'
   },
-  roundTokens: {
-    
+  round_active: {
+    ...base_message,
+    url: '/round/${round_id}'
   }
 
 }
 
-const columns = [
-  {
-    title: 'Events',
-    width: '100%',
-    className: '',
-    dataIndex: 'text',
-    renderer: ({column,value,row}) => {
-      return <Notification type={'danger'}>
-        <span>
-          {value}
-        </span>
-      </Notification>
-    }
-  }
-]
 
 const data = [
     {text: '3 upcoming rounds available, set your availability', type: 'roundsUpcoming'},
@@ -49,23 +49,39 @@ const data = [
 ]
 
 export const AnalystMessages = ({ store }) => {
+  const messages = () => { // generate the messages
+    return data
+  }
 
-    const messages = {
-        columns,
-        data: data,
-        plugins: {},
-        events,
-        store,
-        stateKey: 'analyst_messages'
-    }
+  return messages().map( message =>
+    <div className = "row">
+      <div className="card">
+        <img className="card-img-top" src="https://cdn.history.com/sites/2/2014/02/redscare-H.jpeg"/>
+        <div className="card-block">
+          <figure className="profile">
+            <img src="http://success-at-work.com/wp-content/uploads/2015/04/free-stock-photos.gif" className="profile-avatar" alt=""/>
+          </figure>
+          <h4 className="card-title mt-3">{message.text}</h4>
+          <div className="meta">
+            <a>Friends</a>
+          </div>
+          <div className="card-text">
+            Blah blah with some blah blah.
+          </div>
+        </div>
+        <div className="card-footer">
+          <small>Last updated 3 mins ago</small>
+          <button className="btn btn-secondary float-right btn-sm">show</button>
+        </div>
+      </div>
+    </div>
+  )
 
-    return <Grid { ...messages } />
-};
 
-const { object } = PropTypes
+} 
 
 AnalystMessages.propTypes = {
-    store: object.isRequired
+    store: PropTypes.object.isRequired
 }
 
 AnalystMessages.defaultProps = {}

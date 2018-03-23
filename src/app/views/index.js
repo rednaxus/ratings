@@ -23,3 +23,5 @@ export { default as AlertView   }         from './alert'
 export { default as PaginationView }      from './pagination'
 
 export { default as Round }               from './round'
+export { default as Status }               from './status'
+

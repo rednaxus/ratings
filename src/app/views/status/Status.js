@@ -1,20 +1,12 @@
 import React, { Component } from 'react'
-import TokenListView from '../tokenList'
-import UserStatus from '../../components/userStatus/UserStatus'
 
 import { store } from '../../Root'
 
-import AnalystMessages from '../../components/analysts/AnalystMessages'
-
 import AnalystStat from '../analystStat'
-import { AnimatedView } from '../../components'
 
-class Dashboard extends Component {
-  //constructor(props, { user }) {
-  constructor(props) {
-    super(props)
-    //user = this.props
-  }
+import { AnimatedView, UserStatus } from '../../components'
+
+class Status extends Component {
 
   render() {
     const { userIsConnected, user } = this.props;
@@ -25,9 +17,9 @@ class Dashboard extends Component {
     return(
       <AnimatedView>
         <main className="container">
-          <h2>Analyst Dashboard</h2>
-          <AnalystMessages { ...{ store } } />
-          <hr/>
+          <UserStatus user={ user.info.user }/>
+          <h1>My Status</h1>
+          <AnalystStat />
           <div className="row">
             <div className="col-md-6">
               <div className="card">
@@ -36,7 +28,7 @@ class Dashboard extends Component {
                   <figure className="profile">
                     <img src="http://success-at-work.com/wp-content/uploads/2015/04/free-stock-photos.gif" className="profile-avatar" alt=""/>
                   </figure>
-                  <h4 className="card-title mt-3">Doggone Dog</h4>
+                  <h4 className="card-title mt-3">User info</h4>
                   <div className="meta">
                     <a>Friends</a>
                   </div>
@@ -58,7 +50,7 @@ class Dashboard extends Component {
                   <figure className="profile">
                     <img src="http://success-at-work.com/wp-content/uploads/2015/04/free-stock-photos.gif" className="profile-avatar" alt=""/>
                   </figure>
-                  <h4 className="card-title mt-3">Doggon Cat</h4>
+                  <h4 className="card-title mt-3">More info</h4>
                   <div className="meta">
                     <a>Friends</a>
                   </div>
@@ -79,4 +71,4 @@ class Dashboard extends Component {
   }
 }
 
-export default Dashboard
+export default Status

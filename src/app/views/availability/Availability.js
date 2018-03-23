@@ -79,9 +79,13 @@ class Availability extends PureComponent {
   render() {
     const { cycles } = this.props
     console.log('cycles',cycles)
-
+    let timenow = cycles.cron
+    let comingSignupCycles = cycles.data.filter( cycle => !cycle.analyst_status && cycle.timestart*1000 > cycles.cronInfo )
+    let comingCycles = cycles.data.filter( cycle => cycle.analyst_status && cycle.timestart*1000 > cycles.cronInfo )
+    console.log('coming cycles',comingCycles)
     return(
       <AnimatedView>
+        { !comingSignupCycles.length ? "" :
         <Panel>
           <Panel.Heading>
             <Panel.Title>Upcoming Rounds Available...sign up</Panel.Title>
@@ -91,7 +95,7 @@ class Availability extends PureComponent {
               { columns.map( col => <div className={col.className}>{col.name}</div> )
               }
             </div>
-            { cycles.data.map( (cycle,rowIdx) => { 
+            { comingSignupCycles.map( (cycle,rowIdx) => { 
                 let cols = columns.map( (col,colIdx) => 
                   <div className={col.className}>
                     { col.renderer 
@@ -105,6 +109,32 @@ class Availability extends PureComponent {
             }
           </Panel.Body>
         </Panel>
+        }
+        { !comingCycles.length ? "" :  
+        <Panel>
+          <Panel.Heading>
+            <Panel.Title>Upcoming Rounds Signed Up</Panel.Title>
+          </Panel.Heading>
+          <Panel.Body>
+            <div className="row">
+              { columns.map( col => <div className={col.className}>{col.name}</div> )
+              }
+            </div>
+            { comingCycles.map( (cycle,rowIdx) => { 
+                let cols = columns.map( (col,colIdx) => 
+                  <div className={col.className}>
+                    { col.renderer 
+                      && col.renderer({column:colIdx,row:rowIdx, value:cycle[col.dataIndex]}) 
+                      || cycle[col.dataIndex] 
+                    }
+                  </div> 
+                )
+                return <div className="row">{cols}</div>
+              })
+            }
+          </Panel.Body>
+        </Panel>
+        }
       </AnimatedView>
     );
   }

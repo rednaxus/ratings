@@ -55,7 +55,7 @@ export const appConfig = {
   ],
   
   CYCLE_STATUSES: [ // note: these should be migrated to the Statuses above
-    'unsubscribed','lead-confirmed','lead-assigned','jurist-confirmed','jurist-assigned'
+    'unsubscribed','lead-requested','lead-assigned','jurist-requested','jurist-assigned'
   ],
   
   CYCLES_AHEAD: 4,

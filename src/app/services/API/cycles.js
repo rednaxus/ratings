@@ -49,6 +49,20 @@ export const pulseCron = () => {
   })
 }
 
+export const cycleSignup = ( cycle, analyst, lead = false ) => new Promise( (resolve,reject) => {
+  RatingAgency().then((ratingAgency) => {
+    ratingAgency.addAvailability( cycle, analyst, lead ).then( result => {
+      resolve( result ) // transaction, so only resolve is important
+    })    
+    .catch(result => { 
+      console.error("Error on addAvailability:"  + result) 
+      reject(result)
+    })
+  })
+
+})
+
+
 export const getCycleInfo = ( cycle, analyst = 0) => new Promise( (resolve, reject ) => {
   RatingAgency().then((ratingAgency) => {
     ratingAgency.cycleInfo( cycle, analyst ).then( rCycle => { // idx, addr

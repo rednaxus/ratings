@@ -71,6 +71,7 @@ export const appConfig = {
     return ( ms ? 1000 : 1 ) * ( this.CYCLE_PERIOD * cycle / 4 + this.ZERO_BASE_TIME )
   },
 
+  REPUTATION_LEAD: 12,
 
   JURY_SIZE: 6,
 

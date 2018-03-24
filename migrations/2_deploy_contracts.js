@@ -1,10 +1,14 @@
 var TokenERC20 = artifacts.require("TokenERC20")
 var AnalystRegistry = artifacts.require("AnalystRegistry")
 var RatingAgency = artifacts.require("RatingAgency")
+var Tests = artifacts.require("test2")
 
 module.exports = function(deployer) {
 	deployer.deploy(AnalystRegistry).then( () => AnalystRegistry.deployed() )
-	.then( registry => deployer.deploy(RatingAgency,registry.address) ).then( () => RatingAgency.deployed() )
+	.then( registry => deployer.deploy(RatingAgency,registry.address) )
+	.then( () => RatingAgency.deployed() )
+	.then( ra => deployer.deploy(Tests,ra.address) )
+	.then( () => Tests.deployed() )
 
 	/*
 	deployer.deploy(TokenERC20,10000,"MOOLAH","MOO").then( () => TokenERC20.deployed() )

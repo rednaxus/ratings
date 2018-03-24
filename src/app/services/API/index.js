@@ -10,6 +10,6 @@ export {
 export { getTokenInfo } from './ethplorer'
 export { getUserInfoData }      from './userInfos'
 export { getUsersData } from './users'
-export { getCyclesData, getCronInfo, pulseCron } from './cycles'
+export { getCyclesData, getCronInfo, pulseCron, cycleSignup } from './cycles'
 export { getRoundInfo } from './rounds'
 

@@ -8,7 +8,8 @@ import Availability           from './Availability'
 const mapStateToProps = (state) => {
   return {
     currentView:  state.views.currentView,
-    cycles: state.cycles
+    cycles: state.cycles,
+    user: state.user
   }
 }
 
@@ -19,7 +20,8 @@ const mapDispatchToProps = (dispatch) => {
         enterAvailability: actions.enterAvailability,
         leaveAvailability: actions.leaveAvailability,
         fetchCyclesDataIfNeeded: actions.fetchCyclesDataIfNeeded,
-        fetchCronInfo: actions.fetchCronInfo
+        fetchCronInfo: actions.fetchCronInfo,
+        cycleSignup: actions.cycleSignup
       },
       dispatch)
   }

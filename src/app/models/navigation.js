@@ -64,7 +64,7 @@ export const navigation = {
     // group menu #3
     {
       id: 3,
-      group: 'Info',
+      group: 'Tokens',
       menus: [
         {
           name: 'General preview',

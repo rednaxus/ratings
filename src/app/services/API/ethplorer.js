@@ -10,14 +10,16 @@ const params = { apiKey: 'freekey' }
 const fetchInstance = axios.create({
   baseURL: baseUrl,
   headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
+    //'Accept': 'application/json',
+    //'Content-Type': 'application/json',
     //'Access-Control-Allow-Origin': '*',
+    //'Access-Control-Allow-Credentials': 'true',
+    //'Access-Control-Allow-Methods': 'GET,HEAD,OPTIONS,POST,PUT',
+    //'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
   	//'X-Requested-With': 'XMLHttpRequest'
   },
   params: { apiKey: 'freekey' }
 })
-
 
 /*
 https://api.ethplorer.io/getTokenInfo/0xff71cb760666ab06aa73f34995b42dd4b85ea07b?apiKey=freekey

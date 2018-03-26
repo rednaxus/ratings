@@ -52,7 +52,7 @@ class Availability extends PureComponent {
       name: 'Status',
       className: colDefault,
       dataIndex: 'analyst_status',
-      renderer: ({value,id,lead}) => 
+      renderer: ({value,id}) => 
         value && appConfig.CYCLE_STATUSES[value] || 
         <div>
           <button type="button" className="btn btn-primary btn-xs" onClick={(e)=> this.signup(e,id)}>
@@ -99,7 +99,9 @@ class Availability extends PureComponent {
     let timenow = cycles.cron
     let comingSignupCycles = cycles.data.filter( cycle => !cycle.analyst_status && cycle.timestart*1000 > cycles.cronInfo )
     let comingCycles = cycles.data.filter( cycle => cycle.analyst_status && cycle.timestart*1000 > cycles.cronInfo )
+    console.log('signup cycles',comingSignupCycles)
     console.log('coming cycles',comingCycles)
+
     return(
       <AnimatedView>
         <small className="pull-right">time last checked: { dateView( { value:cycles.cronInfo,convert:false} ) }</small> 
@@ -119,7 +121,7 @@ class Availability extends PureComponent {
                   let cols = columns.map( (col,colIdx) => 
                     <div className={col.className}>
                       { col.renderer 
-                        && col.renderer({column:colIdx, row:rowIdx, id:cycle.id, lead:this.canLead(), value:cycle[col.dataIndex]}) 
+                        && col.renderer({column:colIdx, row:rowIdx, id:cycle.id, value:cycle[col.dataIndex]}) 
                         || cycle[col.dataIndex] 
                       }
                     </div> 

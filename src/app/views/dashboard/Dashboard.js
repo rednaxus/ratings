@@ -52,7 +52,7 @@ class Dashboard extends Component {
             </div>
             <div className="col-md-6">
               <div className="card">
-                <img className="card-img-top" 
+                <img className="card-img-top"
                   src="https://cdn.history.com/sites/2/2014/02/redscare-H.jpeg"/>
                 <div className="card-block">
                   <figure className="profile">

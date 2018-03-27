@@ -115,38 +115,24 @@ export const AnalystMessages = ({ store }) => {
 
   return messages().map( message =>
     <div className = "row">
-        <div className="panel panel-danger card" style={cardStyle}>
-
-          <div className="panel-heading">
-            <h3 className="panel-title">Due In: {message.due} </h3>
+      <div className="card">
+        <img className="card-img-top" src="https://cdn.history.com/sites/2/2014/02/redscare-H.jpeg"/>
+        <div className="card-block">
+          <figure className="profile">
+            <img src="http://success-at-work.com/wp-content/uploads/2015/04/free-stock-photos.gif" className="profile-avatar" alt=""/>
+          </figure>
+          <h4 className="card-title mt-3">{message.text}</h4>
+          <div className="meta">
+            <a>Friends</a>
           </div>
-
-
-        <div className="panel-body" style={cardFlex}>
-            <div id="glyphSpan">
-              <span style={spanStyle}>
-              <span className="card-title mt-3" style={glyphStyle}>{message.glyph} </span>
-              </span>
-            </div>
-
-            <div style={infoRow}>
-              <span className="card-title mt-3">{message.text}</span>
-              <div className="meta">
-              <a> additional information: </a>
-              </div>
-              <div className="card-text">
-              {message.body}
-              <br />
-
-              </div>
-            </div>
-
-            <div style={buttonFlex}>
-            <button className="btn btn-secondary float-left">Go! </button> <button className="btn btn-secondary float-right btn-sm">later</button>
-            </div>
-
+          <div className="card-text">
+            Blah blah with some blah blah.
+          </div>
         </div>
-
+        <div className="card-footer">
+          <small>Last updated 3 mins ago</small>
+          <button className="btn btn-secondary float-right btn-sm">show</button>
+        </div>
       </div>
     </div>
   )

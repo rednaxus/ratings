@@ -14,6 +14,7 @@ import { Notification } from '../../components'
 import events from './events'
 import { Glyphicon }                     from 'react-bootstrap'
 
+import { generateMessages } from '../../services/messages'
 
 
 var glyphStyle = {

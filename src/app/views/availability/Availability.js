@@ -92,16 +92,23 @@ class Availability extends PureComponent {
     cycleSignup( id,lead )
   }
 
+  cyclesPanel({cycles,title}) {
+    console.log('cycles panel',cycles,title)
+    return 
+  }
+
   render() {
     const { cycles, user } = this.props
-    console.log('cycles',cycles)
     let columns = this.columns
-    let timenow = cycles.cron
-    let comingSignupCycles = cycles.data.filter( cycle => !cycle.analyst_status && cycle.timestart*1000 > cycles.cronInfo )
-    let comingCycles = cycles.data.filter( cycle => cycle.analyst_status && cycle.timestart*1000 > cycles.cronInfo )
+    let now = cycles.cronInfo / 1000
+    console.log('cycles',cycles,now)
+
+    let comingSignupCycles = cycles.data.filter( cycle => !cycle.analyst_status && cycle.timestart > now )
+    let comingCycles = cycles.data.filter( cycle => cycle.analyst_status && cycle.timestart > now )
+    let activeCycles = cycles.data.filter( cycle => cycle.analyst_status && cycle.timestart <= now && cycle.timefinish >= now )
     console.log('signup cycles',comingSignupCycles)
     console.log('coming cycles',comingCycles)
-
+    console.log('active cycles',activeCycles)
     return(
       <AnimatedView>
         <small className="pull-right">time last checked: { dateView( { value:cycles.cronInfo,convert:false} ) }</small> 
@@ -110,7 +117,7 @@ class Availability extends PureComponent {
           <h2>Sign up for coming rounds</h2>
           <Panel>
             <Panel.Heading>
-              <Panel.Title>Upcoming Rounds Available...</Panel.Title>
+              <Panel.Title>Upcoming rounds available....</Panel.Title>
             </Panel.Heading>
             <Panel.Body>
               <div className="row">
@@ -119,31 +126,26 @@ class Availability extends PureComponent {
               </div>
               { comingSignupCycles.map( (cycle,rowIdx) => { 
                   let cols = columns.map( (col,colIdx) => 
-                    <div className={col.className}>
+                    <div className={col.className} key={colIdx}>
                       { col.renderer 
                         && col.renderer({column:colIdx, row:rowIdx, id:cycle.id, value:cycle[col.dataIndex]}) 
                         || cycle[col.dataIndex] 
                       }
                     </div> 
                   )
-                  return <div className="row">{cols}</div>
+                  return <div className="row" key={rowIdx}>{cols}</div>
                 })
               }
-              {/*<div className="row"> 
-                <button type="button" className="btn btn-primary" onClick={this.signup}>
-                  <span className="glyphicon glyphicon-box" aria-hidden="true"></span> Submit
-                </button>
-              </div>
-              */}
             </Panel.Body>
           </Panel>
-        </div>
+         </div>
         }
         { !comingCycles.length ? "" : 
-        <div> 
+        <div>
+          <hr/>
           <Panel>
             <Panel.Heading>
-              <Panel.Title>Rounds Signed Up</Panel.Title>
+              <Panel.Title>Rounds signed up</Panel.Title>
             </Panel.Heading>
             <Panel.Body>
               <div className="row">
@@ -151,6 +153,33 @@ class Availability extends PureComponent {
                 }
               </div>
               { comingCycles.map( (cycle,rowIdx) => { 
+                  let cols = columns.map( (col,colIdx) => 
+                    <div className={col.className}>
+                      { col.renderer 
+                        && col.renderer({column:colIdx,row:rowIdx, value:cycle[col.dataIndex]}) 
+                        || cycle[col.dataIndex] 
+                      }
+                    </div> 
+                  )
+                  return <div className="row">{cols}</div>
+                })
+              }
+            </Panel.Body>
+          </Panel>
+        </div>
+        }
+        { !activeCycles.length ? "" : 
+        <div> 
+          <Panel>
+            <Panel.Heading>
+              <Panel.Title>Currently active rounds</Panel.Title>
+            </Panel.Heading>
+            <Panel.Body>
+              <div className="row">
+                { columns.map( col => <div className={col.className}>{col.name}</div> )
+                }
+              </div>
+              { activeCycles.map( (cycle,rowIdx) => { 
                   let cols = columns.map( (col,colIdx) => 
                     <div className={col.className}>
                       { col.renderer 

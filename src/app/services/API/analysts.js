@@ -15,15 +15,14 @@ export const dataSource = function getData({
     web3 = window.web3
 
     AnalystRegistry().then( analystRegistry => {
-      analystRegistry.num_analysts()
-      .then(result => {
-        var numAnalysts = result.toNumber();
+      analystRegistry.num_analysts().then(result => {
+        var numAnalysts = result.toNumber()
         //console.log("number of analysts:",numAnalysts);
         var numFetch = 0
         var usersData = []
         for (var i = 0; i < numAnalysts; i++) {
           analystRegistry.analystInfo(i).then( rAnalyst => { // idx, addr
-            console.log('got analyst info',rAnalyst)
+            //console.log('got analyst info',rAnalyst)
             var res = {
               id:rAnalyst[0].toNumber(), 
               name: web3.toAscii(rAnalyst[1]).replace(/\W/g,''),

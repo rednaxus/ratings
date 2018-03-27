@@ -61,7 +61,7 @@ export default function tokens(state = initialState, action) {
   case REQUEST_TOKEN_DATA:
   case REQUEST_TOKEN_ROUNDS:
     return {...state, time: action.time }
-  case RECEIVED_TOKEN_DATA: // fix me
+  case RECEIVED_TOKEN_DATA: 
     s = { data:[], ...state, time: action.time }
     i = _.findIndex(s.data,['id',action.info.id])
     if (i==-1)

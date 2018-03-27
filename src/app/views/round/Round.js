@@ -38,18 +38,22 @@ class Round extends PureComponent {
 
     this.idx = +this.props.match.params.id
     //const { actions: { fetchTokenData, fetchTokenRounds } } = this.props
-    const { actions: { fetchRoundInfo } } = this.props
+    const { actions: { fetchRoundInfo, fetchRoundAnalystInfo } } = this.props
     fetchRoundInfo( this.idx )
+    fetchRoundAnalystInfo( this.idx )
     //fetchTokenRounds( this.idx ) 
 
     //fetchTokenData( this.idx )
 
   }
   render() {
-    const { round, tokens } = this.props
-    if (!round) return <div>fetching...</div>
-    let i = _.findIndex(tokens.data,['id',round.covered_token])
-    let token = i == -1 ? {} : tokens.data[ i ]
+    let i, token, round
+    const { rounds, tokens } = this.props
+    i = _.findIndex(rounds.data,['id',this.idx])
+    round = i == -1 ? {}: rounds.data[ i ]
+    if (_.isEmpty(round)) return <div>fetching...</div>
+    i = _.findIndex(tokens.data,['id',round.covered_token])
+    token = i == -1 ? {} : tokens.data[ i ]
 
     return(
       <AnimatedView>
@@ -67,6 +71,9 @@ class Round extends PureComponent {
             </div>
             <div>
               Number of analysts: {round.num_analysts}
+            </div>
+            <div>
+              Analyst status in round: {appConfig.STATUSES[round.analyst_status]}
             </div>
             <TokenSummary token={token} />
           </Panel.Body>

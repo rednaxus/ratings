@@ -6,7 +6,7 @@ import Round             from './Round';
 const mapStateToProps = (state) => {
   return {
     currentView:  state.views.currentView,
-    round: state.rounds.round,
+    rounds: state.rounds,
     tokens: state.tokens
   }
 }
@@ -17,7 +17,8 @@ const mapDispatchToProps = (dispatch) => {
       {
         enterRound: actions.enterRound,
         leaveRound: actions.leaveRound,
-        fetchRoundInfo: actions.fetchRoundInfo
+        fetchRoundInfo: actions.fetchRoundInfo,
+        fetchRoundAnalystInfo: actions.fetchRoundAnalystInfo
       },
       dispatch)
   }

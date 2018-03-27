@@ -5,30 +5,47 @@ import { appConfig }        from '../../config'
 
 import { store } from '../../Root'
 
-export const getRoundInfo = ( round ) => {
-  return new Promise( (resolve,reject) => {
-
-    RatingAgency().then((ratingAgency) => {
-      ratingAgency.roundInfo( round ).then( rRound => { 
-        var res = {
-          id:rRound[0].toNumber(), 
-          cycle: rRound[1].toNumber(),
-          covered_token: rRound[2].toNumber(),
-          value: rRound[3].toNumber(),
-          status: rRound[4].toNumber(),
-          num_analysts: rRound[5].toNumber()
-        }
-        console.log('got round',res)
-        resolve( res )
-      })
-      .catch(result => { 
-        console.error("Error from server on fetchRoundInfo:"  + result) 
-        reject(result)
-      })
+export const getRoundInfo = ( round, analyst=0 ) => new Promise( (resolve,reject) => {
+  RatingAgency().then((ratingAgency) => {
+    ratingAgency.roundInfo( round ).then( rRound => { 
+      var res = {
+        id:rRound[0].toNumber(), 
+        cycle: rRound[1].toNumber(),
+        covered_token: rRound[2].toNumber(),
+        value: rRound[3].toNumber(),
+        status: rRound[4].toNumber(),
+        num_analysts: rRound[5].toNumber()
+      }
+      console.log('got round',res)
+      resolve( res )
     })
-    
+    .catch(result => { 
+      console.error("Error from server on getRoundInfo:"  + result) 
+      reject(result)
+    })
   })
-}
+})
+
+
+export const getRoundAnalystInfo = ( round, analyst=0 ) => new Promise( (resolve,reject) => {
+  RatingAgency().then((ratingAgency) => {
+    ratingAgency.roundAnalyst( round, analyst ).then( rRound => { 
+      var res = {
+        id:round,
+        analyst:analyst,
+        inround_id:rRound[0].toNumber(), 
+        analyst_status: rRound[1].toNumber()
+      }
+      console.log('got round analyst',res)
+      resolve( res )
+    })
+    .catch(result => { 
+      console.error("Error from server on getRoundAnalystInfo:"  + result) 
+      reject(result)
+    })
+  })
+})
+
 
 
 

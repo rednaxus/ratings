@@ -3,6 +3,7 @@
 import React                        from 'react'
 import { Route, Switch }            from 'react-router-dom'
 import PrivateRoute                 from '../components/privateRoute/PrivateRoute'
+
 import HomeConnected                from '../views/examples/home'
 import AlertConnected               from '../views/examples/alert'
 import BasicElementsConnected       from '../views/examples/basicElements'
@@ -21,6 +22,7 @@ import TeamMatesViewConnected       from '../views/examples/teamMates'
 import TodoListViewConnected        from '../views/todoList'
 import TwitterFeedConnected         from '../views/examples/twitterFeed'
 import WorkProgressConnected        from '../views/examples/workProgress'
+
 import ProtectedConnected           from '../views/protected'
 
 import Dashboard  from '../views/dashboard'
@@ -89,10 +91,13 @@ export const MainRoutes = () => (
 
 
     <Route path="/round/:id" component={ Round } />
+    <Route path="/round/:id/survey" component={ Survey }/>
+    <Route path="/round/:id/brief" component={ FileUploader } />
+
     {/* private views: need user to be authenticated */}
     <PrivateRoute path="/protected" component={ ProtectedConnected } />
 
   </Switch>
-);
+)
 
-export default MainRoutes;
+export default MainRoutes

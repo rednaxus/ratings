@@ -51,9 +51,25 @@ export const appConfig = {
 
 
   STATUSES: [ 
-    'none','pending','scheduled','active','finished','cancelled','available','confirmed','assigned'
+    'none',
+    'pending',
+    'scheduled',
+    'active',
+    'finished',
+    'cancelled',
+    'available',
+    'confirmed',
+    'assigned',
+    'brief due',
+    'brief submitted',
+    'first survey due',
+    'first survey submitted',
+    'second survey due',
+    'second survey submitted',
+    'round tallied',
+    'disqualified'
   ],
-  
+
   CYCLE_STATUSES: [ // note: these should be migrated to the Statuses above
     'unsubscribed','lead-requested','lead-assigned','jurist-requested','jurist-assigned'
   ],

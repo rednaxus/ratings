@@ -31,7 +31,9 @@ export {
   cycleSignup
 }       from './cycles'
 
-export { fetchRoundInfo }  from './rounds'
+export { 
+  fetchRoundInfo, fetchRoundAnalystInfo 
+}  from './rounds'
 
 export { 
   switchFeature, 

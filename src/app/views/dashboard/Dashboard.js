@@ -36,39 +36,39 @@ class Dashboard extends Component {
                   <figure className="profile">
                     <img src="http://success-at-work.com/wp-content/uploads/2015/04/free-stock-photos.gif" className="profile-avatar" alt=""/>
                   </figure>
-                  <h4 className="card-title mt-3">Doggone Dog</h4>
+                  <h4 className="card-title mt-3">New Sponsored Analyst!</h4>
                   <div className="meta">
-                    <a>Friends</a>
+                    <a>Name: Steven Jobs</a>
                   </div>
                   <div className="card-text">
-                    Blah blah with some blah blah.
+                    Awesome! One of your referrals has joined. You will get X amount of their winnings, as well as Y amount of the winnings of any of their referrals! Keep up the good work——our system depends on analysts like you to grow a high-quality network.
                   </div>
                 </div>
                 <div className="card-footer">
                   <small>Last updated 3 mins ago</small>
-                  <button className="btn btn-secondary float-right btn-sm">show</button>
+                  <button className="btn btn-secondary float-right btn-sm">see more</button>
                 </div>
               </div>
             </div>
             <div className="col-md-6">
               <div className="card">
                 <img className="card-img-top"
-                  src="https://cdn.history.com/sites/2/2014/02/redscare-H.jpeg"/>
+                  src="https://techcrunch.com/wp-content/uploads/2016/12/28577733713_c3c56181da_o.jpg?w=1390&crop=1"/>
                 <div className="card-block">
                   <figure className="profile">
                     <img src="http://success-at-work.com/wp-content/uploads/2015/04/free-stock-photos.gif" className="profile-avatar" alt=""/>
                   </figure>
-                  <h4 className="card-title mt-3">Doggon Cat</h4>
+                  <h4 className="card-title mt-3">VEVA tokens available!</h4>
                   <div className="meta">
-                    <a>Friends</a>
+                    <a>4,000 VEVA</a>
                   </div>
                   <div className="card-text">
-                    Blah blah also some blah blah
+                    Nice work!  Your recent win as a BEAR analyst for Neo (NEO) has netted you 4,000 VEVA tokens!  These tokens are available in your account as of March 26, 2018. Your win total is now 16,000 VEVA... keep it up!
                   </div>
                 </div>
                 <div className="card-footer">
-                  <small>Last updated 3 mins ago</small>
-                  <button className="btn btn-secondary float-right btn-sm">show</button>
+                  <small>Last updated 16 mins ago</small>
+                  <button className="btn btn-secondary float-right btn-sm">go to account</button>
                 </div>
               </div>
             </div>

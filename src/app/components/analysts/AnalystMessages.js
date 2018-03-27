@@ -14,7 +14,7 @@ import { Notification } from '../../components'
 import events from './events'
 import { Glyphicon }                     from 'react-bootstrap'
 
-import { generateMessages } from '../../services/messages'
+import { generateMessages, generateMockMessages } from '../../services/messages'
 
 
 var glyphStyle = {
@@ -114,7 +114,7 @@ export const AnalystMessages = ({ store }) => {
     return data
   }
 
-  let generated = generateMessages()
+  let generated = generateMockMessages()
   console.log('generated messages',generated)
   return messages().map( message =>
     <div className = "row">

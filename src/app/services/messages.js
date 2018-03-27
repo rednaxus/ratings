@@ -1,7 +1,5 @@
 
-
-
-import { appConfig }  from '../config';
+import { appConfig }  from '../config'
 
 import { store } from '../Root'
 
@@ -14,6 +12,8 @@ export const generateMessages = () => {
   let comingCycles = cycles.data.filter( cycle => cycle.analyst_status && cycle.timestart > now )
   let activeCycles = cycles.data.filter( cycle => cycle.analyst_status && cycle.timestart <= now && cycle.timefinish >= now )
 
+  let activeRounds = {} 
+
 	/* New Round Scheduling */
 	if (comingSignupCycles.length) {
 		messages.push({ 
@@ -24,6 +24,13 @@ export const generateMessages = () => {
 	}
 
 	/* Round Activated */
+	activeRounds.map( round => {
+		messages.push({
+			type: 'round_activated',
+			priority: 'info',
+			round: round
+		})
+	})
 
 	/* Payment */
 
@@ -46,7 +53,10 @@ export const generateMessages = () => {
 	/* New ratings in */
 
 	/* make a referral */
-	messages.push({ type: 'make_referral' })
+	messages.push({ 
+		type: 'make_referral',
+		priority: 'action-big'
+	})
 
 
 	/* Round Starting */

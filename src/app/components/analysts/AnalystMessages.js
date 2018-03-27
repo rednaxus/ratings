@@ -9,9 +9,7 @@
 /* eslint-disable */
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Grid } from 'react-redux-grid'
-import { Notification } from '../../components'
-import events from './events'
+import Moment from 'react-moment'
 import { Glyphicon }                     from 'react-bootstrap'
 
 import { generateMessages, generateMockMessages } from '../../services/messages'
@@ -57,47 +55,111 @@ alignItems: "flex-end"
 
 const base_message = {
   url: '',
-  heading: () => {},
-  body: () => {},
-  footer: () => {},
-  time: 0,
-  type: 'success'
+  glyph: 'star-empty',
+  heading: (data) => <div>base heading</div>,
+  body: (data) => <div>base body</div>,
+  footer: (data) => 
+    <div>
+      <small>Last updated 3 mins ago</small>
+      <button className="btn btn-secondary float-right btn-sm">show(url)</button>
+    </div>
+  ,
+  time: 0
 }
-const message_types = {
+const message_templates = {
   new_round_scheduling: {
     ...base_message,
     url: '/analyst/availability',
-    heading: () => { 
+    heading: (data) => { 
       return <div>Upcoming rounds available<span>set your availability</span></div>
     },
-    body: () => {
+    body: (data) => {
 
     },
-    footer: () => {},
-    time: 0,
-    type: 'danger'
+    footer: (data) => {}
   },
-  round_active: {
+  round_activated: {
     ...base_message,
     url: '/round/${round.id}',
-    heading: () => { 
+    heading: (data) => { 
       <div>Active Round</div> 
     },
-    body: () => { 
-      return analyst.isLead ? 
+    body: (data) => { 
+      return data.analyst && data.analyst.isLead ? 
         <div>You are Lead for {round.token.name} round that began at <Moment/>
           <div>Brief is due for this round by <Moment/></div>
         </div> : 
-        <div>You are jurist for {round.token.name} round that began at <Moment/>
+        <div>You are jurist for {data.round} round that began at <Moment/>
           <div>Survey is due for this round by <Moment/></div>
         </div> 
     },
-    footer: () => { 
-      return analyst.isLead ? 
+    footer: (data) => { 
+      return data.analyst && data.analyst.isLead ? 
         <div>Brief is due by <Moment/></div>
         : <div>Survey is due by <Moment/></div>
     }    
-  }
+  },
+  payment: {
+    ...base_message
+  },
+  reputation_score: {
+    ...base_message 
+  },
+  new_level: {
+    ...base_message 
+  },
+  addition_referrals: {
+    ...base_message 
+  },
+  round_finished: {
+    ...base_message 
+  },
+  round_scheduled: {
+    ...base_message 
+  },
+  tokens_added: {
+    ...base_message 
+  },
+  rounds_in_progress:{
+    ...base_message 
+  },
+  sponsored_analyst_joins: {
+    ...base_message 
+  },
+  new_ratings: {
+    ...base_message 
+  },
+  make_referral: {
+    ...base_message 
+  },
+  jurist_round_starting: {
+    ...base_message 
+  },
+  brief_posted: {
+    ...base_message 
+  },
+  pre_survey_due: {
+    ...base_message 
+  },
+  post_survey_due:{
+    ...base_message 
+  },
+  /* Round Confirmation */
+  lead_confirmation: {
+    ...base_message 
+  },
+  round_starting: {
+    ...base_message 
+  },
+  briefs_due: {
+    ...base_message 
+  },
+  rebuttal_due: {
+    ...base_message 
+  },
+  round_confirmed: {
+    ...base_message 
+  }  
 
 }
 
@@ -114,9 +176,9 @@ export const AnalystMessages = ({ store }) => {
     return data
   }
 
-  let generated = generateMockMessages()
-  console.log('generated messages',generated)
-  return messages().map( message =>
+  let generatedMessages = generateMockMessages()
+  console.log('generated messages',generatedMessages)
+  return generatedMessages.map( message =>
     <div className = "row">
       <div className="card">
         <img className="card-img-top" src="https://cdn.history.com/sites/2/2014/02/redscare-H.jpeg"/>
@@ -124,17 +186,16 @@ export const AnalystMessages = ({ store }) => {
           <figure className="profile">
             <img src="http://success-at-work.com/wp-content/uploads/2015/04/free-stock-photos.gif" className="profile-avatar" alt=""/>
           </figure>
-          <h4 className="card-title mt-3">{message.text}</h4>
+          <h4 className="card-title mt-3">{message_templates[message.type].heading(message)}</h4>
           <div className="meta">
-            <a>Friends</a>
+            <a>Friends--{message.type}</a>
           </div>
           <div className="card-text">
-            Blah blah with some blah blah.
+            {message_templates[message.type].body(message)}
           </div>
         </div>
         <div className="card-footer">
-          <small>Last updated 3 mins ago</small>
-          <button className="btn btn-secondary float-right btn-sm">show</button>
+          {message_templates[message.type].footer(message)}
         </div>
       </div>
     </div>

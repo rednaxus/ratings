@@ -147,7 +147,7 @@ export const generateMockMessages = () => {
 
 	/* Rounds in progress */
 	messages.push({
-		type: '',
+		type: 'rounds_in_progress',
 		priority: 'info',
 		rounds:[2,3,4]
 	})	
@@ -197,7 +197,7 @@ export const generateMockMessages = () => {
 
 	/* Post-Survey Due */
 	messages.push({
-		type: 'pre_survey_due',
+		type: 'post_survey_due',
 		priority: 'info',
 		due:1514937600,
 		round:3

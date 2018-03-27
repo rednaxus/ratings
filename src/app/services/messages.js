@@ -8,11 +8,12 @@ export const generateMessages = () => {
 
 	const { tokens, cycles, rounds } = store.getState()
 
+	let now = cycles.cronInfo / 1000
   let comingSignupCycles = cycles.data.filter( cycle => !cycle.analyst_status && cycle.timestart > now )
   let comingCycles = cycles.data.filter( cycle => cycle.analyst_status && cycle.timestart > now )
   let activeCycles = cycles.data.filter( cycle => cycle.analyst_status && cycle.timestart <= now && cycle.timefinish >= now )
 
-  let activeRounds = {} 
+  let activeRounds = [] 
 
 	/* New Round Scheduling */
 	if (comingSignupCycles.length) {

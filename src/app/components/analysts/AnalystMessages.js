@@ -114,6 +114,8 @@ export const AnalystMessages = ({ store }) => {
     return data
   }
 
+  let generated = generateMessages()
+  console.log('generated messages',generated)
   return messages().map( message =>
     <div className = "row">
       <div className="card">

@@ -78,7 +78,7 @@ export const getCycleInfo = ( cycle, analyst = 0) => new Promise( (resolve, reje
         num_leads_assigned: rCycle[7].toNumber(),
         analyst_status: rCycle[8].toNumber()
       }
-      console.log('got cycle',res)
+      //console.log('got cycle',res)
       resolve( res )
     })
     .catch(result => { 
@@ -96,7 +96,7 @@ export const dataSource = function getData({ pageIndex, pageSize }) {
       ratingAgency.num_cycles()
       .then(result => {
         var numCycles = result.toNumber()
-        console.log("result was:",numCycles)
+        // console.log("result was:",numCycles)
         var numFetch = 0
         var cyclesData = []
         let user = store.getState().user.info.user
@@ -105,7 +105,7 @@ export const dataSource = function getData({ pageIndex, pageSize }) {
         for (var i = 0; i < numCycles; i++) {
           getCycleInfo( i, analyst ).then( res => {
             cyclesData.push(res)
-            console.log('got cycle starting',res.timestart)
+            // console.log('got cycle starting',res.timestart)
             if (++numFetch === numCycles) {
               cyclesData.sort( (a,b) => a.id - b.id)  
               resolve( { data:cyclesData, total:numCycles } )

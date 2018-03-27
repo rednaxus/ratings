@@ -56,8 +56,9 @@ alignItems: "flex-end"
 
 const base_message = {
   url: '',
-  primary: () => {},
-  secondary: () => {},
+  heading: () => {},
+  body: () => {},
+  footer: () => {},
   time: 0,
   type: 'success'
 }
@@ -65,18 +66,36 @@ const message_types = {
   new_round_scheduling: {
     ...base_message,
     url: '/analyst/availability',
-    primary: () => {
+    heading: () => { 
       return <div>Upcoming rounds available<span>set your availability</span></div>
     },
-    secondary: () => {
+    body: () => {
 
     },
+    footer: () => {},
     time: 0,
     type: 'danger'
   },
   round_active: {
     ...base_message,
-    url: '/round/${round_id}'
+    url: '/round/${round.id}',
+    heading: () => { 
+      <div>Active Round</div> 
+    },
+    body: () => { 
+      return analyst.isLead ? 
+        <div>You are Lead for {round.token.name} round that began at <Moment/>
+          <div>Brief is due for this round by <Moment/></div>
+        </div> : 
+        <div>You are jurist for {round.token.name} round that began at <Moment/>
+          <div>Survey is due for this round by <Moment/></div>
+        </div> 
+    },
+    footer: () => { 
+      return analyst.isLead ? 
+        <div>Brief is due by <Moment/></div>
+        : <div>Survey is due by <Moment/></div>
+    }    
   }
 
 }

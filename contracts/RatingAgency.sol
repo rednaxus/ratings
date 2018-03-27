@@ -14,6 +14,8 @@ contract RatingAgency {
     uint16 constant JURY_SIZE = 6; /// desired jury size
     uint8 constant JURISTS_MIN = 2; // min jurists for a round
     uint16 constant DEFAULT_ROUND_VALUE = 100;
+    uint constant BRIEF_DUE_TIME = 86400 * 7;
+    uint constant SURVEY_DUE_TIME = 86400 * 7;
     
     uint16 constant REPUTATION_LEAD = 12;
   
@@ -27,7 +29,15 @@ contract RatingAgency {
     uint8 constant AVAILABLE = 6;
     uint8 constant CONFIRMED = 7;
     uint8 constant ASSIGNED = 8;
-
+    uint8 constant BRIEF_DUE = 9;
+    uint8 constant BRIEF_SUBMITTED = 10;
+    uint8 constant FIRST_SURVEY_DUE = 11;
+    uint8 constant FIRST_SURVEY_SUBMITTED = 12;
+    uint8 constant SECOND_SURVEY_DUE = 13;
+    uint8 constant SECOND_SURVEY_SUBMITTED = 14;
+    uint8 constant ROUND_TALLIED = 15;
+    uint8 constant DISQUALIFIED = 16;
+    
     uint public lasttime;
     
     AnalystRegistry registry;
@@ -105,7 +115,7 @@ contract RatingAgency {
     /** 
      * test data
     */
-    address constant testregistry1 = 0x3f8fc0ca7463c6e4f72a5fb04a973ea21d99d297; 
+    address constant testregistry1 = 0xc2dbef2e183c87decca0e7d2dec03626a238b976; 
     address[16] live_tokens = [
         0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0, //EOS 
         0xf230b790e05390fc8295f4d3f60332c93bed42e2, // Tronix
@@ -255,6 +265,9 @@ contract RatingAgency {
         }
     }
     
+    function confirmAnalyst( uint16 _cycle, uint32 _analyst) {
+        
+    }
     // returns analyst so can know what to do with round
     function assignAnalyst( uint16 _cycle, uint16 _analystRef, bool _lead ) public returns ( uint32 analyst ) {  // move analyst from available to assigned
         Cycle storage cycle = cycles[_cycle];
@@ -297,7 +310,9 @@ contract RatingAgency {
         round.stat = ACTIVE;
         rounds_active[ num_rounds_active++ ] = _round;
         for (uint8 a = 0; a < round.num_analysts; a++ ) {
-            registry.activateRound( round.analysts[ a ].analyst_id, _round );
+            RoundAnalyst storage analyst = round.analysts[ a ]; 
+            analyst.stat = a<2 ? BRIEF_DUE: FIRST_SURVEY_DUE;
+            registry.activateRound( analyst.analyst_id, _round );
         }
         for (uint16 i = 0; i < num_rounds_scheduled; i++) { // remove from scheduled rounds
             if ( rounds_scheduled[i] == _round ) {
@@ -341,12 +356,6 @@ contract RatingAgency {
         RoundFinished( rounds[ _roundId ].cycle, _roundId, num_rounds_scheduled, num_rounds_active );
     }   
 
-    function getAnalystNextRound( uint16 _lastRound, uint32 _analyst ) public { // shortcut to iterate rounds for analyst
-        
-    }
-    function getAnalystRoundInfo( uint16 _round, uint32 _analyst ) public {
-        
-    }
     event TallyLog( uint16 round, uint8 analyst, uint8 recommendation);
     event TallyWin( uint16 round, uint8 winner );
     function tallyRound( uint16 _round ) public {
@@ -407,6 +416,14 @@ contract RatingAgency {
             round.winner        
         );
     }  
+    function roundAnalyst( uint16 _round, uint32 _analyst ) public view returns (uint8, uint8) { 
+        Round storage round = rounds[_round];
+        for ( uint8 i=0; i < round.num_analysts; i++){
+            if ( round.analysts[ i ].analyst_id == _analyst )
+                return( i, round.analysts[ i ].stat );
+        }
+        require (false);    // not found        
+    }
     event SurveySubmitted( uint16 _round, uint32 _analyst, uint8 _idx, bytes32 _answers, byte _qualitatives, uint8 _recommendation );
     function submitSurvey( 
         uint16 _round, 
@@ -418,8 +435,21 @@ contract RatingAgency {
         bytes32 _comment
     ) public {
         Round storage round = rounds[ _round ];
+        // do some checks here
+        RoundAnalyst storage analyst = round.analysts[ _analyst ];
+        
+        //require( _idx==0 && analyst.stat == FIRST_SURVEY_DUE || _idx==1 && analyst.stat == SECOND_SURVEY_DUE );
         round.surveys[_analyst][_idx] = RoundSurvey( _answers, _qualitatives, _recommendation, _comment );
+        analyst.stat = _idx == 0 ? FIRST_SURVEY_SUBMITTED : SECOND_SURVEY_SUBMITTED; 
         SurveySubmitted( _round, _analyst, _idx, _answers, _qualitatives, _recommendation );
+    }
+    
+    event BriefSubmitted( uint16 _round, uint8 _analyst, address _file );
+    function submitBrief( uint16 _round, uint8 _analyst, address _file ) public {
+        Round storage round = rounds[ _round ];
+        round.briefs[ _analyst ] = RoundBrief( lasttime, _file);
+        round.analysts[ _analyst ].stat = BRIEF_SUBMITTED;
+        BriefSubmitted( _round, _analyst, _file );
     }
     
     /* get next 16 rounds */

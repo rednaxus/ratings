@@ -86,3 +86,5 @@ export { default as TokenSummary }               from './tokens/TokenSummary'
 
 export { default as UserStatus }                 from './userStatus/UserStatus'
 
+
+export { default as FileInput }   from './file/FileInput'

@@ -11,6 +11,9 @@ import {
   AnimatedView,
   TokenSummary
 }                         from '../../components'
+
+import Survey from '../survey'
+import FileUploader from '../briefUpload/FileUploader'
 import { appConfig } from '../../config'
 
 class Round extends PureComponent {
@@ -76,8 +79,12 @@ class Round extends PureComponent {
               Analyst status in round: {appConfig.STATUSES[round.analyst_status]}
             </div>
             <TokenSummary token={token} />
+            <Survey />
+            <FileUploader />
           </Panel.Body>
         </Panel>
+
+
       </AnimatedView>
     )
   }

@@ -13,13 +13,13 @@ export const generateMessages = () => {
   let comingCycles = cycles.data.filter( cycle => cycle.analyst_status && cycle.timestart > now )
   let activeCycles = cycles.data.filter( cycle => cycle.analyst_status && cycle.timestart <= now && cycle.timefinish >= now )
 
-  let activeRounds = [] 
+  let activeRounds = []
 
 	/* New Round Scheduling */
 	if (comingSignupCycles.length) {
-		messages.push({ 
-			type: 'new_round_scheduling', 
-			priority:'info', 
+		messages.push({
+			type: 'new_round_scheduling',
+			priority:'info',
 			signupCycles:comingSignupCycles.length
 		})
 	}
@@ -36,7 +36,7 @@ export const generateMessages = () => {
 	/* Payment */
 
 	/* Reputation Score */
-	
+
 	/* New Level */
 
 	/* Additional Referrals */
@@ -54,7 +54,7 @@ export const generateMessages = () => {
 	/* New ratings in */
 
 	/* make a referral */
-	messages.push({ 
+	messages.push({
 		type: 'make_referral',
 		priority: 'action-big'
 	})
@@ -82,16 +82,19 @@ export const generateMockMessages = () => {
 	let messages = []
 
 	/* New Round Scheduling */
-	messages.push({ 
-		type: 'new_round_scheduling', 
-		priority:'info', 
-		signupCycles:2
+	messages.push({
+		type: 'new_round_scheduling',
+		priority:'info',
+		signupCycles:2,
+
 	})
 
 	/* Round Activated */
 	messages.push({
 		type: 'round_activated',
 		priority: 'info',
+		due: ("2018-03-28T19:06-0500"),
+		start: ("2018-03-27T14:06-0500"),
 		round: 2
 	})
 
@@ -108,7 +111,7 @@ export const generateMockMessages = () => {
 		priority: 'info',
 		reputation:50,
 		new_points:5
-	})	
+	})
 
 	/* New Level */
 	messages.push({
@@ -116,19 +119,21 @@ export const generateMockMessages = () => {
 		priority: 'info',
 		previous_level:'pawn',
 		new_level:'knight'
-	})	
+	})
 
 	/* Additional Referrals */
 	messages.push({
 		type: 'addition_referrals',
 		priority: 'info',
+		new_ref:2,
 		referrals:8
-	})	
+	})
 
 	/* Round Finished */
 	messages.push({
 		type: 'round_finished',
 		priority: 'info',
+		start: ("2018-03-27T14:06-0500"),
 		round:2
 	})
 
@@ -136,8 +141,9 @@ export const generateMockMessages = () => {
 	messages.push({
 		type: 'round_scheduled',
 		priority: 'action-small',
+		due: ("2018-03-28T19:06-0500"),
 		cycle:2
-	})	
+	})
 
 	/* Tokens added */
 	messages.push({
@@ -149,8 +155,11 @@ export const generateMockMessages = () => {
 	messages.push({
 		type: 'rounds_in_progress',
 		priority: 'info',
+		start: ("2018-03-27T14:06-0500"),
+		analyst:'lead',
+		round:18,
 		rounds:[2,3,4]
-	})	
+	})
 
 	/* Sponsored analyst joins */
 	messages.push({
@@ -158,19 +167,20 @@ export const generateMockMessages = () => {
 		priority: 'info',
 		analyst:22,
 		reputation_points:3
-	})	
+	})
 
 	/* New ratings in */
 	messages.push({
 		type: 'new_ratings',
 		priority: 'info',
 		rounds:[22,33,34]
-	})	
+	})
 
 	/* make a referral */
-	messages.push({ 
+	messages.push({
 		type: 'make_referral',
-		priority: 'action-big'
+		priority: 'action-big',
+		unused_refs: 4
 	})
 
 	/* Round Starting */
@@ -178,57 +188,60 @@ export const generateMockMessages = () => {
 		type: 'jurist_round_starting',
 		priority: 'action-small',
 		round:5
-	})	
+	})
 
 	/* Brief Review */
 	messages.push({
 		type: 'brief_posted',
 		priority: 'info',
+		due: ("2018-03-28T19:06-0500"),
 		round:2
-	})	
+	})
 
 	/* Pre-Survey Due */
 	messages.push({
 		type: 'pre_survey_due',
 		priority: 'info',
-		due:1514937600,
+		due:("2018-03-27T14:06-0500"),
 		round:3
-	})	
+	})
 
 	/* Post-Survey Due */
 	messages.push({
 		type: 'post_survey_due',
 		priority: 'info',
-		due:1514937600,
+		due:("2018-03-27T14:06-0500"),
 		round:3
-	})	
+	})
 
 	/* Round Confirmation */
 	messages.push({
 		type: 'lead_confirmation',
 		priority: 'info',
+		round: 91,
 		cycle:3
-	})	
+	})
 
 	/* Round Starting */
 	messages.push({
 		type: 'round_starting',
 		priority: 'info',
+		round:44,
 		starting:1514937600,
 		cycle:3
-	})	
+	})
 
 	/* Briefs Due */
 	messages.push({
 		type: 'briefs_due',
-		due:154937600,
+		due:("2018-03-28T19:06-0500"),
 		round: 4
 	})
 
 	/* Rebuttal Due */
 	messages.push({
 		type: 'rebuttal_due',
-		due:154937640,
+		due:("2018-03-28T19:06-0500"),
 		round:3
 	})
 
@@ -236,8 +249,10 @@ export const generateMockMessages = () => {
 	messages.push({
 		type: 'round_confirmed',
 		priority: 'info',
+		round: 32,
+		start: ("2018-03-28T19:06-0500"),
 		cycle:5
-	})	
+	})
 
 	return messages
 }

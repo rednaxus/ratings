@@ -53,6 +53,11 @@ var buttonFlex = {
   justifyContent: "flex-end"
 };
 
+var preKey = ("2018-03-27T14:06-0500");
+var dateKey = ("2018-03-28T19:06-0500");
+/*"2019-05-19T12:59-0500"*/
+
+
 
 const base_message = {
   url: '',
@@ -77,7 +82,7 @@ const message_templates = {
       return <div>Upcoming rounds available</div>
     },
     body: (data) => {
-        return <div>We have scheduled new rounds! Please make sure your availability is updated in your profile.</div>
+        return <div>We have scheduled {data.signupCycles} new rounds! Please make sure your availability is updated in your profile.</div>
     },
     footer: (data) => {
       return <div>Go To Profile</div>
@@ -95,17 +100,17 @@ const message_templates = {
     },
     body: (data) => {
       return data.analyst && data.analyst.isLead ?
-        <div>You are Lead for {round.token.name} round that began at <Moment/>
-          <div>Brief is due for this round by <Moment/></div>
+        <div>You are Lead for {round.token.name} round that began <Moment fromNow>{data.start}</Moment>.
+          <div>Brief is due for this round <Moment fromNow>{data.due}</Moment></div>
         </div> :
-        <div>You are jurist for {data.round} round that began at <Moment/>
-          <div>Survey is due for this round by <Moment/></div>
+        <div>You are jurist for round #{data.round} that began <Moment fromNow>{data.start}</Moment>.
+          <div>Survey is due for this round <Moment fromNow>{data.due}</Moment></div>
         </div>
     },
     footer: (data) => {
       return data.analyst && data.analyst.isLead ?
-        <div>Brief is due by <Moment/></div>
-        : <div>Survey is due by <Moment/></div>
+        <div>Brief is due <Moment fromNow>{data.due}</Moment>.</div>
+        : <div>Survey is due <Moment fromNow>{data.due}</Moment>.</div>
     },
     glyph: (data) => {
       return <div><Glyphicon glyph="ok-circle"></Glyphicon></div>
@@ -120,7 +125,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Nice work! You have earned a new payment of VEVA!</div>
+      return <div>Nice work! You have earned a new payment of {data.tokens} VEVA!</div>
 
     },
     footer: (data) => {
@@ -139,7 +144,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Well done! Your reputation score has increased!</div>
+      return <div>Well done! You have earned {data.new_points} reputation points! You now have {data.reputation} points.</div>
 
     },
     footer: (data) => {
@@ -158,7 +163,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>All right! You have earned sufficient reputation points to reach the next level!</div>
+      return <div>All right! You have earned sufficient reputation points to move from a {data.previous_level} to a {data.new_level}!</div>
 
     },
     footer: (data) => {
@@ -177,7 +182,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>You have earned enough rep points to get additional referrals.</div>
+      return <div>You have earned enough rep points to get {data.new_raf} additional referrals, giving you a total of {data.referrals}.</div>
 
     },
     footer: (data) => {
@@ -196,7 +201,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Analysis round #{data.round} (began <Moment />) has finished. Thank you for partcipating!</div>
+      return <div>Analysis round #{data.round} (began <Moment fromNow>{data.start}</Moment>) has finished. Thank you for partcipating!</div>
 
     },
     footer: (data) => {
@@ -215,7 +220,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>A new round has been scheduled to begin at <Moment />. Can you participate?</div>
+      return <div>A new round has been scheduled to begin <Moment fromNow>{data.due}</Moment>. Can you participate?</div>
 
     },
     footer: (data) => {
@@ -234,7 +239,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>New tokens have been added to our system! Check out the tokens page for more information or to browse.</div>
+      return <div>We have added new tokens (data.tokens.name} to our system! Check out the tokens page for more information or to browse.</div>
 
     },
     footer: (data) => {
@@ -253,7 +258,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return  <div> Analysis round #{data.round} (began <Moment />) is in progress.  You are a {data.analyst}. </div>
+      return  <div> Analysis round #{data.round} (began <Moment fromNow>{data.start}</Moment>) is in progress.  You are a {data.analyst}. </div>
     },
     footer: (data) => {
       return <div>view round info</div>
@@ -271,7 +276,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Hurray! One of your referrals has joined. Thank you for participating in the Veva ecosystem!</div>
+      return <div>Hurray! One of your referrals (Analyst #{data.analyst}) has joined. Thank you for participating in the Veva ecosystem! You have earned an additional {data.reputation_points} rep points.</div>
 
     },
     footer: (data) => {
@@ -290,7 +295,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>New token rating data has been added! Check out the tokens page for more information or to browse.</div>
+      return <div>New token rating data has been added for rounds {data.rounds}! Check out the tokens page for more information or to browse.</div>
 
     },
     footer: (data) => {
@@ -309,7 +314,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>You have unused referrals. Your referrals help keep the Veva system healthy and secure—and you get a cut of their winnings! </div>
+      return <div>You have {data.unused_refs} unused referrals. Your referrals help keep the Veva system healthy and secure—and you get a cut of their winnings! </div>
 
     },
     footer: (data) => {
@@ -328,7 +333,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>You are a confirmed JURIST for round {}, which is starting now!</div>
+      return <div>You are a confirmed JURIST for round #{data.round}, which is starting now!</div>
 
     },
     footer: (data) => {
@@ -347,7 +352,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>A lead analyst in round #{data.round} has posted a new brief. You can access it until <Moment />.</div>
+      return <div>A lead analyst in round #{data.round} has posted a new brief. You can access it until it closes <Moment fromNow>{data.due}</Moment>.</div>
 
     },
     footer: (data) => {
@@ -366,7 +371,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Reminder: Please take the pre-survey for round # {data.round} by <Moment />.</div>
+      return <div>Reminder: Please take the pre-survey for round #{data.round}--it is due <Moment fromNow>{data.due}</Moment>.</div>
 
     },
     footer: (data) => {
@@ -385,7 +390,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Reminder: Please take the pre-survey for round # {data.round} by <Moment />.</div>
+      return <div>Reminder: Please take the pre-survey for round #{data.round}--it is due <Moment fromNow>{data.due}</Moment>.</div>
 
     },
     footer: (data) => {
@@ -401,11 +406,11 @@ const message_templates = {
     ...base_message,
     url: '',
     heading: (data) => {
-      return <div>Round Starting!</div>
+      return <div>You are confirmed as a lead!</div>
     },
     body: (data) => {
 
-      return <div>You are a confirmed LEAD for round {}, which is starting now!</div>
+      return <div>You are a confirmed LEAD for round #{data.round}, which is starting now!</div>
 
     },
     footer: (data) => {
@@ -424,7 +429,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>You are confirmed for round {}, which is starting now!</div>
+      return <div>You are confirmed for round #{data.round}, which is starting now!</div>
 
     },
     footer: (data) => {
@@ -443,7 +448,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Your LEAD brief for round #{data.round} is due <Moment />. Please remember to upload!</div>
+      return <div>Your LEAD brief for round #{data.round} is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>
 
     },
     footer: (data) => {
@@ -462,7 +467,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Your LEAD rebuttal for round #{data.round} is due <Moment />. Please remember to upload!</div>
+      return <div>Your LEAD rebuttal for round #{data.round} is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>
 
     },
     footer: (data) => {
@@ -481,7 +486,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Round #{data.round} has been confirmed and will be starting at <Moment />!</div>
+      return <div>Round #{data.round} has been confirmed and will be starting <Moment fromNow>{data.start}</Moment>!</div>
 
     },
     footer: (data) => {

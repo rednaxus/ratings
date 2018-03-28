@@ -16,7 +16,9 @@ import { generateMessages, generateMockMessages } from '../../services/messages'
 
 
 var glyphStyle = {
-  fontSize: "100px"
+  fontSize: "80px",
+  marginTop: "0px",
+  marginBottom: "-20px"
 };
 
 var spanStyle = {
@@ -30,13 +32,15 @@ var cardStyle = {
 };
 
 var cardFlex = {
+  maxHeight: "40%",
   display:"flex",
   flexDirection: "row",
-  justifyContent: 'space-around'
+  justifyContent: "space-between"
+
 };
 
 var infoRow = {
-  width: "100%",
+  width: "60%",
   display:"flex",
   flexDirection: "column",
   alignItems: "flex-start",
@@ -45,121 +49,448 @@ var infoRow = {
 
 var buttonFlex = {
   color: "blue",
-  maxWidth: "50%",
-display: "flex",
-flexDirection: "row",
-justifyContent: "center",
-alignItems: "flex-end"
+  display: "flex",
+  justifyContent: "flex-end"
 };
 
 
 const base_message = {
   url: '',
-  glyph: 'star-empty',
+  /*glyph: 'star-empty',*/
   heading: (data) => <div>base heading</div>,
   body: (data) => <div>base body</div>,
-  footer: (data) => 
+  footer: (data) =>
     <div>
       <small>Last updated 3 mins ago</small>
       <button className="btn btn-secondary float-right btn-sm">show(url)</button>
-    </div>
-  ,
+    </div>,
+    glyph: (data) => <div><Glyphicon glyph="star-empty"></Glyphicon></div>,
+
   time: 0
 }
 const message_templates = {
+
   new_round_scheduling: {
     ...base_message,
     url: '/analyst/availability',
-    heading: (data) => { 
-      return <div>Upcoming rounds available<span>set your availability</span></div>
+    heading: (data) => {
+      return <div>Upcoming rounds available</div>
     },
     body: (data) => {
-
+        return <div>We have scheduled new rounds! Please make sure your availability is updated in your profile.</div>
     },
-    footer: (data) => {}
+    footer: (data) => {
+      return <div>Go To Profile</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="calendar"></Glyphicon></div>
+    }
   },
+
   round_activated: {
     ...base_message,
     url: '/round/${round.id}',
-    heading: (data) => { 
-      <div>Active Round</div> 
+    heading: (data) => {
+      return <div>Active Round</div>
     },
-    body: (data) => { 
-      return data.analyst && data.analyst.isLead ? 
+    body: (data) => {
+      return data.analyst && data.analyst.isLead ?
         <div>You are Lead for {round.token.name} round that began at <Moment/>
           <div>Brief is due for this round by <Moment/></div>
-        </div> : 
+        </div> :
         <div>You are jurist for {data.round} round that began at <Moment/>
           <div>Survey is due for this round by <Moment/></div>
-        </div> 
+        </div>
     },
-    footer: (data) => { 
-      return data.analyst && data.analyst.isLead ? 
+    footer: (data) => {
+      return data.analyst && data.analyst.isLead ?
         <div>Brief is due by <Moment/></div>
         : <div>Survey is due by <Moment/></div>
-    }    
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="ok-circle"></Glyphicon></div>
+    }
   },
+
   payment: {
-    ...base_message
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>New Payment Available!</div>
+    },
+    body: (data) => {
+
+      return <div>Nice work! You have earned a new payment of VEVA!</div>
+
+    },
+    footer: (data) => {
+      return <div>click here to see account</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="usd"></Glyphicon></div>
+    }
   },
+
   reputation_score: {
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>New Rep Points!</div>
+    },
+    body: (data) => {
+
+      return <div>Well done! Your reputation score has increased!</div>
+
+    },
+    footer: (data) => {
+      return <div>see in profile</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="thumbs-up"></Glyphicon></div>
+    }
   },
+
   new_level: {
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>New Level!</div>
+    },
+    body: (data) => {
+
+      return <div>All right! You have earned sufficient reputation points to reach the next level!</div>
+
+    },
+    footer: (data) => {
+      return <div>see in profile</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="knight"></Glyphicon></div>
+    }
   },
+
   addition_referrals: {
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>New Referrals!</div>
+    },
+    body: (data) => {
+
+      return <div>You have earned enough rep points to get additional referrals.</div>
+
+    },
+    footer: (data) => {
+      return <div>view referrals</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="plus-sign"></Glyphicon></div>
+    }
   },
+
   round_finished: {
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>Round Finished</div>
+    },
+    body: (data) => {
+
+      return <div>Analysis round #{data.round} (began <Moment />) has finished. Thank you for partcipating!</div>
+
+    },
+    footer: (data) => {
+      return <div>view round</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="education"></Glyphicon></div>
+    }
   },
+
   round_scheduled: {
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>Round Scheduled</div>
+    },
+    body: (data) => {
+
+      return <div>A new round has been scheduled to begin at <Moment />. Can you participate?</div>
+
+    },
+    footer: (data) => {
+      return <div>Sign up!</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="time"></Glyphicon></div>
+    }
   },
+
   tokens_added: {
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>New Tokens Added!</div>
+    },
+    body: (data) => {
+
+      return <div>New tokens have been added to our system! Check out the tokens page for more information or to browse.</div>
+
+    },
+    footer: (data) => {
+      return <div>Go Now</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="plus"></Glyphicon></div>
+    }
   },
+
   rounds_in_progress:{
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>Round In Progress</div>
+    },
+    body: (data) => {
+
+      return  <div> Analysis round #{data.round} (began <Moment />) is in progress.  You are a {data.analyst}. </div>
+    },
+    footer: (data) => {
+      return <div>view round info</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="star-empty"></Glyphicon></div>
+    }
   },
+
   sponsored_analyst_joins: {
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>New Sponsored Analyst!</div>
+    },
+    body: (data) => {
+
+      return <div>Hurray! One of your referrals has joined. Thank you for participating in the Veva ecosystem!</div>
+
+    },
+    footer: (data) => {
+      return <div>view referrals</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="heart"></Glyphicon></div>
+    }
   },
+
   new_ratings: {
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>New Ratings!</div>
+    },
+    body: (data) => {
+
+      return <div>New token rating data has been added! Check out the tokens page for more information or to browse.</div>
+
+    },
+    footer: (data) => {
+      return <div>Go Now</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="th-list"></Glyphicon></div>
+    }
   },
+
   make_referral: {
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>Reminder: You have unused referrals!</div>
+    },
+    body: (data) => {
+
+      return <div>You have unused referrals. Your referrals help keep the Veva system healthy and secure—and you get a cut of their winnings! </div>
+
+    },
+    footer: (data) => {
+      return <div>view referrals</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="user"></Glyphicon></div>
+    }
   },
+
   jurist_round_starting: {
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>Round Starting!</div>
+    },
+    body: (data) => {
+
+      return <div>You are a confirmed JURIST for round {}, which is starting now!</div>
+
+    },
+    footer: (data) => {
+      return <div>view info</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="bullhorn"></Glyphicon></div>
+    }
   },
+
   brief_posted: {
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>New Brief Posted!</div>
+    },
+    body: (data) => {
+
+      return <div>A lead analyst in round #{data.round} has posted a new brief. You can access it until <Moment />.</div>
+
+    },
+    footer: (data) => {
+      return <div>View Now</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="edit"></Glyphicon></div>
+    }
   },
+
   pre_survey_due: {
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>Pre-Survey Due</div>
+    },
+    body: (data) => {
+
+      return <div>Reminder: Please take the pre-survey for round # {data.round} by <Moment />.</div>
+
+    },
+    footer: (data) => {
+      return <div>Take it Now</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="list-alt"></Glyphicon></div>
+    }
   },
+
   post_survey_due:{
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>Post-Survey Due!</div>
+    },
+    body: (data) => {
+
+      return <div>Reminder: Please take the pre-survey for round # {data.round} by <Moment />.</div>
+
+    },
+    footer: (data) => {
+      return <div>Take it Now</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="list-alt"></Glyphicon></div>
+    }
   },
+
   /* Round Confirmation */
   lead_confirmation: {
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>Round Starting!</div>
+    },
+    body: (data) => {
+
+      return <div>You are a confirmed LEAD for round {}, which is starting now!</div>
+
+    },
+    footer: (data) => {
+      return <div>view info</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="check"></Glyphicon></div>
+    }
   },
+
   round_starting: {
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>Round Starting!</div>
+    },
+    body: (data) => {
+
+      return <div>You are confirmed for round {}, which is starting now!</div>
+
+    },
+    footer: (data) => {
+      return <div>view info</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="bell"></Glyphicon></div>
+    }
   },
+
   briefs_due: {
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>Reminder: Brief Due!</div>
+    },
+    body: (data) => {
+
+      return <div>Your LEAD brief for round #{data.round} is due <Moment />. Please remember to upload!</div>
+
+    },
+    footer: (data) => {
+      return <div>Upload Now</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="paperclip"></Glyphicon></div>
+    }
   },
+
   rebuttal_due: {
-    ...base_message 
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>Rebuttal Due!</div>
+    },
+    body: (data) => {
+
+      return <div>Your LEAD rebuttal for round #{data.round} is due <Moment />. Please remember to upload!</div>
+
+    },
+    footer: (data) => {
+      return <div>View Opposing Brief</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="paperclip"></Glyphicon></div>
+    }
   },
+
   round_confirmed: {
-    ...base_message 
-  }  
+    ...base_message,
+    url: '',
+    heading: (data) => {
+      return <div>Round confirmed!</div>
+    },
+    body: (data) => {
+
+      return <div>Round #{data.round} has been confirmed and will be starting at <Moment />!</div>
+
+    },
+    footer: (data) => {
+      return <div>View Info</div>
+    },
+    glyph: (data) => {
+      return <div><Glyphicon glyph="ok-sign"></Glyphicon></div>
+    }
+  }
 
 }
 
@@ -180,24 +511,30 @@ export const AnalystMessages = ({ store }) => {
   console.log('generated messages',generatedMessages)
   return generatedMessages.map( message =>
     <div className = "row">
-      <div className="card">
-        <img className="card-img-top" src="https://cdn.history.com/sites/2/2014/02/redscare-H.jpeg"/>
-        <div className="card-block">
-          <figure className="profile">
-            <img src="http://success-at-work.com/wp-content/uploads/2015/04/free-stock-photos.gif" className="profile-avatar" alt=""/>
-          </figure>
+      <div className="panel panel-danger card" style={cardStyle}>
+        <div className="panel-heading">
           <h4 className="card-title mt-3">{message_templates[message.type].heading(message)}</h4>
-          <div className="meta">
-            <a>Friends--{message.type}</a>
+          <a>Friends--{message.type}</a>
+        </div>
+
+        <div className="panel-body" style={cardFlex}>
+
+          <div className="card-text" style={glyphStyle}>
+            {message_templates[message.type].glyph(message)}
           </div>
-          <div className="card-text">
+          <div className="card-text" style={infoRow}>
             {message_templates[message.type].body(message)}
           </div>
+
         </div>
-        <div className="card-footer">
-          {message_templates[message.type].footer(message)}
-        </div>
-      </div>
+
+          <div className="meta">
+
+            <div className="card-footer" style={buttonFlex}>
+              {message_templates[message.type].footer(message)}
+            </div>
+          </div>
+    </div>
     </div>
   )
 

@@ -22,9 +22,10 @@ class Dashboard extends Component {
   }
 
   componentDidMount() {
-    const { actions: { fetchCyclesDataIfNeeded, fetchCronInfo } } = this.props
+    const { actions: { fetchCyclesDataIfNeeded, fetchCronInfo, refreshUserInfo } } = this.props
     fetchCyclesDataIfNeeded()
     fetchCronInfo()
+    // refreshUserInfo() work in progress, don't enable yet
   }
 
   componentWillUnmount() {

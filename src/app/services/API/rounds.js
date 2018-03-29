@@ -1,6 +1,10 @@
 // @flow weak
 
-import { getRatingAgency as RatingAgency } from '../contracts'
+import { 
+  getRatingAgency as RatingAgency,
+  getAnalystRegistry as AnalystRegistry
+} from '../contracts'
+
 import { appConfig }        from '../../config'
 
 import { store } from '../../Root'
@@ -45,9 +49,6 @@ export const getRoundAnalystInfo = ( round, analyst=0 ) => new Promise( (resolve
     })
   })
 })
-
-
-
 
 export const dataSource = function getData({
     pageIndex, pageSize

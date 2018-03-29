@@ -49,6 +49,34 @@ const getInfo = (user_id) => { // get from id
 
 }
 
+export const refreshInfo = (deep = true) => { // get from id, deep means to get rounds too
+  const request = userInfo => { return { type: userConstants.INFO_REQUEST, userInfo } }
+  const success = userInfo => { return { type: userConstants.INFO_SUCCESS, userInfo } }
+  const failure = error => { return { type: userConstants.INFO_FAILURE, error } }
+
+  return (dispatch,getState) => {
+    const user_id = getState().user.info.user.id || 0
+    dispatch( request( { user_id } ) )
+    userService.info( user_id ).then(
+      userInfo => {
+        if ( deep ) {
+          userService.getAnalystRounds( userInfo ).then( rounds => {
+            userInfo.rounds = rounds
+            dispatch( success( userInfo ) )
+          }),
+          error => {
+            dispatch( failure( error ) )
+          }
+        }
+        else dispatch( success( userInfo ) )
+      },
+      error => {
+        dispatch( failure( error ) )
+      }
+    )
+  }
+}
+
 const login = (username, password) => {
   const request = user => { return { type: userConstants.LOGIN_REQUEST, user } }
   const success = user => { return { type: userConstants.LOGIN_SUCCESS, user } }
@@ -100,7 +128,8 @@ const register = (user,email,password) => {
 export const userActions = {
   login,
   logout,
-  register
+  register,
+  refreshInfo
 }
 
 let user = JSON.parse(localStorage.getItem('user'));

@@ -21,7 +21,8 @@ const mapDispatchToProps = (dispatch) => {
         enterDashboard: actions.enterDashboard,
         leaveDashboard: actions.leaveDashboard,
         fetchCyclesDataIfNeeded: actions.fetchCyclesDataIfNeeded,
-        fetchCronInfo: actions.fetchCronInfo
+        fetchCronInfo: actions.fetchCronInfo,
+        refreshUserInfo: actions.userActions.refreshInfo
       },
       dispatch)
   }

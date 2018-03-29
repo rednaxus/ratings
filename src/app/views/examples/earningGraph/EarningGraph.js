@@ -7,7 +7,7 @@ import PropTypes          from 'prop-types';
 import {
   AnimatedView,
   Panel,
-  EarningGraph as EarningGraphComponent
+  Graph as EarningGraphComponent
 }                         from '../../../components';
 
 
@@ -71,6 +71,7 @@ class EarningGraph extends PureComponent {
               <div className="row">
                 <div className="col-md-8 col-md-offset-2">
                   <EarningGraphComponent
+                    title={"Earning Graph"}
                     labels={labels}
                     datasets={datasets}
                   />

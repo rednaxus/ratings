@@ -5,21 +5,19 @@ import React, {
 }                     from 'react';
 import PropTypes      from 'prop-types';
 import Chart          from 'chart.js';
-import {
-  earningGraphMockData
-}                     from '../../models';
+//import { earningGraphMockData}                     from '../../models';
 import Panel          from '../panel/Panel';
 
 
-class EarningGraph extends PureComponent {
+class Graph extends PureComponent {
   static propTypes = {
     labels:   PropTypes.array,
     datasets: PropTypes.array
   };
 
   static defaultProps = {
-    data: earningGraphMockData
-  };
+   // data: earningGraphMockData
+  }
 
   chart = null;
   linechart = null;
@@ -41,16 +39,10 @@ class EarningGraph extends PureComponent {
   }
 
   render() {
+    const { title } = this.props
     return (
-      <Panel
-        hasTitle={true}
-        title={'Earning Graph'}>
-        <canvas
-          ref={this.getCanvaRef}
-          id="linechart"
-          width="600"
-          height="330"
-        />
+      <Panel hasTitle={true} title={title}>
+        <canvas ref={this.getCanvaRef} id="linechart" width="600" height="330" />
       </Panel>
     );
   }
@@ -77,4 +69,4 @@ class EarningGraph extends PureComponent {
   }
 }
 
-export default EarningGraph;
+export default Graph

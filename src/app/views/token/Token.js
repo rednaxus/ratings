@@ -4,9 +4,38 @@ import Moment from 'react-moment'
 import { Panel } from 'react-bootstrap'
 import * as _ from 'lodash'
 
-import { AnimatedView, TokenSummary } from '../../components'
+import { 
+  AnimatedView, 
+  TokenSummary, 
+  Graph 
+} from '../../components'
 
 class Token extends Component {
+  dummyGraphData = {
+    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+    datasets: [
+      {
+        label: 'Pre-Review',
+        fillColor: 'rgba(220,220,220,0.2)',
+        strokeColor: 'rgba(220,220,220,1)',
+        pointColor: 'rgba(220,220,220,1)',
+        pointStrokeColor: '#fff',
+        pointHighlightFill: '#fff',
+        pointHighlightStroke: 'rgba(220,220,220,1)',
+        data: [65, 59, 80, 81, 56, 55, 40]
+      },
+      {
+        label: 'Post-Review',
+        fillColor: 'rgba(151,187,205,0.2)',
+        strokeColor: 'rgba(151,187,205,1)',
+        pointColor: 'rgba(151,187,205,1)',
+        pointStrokeColor: '#fff',
+        pointHighlightFill: '#fff',
+        pointHighlightStroke: 'rgba(151,187,205,1)',
+        data: [28, 48, 40, 19, 86, 27, 90]
+      }
+    ]
+  }
 
   componentWillReceiveProps(nextProps, nextState){
     this.props = nextProps
@@ -39,13 +68,17 @@ class Token extends Component {
 
   render() {
     const { currentView, tokens } = this.props
+    const { labels, datasets } = this.dummyGraphData
+
     let idx = _.findIndex(tokens.data,['id',+this.props.match.params.token_id])
     if (idx === -1) return(
       <div>fetching....</div>
     )
     let token = tokens.data[idx] 
     token.rounds = token.rounds || []
-    let roundItems = token.rounds.map( round_id => <li><Link to={"/round/"+round_id}>{round_id}</Link></li> )
+    let roundItems = token.rounds.map( (round_id,idx) => 
+      <li key={idx}><Link to={"/round/"+round_id}>{round_id}</Link></li> 
+    )
     console.log('props',this.props)
     console.log('token',tokens,idx,token)
     console.log('roundItems',roundItems)
@@ -57,13 +90,15 @@ class Token extends Component {
           { roundItems.length && 
           <Panel>
             <Panel.Heading>
-              <Panel.Title>Token Rounds History</Panel.Title>
+              <Panel.Title>Token Ratings History</Panel.Title>
             </Panel.Heading>
             <Panel.Body>
+              <div>Evaluation Rounds</div>
               <ul>{roundItems}</ul>
+              <Graph title="" labels={labels} datasets={datasets} />
             </Panel.Body>
           </Panel>
-          }
+          || ""}
         </div>
       </AnimatedView>
     )

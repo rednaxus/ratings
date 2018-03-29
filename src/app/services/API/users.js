@@ -64,6 +64,25 @@ const info = userId => new Promise((resolve,reject) => {
   })
 })
 
+const getAnalystRounds = ( analystInfo ) => new Promise( (resolve,reject) => {
+  const result = { }
+  AnalystRegistry().then( analystRegistry => {
+    Promise.all([...Array(analystInfo.num_rounds_scheduled)].map((_, i) => analystRegistry.scheduledRound(i)))
+    .then( scheduled => {
+      result.scheduled = scheduled
+      Promise.all([...Array(analystInfo.num_rounds_active)].map((_, i) => analystRegistry.activeRound(i)))
+      .then( active => {
+        result.active = active
+        Promise.all([...Array(analystInfo.num_rounds_finished)].map((_, i) => analystRegistry.finishedRound(i)))
+        .then( finished => {
+          result.finished = finished
+          resolve( result )
+        }).catch( reject )
+      }).catch( reject )
+    }).catch( reject )
+  })
+})
+
 const login = (username, password) => new Promise((resolve,reject) => {
     //console.log(' beginning users fetch')
   
@@ -118,7 +137,8 @@ export const userService = {
   login,
   logout,
   register,
-  info
+  info,
+  getAnalystRounds
 }
 
 export const getUsersData = () => {

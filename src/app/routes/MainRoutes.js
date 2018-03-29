@@ -1,7 +1,7 @@
 // @flow
 /* eslint no-process-env:0 */
 import React                        from 'react'
-import { Route, Switch }            from 'react-router-dom'
+import { Route, Switch, Redirect }  from 'react-router-dom'
 import PrivateRoute                 from '../components/privateRoute/PrivateRoute'
 
 import HomeConnected                from '../views/examples/home'
@@ -46,6 +46,7 @@ import Status from '../views/status'
 export const MainRoutes = () => (
   <Switch>
     <Route exact path="/" component={ Dashboard } />
+    <Redirect from='/dashboard' to='/' />
 
     <Route path="/examples/statsCard" component={ StatsCardConnected } />
     <Route path="/examples/earningGraph" component={ EarningGraphConnected } />

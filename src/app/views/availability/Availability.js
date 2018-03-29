@@ -5,7 +5,10 @@ import { Link } from 'react-router-dom'
 import Moment                    from 'react-moment'
 import PropTypes                 from 'prop-types'
 import { Panel } from 'react-bootstrap'
-import { AnimatedView } from '../../components'
+import { 
+  AnimatedView, 
+  Breadcrumb 
+} from '../../components'
 
 import { appConfig } from '../../config'
 
@@ -111,6 +114,7 @@ class Availability extends PureComponent {
     console.log('active cycles',activeCycles)
     return(
       <AnimatedView>
+        <Breadcrumb path={["dashboard","availability"]}></Breadcrumb>
         <small className="pull-right">time last checked: { dateView( { value:cycles.cronInfo,convert:false} ) }</small> 
         { !comingSignupCycles.length ? <h2>All rounds signed up, check back later</h2> :
         <div>

@@ -15,7 +15,7 @@ const TokenSummary = ( { token } ) => {
 	    <Panel.Body>
 	      <div className="row">
 	        <div className="col-md-4">
-	          { token.price &&   
+	          { token.price && 
 	            <div>
 	              <div>rate: <span className="price-data">{token.price.rate}</span></div>
 	              <div>diff: <span className="price-data">{token.price.diff}</span></div>
@@ -25,10 +25,12 @@ const TokenSummary = ( { token } ) => {
 	              <div>available supply: <span className="price-data">{token.price.availableSupply}</span></div>
 	              <div>market cap: <span className="price-data">{token.price.marketCapUsd}</span></div>
 	            </div>
+	            || ""
 	          }
 	          </div>
 	        <div className = "col-md-4">      
 	          <div>Updated: <Moment className="token-data" format="YYYY-MM-DD HH:mm" date={new Date(token.lastUpdated*1000)} /></div>
+						<div>Decimals: <span className="token-data">{token.decimals}</span></div>
 	          <div>Supply: <span className="token-data">{token.totalSupply}</span></div>
 	          <div>Transfers: <span className="token-data">{token.transfersCount}</span></div>
 	          <div>Holders: <span className="token-data">{token.holdersCount}</span></div>

@@ -1,5 +1,5 @@
 export const navigation = {
-  brand:      'reactDirectorAdmin',
+  brand:      'Veva',
   leftLinks:  [],
   rightLinks: [
     {
@@ -16,27 +16,8 @@ export const navigation = {
     }
   ],
   sideMenu: [
-    // group menu #1
-    {
+    { // group menu #1
       id: 1,
-      group: 'Admin',
-      menus: [
-        {
-          name: 'Analysts',
-          linkTo: '/admin/analysts',
-          faIconName: 'fa-user-circle-o'
-        },
-        {
-          name: 'Round Cycles',
-          linkTo: '/admin/cycles',
-          faIconName: 'fa-columns'
-        }
-      ]
-    },
-
-    // group menu #2
-    {
-      id: 2,
       group: 'Analyst',
       menus: [
         {
@@ -61,9 +42,8 @@ export const navigation = {
         }
       ]
     },
-    // group menu #3
-    {
-      id: 3,
+    { // group menu #2
+      id: 2,
       group: 'Tokens',
       menus: [
         {
@@ -88,7 +68,23 @@ export const navigation = {
         }
       ]
     },
-    // group menu #4
+    { // group menu #3
+      id: 3,
+      group: 'Admin',
+      menus: [
+        {
+          name: 'Analysts',
+          linkTo: '/admin/analysts',
+          faIconName: 'fa-user-circle-o'
+        },
+        {
+          name: 'Round Cycles',
+          linkTo: '/admin/cycles',
+          faIconName: 'fa-columns'
+        }
+      ]
+    },
+     // group menu #4
     {
       id: 4,
       group: 'Tests1',

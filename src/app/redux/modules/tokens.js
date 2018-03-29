@@ -132,7 +132,8 @@ function shouldFetchTokensData(state) {
 
 
 
-export const fetchTokenData = ( id ) => {
+
+export const fetchTokenData = ( id, full=true ) => { // if full is set get all rounds as well
   const request = ( id, time = moment().format() ) => {
     return { type: REQUEST_TOKEN_DATA, id, time }
   }
@@ -145,10 +146,12 @@ export const fetchTokenData = ( id ) => {
   console.log('fetch token data',id)
   return dispatch => {
     dispatch( request( id ) )
+    if (full) dispatch( fetchTokenRounds( id ) )
     //console.log('getting token info from ethplorer')
-    getTokenData( id ).then(
-      info => dispatch( receive( info ) )
-    ).catch(
+    getTokenData( id ).then( info => {
+      dispatch( receive( info ) )
+    })
+    .catch(
       err => dispatch( error( err ) )
     )
   }

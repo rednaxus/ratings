@@ -118,13 +118,13 @@ export {
   enterPagination,
   leavePagination,
 
-  enterGridView,
-  leaveGridView,
+  enterGridView, leaveGridView,
 
   enterRound, leaveRound,
 
   enterStatus, leaveStatus,
 
-  enterAvailability, leaveAvailability
+  enterAvailability, leaveAvailability,
 
+  enterDashboard, leaveDashboard
 }                                     from './views'

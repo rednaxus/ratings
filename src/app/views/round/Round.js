@@ -9,7 +9,8 @@ import * as _ from 'lodash'
 
 import {
   AnimatedView,
-  TokenSummary
+  TokenSummary,
+  Breadcrumb
 }                         from '../../components'
 
 import Survey from '../survey'
@@ -41,7 +42,7 @@ class Round extends PureComponent {
 
     this.idx = +this.props.match.params.id
     //const { actions: { fetchTokenData, fetchTokenRounds } } = this.props
-    const { actions: { fetchRoundInfo, fetchRoundAnalystInfo } } = this.props
+    const { actions: { fetchRoundInfo, fetchRoundAnalystInfo, fetchTokenRounds } } = this.props
     fetchRoundInfo( this.idx )
     fetchRoundAnalystInfo( this.idx )
     //fetchTokenRounds( this.idx ) 
@@ -60,8 +61,9 @@ class Round extends PureComponent {
 
     return(
       <AnimatedView>
+        <Breadcrumb path={["dashboard","eval-round"]} />
         <Panel>
-          <Panel.Heading><Panel.Title>Round</Panel.Title></Panel.Heading>
+          <Panel.Heading><Panel.Title>Evaluation Round</Panel.Title></Panel.Heading>
           <Panel.Body>
             <div>
               Round { this.idx } for token <Link to={"/token/"+token.id}><span className="text-success">{ token.name }</span></Link> with status <span className="text-danger">{ appConfig.STATUSES[round.status] }</span>
@@ -75,10 +77,10 @@ class Round extends PureComponent {
             <div>
               Number of analysts: {round.num_analysts}
             </div>
+            <TokenSummary token={token} />
             <div>
               Analyst status in round: {appConfig.STATUSES[round.analyst_status]}
             </div>
-            <TokenSummary token={token} />
             <Survey />
             <FileUploader />
           </Panel.Body>

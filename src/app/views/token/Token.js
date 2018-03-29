@@ -32,7 +32,7 @@ class Token extends Component {
     if (this.idx !== +this.props.match.params.token_id) {
       this.idx = +this.props.match.params.token_id
       const { actions: { fetchTokenData, fetchTokenRounds } } = this.props
-      fetchTokenRounds( this.idx ) 
+      //fetchTokenRounds( this.idx ) 
       fetchTokenData( this.idx )
     }
   }

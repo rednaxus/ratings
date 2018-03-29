@@ -7,13 +7,29 @@ import { store } from '../../Root'
 import AnalystMessages from '../../components/analysts/AnalystMessages'
 
 import AnalystStat from '../analystStat'
-import { AnimatedView } from '../../components'
+import { AnimatedView, Breadcrumb } from '../../components'
 
 class Dashboard extends Component {
   //constructor(props, { user }) {
   constructor(props) {
     super(props)
     //user = this.props
+  }
+
+  componentWillMount() {
+    const { actions: { enterDashboard } } = this.props
+    enterDashboard()
+  }
+
+  componentDidMount() {
+    const { actions: { fetchCyclesDataIfNeeded, fetchCronInfo } } = this.props
+    fetchCyclesDataIfNeeded()
+    fetchCronInfo()
+  }
+
+  componentWillUnmount() {
+    const { actions: { leaveDashboard } } = this.props
+    leaveDashboard()
   }
 
   render() {
@@ -25,9 +41,8 @@ class Dashboard extends Component {
     return(
       <AnimatedView>
         <main className="container">
-          <h2>Analyst Dashboard</h2>
           <AnalystMessages { ...{ store } } />
-          <hr/>
+          {/*<hr/>
           <div className="row">
             <div className="col-md-6">
               <div className="card">
@@ -73,6 +88,7 @@ class Dashboard extends Component {
               </div>
             </div>
           </div>
+        */}
         </main>
       </AnimatedView>
     )

@@ -4,7 +4,11 @@ import { store } from '../../Root'
 
 import AnalystStat from '../analystStat'
 
-import { AnimatedView, UserStatus } from '../../components'
+import { 
+  AnimatedView, 
+  Breadcrumb, 
+  UserStatus 
+} from '../../components'
 
 class Status extends Component {
 
@@ -17,8 +21,8 @@ class Status extends Component {
     return(
       <AnimatedView>
         <main className="container">
+          <Breadcrumb path={["dashboard","status"]} />
           <UserStatus user={ user.info.user }/>
-          <h2>My Status</h2>
           <AnalystStat />
           <div className="row">
             <div className="col-md-6">

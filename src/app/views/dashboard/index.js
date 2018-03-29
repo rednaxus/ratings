@@ -1,20 +1,16 @@
 // @flow weak
-
 import { connect } from 'react-redux'
 import { bindActionCreators, compose } from 'redux'
-import * as viewsActions        from '../../redux/modules/views'
-//import * as userInfosActions    from '../../redux/modules/userInfos'
+import * as actions           from '../../redux/modules/actions'
 import Dashboard                      from './Dashboard'
-import { userActions } from '../../redux/modules/actions'
+
+
 
 const mapStateToProps = (state) => {
   return {
-    // views:
-    currentView:         state.views.currentView,
-    // userInfos:
-    userInfos:           state.userInfos.data,
-    userIsConnected:     state.userInfos.isConnected,
-    user:                state.user
+    currentView:          state.views.currentView,
+    cycles:               state.cycles,
+    user:                 state.user
   }
 }
 
@@ -22,18 +18,14 @@ const mapDispatchToProps = (dispatch) => {
   return {
     actions : bindActionCreators(
       {
-        // views:
-        ...viewsActions,
-        // userInfos
-        //...userInfosActions,
-        ...userActions
+        enterDashboard: actions.enterDashboard,
+        leaveDashboard: actions.leaveDashboard,
+        fetchCyclesDataIfNeeded: actions.fetchCyclesDataIfNeeded,
+        fetchCronInfo: actions.fetchCronInfo
       },
       dispatch)
   }
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Dashboard)
+export default connect( mapStateToProps, mapDispatchToProps )(Dashboard)
 

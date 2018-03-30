@@ -25,7 +25,7 @@ const info = userId => new Promise((resolve,reject) => {
   AnalystRegistry().then( analystRegistry => {
     RatingAgency().then( ratingAgency => {    
       analystRegistry.analystInfo(userId).then( result => {
-        //  _analystId, name, password, auth_status, reputation, is_lead, token_balance, scheduled_round, active_round, num_rounds );
+        // _analystId, a.name, a.password, a.auth_status, a.reputation, a.is_lead, a.token_balance, a.num_rounds_scheduled, a.num_rounds_active, a.num_rounds_finished
         userInfo = { 
           ...userInfo,
           id: result[0].toNumber(),
@@ -35,9 +35,9 @@ const info = userId => new Promise((resolve,reject) => {
           reputation: result[4].toNumber(),
           lead: result[5],
           token_balance: result[6].toNumber(),
-          scheduled_round: result[7].toNumber(),
-          active_round: result[8].toNumber(),
-          num_rounds: result[9].toNumber()
+          num_rounds_scheduled: result[7].toNumber(),
+          num_rounds_active: result[8].toNumber(),
+          num_rounds_finished: result[9].toNumber()
         }
         console.log('got user info',userInfo)
         console.log('rating agency',ratingAgency)
@@ -64,18 +64,21 @@ const info = userId => new Promise((resolve,reject) => {
   })
 })
 
+
+
 const getAnalystRounds = ( analystInfo ) => new Promise( (resolve,reject) => {
   const result = { }
+  console.log('analyst info',analystInfo)
   AnalystRegistry().then( analystRegistry => {
-    Promise.all([...Array(analystInfo.num_rounds_scheduled)].map((_, i) => analystRegistry.scheduledRound(i)))
-    .then( scheduled => {
-      result.scheduled = scheduled
-      Promise.all([...Array(analystInfo.num_rounds_active)].map((_, i) => analystRegistry.activeRound(i)))
-      .then( active => {
-        result.active = active
-        Promise.all([...Array(analystInfo.num_rounds_finished)].map((_, i) => analystRegistry.finishedRound(i)))
-        .then( finished => {
-          result.finished = finished
+    Promise.all([...Array(analystInfo.num_rounds_scheduled)].map((_, i) => analystRegistry.scheduledRound(analystInfo.id,i)))
+    .then( res => {
+      result.scheduled = res.map( rnd => rnd.toNumber() )
+      Promise.all([...Array(analystInfo.num_rounds_active)].map((_, i) => analystRegistry.activeRound(analystInfo.id,i)))
+      .then( res => {
+        result.active = res.map( rnd => rnd.toNumber() )
+        Promise.all([...Array(analystInfo.num_rounds_finished)].map((_, i) => analystRegistry.finishedRound(analystInfo.id,i)))
+        .then( res => {
+          result.finished = res.map( rnd => rnd.toNumber() )
           resolve( result )
         }).catch( reject )
       }).catch( reject )

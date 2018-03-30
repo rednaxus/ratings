@@ -125,7 +125,7 @@ class Availability extends PureComponent {
             </Panel.Heading>
             <Panel.Body>
               <div className="row">
-                { columns.map( col => <div className={col.className}>{col.name}</div> )
+                { columns.map( (col,colIdx) => <div key={colIdx} className={col.className}>{col.name}</div> )
                 }
               </div>
               { comingSignupCycles.map( (cycle,rowIdx) => { 

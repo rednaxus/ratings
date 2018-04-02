@@ -7,7 +7,7 @@ import PropTypes          from 'prop-types';
 import {
   AnimatedView,
   StatsCard,
-  EarningGraph,
+  Graph as EarningGraph,
   Notifications,
   WorkProgress,
   TwitterFeed,

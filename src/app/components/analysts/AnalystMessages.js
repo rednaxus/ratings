@@ -537,8 +537,8 @@ export const AnalystMessages = ({ store }) => {
 
   let generatedMessages = generateMockMessages()
   console.log('generated messages',generatedMessages)
-  return generatedMessages.map( message =>
-    <div className = "row">
+  return generatedMessages.map( (message,idx) =>
+    <div className = "row" key={idx} >
       <div className="panel panel-danger card" style={cardStyle}>
         <div className="panel-heading">
           <h4 className="card-title mt-3">{message_templates[message.type].heading(message)}</h4>

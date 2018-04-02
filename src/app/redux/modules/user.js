@@ -2,7 +2,7 @@ import { combineReducers }  from 'redux'
 import { push } from 'react-router-redux'
 import { userService } from '../../services/API/users'
 import auth            from '../../services/auth'
-import { alertActions } from './actions'
+import { alertActions, fetchRoundInfo } from './actions'
 
 const userConstants = {
   REGISTER_REQUEST: 'USERS_REGISTER_REQUEST',
@@ -35,18 +35,46 @@ const getInfo = (user_id) => { // get from id
 
   return dispatch => {
     dispatch(request({ user_id }))
-    userService.info(user_id).then(
-      userInfo => {
-        dispatch(success(userInfo))
-        dispatch(push('/')) //history.push
-      },
-      error => {
-        dispatch(failure(error))
-        dispatch(alertActions.error(error))
-      }
-    )
+    userService.info(user_id).then( userInfo => {
+      dispatch(success(userInfo))
+      dispatch(push('/')) //history.push
+    })
+    .catch( error => {
+      dispatch(failure(error))
+      dispatch(alertActions.error(error))
+    })
   }
 
+}
+
+export const refreshInfo = (deep = true) => { // get from id, deep means to get rounds too
+  const request = userInfo => { return { type: userConstants.INFO_REQUEST, userInfo } }
+  const success = userInfo => { return { type: userConstants.INFO_SUCCESS, userInfo } }
+  const failure = error => { return { type: userConstants.INFO_FAILURE, error } }
+
+  return (dispatch,getState) => {
+    const user_id = getState().user.info.user.id || 0
+    dispatch( request( { user_id } ) )
+    userService.info( user_id ).then( userInfo => {
+      if ( deep ) {
+        userService.getAnalystRounds( userInfo ).then( rounds => {
+          userInfo.rounds = rounds
+          console.log('got rounds',rounds)
+          rounds.scheduled.map( round => dispatch(fetchRoundInfo(round)) )
+          rounds.active.map( round => dispatch(fetchRoundInfo(round)) )
+          rounds.finished.map( round => dispatch(fetchRoundInfo(round)) )
+          dispatch( success( userInfo ) )
+        })
+        .catch( error => {
+          dispatch( failure( error ) )
+        })
+      }
+      else dispatch( success( userInfo ) )
+    })
+    .catch( error => {
+      dispatch( failure( error ) )
+    })
+  }
 }
 
 const login = (username, password) => {
@@ -100,7 +128,8 @@ const register = (user,email,password) => {
 export const userActions = {
   login,
   logout,
-  register
+  register,
+  refreshInfo
 }
 
 let user = JSON.parse(localStorage.getItem('user'));

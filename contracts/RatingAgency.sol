@@ -38,6 +38,7 @@ contract RatingAgency {
     uint8 constant ROUND_TALLIED = 15;
     uint8 constant DISQUALIFIED = 16;
     
+
     uint public lasttime;
     
     AnalystRegistry registry;
@@ -115,7 +116,7 @@ contract RatingAgency {
     /** 
      * test data
     */
-    address constant testregistry1 = 0xc2dbef2e183c87decca0e7d2dec03626a238b976; 
+    address constant testregistry1 = 0x3ae851d5780725853de7118c73d0bd2a303c7fff; 
     address[16] live_tokens = [
         0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0, //EOS 
         0xf230b790e05390fc8295f4d3f60332c93bed42e2, // Tronix
@@ -265,7 +266,7 @@ contract RatingAgency {
         }
     }
     
-    function confirmAnalyst( uint16 _cycle, uint32 _analyst) {
+    function confirmAnalyst( uint16 _cycle, uint32 _analyst) public {
         
     }
     // returns analyst so can know what to do with round
@@ -370,13 +371,13 @@ contract RatingAgency {
         }
         */
         uint8 n = 0;
-        for ( uint8 a = 2; a < round.num_analysts; a++ ) {
-            TallyLog( _round, a, round.surveys[a][0].recommendation );
-            TallyLog( _round, a, round.surveys[a][1].recommendation );
+        for ( uint8 aref = 2; aref < round.num_analysts; aref++ ) {
+            TallyLog( _round, aref, round.surveys[aref][0].recommendation );
+            TallyLog( _round, aref, round.surveys[aref][1].recommendation );
 
             //if (round.surveys[a][0] && round.surveys[a][1] ) {        
-                round.r1_avg = (round.r1_avg*n + 10*round.surveys[a][0].recommendation) / (n+1);
-                round.r2_avg = (round.r2_avg*n + 10*round.surveys[a][1].recommendation) / (n+1);
+                round.r1_avg = (round.r1_avg*n + 10*round.surveys[aref][0].recommendation) / (n+1);
+                round.r2_avg = (round.r2_avg*n + 10*round.surveys[aref][1].recommendation) / (n+1);
                 n++;
 
             //}
@@ -388,6 +389,13 @@ contract RatingAgency {
         else if ( round.r2_avg < round.r1_avg - 20) round.winner = 1;
         else if ( round.r2_avg > 50 ) round.winner = 0;
         else round.winner = 1;
+        
+        // payoff in token and reputation, just leads for nowREWARD_ROUND_TOKENS_LOSER
+        for ( uint8 i = 0; i < 2; i++ )
+            registry.payLead( round.analysts[i].analyst_id, _round, round.value, round.winner == i );
+        for ( i = 2; i < round.num_analysts; i++ )
+            registry.payJurist( round.analysts[ i ].analyst_id, _round, round.value, 0 ); // for now, every jurist is a winner, pending tally above
+
         TallyWin( _round, round.winner );
 
     }
@@ -479,6 +487,8 @@ contract RatingAgency {
 
         Cron( lasttime,time );
         if (time <= lasttime) return; // don't run for earlier times than already run
+        registry.update( time ); // keep time in sync
+
         cycleUpdate( time ); // start new cycles if needed
 
         uint16 cycle_now = cycleIdx( time );

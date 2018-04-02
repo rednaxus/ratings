@@ -3,7 +3,6 @@
 export { default as Header }          from './header/Header.js';
 export { AsideLeft, AsideRight }      from './aside';
 export { default as TodoListDemo }    from './todoList/TodoListDemo';
-export { default as EarningGraph }    from './earningGraph/EarningGraph';
 export { default as Footer }          from './footer/Footer';
 export { default as  Notifications }  from './notifications/Notifications';
 export {
@@ -86,3 +85,7 @@ export { default as TokenSummary }               from './tokens/TokenSummary'
 
 export { default as UserStatus }                 from './userStatus/UserStatus'
 
+
+export { default as FileInput }   from './file/FileInput'
+
+export { default as Graph }           from './graph/Graph'

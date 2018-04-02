@@ -28,8 +28,17 @@ var spanStyle = {
 };
 
 var cardStyle = {
-  maxWidth: "50%"
+  maxWidth: "50%",
+  boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
+  transition: "0.3s"
+  /*width: 100%;*/
 };
+
+/*
+var cardStyle:hover = {
+      boxShadow: "0 8px 16px 0 rgba(0,0,0,0.2)"
+  };
+  */
 
 var cardFlex = {
   maxHeight: "40%",
@@ -57,6 +66,20 @@ var preKey = ("2018-03-27T14:06-0500");
 var dateKey = ("2018-03-28T19:06-0500");
 /*"2019-05-19T12:59-0500"*/
 
+
+/*
+.card {
+
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    width: 100%;
+
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+*/
 
 
 const base_message = {
@@ -239,7 +262,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>We have added new tokens (data.tokens.name} to our system! Check out the tokens page for more information or to browse.</div>
+      return <div>We have added new tokens {data.tokens.name} to our system! Check out the tokens page for more information or to browse.</div>
 
     },
     footer: (data) => {
@@ -390,7 +413,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Reminder: Please take the pre-survey for round #{data.round}--it is due <Moment fromNow>{data.due}</Moment>.</div>
+      return <div>Reminder: Please take the post-survey for round #{data.round}--it is due <Moment fromNow>{data.due}</Moment>.</div>
 
     },
     footer: (data) => {
@@ -429,7 +452,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>You are confirmed for round #{data.round}, which is starting now!</div>
+      return <div>You are a confirmed LEAD for round #{data.round}, which is starting now!</div>
 
     },
     footer: (data) => {

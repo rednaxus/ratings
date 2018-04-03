@@ -78,7 +78,7 @@ class App extends Component {
     })
 
     refreshInfo()
-    //fetchUserInfoDataIfNeeded();
+    fetchUserInfoDataIfNeeded();
     getSideMenuCollpasedStateFromLocalStorage();
   }
 

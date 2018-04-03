@@ -193,22 +193,22 @@ contract AnalystRegistry {
         require(false); // error, called without active round
     }
 
-    function payToken( uint32 _analyst, uint8 _rewardType, uint32 _value, uint32 _ref ) public {
+    function payToken( uint32 _analyst, uint8 _rewardType, uint256 timestamp, uint32 _value, uint32 _ref ) public {
         Analyst storage a = analysts[ _analyst ];
         a.reward_events[ a.num_reward_events++ ] = 
-            RewardEvent(_rewardType,timenow,_value,_ref);
+            RewardEvent(_rewardType,timestamp,_value,_ref);
         a.token_balance += _value;
     }
 
-    function payLead( uint32 _analyst, uint16 _round, uint32 _roundValue, bool _win ) public {
-        if (_win) payToken( _analyst, REWARD_ROUND_TOKENS_WINNER, _roundValue * WINNER_PCT / 100, _round);
-        else payToken( _analyst, REWARD_ROUND_TOKENS_LOSER, _roundValue * LOSER_PCT / 100, _round );
+    function payLead( uint32 _analyst, uint256 timestamp, uint16 _round, uint32 _roundValue, bool _win ) public {
+        if (_win) payToken( _analyst, REWARD_ROUND_TOKENS_WINNER, timestamp, _roundValue * WINNER_PCT / 100, _round);
+        else payToken( _analyst, REWARD_ROUND_TOKENS_LOSER, timestamp, _roundValue * LOSER_PCT / 100, _round );
     }
     
-    function payJurist( uint32 _analyst, uint16 _round, uint32 _roundValue, uint8 _level) public {
-        if (_level == 0) payToken( _analyst, REWARD_ROUND_TOKENS_JURY_TOP, _roundValue * TOP_JURISTS_X10 / 1000, _round );
-        else if (_level == 0) payToken( _analyst, REWARD_ROUND_TOKENS_JURY_MIDDLE, _roundValue * MIDDLE_JURISTS_X10 / 1000, _round );
-        else payToken( _analyst, REWARD_ROUND_TOKENS_JURY_BOTTOM, _roundValue * BOTTOM_JURISTS_X10 / 1000, _round );
+    function payJurist( uint32 _analyst, uint256 timestamp, uint16 _round, uint32 _roundValue, uint8 _level) public {
+        if (_level == 0) payToken( _analyst, REWARD_ROUND_TOKENS_JURY_TOP, timestamp, _roundValue * TOP_JURISTS_X10 / 1000, _round );
+        else if (_level == 0) payToken( _analyst, REWARD_ROUND_TOKENS_JURY_MIDDLE, timestamp, _roundValue * MIDDLE_JURISTS_X10 / 1000, _round );
+        else payToken( _analyst, REWARD_ROUND_TOKENS_JURY_BOTTOM, timestamp, _roundValue * BOTTOM_JURISTS_X10 / 1000, _round );
     }
 
     // create some analysts... testing only!

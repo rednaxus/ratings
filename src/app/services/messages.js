@@ -8,6 +8,12 @@ export const generateMessages = () => {
 
 	const { tokens, cycles, rounds } = store.getState()
 
+	const s = store.getState()
+	if (!s.user || !s.user.info || !s.user.info.user) return messages
+
+	console.log('state in messages',s)
+	console.log('user',s.user.info.user)
+
 	let now = cycles.cronInfo / 1000
   let comingSignupCycles = cycles.data.filter( cycle => !cycle.analyst_status && cycle.timestart > now )
   let comingCycles = cycles.data.filter( cycle => cycle.analyst_status && cycle.timestart > now )

@@ -535,7 +535,7 @@ export const AnalystMessages = ({ store }) => {
     return data
   }
 
-  let generatedMessages = generateMockMessages()
+  let generatedMessages = generateMessages()
   console.log('generated messages',generatedMessages)
   return generatedMessages.map( (message,idx) =>
     <div className = "row" key={idx} >
@@ -562,7 +562,7 @@ export const AnalystMessages = ({ store }) => {
               {message_templates[message.type].footer(message)}
             </div>
           </div>
-    </div>
+        </div>
     </div>
   )
 

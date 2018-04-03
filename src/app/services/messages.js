@@ -8,6 +8,19 @@ export const generateMessages = () => {
 
 	const { tokens, cycles, rounds } = store.getState()
 
+	const s = store.getState()
+
+	if (!s.user || !s.user.info || !s.user.info.user) {
+		return messages
+	}
+
+	const user = s.user.info.user
+
+
+	console.log ('here is user')
+	console.log (s.user.info.user)
+	console.log ('sdfsd')
+
 	let now = cycles.cronInfo / 1000
   let comingSignupCycles = cycles.data.filter( cycle => !cycle.analyst_status && cycle.timestart > now )
   let comingCycles = cycles.data.filter( cycle => cycle.analyst_status && cycle.timestart > now )
@@ -35,7 +48,20 @@ export const generateMessages = () => {
 
 	/* Payment */
 
+	messages.push({
+		type: 'payment',
+		priority: 'info',
+		balance: user.token_balance
+	})
+
 	/* Reputation Score */
+
+	messages.push({
+		type: 'reputation_score',
+		priority: 'info',
+		reputation:50,
+		new_points:5
+	})
 
 	/* New Level */
 

@@ -10,7 +10,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Moment from 'react-moment'
-import { Glyphicon }                     from 'react-bootstrap'
+import { Glyphicon } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 
 import { generateMessages, generateMockMessages } from '../../services/messages'
 
@@ -96,11 +97,13 @@ const base_message = {
 
   time: 0
 }
+
+
 const message_templates = {
 
   new_round_scheduling: {
     ...base_message,
-    url: '/analyst/availability',
+    url: '/Analyst/availability',
     heading: (data) => {
       return <div>Upcoming rounds available</div>
     },
@@ -142,17 +145,17 @@ const message_templates = {
 
   payment: {
     ...base_message,
-    url: '',
+    url: '/Analyst/status',
     heading: (data) => {
       return <div>New Payment Available!</div>
     },
     body: (data) => {
 
-      return <div>Nice work! You have earned a new payment of {data.tokens} VEVA!</div>
+      return <div>Nice work! You have earned a new payment of {data.tokens} VEVA! Your new balance is {data.balance} VEVA</div>
 
     },
     footer: (data) => {
-      return <div>click here to see account</div>
+      return <div><Link to={'/Analyst/status'}>click here to go to statuses</Link></div>
     },
     glyph: (data) => {
       return <div><Glyphicon glyph="usd"></Glyphicon></div>
@@ -535,7 +538,8 @@ export const AnalystMessages = ({ store }) => {
     return data
   }
 
-  let generatedMessages = generateMockMessages()
+  /*let generatedMessages = generateMockMessages()*/
+  let generatedMessages = generateMessages()
   console.log('generated messages',generatedMessages)
   return generatedMessages.map( (message,idx) =>
     <div className = "row" key={idx} >
@@ -563,7 +567,7 @@ export const AnalystMessages = ({ store }) => {
             </div>
           </div>
     </div>
-    </div>
+  </div>
   )
 
 

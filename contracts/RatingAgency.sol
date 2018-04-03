@@ -151,6 +151,8 @@ contract RatingAgency {
         registry = AnalystRegistry( _registry );
         
         lasttime = ZERO_BASE_TIME;
+        registry.update( lasttime );
+        
         bootstrapTokens( );
     }
 

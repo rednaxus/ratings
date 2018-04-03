@@ -95,6 +95,24 @@ export const appConfig = {
 
   DEFAULT_ROUND_VALUE: 100,
 
+  REWARD_REFERRAL: 1,
+    
+  REWARD_ROUND_TOKENS_WINNER: 2,
+  REWARD_ROUND_TOKENS_LOSER: 3,
+  REWARD_ROUND_TOKENS_JURY_TOP: 4,
+  REWARD_ROUND_TOKENS_JURY_MIDDLE: 5,
+  REWARD_ROUND_TOKENS_JURY_BOTTOM: 6,
+    
+  REWARD_PROMOTION_TO_LEAD: 7,
+
+    // reward payoffs
+  REFERRAL_POINTS: 8,
+  WINNER_PCT: 40,
+  LOSER_PCT: 10,
+  TOP_JURISTS_X10: 34,   // percentages * 10   ... level:0
+  MIDDLE_JURISTS_X10: 17,   // level:1
+  BOTTOM_JURISTS_X10: 0,    // level:2
+
   customConfig
 
 }

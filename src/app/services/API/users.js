@@ -22,10 +22,11 @@ const info = userId => new Promise((resolve,reject) => {
     id:userId,
     cycleInfo: []
   }
-  AnalystRegistry().then( analystRegistry => {
-    RatingAgency().then( ratingAgency => {    
-      analystRegistry.analystInfo(userId).then( result => {
+  AnalystRegistry().then( registry => {
+    RatingAgency().then( agency => {    
+      registry.analystInfo(userId).then( result => {
         // _analystId, a.name, a.password, a.auth_status, a.reputation, a.is_lead, a.token_balance, a.num_rounds_scheduled, a.num_rounds_active, a.num_rounds_finished
+
         userInfo = { 
           ...userInfo,
           id: result[0].toNumber(),
@@ -37,24 +38,51 @@ const info = userId => new Promise((resolve,reject) => {
           token_balance: result[6].toNumber(),
           num_rounds_scheduled: result[7].toNumber(),
           num_rounds_active: result[8].toNumber(),
-          num_rounds_finished: result[9].toNumber()
+          num_rounds_finished: result[9].toNumber(),
+          num_reward_events: result[10].toNumber(),
+          num_referrals: result[11].toNumber(),
+          reward_events: [],
+          referrals: []
         }
-        console.log('got user info',userInfo)
-        console.log('rating agency',ratingAgency)
-        ratingAgency.num_cycles().then( result => { // check for availabilities
+        //console.log('got user info',userInfo)
+        //console.log('rating agency',ratingAgency)
+        var numFetch = 0
+
+        agency.num_cycles().then( result => { // check for availabilities
           let numCycles = result.toNumber()
-          if (numCycles === 0) resolve(userInfo)
-          let numFetch = 0
+          //console.log('num cycles',numCycles)
+          if ( !numCycles ) {
+            if ( !numFetch ) resolve(userInfo)
+            return
+          }
+          let numCyclesFetch = numCycles
+          numFetch++
           for (var i = 0; i < numCycles; i++) {
-            ratingAgency.getAnalystCycleInfo(i,userId).then( result => {
+            agency.getAnalystCycleInfo(i,userId).then( result => {
               userInfo.cycleInfo.push( result.toNumber() )
-              if (++numFetch === numCycles) {
-                console.log('got user info',userInfo)
-                resolve(userInfo)
+              if ( !--numCyclesFetch ) {
+                if ( !--numFetch ) resolve(userInfo)
               }
             })
           }
-        })
+        })        
+        if (userInfo.num_reward_events) {
+          numFetch++
+          let numRewardsFetch = userInfo.num_reward_events
+          for (var e = 0; e < userInfo.num_reward_events; e++) {
+            registry.getAnalystEvent( userId, e ).then( result => {
+              userInfo.reward_events.push( {
+                reward_type: result[ 0 ].toNumber(), 
+                timestamp: result[ 1 ].toNumber(),
+                value: result[ 2 ].toNumber(),
+                ref: result[ 3 ].toNumber()
+              } )
+              if ( !--numRewardsFetch ) {
+                if ( !--numFetch ) resolve(userInfo)
+              }
+            })
+          }
+        }
       })
       .catch(result => { 
         console.error("Error on info check:"  + result) 
@@ -85,6 +113,21 @@ const getAnalystRounds = ( analystInfo ) => new Promise( (resolve,reject) => {
     }).catch( reject )
   })
 })
+
+/*
+const getRewardEvents = ( analystInfo ) => new Promise( (resolve,reject) => {
+  if (!analystInfo.num_reward_events)    
+    return resolve( [] )
+  AnalystRegistry().then( analystRegistry => {
+    Promise.all([...Array(analystInfo.num_reward_events)].map((_, i) => analystRegistry.getAnalystEvent(analystInfo.id,i)))
+    .then( res => {
+      result = res.map( evt => evt.toNumber() )
+      resolve( result )
+    })
+    .catch( reject )
+  })
+})
+*/
 
 const login = (username, password) => new Promise((resolve,reject) => {
     //console.log(' beginning users fetch')

@@ -7,6 +7,7 @@ import * as viewsActions        from '../../redux/modules/views'
 import * as userInfosActions    from '../../redux/modules/userInfos'
 import * as sidemenuActions     from '../../redux/modules/sideMenu'
 import * as earningGraphActions from '../../redux/modules/earningGraph'
+import { refreshInfo }          from '../../redux/modules/user'
 import App                      from './App'
 
 
@@ -35,7 +36,8 @@ const mapDispatchToProps = (dispatch) => {
         // sideMenu
         ...sidemenuActions,
         // eaning graph
-        ...earningGraphActions
+        ...earningGraphActions,
+        refreshInfo,
       },dispatch)
   }
 }

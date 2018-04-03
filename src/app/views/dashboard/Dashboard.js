@@ -25,7 +25,7 @@ class Dashboard extends Component {
     const { actions: { fetchCyclesDataIfNeeded, fetchCronInfo, refreshUserInfo } } = this.props
     fetchCyclesDataIfNeeded()
     fetchCronInfo()
-    refreshUserInfo()
+    //refreshUserInfo()
   }
 
   componentWillUnmount() {

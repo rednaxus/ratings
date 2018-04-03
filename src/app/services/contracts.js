@@ -5,7 +5,7 @@ import RatingAgencyContract from '../../../build/contracts/RatingAgency.json'
 import AnalystRegistryContract from '../../../build/contracts/AnalystRegistry.json'
 
 
-console.log( 'using analyst registry at: ' + appConfig.ANALYST_REGISTRY )
+//console.log( 'using analyst registry at: ' + appConfig.ANALYST_REGISTRY )
 
 const contract = require('truffle-contract')
 
@@ -22,11 +22,11 @@ export const getContractInstance = (contractDesc, addr = null) =>
     const instanceContract = contract(contractDesc)
     instanceContract.setProvider(web3.currentProvider)
     instanceContract.setNetwork(7)
-    console.log('getting coinbase','contract addr',instanceContract.address)
+    //console.log('getting coinbase','contract addr',instanceContract.address)
     web3.eth.getCoinbase((error, coinbase) => { // Get current ethereum wallet.
       instanceContract.defaults({from:coinbase}) 
 
-      console.log('got ',coinbase)
+      //console.log('got ',coinbase)
       if (error) reject(console.error(error));
 
       if (addr)

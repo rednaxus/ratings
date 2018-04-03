@@ -65,6 +65,7 @@ class App extends Component {
     const {
       actions: {
         fetchUserInfoDataIfNeeded,
+        refreshInfo,
         getSideMenuCollpasedStateFromLocalStorage
       },
       history
@@ -76,7 +77,8 @@ class App extends Component {
       store.dispatch(alertActions.clear());
     })
 
-    fetchUserInfoDataIfNeeded();
+    refreshInfo()
+    //fetchUserInfoDataIfNeeded();
     getSideMenuCollpasedStateFromLocalStorage();
   }
 
@@ -146,14 +148,14 @@ class App extends Component {
 
   handlesOnLogout = (event: any) => {
     if (event) {
-      event.preventDefault();
-      event.stopPropagation();
+      event.preventDefault()
+      event.stopPropagation()
     }
     // clear all application storage
-    auth.clearAllAppStorage();
+    auth.clearAllAppStorage()
     // redirect to login
-    const { history } = this.props;
-    history.push('/login');
+    const { history } = this.props
+    history.push('/login')
   }
 }
 

@@ -120,13 +120,15 @@ contract AnalystRegistry {
         }
     }
 
-    function getAnalystEvent( uint32 _analyst, uint16 _event ) public view returns ( uint8, uint256, uint32 ) {
+    function getAnalystEvent( uint32 _analyst, uint16 _event ) public view returns ( uint8, uint256, uint32, uint32 ) {
         RewardEvent storage e = analysts[ _analyst ].reward_events[ _event ];
-        return ( e.reward_type, e.timestamp, e.value );
+        return ( e.reward_type, e.timestamp, e.value, e.ref );
     }
-
-    function isLead( uint32 _analystId ) public view returns (bool){
-        return( analysts[ _analystId ].reputation >= REPUTATION_LEAD );
+    function getReferral( uint32 _analyst, uint16 _referral ) public view returns ( uint32 ) {
+        return analysts[ _analyst ].referrals[ _referral ];
+    }
+    function isLead( uint32 _analyst ) public view returns (bool){
+        return( analysts[ _analyst ].reputation >= REPUTATION_LEAD );
     }
 
     function analystInfo( uint32 _analystId ) public view returns (

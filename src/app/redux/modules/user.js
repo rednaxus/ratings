@@ -52,10 +52,13 @@ export const refreshInfo = (deep = true) => { // get from id, deep means to get 
   const success = userInfo => { return { type: userConstants.INFO_SUCCESS, userInfo } }
   const failure = error => { return { type: userConstants.INFO_FAILURE, error } }
 
+
   return (dispatch,getState) => {
-    const user_id = getState().user.info.user.id || 0
+    const user = getState().user
+    const user_id = user.info && user.info.user && user.info.user.id ? user.info.user.id : 0
     dispatch( request( { user_id } ) )
     userService.info( user_id ).then( userInfo => {
+      console.log('refreshInfo, got info',userInfo)
       if ( deep ) {
         userService.getAnalystRounds( userInfo ).then( rounds => {
           userInfo.rounds = rounds
@@ -156,11 +159,11 @@ const authentication = (state = initialAuthState, action) => {
   }
 }
 
-const initialInfoState = { infoFetching: false, user:{} }
+const initialInfoState = { infoFetching: false, user:{ info:{user:{id:0}}} }
 const info = (state = initialInfoState, action) => {
   switch (action.type) {
     case userConstants.INFO_REQUEST:
-      return { infoFetching: true }
+      return { } //infoFetching: true }
     case userConstants.INFO_SUCCESS:
       return { infoFetching: false, user:action.userInfo }
     case userConstants.INFO_FAILURE:

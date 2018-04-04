@@ -3,22 +3,22 @@ pragma solidity ^0.4.19;
 
 import "./AnalystRegistry.sol";
 
-  
+
 contract RatingAgency {
-  
+
     uint16 constant CYCLES_AHEAD = 4; // number to keep ahead of the present
-    uint constant ZERO_BASE_TIME = 1514764800;// 1536796800; // e.g. jan 1 2018 
+    uint constant ZERO_BASE_TIME = 1514764800;// 1536796800; // e.g. jan 1 2018
     uint constant CYCLE_PERIOD =  86400 * 28; // e.g. 4 weeks
     uint constant ACTIVE_TIME = 86400 * 28;
-    uint constant SCHEDULE_TIME = 86400 * 4; // 4 days before round activates 
+    uint constant SCHEDULE_TIME = 86400 * 4; // 4 days before round activates
     uint16 constant JURY_SIZE = 6; /// desired jury size
     uint8 constant JURISTS_MIN = 2; // min jurists for a round
     uint16 constant DEFAULT_ROUND_VALUE = 100;
     uint constant BRIEF_DUE_TIME = 86400 * 7;
     uint constant SURVEY_DUE_TIME = 86400 * 7;
-    
+
     uint16 constant REPUTATION_LEAD = 12;
-  
+
     // statuses
     uint8 constant NONE = 0;
     uint8 constant PENDING = 1;
@@ -37,10 +37,11 @@ contract RatingAgency {
     uint8 constant SECOND_SURVEY_SUBMITTED = 14;
     uint8 constant ROUND_TALLIED = 15;
     uint8 constant DISQUALIFIED = 16;
-    
+
 
     uint public lasttime;
-    
+    uint256 timestamp;
+
     AnalystRegistry registry;
 
     struct CoveredToken {
@@ -69,7 +70,7 @@ contract RatingAgency {
     }
     mapping ( uint16 => Cycle ) cycles;
     uint16 public num_cycles = 0;
-    
+
     struct RoundBrief {
         uint upload_time;
         address filehash;
@@ -79,7 +80,7 @@ contract RatingAgency {
         uint8 stat;
     }
     struct RoundSurvey {
-        bytes32 answers;  // 1-5, qualitatives at 24,25, qualitatives at 
+        bytes32 answers;  // 1-5, qualitatives at 24,25, qualitatives at
         byte qualitatives; // yes / no
         uint8 recommendation; // 1-10
         bytes32 comment;
@@ -92,13 +93,13 @@ contract RatingAgency {
         uint8 stat;
         address representative;
         uint8 num_analysts;
-        
+
         bytes32 avg_answer;
-        uint8 r1_avg;  // scaled 0->100 
+        uint8 r1_avg;  // scaled 0->100
         uint8 r2_avg;
         uint8 sways;
         uint8 winner;
-        
+
         mapping ( uint8 => RoundBrief ) briefs; // submitted briefs... 0 is bull, 1 is bear
         mapping ( uint8 => RoundAnalyst ) analysts;
         mapping ( uint8 => RoundSurvey[2] ) surveys;     // 0 for pre, 1 for post
@@ -110,15 +111,15 @@ contract RatingAgency {
     mapping ( uint16 => uint16 ) rounds_active;
     uint16 num_rounds_scheduled = 0;
     uint16 num_rounds_active = 0;
-  
+
     address public registryAddress;
 
-    /** 
+    /**
      * test data
     */
-    address constant testregistry1 = 0x3ae851d5780725853de7118c73d0bd2a303c7fff; 
+    address constant testregistry1 = 0x3ae851d5780725853de7118c73d0bd2a303c7fff;
     address[16] live_tokens = [
-        0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0, //EOS 
+        0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0, //EOS
         0xf230b790e05390fc8295f4d3f60332c93bed42e2, // Tronix
         0xd850942ef8811f2a866692a623011bde52a462c1, // VeChain
         0xd26114cd6ee289accf82350c8d8487fedb8a0c07, // OMG
@@ -133,26 +134,26 @@ contract RatingAgency {
         0x5ca9a71b1d01849c0a95490cc00559717fcf0d1d, // Aeternity
         0xcb97e65f07da24d46bcdd078ebebd7c6e6e3d750, // Byteom
         0xb7cb1c96db6b22b0d3d9536e0108d062bd488f74, // Walton
-        0x4ceda7906a5ed2179785cd3a40a69ee8bc99c466 // Aeon 
+        0x4ceda7906a5ed2179785cd3a40a69ee8bc99c466 // Aeon
     ];
 
-    function bootstrapTokens( ) public { 
+    function bootstrapTokens( ) public {
         for ( uint i = 0; i < live_tokens.length; i++ ) {
             coverToken( live_tokens[i], 0 );
         }
     }
-    
+
     /**
-     * Constructor 
+     * Constructor
     */
     function RatingAgency( address _registry ) public {
         if ( _registry == 0 ) _registry = testregistry1;
         registryAddress = _registry;
         registry = AnalystRegistry( _registry );
-        
+
         lasttime = ZERO_BASE_TIME;
         registry.update( lasttime );
-        
+
         bootstrapTokens( );
     }
 
@@ -160,58 +161,59 @@ contract RatingAgency {
     function randomIdx(uint seed, uint n) public constant returns (uint randomNumber) {
         return(uint(keccak256(block.blockhash(block.number-1), seed ))%(n-1));
     }
-    
-    /* 
-     *   Token methods 
+
+    /*
+     *   Token methods
     */
-    
+
     event TokenAdd( uint32, address);
     function coverToken( address _tokenContract, uint _timeperiod ) public {  // only specify period if different
         covered_tokens[ num_tokens ] = CoveredToken( _tokenContract, _timeperiod, msg.sender );
         TokenAdd( num_tokens, _tokenContract );
         num_tokens++;
     }
-  
+
     event Log( string str, address addr );
 
     function coveredTokenInfo( uint32 _idx ) public view returns ( uint32, address ){
         return ( _idx, covered_tokens[ _idx ].token_addr );
     }
-    
-    
-    /* 
-     ***   Round Cycler  *** 
+
+
+    /*
+     ***   Round Cycler  ***
     */
-    
+
     // start time for a cycle
     function cycleTime( uint16 _idx ) public pure returns ( uint ){
         return CYCLE_PERIOD * _idx / 4 + ZERO_BASE_TIME;    // cycles offset
     }
 
     function cycleIdx( uint time ) public pure returns ( uint16 ) {
-        return( time <= ZERO_BASE_TIME ? 
+        return( time <= ZERO_BASE_TIME ?
             0 : uint16( 4 * ( time - ZERO_BASE_TIME ) / CYCLE_PERIOD ) );
     }
-  
+
     function cycleInfo ( uint16 _cycle, uint32 _analyst ) public view returns ( uint16, uint, uint, uint8, uint8, uint8, uint8, uint8, uint16 ) {
         Cycle storage cycle = cycles[ _cycle ];
         uint16 analystInfo = _analyst == 0 ? 0 : getAnalystCycleInfo( _cycle, _analyst );
         return (
             _cycle,
-            cycleTime( _cycle ), 
-            cycle.period, 
-            cycle.stat, 
+            cycleTime( _cycle ),
+            cycle.period,
+            cycle.stat,
             cycle.num_jurists_available,
             cycle.num_jurists_assigned,
-            cycle.num_leads_available, 
+            cycle.num_leads_available,
             cycle.num_leads_assigned,
             analystInfo
         );
     }
-    
+
     event CycleAdded( uint16 cycle );
-    function cycleUpdate( uint _timenow ) public { // can make internal, public for now, testing 
+    function cycleUpdate( uint _timenow ) public { // can make internal, public for now, testing
         uint timenow = _timenow == 0? ZERO_BASE_TIME : _timenow;
+        timestamp = timenow;
         uint16 num_target = cycleIdx( timenow ) + CYCLES_AHEAD;
         for ( uint16 i = num_cycles; i < num_target; i++ ) {
             cycles[i] = Cycle( cycleTime( i ), CYCLE_PERIOD, NONE, 0, 0, 0, 0 );
@@ -219,7 +221,7 @@ contract RatingAgency {
         }
         num_cycles = num_target;
     }
-    
+
     event AvailabilityAdd( uint16 cycle, uint32 analyst, bool lead, uint16 leads, uint16 jurists  );
     function addAvailability( uint16 _cycle, uint32 _analyst, bool _lead) public {
         Cycle storage cycle = cycles[ _cycle ];
@@ -230,7 +232,7 @@ contract RatingAgency {
         }
         AvailabilityAdd( _cycle, _analyst, _lead, cycle.num_leads_available, cycle.num_jurists_available );
     }
-    
+
     function getAnalystCycleInfo( uint16 _cycle, uint32 _analyst ) public view returns (uint16) {
         Cycle storage cycle = cycles[ _cycle ];
         for ( uint8 i = 0; i < cycle.num_leads_available; i++ )
@@ -247,15 +249,15 @@ contract RatingAgency {
     function selectAvailableAnalyst( uint16 _cycle, bool _lead ) public view returns ( uint16 ) {  // returns local reference to an available analyst
         Cycle storage cycle = cycles[_cycle];
         require( _lead ? cycle.num_leads_available > 0 : cycle.num_jurists_available > 0 );
-        return ( _lead ? 
-            uint16( randomIdx( cycle.leads_available[ 0 ], cycle.num_leads_available ) )  
+        return ( _lead ?
+            uint16( randomIdx( cycle.leads_available[ 0 ], cycle.num_leads_available ) )
             : uint16( randomIdx( cycle.jurists_available[ 0 ],cycle.num_jurists_available ) )
         );
     }
-    
+
     // for testing, volunteer everybody to cycle
     function generateAvailabilities( uint16 _cycleId ) public {
-        for ( uint32 id = 0; id < registry.num_analysts(); id++ ) { 
+        for ( uint32 id = 0; id < registry.num_analysts(); id++ ) {
             addAvailability( _cycleId, id, registry.isLead( id ) );
         }
     }
@@ -267,9 +269,9 @@ contract RatingAgency {
                 generateAvailabilities( cycleId );
         }
     }
-    
+
     function confirmAnalyst( uint16 _cycle, uint32 _analyst) public {
-        
+
     }
     // returns analyst so can know what to do with round
     function assignAnalyst( uint16 _cycle, uint16 _analystRef, bool _lead ) public returns ( uint32 analyst ) {  // move analyst from available to assigned
@@ -287,11 +289,11 @@ contract RatingAgency {
             analyst = cycle.jurists_assigned[ cycle.num_jurists_assigned++ ];
         }
     }
-  
+
     /*
      ***** Round ****
     */
-    
+
     // assign available analysts from the cycle into the round
     event RoundPopulated( uint16 _cycle, uint16 _round, uint16 num_analysts, uint16 num_leads );
     function populateRound( uint16 _cycle, uint16 _round ) public {
@@ -301,41 +303,41 @@ contract RatingAgency {
         for ( uint16 i = 0; i < 2+JURY_SIZE; i++ ) {
             ref = selectAvailableAnalyst( _cycle, i < 2 );  // first two are bull/bear leads
             analyst = assignAnalyst( _cycle, ref, i < 2 );
-            round.analysts[ round.num_analysts++ ] = RoundAnalyst( analyst, NONE ); 
+            round.analysts[ round.num_analysts++ ] = RoundAnalyst( analyst, NONE );
             registry.scheduleRound( analyst, _round );
         }
         RoundPopulated( _cycle, _round, round.num_analysts, 2 );
-    }      
-  
+    }
+
     event RoundActivated( uint16 _cycle, uint16 _round, uint16 num_rounds_scheduled, uint16 num_rounds_active );
     function activateRound( uint16 _round ) public {
         Round storage round = rounds[ _round ];
         round.stat = ACTIVE;
         rounds_active[ num_rounds_active++ ] = _round;
         for (uint8 a = 0; a < round.num_analysts; a++ ) {
-            RoundAnalyst storage analyst = round.analysts[ a ]; 
+            RoundAnalyst storage analyst = round.analysts[ a ];
             analyst.stat = a<2 ? BRIEF_DUE: FIRST_SURVEY_DUE;
             registry.activateRound( analyst.analyst_id, _round );
         }
         for (uint16 i = 0; i < num_rounds_scheduled; i++) { // remove from scheduled rounds
             if ( rounds_scheduled[i] == _round ) {
                 num_rounds_scheduled--;
-                for (uint16 j = i; j < num_rounds_scheduled; j++) 
+                for (uint16 j = i; j < num_rounds_scheduled; j++)
                     rounds_scheduled[ j ] = rounds_scheduled[ j + 1 ];
                 break;
             }
         }
         RoundActivated( round.cycle, _round, num_rounds_scheduled, num_rounds_active );
     }
-    
+
     event RoundScheduled( uint16 cycle, uint16 round, uint32 token );
     function scheduleRound( uint16 _cycle, uint32 _token ) public returns( uint16 ) {
-        rounds[ num_rounds ] = Round( 
-            _cycle, 
-            _token, 
-            DEFAULT_ROUND_VALUE, 
-            SCHEDULED, 
-            msg.sender, 
+        rounds[ num_rounds ] = Round(
+            _cycle,
+            _token,
+            DEFAULT_ROUND_VALUE,
+            SCHEDULED,
+            msg.sender,
             0,0,0,0,0,0
         );
         rounds_scheduled[ num_rounds_scheduled++ ] = num_rounds;
@@ -343,7 +345,7 @@ contract RatingAgency {
         RoundScheduled( _cycle, num_rounds, _token );
         return num_rounds++;
     }
- 
+
     event RoundFinished( uint16 _cycle, uint16 _round, uint16 num_rounds_scheduled, uint16 num_rounds_active );
     function finishRound( uint16 _roundId ) public {
         rounds[ _roundId ].stat = FINISHED;
@@ -351,13 +353,13 @@ contract RatingAgency {
         for (uint16 i = 0; i < num_rounds_active; i++){ // remove from active rounds
             if ( rounds_active[i] == _roundId ) {
                 num_rounds_active--;
-                for (uint16 j = i; j < num_rounds_active; j++) 
+                for (uint16 j = i; j < num_rounds_active; j++)
                     rounds_scheduled[ j ] = rounds_active[ j + 1 ];
                 break;
             }
         }
         RoundFinished( rounds[ _roundId ].cycle, _roundId, num_rounds_scheduled, num_rounds_active );
-    }   
+    }
 
     event TallyLog( uint16 round, uint8 analyst, uint8 recommendation);
     event TallyWin( uint16 round, uint8 winner );
@@ -377,7 +379,7 @@ contract RatingAgency {
             TallyLog( _round, aref, round.surveys[aref][0].recommendation );
             TallyLog( _round, aref, round.surveys[aref][1].recommendation );
 
-            //if (round.surveys[a][0] && round.surveys[a][1] ) {        
+            //if (round.surveys[a][0] && round.surveys[a][1] ) {
                 round.r1_avg = (round.r1_avg*n + 10*round.surveys[aref][0].recommendation) / (n+1);
                 round.r2_avg = (round.r2_avg*n + 10*round.surveys[aref][1].recommendation) / (n+1);
                 n++;
@@ -386,22 +388,22 @@ contract RatingAgency {
         }
         TallyLog( _round, 100, round.r1_avg );
         TallyLog( _round, 101, round.r2_avg );
-        
+
         if ( round.r2_avg > round.r1_avg + 20) round.winner = 0;
         else if ( round.r2_avg < round.r1_avg - 20) round.winner = 1;
         else if ( round.r2_avg > 50 ) round.winner = 0;
         else round.winner = 1;
-        
+
         // payoff in token and reputation, just leads for nowREWARD_ROUND_TOKENS_LOSER
         for ( uint8 i = 0; i < 2; i++ )
-            registry.payLead( round.analysts[i].analyst_id, _round, round.value, round.winner == i );
+            registry.payLead( round.analysts[i].analyst_id, timestamp, _round, round.value, round.winner == i );
         for ( i = 2; i < round.num_analysts; i++ )
-            registry.payJurist( round.analysts[ i ].analyst_id, _round, round.value, 0 ); // for now, every jurist is a winner, pending tally above
+            registry.payJurist( round.analysts[ i ].analyst_id, timestamp, _round, round.value, 0 ); // for now, every jurist is a winner, pending tally above
 
         TallyWin( _round, round.winner );
 
     }
-    function roundInfo ( uint16 _round ) public view returns ( 
+    function roundInfo ( uint16 _round ) public view returns (
         uint16, uint16, uint32, uint16, uint8, uint8
     ) {
         Round storage round = rounds[ _round ];
@@ -413,47 +415,47 @@ contract RatingAgency {
             round.stat,
             round.num_analysts
         );
-    }  
-    function roundSummary ( uint16 _round ) public view returns ( 
+    }
+    function roundSummary ( uint16 _round ) public view returns (
         bytes32, uint8, uint8, uint8, uint8
     ) {
         Round storage round = rounds[ _round ];
         return (
             round.avg_answer,
-            round.r1_avg,  // scaled 0->100 
+            round.r1_avg,  // scaled 0->100
             round.r2_avg,
             round.sways,
-            round.winner        
+            round.winner
         );
-    }  
-    function roundAnalyst( uint16 _round, uint32 _analyst ) public view returns (uint8, uint8) { 
+    }
+    function roundAnalyst( uint16 _round, uint32 _analyst ) public view returns (uint8, uint8) {
         Round storage round = rounds[_round];
         for ( uint8 i=0; i < round.num_analysts; i++){
             if ( round.analysts[ i ].analyst_id == _analyst )
                 return( i, round.analysts[ i ].stat );
         }
-        require (false);    // not found        
+        require (false);    // not found
     }
     event SurveySubmitted( uint16 _round, uint32 _analyst, uint8 _idx, bytes32 _answers, byte _qualitatives, uint8 _recommendation );
-    function submitSurvey( 
-        uint16 _round, 
+    function submitSurvey(
+        uint16 _round,
         uint8 _analyst, // analyst by round index
         uint8 _idx,              // pre (0), or post (1)
-        bytes32 _answers, 
-        byte _qualitatives, 
+        bytes32 _answers,
+        byte _qualitatives,
         uint8 _recommendation,
         bytes32 _comment
     ) public {
         Round storage round = rounds[ _round ];
         // do some checks here
         RoundAnalyst storage analyst = round.analysts[ _analyst ];
-        
+
         //require( _idx==0 && analyst.stat == FIRST_SURVEY_DUE || _idx==1 && analyst.stat == SECOND_SURVEY_DUE );
         round.surveys[_analyst][_idx] = RoundSurvey( _answers, _qualitatives, _recommendation, _comment );
-        analyst.stat = _idx == 0 ? FIRST_SURVEY_SUBMITTED : SECOND_SURVEY_SUBMITTED; 
+        analyst.stat = _idx == 0 ? FIRST_SURVEY_SUBMITTED : SECOND_SURVEY_SUBMITTED;
         SurveySubmitted( _round, _analyst, _idx, _answers, _qualitatives, _recommendation );
     }
-    
+
     event BriefSubmitted( uint16 _round, uint8 _analyst, address _file );
     function submitBrief( uint16 _round, uint8 _analyst, address _file ) public {
         Round storage round = rounds[ _round ];
@@ -461,14 +463,14 @@ contract RatingAgency {
         round.analysts[ _analyst ].stat = BRIEF_SUBMITTED;
         BriefSubmitted( _round, _analyst, _file );
     }
-    
+
     /* get next 16 rounds */
     function roundsForToken ( uint16 _token, uint16 startAt ) public view returns (uint16 _numFound, uint16[16] _rounds){
         _numFound = 0;
         for (uint16 i = 0; i < num_rounds; i++){
             if (rounds[i].covered_token == _token){
                 if (_numFound >= startAt) {
-                    _rounds[_numFound - startAt] = i; 
+                    _rounds[_numFound - startAt] = i;
                 }
                 _numFound++;
                 if (_numFound == 16 + startAt) break;
@@ -479,7 +481,7 @@ contract RatingAgency {
     event CycleScheduled( uint16 _cycle, uint time );
     event CycleActivated( uint16 _cycle, uint time );
     event CycleFinished( uint16 _cycle, uint time );
-    
+
     // cron
     event Cron( uint _lasttime, uint _timestamp );
     function cron( uint _timestamp ) public {
@@ -497,14 +499,14 @@ contract RatingAgency {
         // uint16 cycle_last = cycleIdx( lasttime );
         uint16 cycle_schedule_idx = cycleIdx( time + SCHEDULE_TIME );
         uint16 cycle_last_schedule_idx = cycleIdx( lasttime + SCHEDULE_TIME );
-    
-        
+
+
         // schedule new rounds...covered tokens
-        for ( uint16 icyc = cycle_last_schedule_idx + 1; icyc <= cycle_schedule_idx; icyc++ ) { 
+        for ( uint16 icyc = cycle_last_schedule_idx + 1; icyc <= cycle_schedule_idx; icyc++ ) {
             //uint cyc_time = cycle_time( icyc );
             uint16 cyc4 = ( icyc-1 ) % 4; // first cycle used is 1 so can pre-schedule, no activity cycle 0
             for ( uint16 itoken = 0; itoken < num_tokens; itoken++ ) {
-                if ( ( itoken % 4 ) == cyc4 )  // every 4th token at this particular timeperiod 
+                if ( ( itoken % 4 ) == cyc4 )  // every 4th token at this particular timeperiod
                     scheduleRound( icyc, itoken );
             }
             CycleScheduled( icyc, time );
@@ -514,7 +516,7 @@ contract RatingAgency {
         for ( i = 0; i < num_rounds_active; i++ ) {
             round_id = rounds_active[ i ];
             Cycle storage cycle = cycles[ rounds[ round_id ].cycle ];
-            if (cycle.timestart + cycle.period <= time) 
+            if (cycle.timestart + cycle.period <= time)
             // if ( rounds[ round_id ].cycle < cycle_now )
                 finishRound ( round_id );
         }
@@ -523,24 +525,24 @@ contract RatingAgency {
         for ( i = 0; i < num_rounds_scheduled; i++ ) {
             round_id = rounds_scheduled[ i ];
             //cycle = cycles[ rounds[ round_id ].cycle ];
-            // if ( cycle.timestart < time && cycle.timestart + cycle.period >= time ) 
+            // if ( cycle.timestart < time && cycle.timestart + cycle.period >= time )
             if ( rounds[ round_id ].cycle <= cycle_now)
                 activateRound( round_id );
         }
-      
+
         lasttime = time;
         //return (num_cycles,num_rounds,lasttime);
-          
-    }   
-  
+
+    }
 
 
 
 
-    
+
+
     // utilities
     function bytesToBytes32(bytes b, uint offset) private pure returns (bytes32 out) {
-        for (uint i = 0; i < 32; i++) 
+        for (uint i = 0; i < 32; i++)
             out |= bytes32(b[offset + i] & 0xFF) >> (i * 8);
     }
 
@@ -553,13 +555,8 @@ contract RatingAgency {
 contract Survey {  // "read-only" survey questions
   uint16 public version = 1;
   uint16 num_questions = 24;  // num questions not including final
-  string public questions; // ipfs hash for questions json 
+  string public questions; // ipfs hash for questions json
   function Survey(string _questionsfile) public {
       questions = _questionsfile;
   }
 }
-
-
-
-
-

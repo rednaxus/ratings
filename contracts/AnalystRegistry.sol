@@ -5,13 +5,13 @@ contract AnalystRegistry {
 
     // reward types
     uint8 constant REWARD_REFERRAL = 1;
-    
+
     uint8 constant REWARD_ROUND_TOKENS_WINNER = 2;
     uint8 constant REWARD_ROUND_TOKENS_LOSER = 3;
     uint8 constant REWARD_ROUND_TOKENS_JURY_TOP = 4;
     uint8 constant REWARD_ROUND_TOKENS_JURY_MIDDLE = 5;
     uint8 constant REWARD_ROUND_TOKENS_JURY_BOTTOM = 6;
-    
+
     uint8 constant REWARD_PROMOTION_TO_LEAD = 7;
 
     // reward payoffs
@@ -28,7 +28,7 @@ contract AnalystRegistry {
         uint32 value;
         uint32 ref; // may be round, cycle, analyst, depends on event
     }
-    
+
     struct Analyst {
         //string firstname;
         bytes32 name;
@@ -41,13 +41,13 @@ contract AnalystRegistry {
         uint32 reputation;
         uint32 points;
         uint32 token_balance;
-        
+
         uint16 num_rounds_scheduled;
         uint16 num_rounds_active;
         uint16 num_rounds_finished;
         uint16 num_reward_events;
         uint16 num_referrals;
-        
+
         mapping ( uint16 => uint16 ) rounds_scheduled;
         mapping ( uint16 => uint16 ) rounds_active;
         mapping ( uint16 => uint16 ) rounds_finished;
@@ -57,22 +57,22 @@ contract AnalystRegistry {
     mapping (uint32 => Analyst) analysts;
     mapping (address => uint32) address_lookup;
     mapping (bytes32 => uint32) name_lookup;
-    uint32 public num_analysts; 
-    
+    uint32 public num_analysts;
+
     mapping (uint32 => uint32) leads;
     uint32 public num_leads;
-  
+
     uint256 timenow;
     function update(uint256 _timenow) public { timenow = _timenow; }
-    
+
     function AnalystRegistry() public {
         bootstrap(12,4);
     }
-    
+
     event Register(uint32 id, bytes32 name, bytes32 email);
     function register(bytes32 _name, bytes32 _pw, bytes32 _email, uint32 _referral ) public {
-        analysts[ num_analysts ] = Analyst( 
-            _name, _pw, _email, 0, _referral, msg.sender, false, 
+        analysts[ num_analysts ] = Analyst(
+            _name, _pw, _email, 0, _referral, msg.sender, false,
             0, 0, 0,
             0, 0, 0, 0, 0
         );
@@ -80,7 +80,7 @@ contract AnalystRegistry {
             Analyst storage referredBy = analysts[_referral];
             referredBy.referrals[referredBy.num_referrals++] = num_analysts;
             referredBy.points += REFERRAL_POINTS;
-            referredBy.reward_events[referredBy.num_reward_events++] = 
+            referredBy.reward_events[referredBy.num_reward_events++] =
                 RewardEvent(REWARD_REFERRAL,timenow,REFERRAL_POINTS,num_analysts);
         }
         address_lookup[ msg.sender ] = num_analysts;
@@ -88,14 +88,14 @@ contract AnalystRegistry {
 
         Register( num_analysts++, _name, _email );
     }
-  
+
     function login(bytes32 _name, bytes32 _pw) public view returns (uint32, bytes32, uint32, uint32) {
         uint32 id = name_lookup[ _name ];
         Analyst storage analyst = analysts[id];
         require(analyst.password == _pw);
         return (id,analyst.email,analyst.reputation,analyst.token_balance);
     }
-    
+
     function loginByAddress(bytes32 _password, address force) public view returns ( uint32 id ) { // force is for testing, so can login with another address
         id = address_lookup[ force == 0 ? msg.sender : force ];
         require(analysts[id].password == _password);
@@ -104,7 +104,7 @@ contract AnalystRegistry {
     function getAnalyst( address _user ) public constant returns (uint32 id) {
         id = address_lookup[_user];
     }
-    
+
     function getAddress( uint32 _analystid ) public constant returns (address) { // sequential ids
         return analysts[_analystid].user_addr;
     }
@@ -114,7 +114,7 @@ contract AnalystRegistry {
         a.reputation += _reputationPoints;
         if (!a.is_lead && a.reputation >= REPUTATION_LEAD){
             a.is_lead = true; // promotion
-            a.reward_events[a.num_reward_events++] = 
+            a.reward_events[a.num_reward_events++] =
                 RewardEvent( REWARD_PROMOTION_TO_LEAD, timenow, _reputationPoints, 0);
             leads[num_leads++] = _analyst;
         }
@@ -132,13 +132,13 @@ contract AnalystRegistry {
     }
 
     function analystInfo( uint32 _analystId ) public view returns (
-        uint32, bytes32, bytes32, uint32, uint32, bool, uint32, 
-        uint16, uint16, uint16, uint16, uint16 
+        uint32, bytes32, bytes32, uint32, uint32, bool, uint32,
+        uint16, uint16, uint16, uint16, uint16
     ) {
         Analyst storage a = analysts[_analystId];
         return (
-            _analystId, a.name, a.password, a.auth_status, 
-            a.reputation, a.is_lead, a.token_balance, 
+            _analystId, a.name, a.password, a.auth_status,
+            a.reputation, a.is_lead, a.token_balance,
             a.num_rounds_scheduled, a.num_rounds_active, a.num_rounds_finished,
             a.num_reward_events,a.num_referrals
         );
@@ -154,12 +154,12 @@ contract AnalystRegistry {
     }
     function activeRound( uint32 _analyst, uint8 _roundRef ) public view returns (uint16) {
         Analyst storage a = analysts[ _analyst ];
-        require( _roundRef <= a.num_rounds_active );        
+        require( _roundRef <= a.num_rounds_active );
         return a.rounds_active[ _roundRef ];
     }
     function finishedRound( uint32 _analyst, uint8 _roundRef ) public view returns (uint16) {
         Analyst storage a = analysts[ _analyst ];
-        require( _roundRef <= a.num_rounds_finished );         
+        require( _roundRef <= a.num_rounds_finished );
         return a.rounds_finished[ _roundRef ];
     }
     function activateRound( uint32 _analyst, uint16 _round ) public {
@@ -168,47 +168,47 @@ contract AnalystRegistry {
             if (a.rounds_scheduled[ i ] == _round ){
                 a.rounds_active[ a.num_rounds_active++ ] = _round;
                 while (i < a.num_rounds_scheduled ){
-                    a.rounds_scheduled[ i ] = a.rounds_scheduled[ i + 1 ];                    
+                    a.rounds_scheduled[ i ] = a.rounds_scheduled[ i + 1 ];
                     i++;
                 }
                 a.num_rounds_scheduled--;
-                return;                
+                return;
             }
         }
         require(false); // error, called with round not scheduled
     }
-    
-    function finishRound( uint32 _analystId, uint16 _roundId ) public {  
+
+    function finishRound( uint32 _analystId, uint16 _roundId ) public {
         Analyst storage a = analysts[ _analystId ];
         for( uint16 i = 0; i < a.num_rounds_active; i++ ) {
             if (a.rounds_active[ i ] == _roundId ){
                 a.rounds_finished[ a.num_rounds_finished++ ] = _roundId;
                 while (i++ < a.num_rounds_active ){
-                    a.rounds_active[ i - 1 ] = a.rounds_active[ i ];                    
+                    a.rounds_active[ i - 1 ] = a.rounds_active[ i ];
                 }
                 a.num_rounds_active--;
-                return;                
+                return;
             }
         }
         require(false); // error, called without active round
     }
 
-    function payToken( uint32 _analyst, uint8 _rewardType, uint256 timestamp, uint32 _value, uint32 _ref ) public {
+    function payToken( uint32 _analyst, uint8 _rewardType, uint32 _value, uint32 _ref ) public {
         Analyst storage a = analysts[ _analyst ];
-        a.reward_events[ a.num_reward_events++ ] = 
-            RewardEvent(_rewardType,timestamp,_value,_ref);
+        a.reward_events[ a.num_reward_events++ ] =
+            RewardEvent(_rewardType,timenow,_value,_ref);
         a.token_balance += _value;
     }
 
-    function payLead( uint32 _analyst, uint256 timestamp, uint16 _round, uint32 _roundValue, bool _win ) public {
-        if (_win) payToken( _analyst, REWARD_ROUND_TOKENS_WINNER, timestamp, _roundValue * WINNER_PCT / 100, _round);
-        else payToken( _analyst, REWARD_ROUND_TOKENS_LOSER, timestamp, _roundValue * LOSER_PCT / 100, _round );
+    function payLead( uint32 _analyst, uint16 _round, uint32 _roundValue, bool _win ) public {
+        if (_win) payToken( _analyst, REWARD_ROUND_TOKENS_WINNER, _roundValue * WINNER_PCT / 100, _round);
+        else payToken( _analyst, REWARD_ROUND_TOKENS_LOSER, _roundValue * LOSER_PCT / 100, _round );
     }
-    
-    function payJurist( uint32 _analyst, uint256 timestamp, uint16 _round, uint32 _roundValue, uint8 _level) public {
-        if (_level == 0) payToken( _analyst, REWARD_ROUND_TOKENS_JURY_TOP, timestamp, _roundValue * TOP_JURISTS_X10 / 1000, _round );
-        else if (_level == 0) payToken( _analyst, REWARD_ROUND_TOKENS_JURY_MIDDLE, timestamp, _roundValue * MIDDLE_JURISTS_X10 / 1000, _round );
-        else payToken( _analyst, REWARD_ROUND_TOKENS_JURY_BOTTOM, timestamp, _roundValue * BOTTOM_JURISTS_X10 / 1000, _round );
+
+    function payJurist( uint32 _analyst, uint16 _round, uint32 _roundValue, uint8 _level) public {
+        if (_level == 0) payToken( _analyst, REWARD_ROUND_TOKENS_JURY_TOP, _roundValue * TOP_JURISTS_X10 / 1000, _round );
+        else if (_level == 0) payToken( _analyst, REWARD_ROUND_TOKENS_JURY_MIDDLE, _roundValue * MIDDLE_JURISTS_X10 / 1000, _round );
+        else payToken( _analyst, REWARD_ROUND_TOKENS_JURY_BOTTOM, _roundValue * BOTTOM_JURISTS_X10 / 1000, _round );
     }
 
     // create some analysts... testing only!

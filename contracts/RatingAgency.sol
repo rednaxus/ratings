@@ -40,7 +40,7 @@ contract RatingAgency {
 
 
     uint public lasttime;
-    uint256 timestamp;
+
 
     AnalystRegistry registry;
 
@@ -117,7 +117,7 @@ contract RatingAgency {
     /**
      * test data
     */
-    address constant testregistry1 = 0x3ae851d5780725853de7118c73d0bd2a303c7fff;
+    address constant testregistry1 = 0xc2dbef2e183c87decca0e7d2dec03626a238b976;
     address[16] live_tokens = [
         0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0, //EOS
         0xf230b790e05390fc8295f4d3f60332c93bed42e2, // Tronix
@@ -213,7 +213,6 @@ contract RatingAgency {
     event CycleAdded( uint16 cycle );
     function cycleUpdate( uint _timenow ) public { // can make internal, public for now, testing
         uint timenow = _timenow == 0? ZERO_BASE_TIME : _timenow;
-        timestamp = timenow;
         uint16 num_target = cycleIdx( timenow ) + CYCLES_AHEAD;
         for ( uint16 i = num_cycles; i < num_target; i++ ) {
             cycles[i] = Cycle( cycleTime( i ), CYCLE_PERIOD, NONE, 0, 0, 0, 0 );
@@ -396,9 +395,9 @@ contract RatingAgency {
 
         // payoff in token and reputation, just leads for nowREWARD_ROUND_TOKENS_LOSER
         for ( uint8 i = 0; i < 2; i++ )
-            registry.payLead( round.analysts[i].analyst_id, timestamp, _round, round.value, round.winner == i );
+            registry.payLead( round.analysts[i].analyst_id, _round, round.value, round.winner == i );
         for ( i = 2; i < round.num_analysts; i++ )
-            registry.payJurist( round.analysts[ i ].analyst_id, timestamp, _round, round.value, 0 ); // for now, every jurist is a winner, pending tally above
+            registry.payJurist( round.analysts[ i ].analyst_id, _round, round.value, 0 ); // for now, every jurist is a winner, pending tally above
 
         TallyWin( _round, round.winner );
 

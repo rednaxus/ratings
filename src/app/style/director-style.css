@@ -2887,7 +2887,7 @@ vertical-align: top;
 */
 /* skin-black navbar */
 .skin-black .navbar {
-  background-color: #ffffff;
+  background-color: #cef; /*#ffffff;*/
   border-bottom: 1px solid #eee;
 }
 .skin-black .navbar .nav a {

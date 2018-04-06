@@ -12,7 +12,7 @@ import {
   //UserListSeeAllUser
 }                         from '../../components';
 
-import { fetchUsersDataIfNeeded } from '../../redux/modules/users'
+//import { fetchUsersDataIfNeeded } from '../../redux/modules/users'
 import { store } from '../../Root'
 
 class UserListView extends PureComponent {
@@ -26,7 +26,7 @@ class UserListView extends PureComponent {
 
   componentDidMount() {
     console.log('users component mounted')
-    store.dispatch(fetchUsersDataIfNeeded())
+    //store.dispatch(fetchUsersDataIfNeeded()) re-enable me to use if needed
   }
 
   componentWillUnmount() {
@@ -36,7 +36,7 @@ class UserListView extends PureComponent {
   }
 
   render() {
-    const { users } = this.props
+    const { users } = this.props // move this over to user.data
 
     return(
       <AnimatedView>

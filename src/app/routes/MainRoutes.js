@@ -3,7 +3,7 @@
 import React                        from 'react'
 import { Route, Switch, Redirect }  from 'react-router-dom'
 import PrivateRoute                 from '../components/privateRoute/PrivateRoute'
-
+/*
 import HomeConnected                from '../views/examples/home'
 import AlertConnected               from '../views/examples/alert'
 import BasicElementsConnected       from '../views/examples/basicElements'
@@ -22,7 +22,7 @@ import TeamMatesViewConnected       from '../views/examples/teamMates'
 import TodoListViewConnected        from '../views/todoList'
 import TwitterFeedConnected         from '../views/examples/twitterFeed'
 import WorkProgressConnected        from '../views/examples/workProgress'
-
+*/
 import ProtectedConnected           from '../views/protected'
 
 import Dashboard  from '../views/dashboard'
@@ -47,7 +47,7 @@ export const MainRoutes = () => (
   <Switch>
     <Route exact path="/" component={ Dashboard } />
     <Redirect from='/dashboard' to='/' />
-
+    { /*
     <Route path="/examples/statsCard" component={ StatsCardConnected } />
     <Route path="/examples/earningGraph" component={ EarningGraphConnected } />
     <Route path="/examples/notifications" component={NotificationsConnected} />
@@ -68,7 +68,8 @@ export const MainRoutes = () => (
 
     <Route path="/examples/grid/simple" component={ GridView } />
     <Route path="/examples/grid/customPager" component={ GridView } />
-
+    <Route exact path="/general" component={ GeneralConnected } />
+    */ }
     <Route path="/token/:token_id" component={ Token } />
     
     <Route path="/Analyst/availability" component={ Availability }  />
@@ -84,7 +85,7 @@ export const MainRoutes = () => (
 
 
     <Route exact path="/fileUpload" component={ FileUploader } />
-    <Route exact path="/general" component={ GeneralConnected } />
+
     
     <Route path="/general/tokens" component={ Tokens } /> 
     <Route path="/general/rules" component={ Rules } />

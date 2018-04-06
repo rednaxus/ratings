@@ -22,7 +22,7 @@ export {
   fetchTokenRounds
 }       from './tokens'
 
-export { fetchUsersDataIfNeeded }       from './users'
+//export { fetchUsersDataIfNeeded }       from './users'
 export { 
   cycleActions, 
   fetchCyclesDataIfNeeded, 

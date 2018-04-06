@@ -19,7 +19,7 @@ import userInfos            from './userInfos'
 import teamMates            from './teamMates'
 import views                from './views'
 import userAuth             from './userAuth' // to die
-import users                from './users' // to die
+//import users                from './users' // to die
 import cycles               from './cycles'
 import rounds               from './rounds'
 import web3                 from './web3'
@@ -36,7 +36,7 @@ export const reducers = {
   tokens,
   views,
   userAuth,
-  users,
+  //users,
   cycles,
   rounds,
   survey,

@@ -90,7 +90,7 @@ const fetchCyclesData = () => {
     dispatch(request())
       console.log('getting cycles data from api')
       let user = getState().user
-      let analyst = user.info.user ? user.info.user.id : 0
+      let analyst = user.info ? user.info.id : 0
       getCyclesData( analyst )
       .then( data => dispatch( success( data ) ) )
       .catch( err => dispatch( failure( err ) ) )    

@@ -117,10 +117,10 @@ class App extends Component {
             isCollapsed={sideMenuIsCollapsed}
             helloWord={helloWord}
             connectionStatus={connectionStatus}
-            userIsConnected={user.info.isConnected}
+            userIsConnected={user.authentication.loggedIn}
             username={userFullName}
-            userPicture={user.info.picture}
-            showPicture={user.info.showPicture}
+            userPicture={ user.info.picture || UserIMG }
+            showPicture={ user.info.showPicture }
           />
           <AsideRight isAnimated={true} isExpanded={sideMenuIsCollapsed} >
             {alert.message &&

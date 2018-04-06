@@ -160,11 +160,11 @@ const login = (username, password) => new Promise((resolve,reject) => {
 })
 
 
-const register = (user,email,password) => new Promise( (resolve,reject) => {
+const register = (user,email,password, referral = 0) => new Promise( (resolve,reject) => {
   console.log(' register',user,password,email)
   web3 = window.web3
   AnalystRegistry().then((analystRegistry) => {
-    analystRegistry.register(user,password,email).then(result => { // transaction object
+    analystRegistry.register(user,password,email,referral).then(result => { // transaction object
       console.log('result',result)
       resolve(result)
     })

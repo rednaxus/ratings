@@ -55,7 +55,7 @@ export const refreshInfo = (deep = true) => { // get from id, deep means to get 
 
   return (dispatch,getState) => {
     const user = getState().user
-    const user_id = user.info && user.info.user && user.info.user.id ? user.info.user.id : 0
+    const user_id = user.authentication && user.authentication.id ? user.authentication.id : 0
     dispatch( request( { user_id } ) )
     userService.info( user_id ).then( userInfo => {
       console.log('refreshInfo, got info',userInfo)
@@ -141,31 +141,25 @@ const initialAuthState = user ? { loggedIn: true, user } : {};
 const authentication = (state = initialAuthState, action) => {
   switch (action.type) {
     case userConstants.LOGIN_REQUEST:
-      return {
-        loggingIn: true,
-        user: action.user
-      };
+      return { loggingIn: true, ...action.user }
     case userConstants.LOGIN_SUCCESS:
-      return {
-        loggedIn: true,
-        user: action.user
-      };
+      return { loggedIn: true, ...action.user }
     case userConstants.LOGIN_FAILURE:
-      return {};
+      return {}
     case userConstants.LOGOUT:
-      return {};
+      return {}
     default:
       return state
   }
 }
 
-const initialInfoState = { infoFetching: false, user:{ info:{user:{id:0}}} }
+const initialInfoState = { infoFetching: false, user:{ info:{ id:0, showPicture:true, isConnected:true } } }
 const info = (state = initialInfoState, action) => {
   switch (action.type) {
     case userConstants.INFO_REQUEST:
       return { } //infoFetching: true }
     case userConstants.INFO_SUCCESS:
-      return { infoFetching: false, user:action.userInfo }
+      return { infoFetching: false, ...action.userInfo }
     case userConstants.INFO_FAILURE:
       return {}
     default:
@@ -185,6 +179,7 @@ function registration(state = {}, action) {
       return state
   }
 }
+
 
 const reducer = combineReducers({
   authentication,

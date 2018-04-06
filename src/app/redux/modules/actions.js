@@ -14,7 +14,7 @@ export { alertActions } from './alert'
 export { userActions } from './user'
 
 export { fetchTeamMatesDataIfNeeded }    from './teamMates'
-export { fetchUserInfoDataIfNeeded }     from './userInfos'
+//export { fetchUserInfoDataIfNeeded }     from './userInfos'
 
 export { 
   fetchTokensDataIfNeeded,
@@ -42,8 +42,8 @@ export {
   changePageLimit 
 }                                       from './app'
 
-// views:
-export {
+
+export { // views:
   enterAnalystStat, leaveAnalystStat,
 
   enterHome, leaveHome,

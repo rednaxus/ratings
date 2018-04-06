@@ -22,7 +22,7 @@ class Status extends Component {
       <AnimatedView>
         <main className="container">
           <Breadcrumb path={["dashboard","status"]} />
-          <UserStatus user={ user.info.user }/>
+          <UserStatus user={ user.info }/>
           <AnalystStat />
           <div className="row">
             <div className="col-md-6">

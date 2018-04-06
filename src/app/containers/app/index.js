@@ -4,10 +4,10 @@ import { connect } from 'react-redux'
 import { bindActionCreators, compose } from 'redux'
 import { withRouter }           from 'react-router'
 import * as viewsActions        from '../../redux/modules/views'
-import * as userInfosActions    from '../../redux/modules/userInfos'
+//import * as userInfosActions    from '../../redux/modules/userInfos'
 import * as sidemenuActions     from '../../redux/modules/sideMenu'
 import * as earningGraphActions from '../../redux/modules/earningGraph'
-import { refreshInfo }          from '../../redux/modules/user'
+import { userActions }          from '../../redux/modules/user'
 import App                      from './App'
 
 
@@ -18,8 +18,8 @@ const mapStateToProps = (state) => {
     // sideMenu:
     sideMenuIsCollapsed: state.sideMenu.isCollapsed,
     // userInfos:
-    userInfos:           state.userInfos.data,
-    userIsConnected:     state.userInfos.isConnected,
+    //userInfos:           state.userInfos.data,
+    //userIsConnected:     state.userInfos.isConnected,
     alert:               state.alert,
     user:                state.user
   };
@@ -32,12 +32,12 @@ const mapDispatchToProps = (dispatch) => {
         // views:
         ...viewsActions,
         // userInfos
-        ...userInfosActions,
+        //...userInfosActions,
         // sideMenu
         ...sidemenuActions,
         // eaning graph
         ...earningGraphActions,
-        refreshInfo,
+        ...userActions // refreshInfo,
       },dispatch)
   }
 }

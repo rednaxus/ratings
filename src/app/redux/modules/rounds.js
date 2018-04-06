@@ -133,7 +133,7 @@ export const fetchRoundInfo = ( round ) => {
   }
 }
 
-const getUser = (state) => state.user.info.user ? state.user.info.user.id : 0
+const getUser = (state) => state.user.info ? state.user.info.id : 0
 
 export const fetchRoundAnalystInfo = ( round, analyst = -1 ) => {
   const request = (time = moment().format()) => {

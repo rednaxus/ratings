@@ -4,7 +4,7 @@
 /* eslint consistent-return:0 */
 import moment               from 'moment'
 import { appConfig }        from '../../config'
-import {  fetchMockCyclesData } from '../../services'
+// import {  fetchMockCyclesData } from '../../services'
 import { 
   getCyclesData, 
   getCronInfo, 
@@ -36,7 +36,7 @@ const initialState = {
   time:       null
 };
 
-const getUser = (state) => state.user.info.user ? state.user.info.user.id : 0
+const getUser = (state) => state.user.info ? state.user.info.id : 0
 
 const cycles = (state = initialState, action) => {
   switch (action.type) {

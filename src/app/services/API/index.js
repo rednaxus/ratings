@@ -10,7 +10,7 @@ export {
 }     from './tokens'
 export { getTokenInfo } from './ethplorer'
 
-export { getUserInfoData }      from './userInfos'
+//export { getUserInfoData }      from './userInfos'
 
 export { getUsersData } from './users'
 

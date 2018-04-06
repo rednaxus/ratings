@@ -15,7 +15,7 @@ import user                 from './user'
 import sideMenu             from './sideMenu'
 
 import earningGraph         from './earningGraph'
-import userInfos            from './userInfos'
+//import userInfos            from './userInfos'
 import teamMates            from './teamMates'
 import views                from './views'
 import userAuth             from './userAuth' // to die
@@ -31,7 +31,7 @@ export const reducers = {
   user,
   earningGraph,
   sideMenu,
-  userInfos,
+  //userInfos,
   teamMates,
   tokens,
   views,

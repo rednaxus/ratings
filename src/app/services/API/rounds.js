@@ -62,7 +62,7 @@ export const dataSource = function getData({
         console.log("number of rounds:",numRounds)
         var numFetch = 0
         var roundsData = []
-        let user = store.getState().user.info.user
+        let user = store.getState().user.info
         let analyst = user && user.id ?  user.id : 0
 
         for (var i = 0; i < numRounds; i++) {

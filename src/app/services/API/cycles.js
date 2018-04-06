@@ -99,7 +99,7 @@ export const dataSource = function getData({ pageIndex, pageSize }) {
         // console.log("result was:",numCycles)
         var numFetch = 0
         var cyclesData = []
-        let user = store.getState().user.info.user
+        let user = store.getState().user.info
         let analyst = user && user.id ?  user.id : 0
 
         for (var i = 0; i < numCycles; i++) {

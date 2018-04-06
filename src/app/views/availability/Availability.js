@@ -86,7 +86,7 @@ class Availability extends PureComponent {
   }
 
   canLead() { 
-    return this.props.user.info.user.reputation >= appConfig.REPUTATION_LEAD
+    return this.props.user.info.reputation >= appConfig.REPUTATION_LEAD
   }
 
   signup(e,id,lead=false) {

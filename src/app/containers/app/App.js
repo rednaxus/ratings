@@ -1,23 +1,21 @@
 // @flow weak
 
 // #region imports
-import React, {
-  Component
-}                             from 'react';
+import React, { Component }   from 'react'
 import PropTypes              from 'prop-types';
 import {
   Header,
   // Footer,
   AsideLeft,
   AsideRight
-}                             from '../../components';
-import { Modals }             from '../../views';
-import { appConfig }          from '../../config';
-import { navigation }         from '../../models';
-import MainRoutes             from '../../routes/MainRoutes';
-import auth                   from '../../services/auth';
+}                             from '../../components'
+import { Modals }             from '../../views'
+import { appConfig }          from '../../config'
+import { navigation }         from '../../models'
+import MainRoutes             from '../../routes/MainRoutes'
+import auth                   from '../../services/auth'
 
-import UserIMG                from '../../img/user.jpg';
+import UserIMG                from '../../img/user.jpg'
 // #endregion
 import { alertActions }       from '../../redux/modules/alert'
 
@@ -31,13 +29,14 @@ class App extends Component {
     history:  PropTypes.object.isRequired,
 
     sideMenuIsCollapsed: PropTypes.bool,
-    userInfos:  PropTypes.shape({
+    /*userInfos:  PropTypes.shape({
       login:       PropTypes.string,
       firstname:   PropTypes.string,
       lastname:    PropTypes.string,
       picture:     PropTypes.string,
       showPicture: PropTypes.bool
     }),
+    */
     userIsConnected: PropTypes.bool,
     currentView:     PropTypes.string,
 
@@ -64,7 +63,7 @@ class App extends Component {
     console.log('props',this.props)
     const {
       actions: {
-        fetchUserInfoDataIfNeeded,
+        //fetchUserInfoDataIfNeeded,
         refreshInfo,
         getSideMenuCollpasedStateFromLocalStorage
       },
@@ -78,25 +77,25 @@ class App extends Component {
     })
 
     refreshInfo()
-    fetchUserInfoDataIfNeeded();
+    //fetchUserInfoDataIfNeeded();
     getSideMenuCollpasedStateFromLocalStorage();
   }
 
   render() {
     const { appName, connectionStatus, helloWord } = this.state;
     const { 
-      userInfos, 
+      //userInfos, 
       userIsConnected, 
       sideMenuIsCollapsed, 
       currentView, 
       alert,
       user
-    } = this.props;
+    } = this.props
     console.log('props in app',this.props)
 
     //const userFullName = `${userInfos.firstname} ${userInfos.lastname.toUpperCase()}`;
-    const userFullName = user.info.user && user.info.user.name ? user.info.user.name : '' // should not get here if not logged in but during testing
-    const username = user.info.user && user.info.user.name ? user.info.user.name: ''
+    const userFullName = user.info && user.info.name ? user.info.name : '' // should not get here if not logged in but during testing
+    const username = user.info && user.info.name ? user.info.name: ''
     return (
       <div>
         <Header
@@ -105,7 +104,7 @@ class App extends Component {
           userFirstname={userFullName}
           userLastname={""}
           userPicture={UserIMG}
-          showPicture={userInfos.showPicture}
+          showPicture={user.info.showPicture}
           currentView={currentView}
           toggleSideMenu={this.handlesMenuButtonClick}
           onLogout={this.handlesOnLogout}
@@ -118,10 +117,10 @@ class App extends Component {
             isCollapsed={sideMenuIsCollapsed}
             helloWord={helloWord}
             connectionStatus={connectionStatus}
-            userIsConnected={userIsConnected}
+            userIsConnected={user.info.isConnected}
             username={userFullName}
-            userPicture={userInfos.picture}
-            showPicture={userInfos.showPicture}
+            userPicture={user.info.picture}
+            showPicture={user.info.showPicture}
           />
           <AsideRight isAnimated={true} isExpanded={sideMenuIsCollapsed} >
             {alert.message &&

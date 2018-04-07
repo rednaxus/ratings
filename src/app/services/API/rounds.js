@@ -50,6 +50,26 @@ export const getRoundAnalystInfo = ( round, analyst=0 ) => new Promise( (resolve
   })
 })
 
+// function submitBrief( uint16 _round, uint8 _analyst, address _file )
+export const submitBrief = ( round, filehash, analyst ) => {
+
+}
+
+/*    function submitSurvey(uint16 _round,
+        uint8 _analyst, // analyst by round index
+        uint8 _idx,              // pre (0), or post (1)
+        bytes32 _answers,
+        byte _qualitatives,
+        uint8 _recommendation,
+        bytes32 _comment
+    )
+*/
+export const submitSurvey = ( round, answers, qualitatives, recommendation, comment, preOrPost = 0 ) => {
+
+}
+
+
+
 export const dataSource = function getData({
     pageIndex, pageSize
 }) {

@@ -28,6 +28,13 @@ contract AnalystRegistry {
         uint32 value;
         uint32 ref; // may be round, cycle, analyst, depends on event
     }
+    
+    struct Referral {
+        uint256 timestamp;
+        uint256 reg_timestamp;
+        bytes32 email;
+        uint32 analyst;
+    }
 
     struct Analyst {
         //string firstname;
@@ -41,7 +48,8 @@ contract AnalystRegistry {
         uint32 reputation;
         uint32 points;
         uint32 token_balance;
-
+        uint8 referral_balance;
+        
         uint16 num_rounds_scheduled;
         uint16 num_rounds_active;
         uint16 num_rounds_finished;
@@ -52,7 +60,7 @@ contract AnalystRegistry {
         mapping ( uint16 => uint16 ) rounds_active;
         mapping ( uint16 => uint16 ) rounds_finished;
         mapping ( uint16 => RewardEvent ) reward_events;
-        mapping ( uint16 => uint32 ) referrals;
+        mapping ( uint16 => Referral ) referrals;
     }
     mapping (uint32 => Analyst) analysts;
     mapping (address => uint32) address_lookup;
@@ -69,24 +77,30 @@ contract AnalystRegistry {
         bootstrap(12,4);
     }
 
-    event Register(uint32 id, bytes32 name, bytes32 email);
+    event Register( uint32 id, bytes32 name, bytes32 email, uint32 referral );
     function register(bytes32 _name, bytes32 _pw, bytes32 _email, uint32 _referral ) public {
         analysts[ num_analysts ] = Analyst(
             _name, _pw, _email, 0, _referral, msg.sender, false,
-            0, 0, 0,
+            0, 0, 0, 5,
             0, 0, 0, 0, 0
         );
         if (_referral > 0){
-            Analyst storage referredBy = analysts[_referral];
-            referredBy.referrals[referredBy.num_referrals++] = num_analysts;
-            referredBy.points += REFERRAL_POINTS;
-            referredBy.reward_events[referredBy.num_reward_events++] =
-                RewardEvent(REWARD_REFERRAL,timenow,REFERRAL_POINTS,num_analysts);
+            Analyst storage referredBy = analysts[ _referral ];
+            require( referredBy.num_referrals > 0 );
+            for (uint8 i = 0; i < referredBy.num_referrals; i++ ) {
+                if (referredBy.referrals[ i ].email == _email) {
+                    referredBy.points += REFERRAL_POINTS;
+                    referredBy.reward_events[referredBy.num_reward_events++] =
+                        RewardEvent(REWARD_REFERRAL,timenow,REFERRAL_POINTS,num_analysts);
+                    break;
+                }
+                require( i != referredBy.num_referrals - 1 ); // referral not found, invalid
+            }
         }
         address_lookup[ msg.sender ] = num_analysts;
         name_lookup[ _name ] = num_analysts;
 
-        Register( num_analysts++, _name, _email );
+        Register( num_analysts++, _name, _email, _referral );
     }
 
     function login(bytes32 _name, bytes32 _pw) public view returns (uint32, bytes32, uint32, uint32) {
@@ -124,21 +138,26 @@ contract AnalystRegistry {
         RewardEvent storage e = analysts[ _analyst ].reward_events[ _event ];
         return ( e.reward_type, e.timestamp, e.value, e.ref );
     }
-    function getReferral( uint32 _analyst, uint16 _referral ) public view returns ( uint32 ) {
-        return analysts[ _analyst ].referrals[ _referral ];
+    function referralInfo( uint32 _analyst, uint16 _referral ) public view returns ( uint256, uint256, bytes32, uint32 ) {
+        Referral storage r = analysts[ _analyst ].referrals[_referral];
+        return ( r.timestamp, r.reg_timestamp, r.email, r.analyst ); 
     }
     function isLead( uint32 _analyst ) public view returns (bool){
         return( analysts[ _analyst ].reputation >= REPUTATION_LEAD );
     }
 
-    function analystInfo( uint32 _analystId ) public view returns (
-        uint32, bytes32, bytes32, uint32, uint32, bool, uint32,
+    function referredBy( uint32 _analyst ) public view returns ( uint32 ) {
+        return analysts[ _analyst ].referred_by;
+    }
+    function analystInfo( uint32 _analyst ) public view returns (
+        uint32, bytes32, bytes32, uint32, 
+        uint32, bool, uint32,
         uint16, uint16, uint16, uint16, uint16
     ) {
-        Analyst storage a = analysts[_analystId];
+        Analyst storage a = analysts[ _analyst ];
         return (
-            _analystId, a.name, a.password, a.auth_status,
-            a.reputation, a.is_lead, a.token_balance,
+            _analyst, a.name, a.email, a.auth_status,
+            a.reputation, a.is_lead, a.token_balance, 
             a.num_rounds_scheduled, a.num_rounds_active, a.num_rounds_finished,
             a.num_reward_events,a.num_referrals
         );
@@ -211,6 +230,11 @@ contract AnalystRegistry {
         else payToken( _analyst, REWARD_ROUND_TOKENS_JURY_BOTTOM, _roundValue * BOTTOM_JURISTS_X10 / 1000, _round );
     }
 
+    function submitReferral( uint32 _analyst, bytes32 _email ) public {
+        Analyst storage a = analysts[ _analyst ];
+        a.referrals[ a.num_referrals++ ] = Referral( timenow, 0, _email, 0 );
+    }
+    
     // create some analysts... testing only!
     function bootstrap(uint32 _numanalysts,uint32 _numleads) public {
         uint32 new_analysts = _numanalysts == 0 ? 12 : _numanalysts;

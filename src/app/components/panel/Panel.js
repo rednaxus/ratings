@@ -1,7 +1,7 @@
 // @flow weak
 
-import React      from 'react';
-import PropTypes  from 'prop-types';
+import React      from 'react'
+import PropTypes  from 'prop-types'
 
 const Panel = ({
   hasTitle,
@@ -24,7 +24,7 @@ const Panel = ({
       { children }
     </div>
   </section>
-);
+)
 
 Panel.propTypes = {
   hasTitle:           PropTypes.bool,
@@ -40,6 +40,6 @@ Panel.defaultProps = {
   title:              'no title set',
   sectionCustomClass: '',
   bodyBackGndColor:   '#FFF'
-};
+}
 
-export default Panel;
+export default Panel

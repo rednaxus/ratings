@@ -25,13 +25,12 @@ const info = userId => new Promise((resolve,reject) => {
   AnalystRegistry().then( registry => {
     RatingAgency().then( agency => {    
       registry.analystInfo(userId).then( result => {
-        // _analystId, a.name, a.password, a.auth_status, a.reputation, a.is_lead, a.token_balance, a.num_rounds_scheduled, a.num_rounds_active, a.num_rounds_finished
-
+        // _analystId, a.name, a.email, a.auth_status, a.reputation, a.is_lead, a.token_balance, a.num_rounds_scheduled, a.num_rounds_active, a.num_rounds_finished
         userInfo = { 
           ...userInfo,
           id: result[0].toNumber(),
           name: web3.toAscii(result[1]).replace(/\W/g,''),
-          email: web3.toAscii(result[1]).replace(/\W/g,''),
+          email: web3.toAscii(result[2]).replace(/\W/g,''),
           auth_status: result[3].toNumber(),
           reputation: result[4].toNumber(),
           lead: result[5],
@@ -160,11 +159,11 @@ const login = (username, password) => new Promise((resolve,reject) => {
 })
 
 
-const register = (user,email,password, referral = 0) => new Promise( (resolve,reject) => {
+const register = ( user, email, password, referral = 0 ) => new Promise( (resolve,reject) => {
   console.log(' register',user,password,email)
   web3 = window.web3
-  AnalystRegistry().then((analystRegistry) => {
-    analystRegistry.register(user,password,email,referral).then(result => { // transaction object
+  AnalystRegistry().then( analystRegistry => {
+    analystRegistry.register( user, password, email, referral ).then(result => { // transaction object
       console.log('result',result)
       resolve(result)
     })
@@ -186,7 +185,7 @@ export const userService = {
   info,
   getAnalystRounds
 }
-
+/*
 export const getUsersData = () => {
 
   return new Promise((resolve,reject) => {
@@ -202,12 +201,16 @@ export const getUsersData = () => {
         var usersData = []
         for (var i = 0; i < numAnalysts; i++) {
           analystRegistry.analystInfo(i).then( rAnalyst => { // idx, addr
+            _analyst, a.name, a.password, a.auth_status,
+            a.reputation, a.is_lead, a.token_balance, 
+            a.num_rounds_scheduled, a.num_rounds_active, a.num_rounds_finished,
+            a.num_reward_events,a.num_referrals
             //console.log('got analyst info',rAnalyst)
             var res = {
               id:rAnalyst[0].toNumber(), 
               name: rAnalyst[1].slice(48),
-              status:rAnalyst[2].toNumber(),
-              reputation:rAnalyst[3].toNumber(),  
+              status:rAnalyst[3].toNumber(),
+              reputation:rAnalyst[4].toNumber(),  
               is_lead:rAnalyst[4], 
               token_balance:rAnalyst[5].toNumber(),
               scheduled_round:rAnalyst[6].toNumber(),
@@ -228,8 +231,24 @@ export const getUsersData = () => {
         reject(result)
       })
     })
-
   })
+}
+*/
 
+// function referralInfo( uint32 _analyst, uint16 _referral ) public view returns ( uint256, uint256, bytes32, uint32 ) {
+export const referrals = ( ) => {
 
 }
+
+
+// function referredBy( uint32 _analyst ) public view returns ( uint32 ) {
+export const referredBy = ( _analyst ) => {
+
+}
+
+//     function submitReferral( uint32 _analyst, bytes32 _email ) public {
+export const submitReferral = ( _email ) => {
+
+}
+
+

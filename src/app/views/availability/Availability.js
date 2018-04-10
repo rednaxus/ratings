@@ -101,21 +101,21 @@ class Availability extends PureComponent {
   }
 
   render() {
-    const { cycles, user } = this.props
+    const { cycles, user, cronInfo } = this.props
     let columns = this.columns
-    let now = cycles.cronInfo / 1000
+    let now = cronInfo / 1000
     console.log('cycles',cycles,now)
 
-    let comingSignupCycles = cycles.data.filter( cycle => !cycle.analyst_status && cycle.timestart > now )
-    let comingCycles = cycles.data.filter( cycle => cycle.analyst_status && cycle.timestart > now )
-    let activeCycles = cycles.data.filter( cycle => cycle.analyst_status && cycle.timestart <= now && cycle.timefinish >= now )
+    let comingSignupCycles = cycles.filter( cycle => !cycle.analyst_status && cycle.timestart > now )
+    let comingCycles = cycles.filter( cycle => cycle.analyst_status && cycle.timestart > now )
+    let activeCycles = cycles.filter( cycle => cycle.analyst_status && cycle.timestart <= now && cycle.timefinish >= now )
     console.log('signup cycles',comingSignupCycles)
     console.log('coming cycles',comingCycles)
     console.log('active cycles',activeCycles)
     return(
       <AnimatedView>
         <Breadcrumb path={["dashboard","availability"]}></Breadcrumb>
-        <small className="pull-right">time last checked: { dateView( { value:cycles.cronInfo,convert:false} ) }</small> 
+        <small className="pull-right">time last checked: { dateView( { value:cronInfo,convert:false} ) }</small> 
         { !comingSignupCycles.length ? <h2>All rounds signed up, check back later</h2> :
         <div>
           <h2>Sign up for coming rounds</h2>

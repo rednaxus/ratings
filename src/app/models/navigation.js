@@ -30,11 +30,11 @@ export const navigation = {
           linkTo: '/Analyst/availability',
           faIconName: 'fa-eye'
         },
-        {
+        /*{
           name: 'Survey',
           linkTo: '/Analyst/survey',
           faIconName: 'fa-eye'
-        },
+        },*/
         {
           name: 'Statuses',
           linkTo: '/Analyst/status',

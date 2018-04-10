@@ -14,7 +14,8 @@ const mapStateToProps = state => {
     bulkSelection:      state.bulkSelection,
     selection:          state.selection,
     app:                state.app,
-    cycles:             state.cycles
+    cycles:             state.cycles.data,
+    cronInfo:           state.cycles.cronInfo
   }
 }
 

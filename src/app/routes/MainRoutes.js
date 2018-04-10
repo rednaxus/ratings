@@ -32,7 +32,7 @@ import About from '../views/about'
 import Tokens from '../views/tokens'
 import Token from '../views/token'
 import UserListViewConnected        from '../views/userList'
-import RoundCycles from '../views/roundCycles'
+//import RoundCycles from '../views/roundCycles'
 import Round from '../views/round'
 
 import Survey from '../views/survey'
@@ -73,12 +73,11 @@ export const MainRoutes = () => (
     <Route path="/token/:token_id" component={ Token } />
     
     <Route path="/Analyst/availability" component={ Availability }  />
-    <Route path="/Analyst/survey" component={ Survey } />
+    { /* <Route path="/Analyst/survey" component={ Survey } /> 
+        <Route path="/admin/roundCycles" component={ RoundCycles } />
+    */}
     <Route path="/Analyst/status" component={ Status } />
-    
     <Route path="/admin/userList" component={ UserListViewConnected } />
-    <Route path="/admin/roundCycles" component={ RoundCycles } />
-
     <Route path="/admin/analysts" component={ Analysts } />
     <Route path="/admin/cycles" component = { Cycles } />
     

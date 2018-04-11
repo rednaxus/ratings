@@ -37,7 +37,10 @@ const columns = [
         width: '50%',
         dataIndex: 'address',
         className: 'additional-class',
-        defaultSortDirection: 'descend'
+        defaultSortDirection: 'descend',
+        renderer: ( { column, row, value }) => (
+          <a href={'https://etherscan.io/address/'+value}>{value}</a>
+        )
     }
 ];
 

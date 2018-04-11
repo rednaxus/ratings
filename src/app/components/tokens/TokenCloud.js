@@ -32,7 +32,7 @@ const data = [
 const customRenderer = (tag, size, color) => (
   <span key={tag.value}
         style={{
-          animation: 'blinker 3s linear infinite',
+          animation: 'blinker 12s linear infinite',
           animationDelay: `${Math.random() * 2}s`,
           fontSize: `${size}em`,
           //border: `2px solid ${color}`,
@@ -46,10 +46,7 @@ const customRenderer = (tag, size, color) => (
 const TokenCloud = ( { tokens } ) => {
   console.log('tokens',tokens)
   return (
-    <TagCloud tags={data}
-            minSize={1}
-            maxSize={2}
-            renderer={customRenderer} />
+    <TagCloud tags={data} minSize={1} maxSize={2} renderer={customRenderer} />
   )
 }
 

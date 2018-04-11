@@ -172,6 +172,7 @@
     "react-router-redux": "^5.0.0-alpha.8",
     "react-select": "^1.2.1",
     "react-svg-morph": "^0.2.1",
+    "react-tagcloud": "^1.2.0",
     "react-tap-event-plugin": "^3.0.2",
     "react-test-renderer": "^16.2.0",
     "react-web3": "^0.4.4",

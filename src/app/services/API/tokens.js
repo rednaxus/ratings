@@ -12,44 +12,41 @@ import { getTokenInfo } from './ethplorer'
 export const dataSource = function getData({
     pageIndex, pageSize
 }) {
- return new Promise((resolve,reject) => {
-    console.log(' beginning tokens fetch')
-
-    RatingAgency()
-    .then((ratingAgency) => {
-      ratingAgency.num_tokens()
-      .then(result => {
-        var numTokens = result.toNumber();
-        console.log("result was:",numTokens);
-        var numFetch = 0
+  console.log('in data source')
+  return new Promise((resolve,reject) => {
+    console.log(' beginning tokens fetch', pageSize, pageIndex )
+    pageSize = pageSize || 5
+    pageIndex = pageIndex || 0
+    RatingAgency().then( (ratingAgency) => {
+      ratingAgency.num_tokens().then( result => {
+        var numTokens = result.toNumber()
+        console.log("result was:",numTokens)
+   
         var tokensData = []
-        for (var i = 0; i < numTokens; i++) {
-          ratingAgency.coveredTokenInfo(i).then( raToken => { // idx, addr
-            var res = {id:raToken[0].toNumber(),addr:raToken[1]}
-            console.log('got address',res)
-            TokenERC20(res.addr).then( tokenERC20 => {
-              tokenERC20.name().then( name => {
-                res.name = name
-                tokensData.push(res)
-                console.log('got token with name',name)
-                if (++numFetch === numTokens) {
-                  tokensData.sort( (a,b) => a.id - b.id)  
-                  //dispatch(tokensFetched( ))
-                  resolve( { data:tokensData, total:numTokens } ) // {numTokens: numTokens, data: tokensData });
-                }
-              })
-            })
+        let max = Math.min( pageIndex + pageSize, numTokens )
+        let numFetch = max - pageIndex
+        for (var i = pageIndex; i < max; i++) {
+          getTokenData( i ).then( token => { // idx, addr
+            tokensData.push( token )
+            console.log('got token with name',token.name)
+            if (!--numFetch) {
+              tokensData.sort( (a,b) => a.id - b.id)  
+              //dispatch(tokensFetched( ))
+              resolve( { data:tokensData, total:numTokens } ) // {numTokens: numTokens, data: tokensData });
+            }
+          })
+          .catch( err => {
+            console.error("Error on token fetch")
+            reject( err )
           })
         }
       })
-      .catch(result => { 
-        console.error("Error from server:"  + result) 
-        reject(result)
+      .catch( err => { 
+        console.error("Error from server:"  + err) 
+        reject( err )
       })
     })
-
   })
-
 }
 
 export default dataSource
@@ -92,7 +89,7 @@ export const getTokenRounds = ( i, startAt = 0 ) => {
     })
   })
 }
-
+/*
 export const getTokensData = () => { // not used any more
 
   return new Promise((resolve,reject) => {
@@ -135,3 +132,16 @@ export const getTokensData = () => { // not used any more
 
 
 }
+
+
+.error("Error from server:"  + result) 
+        reject(result)
+      })
+    })
+
+  })
+
+
+}
+
+*/

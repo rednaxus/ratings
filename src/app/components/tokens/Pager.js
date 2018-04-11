@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { Actions } from 'react-redux-grid'
 
 export const Pager = ({ api, current, gridData, pagingDataSource, store  }) => {
-    
+  console.log('in pager',api)
     const total = gridData ?
         gridData.total
         : 0;
@@ -23,7 +23,7 @@ export const Pager = ({ api, current, gridData, pagingDataSource, store  }) => {
             Actions.PagerActions
                 .setPageIndexAsync({
                     pageIndex: parseInt(index) - 1,
-                    pageSize: 10,
+                    pageSize: 5,
                     dataSource: api,
                     stateKey: 'analysts'
                 })

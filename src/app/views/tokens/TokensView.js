@@ -8,7 +8,8 @@ import { AnimatedView } from '../../components'
 
 import { store } from '../../Root'
 
-import Tokens from '../../components/tokens/Tokens'
+import { Tokens, TokenCloud } from '../../components/tokens'
+
 
 class TokensView extends Component {
   static propTypes= {
@@ -45,10 +46,12 @@ class TokensView extends Component {
   }
 
   render() {
+    const { tokens } = this.props
     return (
       <AnimatedView>
         <div className="simpleContainer">
-          <h2 className="gridH2">Tokens</h2>
+          <h2 className="gridH2">Covered Tokens</h2>
+          <TokenCloud tokens={ tokens }/>
           <Tokens { ...{ store } } />
         </div>
       </AnimatedView>

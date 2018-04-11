@@ -35,35 +35,36 @@ const columns = [
     {
         name: 'Address',
         width: '50%',
-        dataIndex: 'addr',
+        dataIndex: 'address',
         className: 'additional-class',
         defaultSortDirection: 'descend'
     }
 ];
 
 export const Tokens = ({ store }) => {
+  console.log('api:',api)
+  const tokens = {
+      columns,
+      dataSource: api,
+      plugins: {
+        PAGER: {
+          enabled: true,
+          pagingType: 'remote',
+          pagerComponent: (
+              <Pager
+                  api={api}
+                  store={store}
+              />
+          )
+        }
+      },
+      events,
+      store,
+      stateKey: 'tokens'
+  };
 
-    const tokens = {
-        columns,
-        dataSource: api,
-        plugins: {
-            PAGER: {
-                enabled: true,
-                pagingType: 'remote',
-                pagerComponent: (
-                    <Pager
-                        api={api}
-                        store={store}
-                    />
-                )
-            }
-        },
-        events,
-        store,
-        stateKey: 'tokens'
-    };
-
-    return <Grid { ...tokens } />;
+  console.log('getting grid', tokens)
+  return <Grid { ...tokens } />
 };
 
 const { object } = PropTypes

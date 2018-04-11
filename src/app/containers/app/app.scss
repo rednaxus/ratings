@@ -442,3 +442,9 @@ h5 {
 .box .space { height: 30px; }
 
 //   end card stuff
+
+
+@keyframes blinker {
+  50% { opacity: 0.0; }
+}
+

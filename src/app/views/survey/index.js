@@ -10,17 +10,13 @@ import 'bootstrap/dist/css/bootstrap.css'
 import json from '../../../../survey.json'
 
 var model = new SurveyJS.Model(json)
+//model.onValueChanged = () => {
+//  console.log('test onValue')
+//}
 SurveyJS.Survey.cssType = "bootstrap"
 
-const onValueChanged = (props, model) => {
-  console.log('value changed',props,model)
-  props.setData(model.data)
-}
 
-const onComplete = (props, model) => {
-  console.log('on complete',props,model)
-  props.setCompleteFlag(true)
-}
+
 
 class Survey extends Component {
   onValueChanged( model, options ) {
@@ -30,7 +26,12 @@ class Survey extends Component {
   onComplete(model, options) {
     console.log('on complete',model,options)
     this.props.setCompleteFlag( true )
-    model.currentPageNo = 1
+    model.currentPage = 1
+    model.render()
+  }
+  onCurrentPageChanged( sender, options ) {
+    console.log('current page changed',sender,options)
+    model.currentPage = 1
     model.render()
   }
   restart(){
@@ -44,6 +45,7 @@ class Survey extends Component {
           model={model}
           onComplete={ this.onComplete.bind(this) }
           onValueChanged={ this.onValueChanged.bind(this) }
+          onCurrentPageChanged={ this.onCurrentPageChanged.bind(this) }
         />
         <button onClick={this.restart.bind(this)}>restart</button>
       </div>

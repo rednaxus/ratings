@@ -21,25 +21,43 @@ import events from './events'
 const columns = [
     {
         name: 'ID',
-        width: '10%',
+        width: '5%',
         className: 'additional-class',
         dataIndex: 'id',
         HANDLE_CLICK: () => { console.log('Header Click'); }
     },
     {
         name: 'Name',
-        width: '40%',
+        width: '20%',
         dataIndex: 'name',
+        className: 'additional-class'
+    },    
+    {
+        name: 'Symbol',
+        width: '10%',
+        dataIndex: 'symbol',
         className: 'additional-class'
     },
     {
+      name: 'Decimals',
+      width: '10%',
+      dataIndex: 'decimals'
+    },
+    {
+      name: 'Price',
+      width: '15%',
+      dataIndex: 'price',
+      renderer: ( { value }) => (
+        value.rate
+      )
+    },
+    {
         name: 'Address',
-        width: '50%',
+        width: '45%',
         dataIndex: 'address',
-        className: 'additional-class',
         defaultSortDirection: 'descend',
         renderer: ( { column, row, value }) => (
-          <a href={'https://etherscan.io/address/'+value}>{value}</a>
+          <a className={'small'} href={'https://etherscan.io/address/'+value}>{value}</a>
         )
     }
 ];

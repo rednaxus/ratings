@@ -64,6 +64,7 @@ export const submitBrief = ( round, filehash, analyst ) => {
         bytes32 _comment
     )
 */
+
 export const submitSurvey = ( round, answers, qualitatives, recommendation, comment, preOrPost = 0 ) => {
 
 }

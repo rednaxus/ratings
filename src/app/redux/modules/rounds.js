@@ -22,6 +22,10 @@ const REQUEST_ROUND_ANALYST_INFO   = 'REQUEST_ROUND_ANALYST_INFO'
 const RECEIVED_ROUND_ANALYST_INFO  = 'RECEIVED_ROUND_ANALYST_INFO'
 const ERROR_ROUND_ANALYST_INFO     = 'ERROR_ROUND_ANALYST_INFO'
 
+const REQUEST_SURVEY_SUBMIT  = 'REQUEST_SURVEY_SUBMIT'
+const RECEIVED_SURVEY_SUBMIT  = 'RECEIVED_SURVEY_SUBMIT'
+const ERROR_SURVEY_SUBMIT     = 'ERROR_SURVEY_SUBMIT'
+
 const initialState = {
   isFetching: false,
   data:       [], // rounds
@@ -154,7 +158,34 @@ export const fetchRoundAnalystInfo = ( round, analyst = -1 ) => {
   }
 }
 
+
+const toHexString = (byteArray) => {
+  return Array.from(byteArray, function(byte) {
+    return ('0' + (byte & 0xFF).toString(16)).slice(-2);
+  }).join('')
+}
+/*        uint8 _analyst, // analyst by round index
+        uint8 _idx,              // pre (0), or post (1)
+        bytes32 _answers,
+        byte _qualitatives,
+        uint8 _recommendation,
+        bytes32 _comment
+    )
+*/
+export const submitSurvey = ( round, analyst, pre, data ) => {
+  const request = ( time = moment().format() ) => ( { type: REQUEST_SURVEY_SUBMIT, time } )
+  const success = ( time = moment().format() ) => ( { type: RECEIVED_SURVEY_SUBMIT, time } )
+  const failure = (time = moment().format()) => ( { type: ERROR_SURVEY_SUBMIT, time } )
+  
+  return (dispatch,getState) => {
+    dispatch( request() )
+    let bytes32 = toHexString( data )
+    console.log('data',data,'bytes32',bytes32)
+  }
+}
+
 export const roundActions = {
   fetchRoundInfo,
-  fetchRoundAnalystInfo
+  fetchRoundAnalystInfo,
+  submitSurvey
 }

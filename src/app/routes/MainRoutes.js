@@ -35,7 +35,7 @@ import UserListViewConnected        from '../views/userList'
 //import RoundCycles from '../views/roundCycles'
 import Round from '../views/round'
 
-import Survey from '../views/survey'
+//import Survey from '../views/survey'
 import FileUploader from '../views/briefUpload/FileUploader'
 
 import GridView from '../views/examples/grid'
@@ -92,9 +92,9 @@ export const MainRoutes = () => (
 
 
     <Route path="/round/:id" component={ Round } />
-    <Route path="/round/:id/survey" component={ Survey }/>
+    {/*<Route path="/round/:id/survey" component={ Survey }/>
     <Route path="/round/:id/brief" component={ FileUploader } />
-
+    */}
     {/* private views: need user to be authenticated */}
     <PrivateRoute path="/protected" component={ ProtectedConnected } />
 

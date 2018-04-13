@@ -20,7 +20,7 @@ SurveyJS.Survey.cssType = "bootstrap"
 
 
 
-class Survey extends Component {
+class JuristSurvey extends Component {
   currentPage = 0
   isCompleted = false
   data = {}
@@ -75,6 +75,7 @@ class Survey extends Component {
           onCurrentPageChanged={ this.onCurrentPageChanged.bind(this) }
           currentPageNo={this.currentPage}
           isCompleted={this.isCompleted}
+          completedHtml={'<div>thanks for <strong>finishing</strong></div>'}
           data={this.data}
         />
         <button onClick={this.restart.bind(this)}>restart</button>
@@ -95,4 +96,5 @@ const mapDispatchToProps = dispatch => bindActionCreators( {
   submitSurvey
 }, dispatch )
 
-export default connect( mapStateToProps, mapDispatchToProps )( Survey )
+export default connect( mapStateToProps, mapDispatchToProps )( JuristSurvey )
+

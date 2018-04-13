@@ -13,7 +13,7 @@ import {
   Breadcrumb
 }                         from '../../components'
 
-import Survey from '../survey'
+import JuristSurvey from '../../components/juristSurvey'
 import FileUploader from '../briefUpload/FileUploader'
 import { appConfig } from '../../config'
 
@@ -81,7 +81,7 @@ class Round extends PureComponent {
             <div>
               Analyst status in round: {appConfig.STATUSES[round.analyst_status]}
             </div>
-            <Survey />
+            <JuristSurvey />
             <FileUploader />
           </Panel.Body>
         </Panel>

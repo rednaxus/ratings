@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 //import { push } from 'react-router-redux'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { setData, setCompleteFlag } from '../../redux/modules/survey'
+import { clearData, setData, setComplete } from '../../redux/modules/survey'
 import * as SurveyJS from 'survey-react'
 // import SurveyEditor from './SurveyEditor';
 import 'survey-react/survey.css'
@@ -19,23 +19,28 @@ SurveyJS.Survey.cssType = "bootstrap"
 
 
 class Survey extends Component {
+  currentPage = 0
+  isCompleted = false
+  data = {}
   onValueChanged( model, options ) {
-    console.log('on value change',model,options);
+    //console.log('on value change',model,options);
     this.props.setData( model.data )
   }
   onComplete(model, options) {
-    console.log('on complete',model,options)
-    this.props.setCompleteFlag( true )
-    model.currentPage = 1
-    model.render()
+    //console.log('on complete',model,options)
+    this.props.setComplete( true )
   }
-  onCurrentPageChanged( sender, options ) {
-    console.log('current page changed',sender,options)
-    model.currentPage = 1
-    model.render()
+  onCurrentPageChanged( model, options ) {
+    //console.log('current page changed',model,options)
+    this.currentPage = model.currentPageNo
   }
   restart(){
-    this.props.setCompleteFlag( false )
+    this.props.setComplete( false )
+    this.currentPage = 0
+    this.isCompleted = false
+    this.data = {}
+    this.props.clearData()
+    this.forceUpdate()
   }
   render() {
     let props = this.props
@@ -46,6 +51,9 @@ class Survey extends Component {
           onComplete={ this.onComplete.bind(this) }
           onValueChanged={ this.onValueChanged.bind(this) }
           onCurrentPageChanged={ this.onCurrentPageChanged.bind(this) }
+          currentPageNo={this.currentPage}
+          isCompleted={this.isCompleted}
+          data={this.data}
         />
         <button onClick={this.restart.bind(this)}>restart</button>
       </div>
@@ -53,13 +61,14 @@ class Survey extends Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = state => ( {
   data: state.survey.data
-})
+} )
 
-const mapDispatchToProps = dispatch => bindActionCreators({
+const mapDispatchToProps = dispatch => bindActionCreators( {
+  clearData,
   setData,
-  setCompleteFlag
-}, dispatch)
+  setComplete
+}, dispatch )
 
 export default connect( mapStateToProps, mapDispatchToProps )( Survey )

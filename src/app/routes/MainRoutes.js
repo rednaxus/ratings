@@ -42,6 +42,7 @@ import GridView from '../views/examples/grid'
 import Cycles from '../views/cycles'
 import Analysts from '../views/analysts'
 import Status from '../views/status'
+import FormsView from '../views/examples/forms'
 
 export const MainRoutes = () => (
   <Switch>
@@ -96,6 +97,8 @@ export const MainRoutes = () => (
     <Route path="/round/:id/brief" component={ FileUploader } />
     */}
     {/* private views: need user to be authenticated */}
+
+    <Route path="/examples/form" component={ FormsView } />
     <PrivateRoute path="/protected" component={ ProtectedConnected } />
 
   </Switch>

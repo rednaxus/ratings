@@ -448,3 +448,41 @@ h5 {
   50% { opacity: 0.1; }
 }
 
+/*
+  Tweaking some CSS for
+  getting it work with react-widgets
+*/
+form ul li:first-child {
+  text-align: left;
+}
+
+form ul li {
+  padding: 0;
+  background-image: none;
+  display: inline-block;
+}
+
+form > div > div {
+  border: none;
+}
+
+form > div > div > * {
+  height: 50px;
+}
+
+form > div > div > span:before {
+  display: none;
+}
+
+form .rw-list {
+  border: none;
+}
+
+form .rw-popup-container {
+  border: none;
+}
+    
+
+.question-body {
+  font-size:2em;
+}

@@ -65,8 +65,37 @@ export const submitBrief = ( round, filehash, analyst ) => {
     )
 */
 
-export const submitSurvey = ( round, answers, qualitatives, recommendation, comment, preOrPost = 0 ) => {
+export const submitRoundSurvey = ( 
+  round, 
+  roundAnalyst, 
+  answers, 
+  qualitatives, 
+  recommendation, 
+  comment, 
+  preOrPost = 0 
+) => {
+  return new Promise( (resolve,reject) => {
+    //console.log(' beginning cycles fetch')
+    RatingAgency().then((ratingAgency) => {
+      ratingAgency.submitSurvey(
+        round, 
+        roundAnalyst,
+        preOrPost, 
+        answers, 
+        qualitatives, 
+        recommendation, 
+        comment
+      ).then( result => {
+        console.log('submit survey result',result)
+        resolve( 'done' )
+      })
+      .catch(result => { 
+        console.error("Error submitting survey:"  + result) 
+        reject(result)
+      })
+    })
 
+  })
 }
 
 

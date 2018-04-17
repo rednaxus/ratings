@@ -90,6 +90,11 @@ export const navigation = {
       group: 'Tests1',
       menus: [
         {
+          name:'Forms Test',
+          linkTo:'/examples/form',
+          faIconName: 'fa-eye'
+        },
+        {
           name: 'Upload briefs',
           linkTo: '/fileUpload',
           faIconName: 'fa-file'

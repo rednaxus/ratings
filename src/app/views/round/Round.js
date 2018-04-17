@@ -14,7 +14,7 @@ import {
 }                         from '../../components'
 
 import JuristSurvey from '../../components/juristSurvey'
-import FileUploader from '../briefUpload/FileUploader'
+import BriefUploader from '../briefUpload/FileUploader'
 import { appConfig } from '../../config'
 
 class Round extends PureComponent {
@@ -58,6 +58,28 @@ class Round extends PureComponent {
     if (_.isEmpty(round)) return <div>fetching...</div>
     i = _.findIndex(tokens.data,['id',round.covered_token])
     token = i == -1 ? {} : tokens.data[ i ]
+    let analyst_status = appConfig.STATUSES[round.analyst_status]
+    analyst_status = 'first survey due' // testing
+    const getActivity = (analyst_status) => {
+      switch(analyst_status) {
+        case 'brief due' :
+          return (<BriefUploader/>)
+        case 'brief submitted' :
+          return (<Brief edit={true} />)
+        case 'first survey due':
+          return (<JuristSurvey round={ round.id } pre={ true } roundAnalyst={ round.inround_id } />)
+        case 'first survey submitted':
+          return (<Brief />)
+        case 'second survey due':
+          return(
+            <div>
+              <div>Post survey due</div>
+              <JuristSurvey round={ round.id } roundAnalyst={ round.inround_id } pre={ false }/>
+            </div> )
+        case 'second survey submitted':
+          return(<div>Round completion at xxx</div>)
+      }
+    }
 
     return(
       <AnimatedView>
@@ -78,11 +100,11 @@ class Round extends PureComponent {
               Number of analysts: {round.num_analysts}
             </div>
             <TokenSummary token={token} />
+            <hr/>
             <div>
-              Analyst status in round: {appConfig.STATUSES[round.analyst_status]}
+              Analyst status in round: { analyst_status } => { round.inround_id }
             </div>
-            <JuristSurvey />
-            <FileUploader />
+            { getActivity( analyst_status ) }
           </Panel.Body>
         </Panel>
 

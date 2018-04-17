@@ -89,3 +89,6 @@ export { default as UserStatus }                 from './userStatus/UserStatus'
 export { default as FileInput }   from './file/FileInput'
 
 export { default as Graph }           from './graph/Graph'
+
+export { default as WizardForm } from './wizard/WizardForm'
+export { default as JuristSurvey } from './jurist/JuristSurvey'

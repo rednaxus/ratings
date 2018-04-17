@@ -5,7 +5,7 @@
 import moment               from 'moment'
 import * as _ from 'lodash'
 import { appConfig }        from '../../config'
-import { getRoundInfo, getRoundAnalystInfo } from '../../services/API'
+import { getRoundInfo, getRoundAnalystInfo, submitRoundSurvey } from '../../services/API'
 import { fetchTokenData }  from './tokens'
 
 //import { store } from '../../Root'
@@ -172,15 +172,25 @@ const toHexString = (byteArray) => {
         bytes32 _comment
     )
 */
-export const submitSurvey = ( round, analyst, pre, data ) => {
+export const submitSurvey = ( round, roundAnalyst, pre, answers ) => {
   const request = ( time = moment().format() ) => ( { type: REQUEST_SURVEY_SUBMIT, time } )
   const success = ( time = moment().format() ) => ( { type: RECEIVED_SURVEY_SUBMIT, time } )
   const failure = (time = moment().format()) => ( { type: ERROR_SURVEY_SUBMIT, time } )
   
+  console.log('submitSurvey action',round,roundAnalyst,pre,answers)
+  let qualitatives = 0
+  let recommendation = 0
+  let comment = ""
+
   return (dispatch,getState) => {
     dispatch( request() )
-    let bytes32 = toHexString( data )
-    console.log('data',data,'bytes32',bytes32)
+    let answersB32 = toHexString( answers )
+    console.log('data',answers,'bytes32',answersB32)
+    submitRoundSurvey( round, roundAnalyst, answersB32, qualitatives, recommendation, comment, pre?0:1 )
+    .then( result => {
+      dispatch( success() ) 
+    } )
+    .catch( err => { console.log('error submitting survey')} )
   }
 }
 

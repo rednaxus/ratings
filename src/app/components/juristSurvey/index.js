@@ -7,8 +7,8 @@ import { submitSurvey } from '../../redux/modules/rounds'
 
 import { Survey, Model } from 'survey-react'
 // import SurveyEditor from './SurveyEditor';
-import 'survey-react/survey.css'
-import 'bootstrap/dist/css/bootstrap.css'
+//import 'survey-react/survey.css'
+
 import json from '../../../../survey.json'
 
 Survey.cssType = 'bootstrap'

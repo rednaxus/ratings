@@ -19,6 +19,8 @@ import UserIMG                from '../../img/user.jpg'
 // #endregion
 import { alertActions }       from '../../redux/modules/alert'
 
+//import 'bootstrap/dist/css/bootstrap.css'
+
 import { store } from '../../Root'
 
 class App extends Component {

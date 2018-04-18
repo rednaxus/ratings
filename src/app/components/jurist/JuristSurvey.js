@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-
+import { Panel } from 'react-bootstrap'
 import Question from './Question'
-
+import Moment from 'react-moment'
 import json from '../../../../survey.json'
 
 let indexer = {}
@@ -47,13 +47,20 @@ class JuristSurvey extends Component {
     let element = elements[page]
     return (
       <div>
-        <Question 
-          questionData={element} 
-          questionNumber={page}
-          onSubmit={this.nextPage} 
-          previousPage={this.previousPage}
-          nextPage={this.nextPage}
-        />
+        <Panel>
+          <Panel.Heading>Jurist Survey<span className="red small pull-right">Complete by: <Moment/></span></Panel.Heading>
+          <Panel.Body className="question-panel">
+          {elements.map( (element,idx) => 
+            <Question
+              questionData={element} 
+              questionNumber={idx}
+              onSubmit={this.nextPage} 
+              previousPage={this.previousPage}
+              nextPage={this.nextPage}
+            />)}
+          </Panel.Body>
+        </Panel>
+
         {/*
         {page === 1 && <WizardFormFirstPage onSubmit={this.nextPage} />}
         {page === 2 &&

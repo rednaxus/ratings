@@ -13,9 +13,16 @@ import {
   Breadcrumb
 }                         from '../../components'
 
-import JuristSurvey from '../../components/juristSurvey'
+//import JuristSurvey from '../../components/juristSurvey'
+import { JuristSurvey } from '../../components'
 import BriefUploader from '../briefUpload/FileUploader'
 import { appConfig } from '../../config'
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+async function showResults(values) {
+  await sleep(500); // simulate server latency
+  window.alert(`You submitted:\n\n${JSON.stringify(values, null, 2)}`);
+}
 
 class Round extends PureComponent {
   static propTypes= {
@@ -67,14 +74,15 @@ class Round extends PureComponent {
         case 'brief submitted' :
           return (<Brief edit={true} />)
         case 'first survey due':
-          return (<JuristSurvey round={ round.id } pre={ true } roundAnalyst={ round.inround_id } />)
+          return (<JuristSurvey onSubmit={showResults} />)
+          //return (<JuristSurvey round={ round.id } pre={ true } roundAnalyst={ round.inround_id } />)
         case 'first survey submitted':
           return (<Brief />)
         case 'second survey due':
           return(
             <div>
               <div>Post survey due</div>
-              <JuristSurvey round={ round.id } roundAnalyst={ round.inround_id } pre={ false }/>
+              {/*<JuristSurvey round={ round.id } roundAnalyst={ round.inround_id } pre={ false }/>*/}
             </div> )
         case 'second survey submitted':
           return(<div>Round completion at xxx</div>)

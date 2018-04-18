@@ -158,7 +158,7 @@ ul.user-list {
   position: relative;
 }
 
-ul {
+/*ul {
   list-style-type: none;
   margin: 0px;
   margin-left: 0px;
@@ -170,7 +170,7 @@ li {
   margin: 0px;
   padding: 0px;
 }
-
+*/
 .react-redux-grid-active, .react-redux-grid-inactive {
   margin: 5px;
   border-radius: 5px;
@@ -194,12 +194,12 @@ li {
 }
 
 
-
+/*
 :focus {
   border: none;
   outline: none;
 };
-
+*/
 
 
 .simpleContainer {
@@ -355,6 +355,14 @@ h5 {
     line-height: 1.2857em;
 }
 
+.card-style {
+  max-width: 80%;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  /*width: 100%;*/
+}
+
+
 .card-text {
     clear: both;
     margin-top: .5em;
@@ -482,6 +490,11 @@ form .rw-popup-container {
   border: none;
 }
     
+.question-panel {
+  max-height: 300px;
+  min-height: 300px;
+  overflow-y: scroll;
+}
 
 .question-body {
   font-size:2em;

@@ -22,7 +22,7 @@ class FormsView extends PureComponent {
     return(
       <Panel>
       	<Panel.Body>
-      		<h2>Jurist Survey</h2>
+      		{/*<h2>Jurist Survey</h2>*/}
       		<JuristSurvey onSubmit={showResults} />
       	</Panel.Body>
     	</Panel>

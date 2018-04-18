@@ -29,7 +29,7 @@ var spanStyle = {
 };
 
 var cardStyle = {
-  maxWidth: "50%",
+  maxWidth: "100%",
   boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
   transition: "0.3s"
   /*width: 100%;*/
@@ -542,7 +542,7 @@ export const AnalystMessages = ({ store }) => {
   console.log('generated messages',generatedMessages)
   return generatedMessages.map( (message,idx) =>
     <div className = "row" key={idx} >
-      <div className="panel panel-danger card" style={cardStyle}>
+      <div className="panel panel-danger card card-style">
         <div className="panel-heading">
           <h4 className="card-title mt-3">{message_templates[message.type].heading(message)}</h4>
           <a>Friends--{message.type}</a>

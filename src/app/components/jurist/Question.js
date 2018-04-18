@@ -6,7 +6,7 @@ import Multiselect from 'react-widgets/lib/Multiselect'
 import DateTimePicker from 'react-widgets/lib/DateTimePicker'
 import moment from 'moment'
 //import momentLocaliser from 'react-widgets/lib/localizers/moment'
-
+import { Panel } from 'react-bootstrap'
 import 'react-widgets/dist/css/react-widgets.css'
 import validate from './validate';
 
@@ -57,28 +57,36 @@ const Question = props => {
   const { handleSubmit, pristine, nextPage, previousPage, submitting, questionNumber, questionData } = props;
   console.log('question data',questionData)
   return (
-    <form className="jurist-survey" onSubmit={handleSubmit}>
-      <div>
-        <label className="question-title">{questionData.name}</label>
-        <div className="question-body">{questionData.title}</div>
-        <Field
-          name={"rating-"+questionNumber}
-          component={renderSelectList}
-          data={['1', '2', '3', '4', '5']}
-        />
-      </div>
-      <div>
-        <button type="button" className="previous" onClick={previousPage} >
-          Previous
-        </button>
-        <button type="button" className="next" onClick={nextPage} >
-          Next
-        </button>
-        <button type="submit" disabled={pristine || submitting}>
-          Submit
-        </button>
-      </div>
-    </form>
+    <div>
+      <Panel className={"panel-success card card-style"}>
+        <Panel.Heading className={"card-title"}>{questionNumber+1}. {questionData.name}</Panel.Heading>
+        <Panel.Body>
+          <form className="jurist-survey" onSubmit={handleSubmit}>
+            <div>
+              {/*<label className="question-title">{questionData.name}</label>*/}
+              <div className="question-body"><i className="fa fa-bar-chart fa-lg"/>{questionData.title}</div>
+              <Field
+                name={"rating-"+questionNumber}
+                component={renderSelectList}
+                data={['1', '2', '3', '4', '5']}
+              />
+            </div>
+            <div>{/*
+              <button type="button" className="previous" onClick={previousPage} >
+                Previous
+              </button>
+              <button type="button" className="next" onClick={nextPage} >
+                Next
+              </button>
+              <button type="submit" disabled={pristine || submitting}>
+                Submit
+              </button>
+            */}
+            </div>
+          </form>
+        </Panel.Body>
+      </Panel>
+    </div>
   )
 }
 

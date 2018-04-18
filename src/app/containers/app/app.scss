@@ -356,7 +356,7 @@ h5 {
 }
 
 .card-style {
-  max-width: 80%;
+  max-width: 100%;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   transition: 0.3s;
   /*width: 100%;*/
@@ -498,4 +498,8 @@ form .rw-popup-container {
 
 .question-body {
   font-size:2em;
+}
+
+.fat {
+  font-size:80px;
 }

@@ -11,6 +11,9 @@ import { Panel } from 'react-bootstrap'
 import 'react-widgets/dist/css/react-widgets.css'
 import validate from './validate'
 
+import Slider from '../slider'
+
+
 //momentLocaliser(moment)
 
 const colors = [
@@ -48,12 +51,21 @@ const renderRating = ({ input, data }) => (
   <Rating   
     emptySymbol="fa fa-star-o fa-2x fat"
     fullSymbol="fa fa-star fa-2x fat"
+    stop={data.length}
     {...input} 
     initialRate={parseInt(input.value)} 
-    data={data} 
   />
 )
 
+const renderSlider = ({ input, data }) => (
+  <Slider
+              value={data}
+              min={0}
+              max={5}
+              orientation="horizontal"
+              onChange={this.handleOnSliderChange}
+            />
+)
 /*
 const renderSelectListButtons
   <ButtonGroup>
@@ -144,7 +156,12 @@ const renderDateTimePicker = ({ input: { onChange, value }, showTime }) => (
 
 const Question = props => {
   const { handleSubmit, pristine, nextPage, previousPage, submitting, questionNumber, questionData } = props;
-  console.log('question data',questionData)
+  console.log('question data',questionData) 
+  let rating = 0 
+  const handleOnSliderChange = (value) => {
+    console.log('slider change',value)
+  }
+
   return (
     <div>
       <Panel className={"panel-success card card-style"}>
@@ -154,10 +171,18 @@ const Question = props => {
             <div>
               {/*<label className="question-title">{questionData.name}</label>*/}
               <div className="question-body"><i className="fa fa-bar-chart fa-lg"/>{questionData.title}</div>
-              <Field
+              {/*<Field
                 name={"rating-"+questionNumber}
                 component={renderRating}
                 data={['1', '2', '3', '4', '5']}
+              />*/}
+              <Slider
+                value={rating}
+                min={0}
+                max={5}
+                step={0.1}
+                orientation="horizontal"
+                onChange={this.handleOnSliderChange}
               />
             </div>
             <div>{/*
@@ -175,6 +200,8 @@ const Question = props => {
           </form>
         </Panel.Body>
       </Panel>
+
+ 
     </div>
   )
 }

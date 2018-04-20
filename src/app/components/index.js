@@ -92,3 +92,6 @@ export { default as Graph }           from './graph/Graph'
 
 export { default as WizardForm } from './wizard/WizardForm'
 export { default as JuristSurvey } from './jurist/JuristSurvey'
+
+export { default as AnalystRounds } from './analysts/AnalystRounds'
+export { default as AnalystPayouts } from './analysts/AnalystPayouts'

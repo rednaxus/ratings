@@ -7,8 +7,7 @@ import AnalystStat from '../analystStat'
 import { 
   AnimatedView, 
   Breadcrumb, 
-  UserStatus,
-  AnalystRounds, AnalystPayouts
+  UserStatus 
 } from '../../components'
 
 class Status extends Component {
@@ -16,12 +15,7 @@ class Status extends Component {
   render() {
     const { userIsConnected, user } = this.props;
     const { currentView } = this.props;
-    let analystRounds = [
-      { id:47, token:3, status:'completed', start:+new Date(), finish:+new Date() }
-    ]
-    let analystPayouts = [ // dummy data
-      { id:47, token:3, status:'completed', start:+new Date(), finish:+new Date() }
-    ]
+
     //const userFullName = `${userInfos.firstname} ${userInfos.lastname.toUpperCase()}`;
     console.log('props',this.props);
     return(
@@ -30,26 +24,6 @@ class Status extends Component {
           <Breadcrumb path={["dashboard","status"]} />
           <UserStatus user={ user.info }/>
           <AnalystStat />
-          <div className="row">
-            <div className="col-md-6">
-              <AnalystRounds analystRounds={analystRounds}/>
-            </div>
-            <div className="col-md-6">
-              <AnalystPayouts analystPayouts={analystPayouts}/>
-            </div>
-          </div>
-        </main>
-      </AnimatedView>
-    )
-  }
-}
-
-export default Status
-
-
-
-/*
-
           <div className="row">
             <div className="col-md-6">
               <div className="card">
@@ -95,4 +69,10 @@ export default Status
               </div>
             </div>
           </div>
-*/
+        </main>
+      </AnimatedView>
+    )
+  }
+}
+
+export default Status

@@ -543,29 +543,27 @@ export const AnalystMessages = ({ store }) => {
   return generatedMessages.map( (message,idx) =>
     <div className = "row" key={idx} >
       <div className="panel panel-danger card card-style">
+        
         <div className="panel-heading">
           <h4 className="card-title mt-3">{message_templates[message.type].heading(message)}</h4>
           <a>Friends--{message.type}</a>
         </div>
 
         <div className="panel-body" style={cardFlex}>
-
           <div className="card-text" style={glyphStyle}>
             {message_templates[message.type].glyph(message)}
           </div>
           <div className="card-text" style={infoRow}>
             {message_templates[message.type].body(message)}
           </div>
-
         </div>
 
-          <div className="meta">
-
-            <div className="card-footer" style={buttonFlex}>
-              {message_templates[message.type].footer(message)}
-            </div>
+        <div className="meta">
+          <div className="card-footer" style={buttonFlex}>
+            {message_templates[message.type].footer(message)}
           </div>
         </div>
+      </div>
     </div>
   )
 

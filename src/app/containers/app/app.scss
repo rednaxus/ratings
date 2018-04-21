@@ -332,43 +332,43 @@ h5 {
   border-radius: .28571429rem;
   box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 1px #d4d4d5;
   .glyphStyle {
-    font-size: '80px';
-    margin-top: '0px';
-    margin-bottom: '-20px';
+    font-size: 80px;
+    margin-top: 0px;
+    margin-bottom: -20px;
   }
 
   .spanStyle {
-    display: 'flex';
-    align-items: 'center';
-    padding-right: '30px';
+    display: flex;
+    align-items: center;
+    padding-right: 30px;
   }
 
   .cardStyle {
-    max-width: '100%';
-    box-shadow: '0 4px 8px 0 rgba(0,0,0,0.2)';
-    transition: '0.3s';
+    max-width: 100%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
     /*width: 100%;*/
   }
 
   .cardFlex {
-    max-height: '40%';
-    display:'flex';
-    flex-direction: 'row';
-    justify-content: 'space-between';
+    max-height: 40%;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
   }
 
   .infoRow{
-    width: '60%';
-    display:'flex';
-    flex-direction: 'column';
-    align-items: 'flex-start';
-    justify-content: 'center';
+    width: 60%;
+    display:flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
   }
 
   .buttonFlex {
-    color: 'blue';
-    display: 'flex';
-    justify-content: 'flex-end';
+    color: blue;
+    display: flex;
+    justify-content: flex-end
   }
 }
 
@@ -498,7 +498,7 @@ h5 {
 /*
   Tweaking some CSS for
   getting it work with react-widgets
-*/
+
 form ul li:first-child {
   text-align: left;
 }
@@ -528,7 +528,8 @@ form .rw-list {
 form .rw-popup-container {
   border: none;
 }
-    
+*/
+
 .question-panel {
   max-height: 300px;
   min-height: 300px;

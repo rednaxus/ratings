@@ -17,10 +17,11 @@ class Status extends Component {
     const { userIsConnected, user } = this.props;
     const { currentView } = this.props;
     let analystRounds = [
-      { id:47, token:3, status:'completed', start:+new Date(), finish:+new Date() }
+      { id:47, token:3, status:'completed', start:+new Date(), finish:+new Date() },
+      { id:48, token:4, status:'in-process', start:+new Date(), finish:+new Date() }
     ]
     let analystPayouts = [ // dummy data
-      { id:47, token:3, status:'completed', start:+new Date(), finish:+new Date() }
+      { id:2, tokens:5, timestamp:+new Date() }
     ]
     //const userFullName = `${userInfos.firstname} ${userInfos.lastname.toUpperCase()}`;
     console.log('props',this.props);

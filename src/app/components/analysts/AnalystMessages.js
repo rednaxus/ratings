@@ -15,7 +15,7 @@ import { Link } from 'react-router-dom'
 
 import { generateMessages, generateMockMessages } from '../../services/messages'
 
-
+/*
 var glyphStyle = {
   fontSize: "80px",
   marginTop: "0px",
@@ -32,15 +32,15 @@ var cardStyle = {
   maxWidth: "100%",
   boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
   transition: "0.3s"
-  /*width: 100%;*/
+  //width: 100%;
 };
-
+*/
 /*
 var cardStyle:hover = {
       boxShadow: "0 8px 16px 0 rgba(0,0,0,0.2)"
   };
   */
-
+/*
 var cardFlex = {
   maxHeight: "40%",
   display:"flex",
@@ -62,6 +62,7 @@ var buttonFlex = {
   display: "flex",
   justifyContent: "flex-end"
 };
+*/
 
 var preKey = ("2018-03-27T14:06-0500");
 var dateKey = ("2018-03-28T19:06-0500");
@@ -542,24 +543,24 @@ export const AnalystMessages = ({ store }) => {
   console.log('generated messages',generatedMessages)
   return generatedMessages.map( (message,idx) =>
     <div className = "row" key={idx} >
-      <div className="panel panel-danger card card-style">
+      <div className={`panel panel-${message.priority} card card-style`}>
         
         <div className="panel-heading">
           <h4 className="card-title mt-3">{message_templates[message.type].heading(message)}</h4>
           <a>Friends--{message.type}</a>
         </div>
 
-        <div className="panel-body" style={cardFlex}>
-          <div className="card-text" style={glyphStyle}>
+        <div className="panel-body cardFlex">
+          <div className="card-text glyphStyle">
             {message_templates[message.type].glyph(message)}
           </div>
-          <div className="card-text" style={infoRow}>
+          <div className="card-text infoRow">
             {message_templates[message.type].body(message)}
           </div>
         </div>
 
         <div className="meta">
-          <div className="card-footer" style={buttonFlex}>
+          <div className="card-footer buttonFlex">
             {message_templates[message.type].footer(message)}
           </div>
         </div>

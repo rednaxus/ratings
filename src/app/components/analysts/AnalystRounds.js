@@ -13,7 +13,7 @@ class AnalystRounds extends Component {
       <div className="panel panel-info card card-style">
 
         <div className="panel-heading">
-          <h4 className="card-title mt-3">Involvement</h4>
+          <h4 className="card-title mt-3">Rounds Involvement</h4>
         </div>
 
         <div className="panel-body">

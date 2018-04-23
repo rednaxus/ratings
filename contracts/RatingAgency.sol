@@ -404,6 +404,15 @@ contract RatingAgency {
         TallyWin( _round, round.winner );
 
     }
+    
+    function roundBriefs( uint16 _round ) public view returns ( uint, address, uint, address ){
+        Round storage round = rounds[ _round ];
+        return (
+            round.briefs[ 0 ].upload_time, round.briefs[ 0 ].filehash, 
+            round.briefs[ 1 ].upload_time,round.briefs[ 1 ].filehash 
+        );
+    }
+
     function roundInfo ( uint16 _round ) public view returns (
         uint16, uint16, uint32, uint16, uint8, uint8
     ) {

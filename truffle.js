@@ -6,21 +6,21 @@ module.exports = {
       port: 8545,
       network_id: "*", // Match any network id
       from: "0x9F943eD85fb1B63b2a68aF79290e5023D32F5E96",
-      gas: 5500000 // 4700000  add extra to bootstrap test data
+      gas: 6500000 // 4700000  add extra to bootstrap test data
     },
     development_1: {
       host: "52.41.77.72", //10.0.0.3", // veva.one"
       port: 8545,
       network_id: "*", // Match any network id
       from: "0x9F943eD85fb1B63b2a68aF79290e5023D32F5E96",
-      gas: 5500000 // 4700000  add extra to bootstrap test data      
+      gas: 6500000 // 4700000  add extra to bootstrap test data      
     },
     development_2: {
       host: "52.41.77.72", //10.0.0.3", // veva.one"
       port: 8302,
       network_id: "*", // Match any network id
       from: "0x9F943eD85fb1B63b2a68aF79290e5023D32F5E96",
-      gas: 5500000 // 4700000  add extra to bootstrap test data      
+      gas: 6500000 // 4700000  add extra to bootstrap test data      
     }
   }
 };

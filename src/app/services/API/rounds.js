@@ -21,7 +21,13 @@ export const getRoundInfo = ( round, analyst=0 ) => new Promise( (resolve,reject
         num_analysts: rRound[5].toNumber()
       }
       console.log('got round',res)
-      resolve( res )
+      ratingAgency.roundBriefs( round ).then( rBriefs => {
+        res.briefs = [
+          { timestamp: rBriefs[0].toNumber(), filehash: rBriefs[1] },
+          { timestamp: rBriefs[2].toNumber(), filehash: rBriefs[3] }
+        ]
+        resolve( res )
+      })
     })
     .catch(result => { 
       console.error("Error from server on getRoundInfo:"  + result) 

@@ -52,9 +52,9 @@ export const refreshInfo = (deep = true) => { // get from id, deep means to get 
   const success = userInfo => { return { type: userConstants.INFO_SUCCESS, userInfo } }
   const failure = error => { return { type: userConstants.INFO_FAILURE, error } }
 
-
   return (dispatch,getState) => {
     const user = getState().user
+    console.log('user',user)
     const user_id = user.authentication && user.authentication.id ? user.authentication.id : 0
     dispatch( request( { user_id } ) )
     userService.info( user_id ).then( userInfo => {
@@ -153,11 +153,12 @@ const authentication = (state = initialAuthState, action) => {
   }
 }
 
-const initialInfoState = { infoFetching: false, user:{ info:{ id:0, showPicture:true, isConnected:true } } }
+const initialInfoState = { infoFetching: false }
 const info = (state = initialInfoState, action) => {
   switch (action.type) {
     case userConstants.INFO_REQUEST:
-      return { } //infoFetching: true }
+      console.log('info request',state)
+      return { infoFetching: true } 
     case userConstants.INFO_SUCCESS:
       return { infoFetching: false, ...action.userInfo }
     case userConstants.INFO_FAILURE:

@@ -33,6 +33,10 @@ class Dashboard extends Component {
     leaveDashboard()
   }
 
+  shouldComponentUpdate() {
+    return !this.props.user.isFetching
+  }
+
   render() {
     const { userIsConnected, user } = this.props;
     const { currentView } = this.props;

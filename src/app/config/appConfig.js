@@ -50,7 +50,7 @@ export const appConfig = {
   CRON_INTERVAL: 2*24*60*60,
 
 
-  STATUSES: [ 
+  STATUSES: [ // map array to contract
     'none',
     'pending',
     'scheduled',
@@ -60,6 +60,8 @@ export const appConfig = {
     'available',
     'confirmed',
     'assigned',
+    'scheduled lead',
+    'scheduled jurist',
     'brief due',
     'brief submitted',
     'first survey due',
@@ -71,7 +73,11 @@ export const appConfig = {
   ],
 
   CYCLE_STATUSES: [ // note: these should be migrated to the Statuses above
-    'unsubscribed','lead-requested','lead-assigned','jurist-requested','jurist-assigned'
+    'unsubscribed',
+    'lead-requested',
+    'lead-assigned',
+    'jurist-requested',
+    'jurist-assigned'
   ],
   
   CYCLES_AHEAD: 4,
@@ -94,6 +100,8 @@ export const appConfig = {
   JURISTS_MIN: 2,
 
   DEFAULT_ROUND_VALUE: 100,
+
+  isRoundLead: function( in_round_id ) { return in_round_id < 2 },
 
   REWARD_REFERRAL: 1,
     

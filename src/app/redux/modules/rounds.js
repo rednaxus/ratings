@@ -150,7 +150,9 @@ export const fetchRoundAnalystInfo = ( round, analyst = -1 ) => {
     return { type: ERROR_ROUND_ANALYST_INFO, time }
   }
   return (dispatch,getState) => {
+    console.log('fetch analyst info', round, analyst)
     dispatch( request() )
+    //console.log('getting round analyst infor for user ',getState(),getUser(getState()))
     getRoundAnalystInfo(round, analyst==-1 ? getUser(getState()) : analyst).then( roundAnalystInfo => {
       dispatch( success( roundAnalystInfo ) ) 
     })

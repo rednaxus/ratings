@@ -29,14 +29,16 @@ contract RatingAgency {
     uint8 constant AVAILABLE = 6;
     uint8 constant CONFIRMED = 7;
     uint8 constant ASSIGNED = 8;
-    uint8 constant BRIEF_DUE = 9;
-    uint8 constant BRIEF_SUBMITTED = 10;
-    uint8 constant FIRST_SURVEY_DUE = 11;
-    uint8 constant FIRST_SURVEY_SUBMITTED = 12;
-    uint8 constant SECOND_SURVEY_DUE = 13;
-    uint8 constant SECOND_SURVEY_SUBMITTED = 14;
-    uint8 constant ROUND_TALLIED = 15;
-    uint8 constant DISQUALIFIED = 16;
+    uint8 constant SCHEDULED_LEAD = 9;
+    uint8 constant SCHEDULED_JURIST = 10;
+    uint8 constant BRIEF_DUE = 11;
+    uint8 constant BRIEF_SUBMITTED = 12;
+    uint8 constant FIRST_SURVEY_DUE = 13;
+    uint8 constant FIRST_SURVEY_SUBMITTED = 14;
+    uint8 constant SECOND_SURVEY_DUE = 15;
+    uint8 constant SECOND_SURVEY_SUBMITTED = 16;
+    uint8 constant ROUND_TALLIED = 17;
+    uint8 constant DISQUALIFIED = 18;
 
 
     uint public lasttime;
@@ -302,7 +304,7 @@ contract RatingAgency {
         for ( uint16 i = 0; i < 2+JURY_SIZE; i++ ) {
             ref = selectAvailableAnalyst( _cycle, i < 2 );  // first two are bull/bear leads
             analyst = assignAnalyst( _cycle, ref, i < 2 );
-            round.analysts[ round.num_analysts++ ] = RoundAnalyst( analyst, NONE );
+            round.analysts[ round.num_analysts++ ] = RoundAnalyst( analyst, i < 2 ? SCHEDULED_LEAD: SCHEDULED_JURIST );
             registry.scheduleRound( analyst, _round );
         }
         RoundPopulated( _cycle, _round, round.num_analysts, 2 );
@@ -431,9 +433,9 @@ contract RatingAgency {
         Round storage round = rounds[_round];
         for ( uint8 i=0; i < round.num_analysts; i++){
             if ( round.analysts[ i ].analyst_id == _analyst )
-                return( i, round.analysts[ i ].stat );
+                return( i, round.analysts[ i ].stat ); 
         }
-        require (false);    // not found
+        return ( 0, NONE );    // not found, no status
     }
     event SurveySubmitted( uint16 _round, uint32 _analyst, uint8 _idx, bytes32 _answers, byte _qualitatives, uint8 _recommendation );
     function submitSurvey(

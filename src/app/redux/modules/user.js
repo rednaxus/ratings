@@ -2,7 +2,11 @@ import { combineReducers }  from 'redux'
 import { push } from 'react-router-redux'
 import { userService } from '../../services/API/users'
 import auth            from '../../services/auth'
-import { alertActions, fetchRoundInfo } from './actions'
+import { 
+  alertActions, 
+  fetchRoundInfo, 
+  fetchRoundAnalystInfo 
+} from './actions'
 
 const userConstants = {
   REGISTER_REQUEST: 'USERS_REGISTER_REQUEST',
@@ -62,10 +66,14 @@ export const refreshInfo = (deep = true) => { // get from id, deep means to get 
       if ( deep ) {
         userService.getAnalystRounds( userInfo ).then( rounds => {
           userInfo.rounds = rounds
+          const fetchDeep = round => {
+            dispatch( fetchRoundInfo( round ) )
+            dispatch( fetchRoundAnalystInfo( round, user_id ) )
+          }
           console.log('got rounds',rounds)
-          rounds.scheduled.map( round => dispatch(fetchRoundInfo(round)) )
-          rounds.active.map( round => dispatch(fetchRoundInfo(round)) )
-          rounds.finished.map( round => dispatch(fetchRoundInfo(round)) )
+          rounds.scheduled.map( fetchDeep )
+          rounds.active.map( fetchDeep ) 
+          rounds.finished.map( fetchDeep ) 
           dispatch( success( userInfo ) )
         })
         .catch( error => {

@@ -104,8 +104,16 @@ export const appConfig = {
   REWARD_ROUND_TOKENS_JURY_BOTTOM: 6,
     
   REWARD_PROMOTION_TO_LEAD: 7,
+  reward_is_tokens: function (reward_type) { 
+    return _.includes([
+      this.REWARD_ROUND_TOKENS_WINNER,
+      this.REWARD_ROUND_TOKENS_LOSER,      
+      this.REWARD_ROUND_TOKENS_JURY_TOP,
+      this.REWARD_ROUND_TOKENS_JURY_MIDDLE,
+      this.REWARD_ROUND_TOKENS_BOTTOM
+    ],reward_type)
+  },
 
-    // reward payoffs
   REFERRAL_POINTS: 8,
   WINNER_PCT: 40,
   LOSER_PCT: 10,

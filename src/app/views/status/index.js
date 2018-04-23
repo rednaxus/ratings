@@ -9,7 +9,8 @@ import { userActions } from '../../redux/modules/actions'
 const mapStateToProps = (state) => {
   return {
     currentView:         state.views.currentView,
-    user:                state.user
+    user:                state.user.info,
+    rounds:              state.rounds.data
   }
 }
 

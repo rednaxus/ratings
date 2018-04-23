@@ -17,8 +17,8 @@ class AnalystPayouts extends Component {
         </div>
 
         <div className="panel-body">
-          { analystPayouts.map( payout => 
-            <div className="row infoRow">
+          { analystPayouts.map( (payout,idx) => 
+            <div className="row infoRow" key={idx}>
               <div className="card-text">a row for payouts {payout.id} blah blah {payout.tokens} </div>
             </div>
           )}

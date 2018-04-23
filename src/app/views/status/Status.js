@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-
+import { appConfig } from '../../config'
 import { store } from '../../Root'
 
 import AnalystStat from '../analystStat'
@@ -12,31 +12,59 @@ import {
 } from '../../components'
 
 class Status extends Component {
+  
+  componentDidMount() {
+    console.log('props',this.props)
+    const {
+      actions: {
+        //fetchUserInfoDataIfNeeded,
+        refreshInfo
+      }
+    } = this.props
+
+    refreshInfo()
+  }
 
   render() {
-    const { userIsConnected, user } = this.props;
-    const { currentView } = this.props;
-    let analystRounds = [
+    const { currentView, userIsConnected, user, rounds } = this.props;
+
+    console.log('rounds',rounds)
+    console.log('user',user)
+    let user_rounds = !user.rounds ? [] : [ 
+      ...user.rounds.scheduled,
+      ...user.rounds.active,
+      ...user.rounds.finished 
+    ].map( round_id => _.find( rounds,['id',round_id] ) )
+
+    console.log('user rounds',user_rounds)
+
+    let payouts = !user.reward_events ? [] : _.filter( user.reward_events, reward => 
+      appConfig.reward_is_tokens(reward.reward_type) 
+    )
+    console.log('payouts',payouts)
+    /*[
       { id:47, token:3, status:'completed', start:+new Date(), finish:+new Date() },
       { id:48, token:4, status:'in-process', start:+new Date(), finish:+new Date() }
     ]
+    */
+    /*
     let analystPayouts = [ // dummy data
       { id:2, tokens:5, timestamp:+new Date() }
     ]
-    //const userFullName = `${userInfos.firstname} ${userInfos.lastname.toUpperCase()}`;
+    */
     console.log('props',this.props);
     return(
       <AnimatedView>
         <main className="container">
           <Breadcrumb path={["dashboard","status"]} />
-          <UserStatus user={ user.info }/>
+          <UserStatus user={ user }/>
           <AnalystStat />
           <div className="row">
             <div className="col-md-6">
-              <AnalystRounds analystRounds={analystRounds}/>
+              <AnalystRounds analystRounds={user_rounds}/>
             </div>
             <div className="col-md-6">
-              <AnalystPayouts analystPayouts={analystPayouts}/>
+              <AnalystPayouts analystPayouts={payouts}/>
             </div>
           </div>
         </main>

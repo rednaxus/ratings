@@ -17,8 +17,8 @@ class AnalystRounds extends Component {
         </div>
 
         <div className="panel-body">
-          { analystRounds.map( round => 
-            <div className="row">
+          { analystRounds.map( (round,idx) => 
+            <div className="row" key={idx}>
               <div className="card-text">a row for round {round.id}</div>
             </div>
           )}

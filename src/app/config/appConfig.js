@@ -129,6 +129,15 @@ export const appConfig = {
   MIDDLE_JURISTS_X10: 17,   // level:1
   BOTTOM_JURISTS_X10: 0,    // level:2
 
+  LEVELS: [
+    { name:  'white belt', points:   0, referrals:  2 },
+    { name: 'yellow belt', points:  10, referrals:  4 },
+    { name: 'orange belt', points:  50, referrals:  6 },
+    { name:   'blue belt', points: 100, referrals: 10 },
+    { name:    'red belt', points: 200, referrals: 20 },
+    { name:  'black belt', points: 500, referrals: 30 }
+  ],
+
   customConfig
 
 }

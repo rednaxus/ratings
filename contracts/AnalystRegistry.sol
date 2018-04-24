@@ -1,7 +1,7 @@
 pragma solidity ^0.4.19;
 
 contract AnalystRegistry {
-    uint32 constant REPUTATION_LEAD = 12;
+    uint32 constant LEAD_LEVEL = 2;
 
     // reward types
     uint8 constant REWARD_REFERRAL = 1;
@@ -11,21 +11,38 @@ contract AnalystRegistry {
     uint8 constant REWARD_ROUND_TOKENS_JURY_TOP = 4;
     uint8 constant REWARD_ROUND_TOKENS_JURY_MIDDLE = 5;
     uint8 constant REWARD_ROUND_TOKENS_JURY_BOTTOM = 6;
+    uint8 constant REWARD_REFERRAL_TOKENS = 7;
 
-    uint8 constant REWARD_PROMOTION_TO_LEAD = 7;
+    uint8 constant REWARD_ROUND_POINTS_WINNER = 8;
+    uint8 constant REWARD_ROUND_POINTS_LOSER = 9;
+    uint8 constant REWARD_ROUND_POINTS_JURY_TOP = 10;
+    uint8 constant REWARD_ROUND_POINTS_JURY_MIDDLE = 11;
+    uint8 constant REWARD_ROUND_POINTS_JURY_BOTTOM = 12;
+    uint8 constant REWARD_ROUND_POINTS_NEGATIVE = 13;
+    
+    uint8 constant REWARD_PROMOTION = 20;
+    uint8 constant REFERRAL_POINTS = 21;
 
-    // reward payoffs
-    uint8 constant REFERRAL_POINTS = 8;
+    // payoffs
     uint8 constant WINNER_PCT = 40;
     uint8 constant LOSER_PCT = 10;
     uint8 constant TOP_JURISTS_X10 = 34;   // percentages * 10   ... level:0
     uint8 constant MIDDLE_JURISTS_X10 = 17;   // level:1
     uint8 constant BOTTOM_JURISTS_X10 = 0;    // level:2
+    int8 constant WINNER_POINTS = 50;
+    int8 constant LOSER_POINTS = 10;
+    int8 constant NEGATIVE_RATING = -100;
+    int8 constant TOP_JURISTS_POINTS = 10;
+    int8 constant MIDDLE_JURISTS_POINTS = 4;
+    int8 constant BOTTOM_JURISTS_POINTS = 0;
+    
+    uint16[2][] public levels;
 
+    
     struct RewardEvent {
         uint8 reward_type;
         uint256 timestamp;
-        uint32 value;
+        int32 value;
         uint32 ref; // may be round, cycle, analyst, depends on event
     }
     
@@ -45,8 +62,8 @@ contract AnalystRegistry {
         uint32 referred_by; // analyst that referred me
         address user_addr;
         bool is_lead;
-        uint32 reputation;
-        uint32 points;
+        int32 points;
+        //uint32 points;
         uint32 token_balance;
         uint8 referral_balance;
         
@@ -74,6 +91,12 @@ contract AnalystRegistry {
     function update(uint256 _timenow) public { timenow = _timenow; }
 
     function AnalystRegistry() public {
+        levels.push( [  0, 2] );
+        levels.push( [ 10, 4] );
+        levels.push( [ 50, 6] ); // LEAD_LEVEL
+        levels.push( [100,10] );
+        levels.push( [200,20] );
+        levels.push( [500,30] );
         bootstrap(12,4);
     }
 
@@ -81,7 +104,7 @@ contract AnalystRegistry {
     function register(bytes32 _name, bytes32 _pw, bytes32 _email, uint32 _referral ) public {
         analysts[ num_analysts ] = Analyst(
             _name, _pw, _email, 0, _referral, msg.sender, false,
-            0, 0, 0, 5,
+            0, 0, 5,
             0, 0, 0, 0, 0
         );
         if (_referral > 0){
@@ -103,11 +126,11 @@ contract AnalystRegistry {
         Register( num_analysts++, _name, _email, _referral );
     }
 
-    function login(bytes32 _name, bytes32 _pw) public view returns (uint32, bytes32, uint32, uint32) {
+    function login(bytes32 _name, bytes32 _pw) public view returns (uint32, bytes32, int32, uint32) {
         uint32 id = name_lookup[ _name ];
         Analyst storage analyst = analysts[id];
         require(analyst.password == _pw);
-        return (id,analyst.email,analyst.reputation,analyst.token_balance);
+        return (id,analyst.email,analyst.points,analyst.token_balance);
     }
 
     function loginByAddress(bytes32 _password, address force) public view returns ( uint32 id ) { // force is for testing, so can login with another address
@@ -123,18 +146,7 @@ contract AnalystRegistry {
         return analysts[_analystid].user_addr;
     }
 
-    function increaseReputation( uint32 _analyst, uint32 _reputationPoints) public {
-        Analyst storage a = analysts[_analyst];
-        a.reputation += _reputationPoints;
-        if (!a.is_lead && a.reputation >= REPUTATION_LEAD){
-            a.is_lead = true; // promotion
-            a.reward_events[a.num_reward_events++] =
-                RewardEvent( REWARD_PROMOTION_TO_LEAD, timenow, _reputationPoints, 0);
-            leads[num_leads++] = _analyst;
-        }
-    }
-
-    function getAnalystEvent( uint32 _analyst, uint16 _event ) public view returns ( uint8, uint256, uint32, uint32 ) {
+    function getAnalystEvent( uint32 _analyst, uint16 _event ) public view returns ( uint8, uint256, int32, uint32 ) {
         RewardEvent storage e = analysts[ _analyst ].reward_events[ _event ];
         return ( e.reward_type, e.timestamp, e.value, e.ref );
     }
@@ -143,7 +155,7 @@ contract AnalystRegistry {
         return ( r.timestamp, r.reg_timestamp, r.email, r.analyst ); 
     }
     function isLead( uint32 _analyst ) public view returns (bool){
-        return( analysts[ _analyst ].reputation >= REPUTATION_LEAD );
+        return( analysts[ _analyst ].points >= levels[LEAD_LEVEL][0] );
     }
 
     function referredBy( uint32 _analyst ) public view returns ( uint32 ) {
@@ -151,13 +163,13 @@ contract AnalystRegistry {
     }
     function analystInfo( uint32 _analyst ) public view returns (
         uint32, bytes32, bytes32, uint32, 
-        uint32, bool, uint32,
+        int32, bool, uint32,
         uint16, uint16, uint16, uint16, uint16
     ) {
         Analyst storage a = analysts[ _analyst ];
         return (
             _analyst, a.name, a.email, a.auth_status,
-            a.reputation, a.is_lead, a.token_balance, 
+            a.points, a.is_lead, a.token_balance, 
             a.num_rounds_scheduled, a.num_rounds_active, a.num_rounds_finished,
             a.num_reward_events,a.num_referrals
         );
@@ -212,24 +224,66 @@ contract AnalystRegistry {
         require(false); // error, called without active round
     }
 
-    function payToken( uint32 _analyst, uint8 _rewardType, uint32 _value, uint32 _ref ) public {
+
+    function rewardToken( uint32 _analyst, uint8 _rewardType, uint32 _value, uint32 _ref ) public {
         Analyst storage a = analysts[ _analyst ];
         a.reward_events[ a.num_reward_events++ ] =
-            RewardEvent(_rewardType,timenow,_value,_ref);
+            RewardEvent( _rewardType, timenow, int32(_value), _ref );
         a.token_balance += _value;
+        if (a.referred_by != 0) {
+            // Pay referrees
+            rewardToken( a.referred_by, REWARD_REFERRAL_TOKENS, _value / 5, _ref );
+        }        
     }
 
-    function payLead( uint32 _analyst, uint16 _round, uint32 _roundValue, bool _win ) public {
-        if (_win) payToken( _analyst, REWARD_ROUND_TOKENS_WINNER, _roundValue * WINNER_PCT / 100, _round);
-        else payToken( _analyst, REWARD_ROUND_TOKENS_LOSER, _roundValue * LOSER_PCT / 100, _round );
+    function rewardLead( uint32 _analyst, uint16 _round, uint32 _roundValue, int8 _win ) public {
+        if ( _win == 1 ) {
+            rewardToken( _analyst, REWARD_ROUND_TOKENS_WINNER, _roundValue * WINNER_PCT / 100, _round);
+            rewardPoints( _analyst, REWARD_ROUND_POINTS_WINNER, WINNER_POINTS, _round );
+        } else if ( _win == 0 ) {
+            rewardToken( _analyst, REWARD_ROUND_TOKENS_LOSER, _roundValue * LOSER_PCT / 100, _round );
+            rewardPoints( _analyst, REWARD_ROUND_POINTS_LOSER, LOSER_POINTS, _round );
+        } else {
+            rewardPoints( _analyst, REWARD_ROUND_POINTS_NEGATIVE, NEGATIVE_RATING, _round );
+        }
     }
 
-    function payJurist( uint32 _analyst, uint16 _round, uint32 _roundValue, uint8 _level) public {
-        if (_level == 0) payToken( _analyst, REWARD_ROUND_TOKENS_JURY_TOP, _roundValue * TOP_JURISTS_X10 / 1000, _round );
-        else if (_level == 0) payToken( _analyst, REWARD_ROUND_TOKENS_JURY_MIDDLE, _roundValue * MIDDLE_JURISTS_X10 / 1000, _round );
-        else payToken( _analyst, REWARD_ROUND_TOKENS_JURY_BOTTOM, _roundValue * BOTTOM_JURISTS_X10 / 1000, _round );
+    function rewardJurist( uint32 _analyst, uint16 _round, uint32 _roundValue, uint8 _level ) public {
+        if (_level == 0) {
+            rewardToken( _analyst, REWARD_ROUND_TOKENS_JURY_TOP, _roundValue * TOP_JURISTS_X10 / 1000, _round );
+            rewardPoints( _analyst, REWARD_ROUND_POINTS_JURY_TOP, TOP_JURISTS_POINTS, _round );
+        } else if ( _level == 1 ) {
+            rewardToken( _analyst, REWARD_ROUND_TOKENS_JURY_MIDDLE, _roundValue * MIDDLE_JURISTS_X10 / 1000, _round );
+            rewardPoints( _analyst, REWARD_ROUND_POINTS_JURY_MIDDLE, MIDDLE_JURISTS_POINTS, _round );
+        } else {
+            rewardToken( _analyst, REWARD_ROUND_TOKENS_JURY_BOTTOM, _roundValue * BOTTOM_JURISTS_X10 / 1000, _round );
+            rewardPoints( _analyst, REWARD_ROUND_POINTS_JURY_BOTTOM, BOTTOM_JURISTS_POINTS, _round );
+        }
     }
 
+    function findLevel( int32 _points ) public view returns (uint8) {
+        for (uint8 i = 1; i < levels.length; i++ ) {
+            if ( levels[i-1][0] < _points && levels[i][0] >= _points ) return i-1;
+        }        
+    }
+    function rewardPoints(  uint32 _analyst, uint8 _rewardType, int32 _value, uint32 _ref ) public {
+        Analyst storage a = analysts[ _analyst ];
+        uint8 old_level = findLevel( a.points );
+        a.points += _value;
+        uint8 new_level = findLevel( a.points );
+        a.reward_events[ a.num_reward_events++ ] =
+            RewardEvent( _rewardType, timenow, _value, _ref );
+        if ( old_level != new_level ) {
+        //if ( !a.is_lead && a.points >= levels[LEAD_LEVEL][0] ){
+            if ( new_level == LEAD_LEVEL ) {
+                a.is_lead = true; // promotion
+                leads[ num_leads++ ] = _analyst;
+            }
+            a.reward_events[a.num_reward_events++] =
+                RewardEvent( REWARD_PROMOTION, timenow, 0, new_level );
+        }
+    }
+    
     function submitReferral( uint32 _analyst, bytes32 _email ) public {
         Analyst storage a = analysts[ _analyst ];
         a.referrals[ a.num_referrals++ ] = Referral( timenow, 0, _email, 0 );
@@ -250,7 +304,7 @@ contract AnalystRegistry {
             bytes32 email = emailbase;
             register( name, 'veva', email, 0); // make up phony name based on id
             if ( new_leads > 0 ) {
-                increaseReputation( i, REPUTATION_LEAD);
+                rewardPoints( i, REWARD_PROMOTION, levels[LEAD_LEVEL][0], LEAD_LEVEL);
                 new_leads--;
             }
         }

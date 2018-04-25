@@ -139,6 +139,7 @@ const login = (username, password) => new Promise((resolve,reject) => {
       let user = { 
         id: result[0].toNumber(),
         name: username,
+        password: password,
         email: web3.toAscii(result[1]).replace(/\W/g,''),
         reputation: result[2].toNumber(),
         token_balance: result[3].toNumber()

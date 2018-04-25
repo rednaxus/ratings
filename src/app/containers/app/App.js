@@ -17,7 +17,7 @@ import auth                   from '../../services/auth'
 
 import UserIMG                from '../../img/user.jpg'
 // #endregion
-import { alertActions }       from '../../redux/modules/alert'
+
 
 //import 'bootstrap/dist/css/bootstrap.css'
 
@@ -62,25 +62,37 @@ class App extends Component {
 
   // #region lifecycle methods
   componentDidMount() {
-    console.log('props',this.props)
+    console.log('component did mount props',this.props)
     const {
       actions: {
         //fetchUserInfoDataIfNeeded,
-        refreshInfo,
-        getSideMenuCollpasedStateFromLocalStorage
+        //refreshInfo,
+        clear,  // alert
+        getSideMenuCollapsedStateFromLocalStorage
       },
       history
     } = this.props;
 
     history.listen((location, action) => {
       // clear alert on location change
-      console.log('location change in app',location,action,alertActions)
-      store.dispatch(alertActions.clear());
+      console.log('location change in app',location,action)
+      clear()
     })
 
-    refreshInfo()
+    //refreshInfo()
     //fetchUserInfoDataIfNeeded();
-    getSideMenuCollpasedStateFromLocalStorage();
+    getSideMenuCollapsedStateFromLocalStorage();
+  }
+
+  componentWillMount() {
+    const { actions: { login } } = this.props
+
+    let user = auth.getUserInfo()
+    console.log('user from local storage',user)
+    if (user) {
+      console.log('logging in')
+      login( user.name, user.password )
+    }
   }
 
   render() {

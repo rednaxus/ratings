@@ -21,7 +21,7 @@ class Dashboard extends Component {
     enterDashboard()
   }
 
-  componentDidMount() {
+  componentDidMount() { // Note: move these to app? or login
     const { actions: { fetchCyclesDataIfNeeded, fetchCronInfo, refreshUserInfo } } = this.props
     fetchCyclesDataIfNeeded()
     fetchCronInfo()

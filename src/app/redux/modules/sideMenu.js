@@ -18,10 +18,7 @@ const initialState = {
   time: null
 };
 
-export default function sideMenu(
-  state = initialState, 
-  action
-) {
+export default function sideMenu( state = initialState, action ) {
   switch (action.type) {
   case GET_SIDE_MENU_TOGGLE_STATE_FROM_LOCALSTORAGE:
     return {
@@ -45,7 +42,7 @@ export default function sideMenu(
   }
 }
 
-export function getSideMenuCollpasedStateFromLocalStorage(time = moment().format()) {
+export function getSideMenuCollapsedStateFromLocalStorage(time = moment().format()) {
   return {
     type: GET_SIDE_MENU_TOGGLE_STATE_FROM_LOCALSTORAGE,
     time,

@@ -35,9 +35,7 @@ window.__forceSmoothScrollPolyfill__ = true;
 
 const renderApp = RootComponent => {
   render(
-    <AppContainer
-      warnings={false}
-    >
+    <AppContainer warnings={false} >
       <RootComponent />
     </AppContainer>,
     BootstrappedElement

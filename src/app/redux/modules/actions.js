@@ -1,14 +1,14 @@
 // flow weak
 
 // earningGraph:
-export {fetchEarningGraphDataIfNeeded} from './earningGraph'
+export { fetchEarningGraphDataIfNeeded } from './earningGraph'
 // sideMenu:
 export {
   openSideMenu,
   closeSideMenu,
   toggleSideMenu,
-  getSideMenuCollpasedStateFromLocalStorage
-}                                      from './sideMenu';
+  getSideMenuCollapsedStateFromLocalStorage
+}                                      from './sideMenu'
 
 export { alertActions } from './alert'
 export { userActions } from './user'

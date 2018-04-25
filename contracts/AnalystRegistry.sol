@@ -263,8 +263,9 @@ contract AnalystRegistry {
 
     function findLevel( int32 _points ) public view returns (uint8) {
         for (uint8 i = 1; i < levels.length; i++ ) {
-            if ( levels[i-1][0] < _points && levels[i][0] > _points ) return i-1;
+            if ( levels[i-1][0] <= _points && levels[i][0] > _points ) return i-1;
         }        
+        return ( uint8( levels.length - 1 ) );
     }
     function rewardPoints(  uint32 _analyst, uint8 _rewardType, int32 _value, uint32 _ref ) public {
         Analyst storage a = analysts[ _analyst ];
@@ -274,7 +275,7 @@ contract AnalystRegistry {
         a.reward_events[ a.num_reward_events++ ] =
             RewardEvent( _rewardType, timenow, _value, _ref );
         if ( old_level != new_level ) {
-            if ( new_level == LEAD_LEVEL ) {
+            if ( !a.is_lead && new_level >= LEAD_LEVEL ) {
                 a.is_lead = true;
                 leads[ num_leads++ ] = _analyst;
             }

@@ -23,6 +23,13 @@ export const generateMessages = () => {
 
   let activeRounds = []
 
+	console.log ("hghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghg")
+	console.log (user.reward_events)
+	console.log (user.reward_events)
+	console.log ("hghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghg")
+
+	console.log (user.reward_events[0])
+
 	/* New Round Scheduling */
 	if (comingSignupCycles.length) {
 		messages.push({

@@ -397,9 +397,9 @@ contract RatingAgency {
 
         // payoff in token and reputation, just leads for nowREWARD_ROUND_TOKENS_LOSER
         for ( uint8 i = 0; i < 2; i++ )
-            registry.payLead( round.analysts[i].analyst_id, _round, round.value, round.winner == i );
+            registry.rewardLead( round.analysts[i].analyst_id, _round, round.value, int8(round.winner == i ? 1 : 0) );
         for ( i = 2; i < round.num_analysts; i++ )
-            registry.payJurist( round.analysts[ i ].analyst_id, _round, round.value, 0 ); // for now, every jurist is a winner, pending tally above
+            registry.rewardJurist( round.analysts[ i ].analyst_id, _round, round.value, 0 ); // for now, every jurist is a winner, pending tally above
 
         TallyWin( _round, round.winner );
 

@@ -7,17 +7,18 @@ import {
   // Router, // using now ConnectedRouter from react-router-redux v5.x (the only one compatible react-router 4)
   Switch,
   Route
-}                               from 'react-router-dom';
-import { ConnectedRouter }      from 'react-router-redux';
-import { Provider }             from 'react-redux';
+}                               from 'react-router-dom'
+import { ConnectedRouter }      from 'react-router-redux'
+import { Provider }             from 'react-redux'
 import { Web3Provider }         from 'react-web3'
-import configureStore           from './redux/store/configureStore';
-import { history }              from './redux/store/configureStore';
-import App                      from './containers/app';
-import ScrollTop                from './components/scrollToTop/ScrollToTop';
-import Login                    from './views/login/index';
+import configureStore           from './redux/store/configureStore'
+import { history }              from './redux/store/configureStore'
+import App                      from './containers/app'
+import ScrollTop                from './components/scrollToTop/ScrollToTop'
+import Login                    from './views/login/index'
 import Register                 from './views/register'
-import PageNotFound             from './views/pageNotFound';
+import PageNotFound             from './views/pageNotFound'
+import Tokens                   from './views/tokens'
 
 //import getWeb3 from './services/getWeb3'
  
@@ -29,10 +30,11 @@ type State = any;
 
 export const store = configureStore()
 export { history } from './redux/store/configureStore'
-
+import auth                   from './services/auth'
 
 class Root extends Component<Props, State> {
   render() {
+    let isAuthenticated = auth.isAuthenticated()
     return (
       <Provider store={store}>
         <Web3Provider > 
@@ -40,9 +42,9 @@ class Root extends Component<Props, State> {
             <ConnectedRouter history={history}>
               <ScrollTop>
                 <Switch>
-                  <Route exact path="/login" component={Login} />
-                  <Route exact path="/register" component={Register} />
-                  <App />
+                  <Route exact path="/login" component={ Login } />
+                  <Route exact path="/register" component={ Register } />
+                  { isAuthenticated ? <App />:<Route exact path="/" component={ Tokens } /> }
                   <Route component={PageNotFound} />
                 </Switch>
               </ScrollTop>

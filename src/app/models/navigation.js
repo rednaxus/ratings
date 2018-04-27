@@ -27,7 +27,7 @@ export const navigation = {
         },
         {
           name: 'Availability',
-          linkTo: '/Analyst/availability',
+          linkTo: '/availability',
           faIconName: 'fa-eye'
         },
         /*{
@@ -37,7 +37,7 @@ export const navigation = {
         },*/
         {
           name: 'Statuses',
-          linkTo: '/Analyst/status',
+          linkTo: '/status',
           faIconName: 'fa-gear'
         }
       ]
@@ -47,23 +47,18 @@ export const navigation = {
       group: 'Tokens',
       menus: [
         {
-          name: 'General preview',
-          linkTo: '/examples/general',
-          faIconName: 'fa-eye'
-        },
-        {
           name: 'Tokens',
-          linkTo: '/general/tokens',
+          linkTo: '/tokens',
           faIconName: 'fa-columns'
         },
         {
           name: 'Rules',
-          linkTo: '/general/rules',
+          linkTo: '/rules',
           faIconName: 'fa-columns'
         },
         { 
           name: 'About',
-          linkTo: '/general/about',
+          linkTo: '/about',
           faIconName: 'fa-info'
         }
       ]
@@ -89,6 +84,11 @@ export const navigation = {
       id: 4,
       group: 'Tests1',
       menus: [
+        {
+          name: 'General preview',
+          linkTo: '/examples/general',
+          faIconName: 'fa-eye'
+        },
         {
           name:'Forms Test',
           linkTo:'/examples/form',

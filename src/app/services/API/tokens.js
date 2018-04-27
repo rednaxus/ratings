@@ -75,7 +75,7 @@ export const getTokenRounds = ( i, startAt = 0 ) => {
   return new Promise((resolve,reject) => {
     RatingAgency().then( (ratingAgency) => {
       ratingAgency.roundsForToken( i, startAt ).then( raToken => { // idx, addr
-        console.log('raToken',raToken)
+        //console.log('raToken',raToken)
         let num_rounds = raToken[0].toNumber()
         let raRounds = raToken[1]
         let rounds = []

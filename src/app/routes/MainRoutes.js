@@ -73,11 +73,11 @@ export const MainRoutes = () => (
     */ }
     <Route path="/token/:token_id" component={ Token } />
     
-    <Route path="/Analyst/availability" component={ Availability }  />
+    <Route path="/availability" component={ Availability }  />
     { /* <Route path="/Analyst/survey" component={ Survey } /> 
         <Route path="/admin/roundCycles" component={ RoundCycles } />
     */}
-    <Route path="/Analyst/status" component={ Status } />
+    <Route path="/status" component={ Status } />
     <Route path="/admin/userList" component={ UserListViewConnected } />
     <Route path="/admin/analysts" component={ Analysts } />
     <Route path="/admin/cycles" component = { Cycles } />
@@ -87,9 +87,9 @@ export const MainRoutes = () => (
     <Route exact path="/fileUpload" component={ FileUploader } />
 
     
-    <Route path="/general/tokens" component={ Tokens } /> 
-    <Route path="/general/rules" component={ Rules } />
-    <Route path="/general/about" component={ About } />
+    <Route path="/tokens" component={ Tokens } /> 
+    <Route path="/rules" component={ Rules } />
+    <Route path="/about" component={ About } />
 
 
     <Route path="/round/:id" component={ Round } />

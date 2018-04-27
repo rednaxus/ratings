@@ -534,12 +534,9 @@ const data = [
     {text: 'Brief Due', type: 'brief_upload', glyph: <Glyphicon glyph="paperclip"></Glyphicon>, body: "You have a brief due by xxx for round 4, please upload", due: "4h:55m"}
 ]
 
-export const AnalystMessages = ({ store }) => {
-  const messages = () => { // generate the messages
-    return data
-  }
-
-  let generatedMessages = generateMessages()
+export const AnalystMessages = ( props ) => {
+  console.log('analyst messages',props)
+  let generatedMessages = generateMessages( props )
   console.log('generated messages',generatedMessages)
   return generatedMessages.map( (message,idx) =>
     <div className = "row" key={idx} >
@@ -572,7 +569,7 @@ export const AnalystMessages = ({ store }) => {
 }
 
 AnalystMessages.propTypes = {
-    store: PropTypes.object.isRequired
+  user: PropTypes.object.isRequired
 }
 
 AnalystMessages.defaultProps = {}

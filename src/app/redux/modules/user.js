@@ -7,6 +7,8 @@ import {
   fetchRoundInfo, 
   fetchRoundAnalystInfo 
 } from './actions'
+//import Root from '../../Root'
+import { store } from '../../Root'
 
 const userConstants = {
   REGISTER_REQUEST: 'USERS_REGISTER_REQUEST',
@@ -41,7 +43,7 @@ const getInfo = (user_id) => { // get from id
     dispatch(request({ user_id }))
     userService.info(user_id).then( userInfo => {
       dispatch(success(userInfo))
-      dispatch(push('/')) //history.push
+      //dispatch(push('/')) //history.push
     })
     .catch( error => {
       dispatch(failure(error))
@@ -61,45 +63,58 @@ export const refreshInfo = (deep = true) => { // get from id, deep means to get 
     console.log('user',user)
     const user_id = user.authentication && user.authentication.id ? user.authentication.id : 0
     dispatch( request( { user_id } ) )
-    userService.info( user_id ).then( userInfo => {
-      console.log('refreshInfo, got info',userInfo)
-      if ( deep ) {
-        userService.getAnalystRounds( userInfo ).then( rounds => {
-          userInfo.rounds = rounds
-          const fetchDeep = round => {
-            dispatch( fetchRoundInfo( round ) )
-            dispatch( fetchRoundAnalystInfo( round, user_id ) )
-          }
-          console.log('got rounds',rounds)
-          rounds.scheduled.map( fetchDeep )
-          rounds.active.map( fetchDeep ) 
-          rounds.finished.map( fetchDeep ) 
-          dispatch( success( userInfo ) )
-        })
-        .catch( error => {
-          dispatch( failure( error ) )
-        })
+    return new Promise( (resolve,reject) => {
+      const returnError = ( err ) => {
+        dispatch( failure( err ) )
+        reject( err )
       }
-      else dispatch( success( userInfo ) )
+      const returnSuccess = ( userInfo ) => {
+        dispatch( success( userInfo ) )
+        resolve( userInfo )
+      }
+      userService.info( user_id ).then( userInfo => {
+        console.log('refreshInfo, got info',userInfo)
+        if ( !deep ) returnSuccess( userInfo )
+        else {
+          userService.getAnalystRounds( userInfo ).then( rounds => {
+            userInfo.rounds = rounds
+            let numFetches = 0
+            let allRounds = [ ...rounds.scheduled,...rounds.active,...rounds.finished ]
+            if ( !allRounds.length ) returnSuccess( userInfo )
+            allRounds.forEach( round => {
+              numFetches++
+              fetchRoundInfo( round )( dispatch, getState ).then( ( roundInfo ) => {
+                console.log('got round info', round, roundInfo )
+                fetchRoundAnalystInfo( round, user_id )( dispatch, getState ).then( ( roundAnalystInfo ) => {
+                  console.log('got round analyst info', round, roundAnalystInfo )
+                  if ( !--numFetches ) returnSuccess( userInfo )
+                })
+              })
+            })
+          }).catch( returnError )
+        }
+      }).catch( returnError )
     })
-    .catch( error => {
-      dispatch( failure( error ) )
-    })
+
   }
 }
 
-const login = (username, password) => {
+const login = (username, password, reload = true) => {
   const request = user => { return { type: userConstants.LOGIN_REQUEST, user } }
   const success = user => { return { type: userConstants.LOGIN_SUCCESS, user } }
   const failure = error => { return { type: userConstants.LOGIN_FAILURE, error } }
 
-  return dispatch => {
+  return (dispatch,getState) => {
     dispatch(request({ username }))
     userService.login(username, password).then(
       user => {
         dispatch(success(user))
-        dispatch(getInfo(user.id))
-        //dispatch(push('/')) //history.push
+        dispatch(push('/')) //history.push
+        //dispatch(getInfo(user.id))
+        if (reload) window.location.reload()
+        else refreshInfo()(dispatch,getState).then( ( userInfo )=> { 
+          console.log('got user info',userInfo) 
+        })
       },
       error => {
         dispatch(failure(error))

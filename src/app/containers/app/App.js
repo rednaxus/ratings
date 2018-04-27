@@ -90,8 +90,7 @@ class App extends Component {
     let user = auth.getUserInfo()
     console.log('user from local storage',user)
     if (user) {
-      console.log('logging in')
-      login( user.name, user.password )
+      login( user.name, user.password, false )  // login, don't reload
     }
   }
 
@@ -110,6 +109,7 @@ class App extends Component {
     //const userFullName = `${userInfos.firstname} ${userInfos.lastname.toUpperCase()}`;
     const userFullName = user.info && user.info.name ? user.info.name : '' // should not get here if not logged in but during testing
     const username = user.info && user.info.name ? user.info.name: ''
+    console.log( 'alert:',alert )
     return (
       <div>
         <Header
@@ -168,7 +168,8 @@ class App extends Component {
     auth.clearAllAppStorage()
     // redirect to login
     const { history } = this.props
-    history.push('/login')
+    history.push('/')
+    window.location.reload()
   }
 }
 

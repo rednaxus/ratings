@@ -126,14 +126,18 @@ export const fetchRoundInfo = ( round ) => {
   const failure = (time = moment().format()) => {
     return { type: ERROR_ROUND_INFO, time }
   }
-  return dispatch => {
+  return (dispatch, getState) => {
     dispatch( request() )
-    getRoundInfo(round).then( roundInfo => {
+    console.log('getting round info',round)
+    return getRoundInfo(round).then( roundInfo => {
+      console.log('got round info for round',round)
       dispatch( success( roundInfo ) ) 
       dispatch( fetchTokenData( roundInfo.covered_token ) )
-
+      return roundInfo
     })
-    .catch( error => dispatch( failure(error) ) )
+    .catch( error => {
+      dispatch( failure(error) )
+    })
   }
 }
 
@@ -149,12 +153,13 @@ export const fetchRoundAnalystInfo = ( round, analyst = -1 ) => {
   const failure = (time = moment().format()) => {
     return { type: ERROR_ROUND_ANALYST_INFO, time }
   }
-  return (dispatch,getState) => {
+  return ( dispatch, getState ) => {
     console.log('fetch analyst info', round, analyst)
     dispatch( request() )
     //console.log('getting round analyst infor for user ',getState(),getUser(getState()))
-    getRoundAnalystInfo(round, analyst==-1 ? getUser(getState()) : analyst).then( roundAnalystInfo => {
+    return getRoundAnalystInfo(round, analyst==-1 ? getUser(getState()) : analyst).then( roundAnalystInfo => {
       dispatch( success( roundAnalystInfo ) ) 
+      return roundAnalystInfo
     })
     .catch( error => dispatch( failure(error) ) )
   }

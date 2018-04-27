@@ -3,23 +3,23 @@ import { appConfig }  from '../config'
 
 import { store } from '../Root'
 
-export const generateMessages = () => {
+export const generateMessages = ( { user, cycles, rounds, tokens, timestamp }) => {
 	let messages = []
 
-	const { tokens, cycles, rounds } = store.getState()
+	//const { tokens, cycles, rounds } = store.getState()
 
-	const s = store.getState()
-	if (!s.user || !s.user.info ) return messages
+	//const s = store.getState()
+	//if (!s.user || !s.user.info ) return messages
 
-	console.log('state in messages',s)
-	console.log('user',s.user.info)
+	//console.log('state in messages',s)
+	//console.log('user',s.user.info)
 
-	const user = s.user.info
+	//const user = s.user.info
 
-	let now = cycles.cronInfo / 1000
-  let comingSignupCycles = cycles.data.filter( cycle => !cycle.analyst_status && cycle.timestart > now )
-  let comingCycles = cycles.data.filter( cycle => cycle.analyst_status && cycle.timestart > now )
-  let activeCycles = cycles.data.filter( cycle => cycle.analyst_status && cycle.timestart <= now && cycle.timefinish >= now )
+	let now = timestamp
+  let comingSignupCycles = cycles.filter( cycle => !cycle.analyst_status && cycle.timestart > now )
+  let comingCycles = cycles.filter( cycle => cycle.analyst_status && cycle.timestart > now )
+  let activeCycles = cycles.filter( cycle => cycle.analyst_status && cycle.timestart <= now && cycle.timefinish >= now )
 
   let activeRounds = []
 

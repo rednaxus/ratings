@@ -25,7 +25,7 @@ class Dashboard extends Component {
     const { actions: { fetchCyclesDataIfNeeded, fetchCronInfo, refreshUserInfo } } = this.props
     fetchCyclesDataIfNeeded()
     fetchCronInfo()
-    refreshUserInfo()
+    //refreshUserInfo()
   }
 
   componentWillUnmount() {
@@ -34,19 +34,25 @@ class Dashboard extends Component {
   }
 
   shouldComponentUpdate() {
-    return !this.props.user.isFetching
+    return true;
+    //return ( this.props.user.id !== undefined && !this.props.user.isFetching )
   }
 
   render() {
-    const { userIsConnected, user } = this.props;
-    const { currentView } = this.props;
-
+    const { user, tokens, rounds, cycles, cronInfo } = this.props
+    const { currentView } = this.props
     //const userFullName = `${userInfos.firstname} ${userInfos.lastname.toUpperCase()}`;
-    console.log('props',this.props);
+    console.log('dashboard render',this.props)
+    if ( user.id === undefined) return( '' )
     return(
       <AnimatedView>
         <main className="container">
-          <AnalystMessages { ...{ store } } />
+          <AnalystMessages 
+            user={ user } 
+            cycles={ cycles } 
+            tokens={ tokens } 
+            rounds={ rounds } 
+            timestamp={ cronInfo / 1000 }/>
           {/*<hr/>
           <div className="row">
             <div className="col-md-6">

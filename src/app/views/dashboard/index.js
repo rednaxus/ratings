@@ -9,8 +9,11 @@ import Dashboard                      from './Dashboard'
 const mapStateToProps = (state) => {
   return {
     currentView:          state.views.currentView,
-    cycles:               state.cycles,
-    user:                 state.user
+    cycles:               state.cycles.data,
+    user:                 state.user.info,
+    tokens:               state.tokens.data,
+    rounds:               state.rounds.data,
+    cronInfo:             state.cycles.cronInfo
   }
 }
 

@@ -31,7 +31,7 @@ class PrivateRoute extends Component {
 
     const isUserAuthenticated = this.isAuthenticated();
     const isTokenExpired      = this.isExpired();
-
+    console.log( 'isauth',{...isUserAuthenticated,...isTokenExpired} )
     return (
       <Route
         {...rest}

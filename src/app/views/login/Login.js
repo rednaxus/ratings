@@ -192,11 +192,11 @@ class Login extends PureComponent<Props, State> {
 
     const { email, password } = this.state
 
-    login(email, password).then( result => {
+    login(email, password)/*.then( result => {
       console.log('result from login', result)
       goHome()
 
-    })
+    })*/
 
   }
   // #endregion

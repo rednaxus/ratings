@@ -23,7 +23,7 @@ export const navigation = {
         {
           name: 'Dashboard',
           linkTo: '/',
-          faIconName: 'fa-eye'
+          faIconName: 'fa-server'
         },
         {
           name: 'Availability',
@@ -49,17 +49,17 @@ export const navigation = {
         {
           name: 'Tokens',
           linkTo: '/tokens',
-          faIconName: 'fa-columns'
+          faIconName: 'fa-certificate'
         },
         {
-          name: 'Rules',
+          name: 'FAQ',
           linkTo: '/rules',
-          faIconName: 'fa-columns'
+          faIconName: 'fa-info'
         },
         { 
           name: 'About',
           linkTo: '/about',
-          faIconName: 'fa-info'
+          faIconName: 'fa-cube'
         }
       ]
     },

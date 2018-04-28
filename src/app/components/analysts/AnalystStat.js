@@ -30,6 +30,11 @@ class AnalystStat extends PureComponent {
                       statIconColor="#fa8564"
                       statLabel={`${analyst.rounds.finished.length} Rounds Completed`}
                     />
+                    {/*<Stat
+                      statIoniconName="ion-md-alert"
+                      statIconColor="#fa8564"
+                      statLabel={`${analyst.rounds.finished.length} Rounds Completed`}
+                    /> */}                 
                   </div>
                   <div className="col-md-4">
                     <Stat

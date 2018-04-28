@@ -4,30 +4,65 @@
 import React      from 'react';
 import PropTypes  from 'prop-types';
 
+
+
+
 const Stat = ({
   statFaIconName,
+  statIoniconName,
   statIconColor,
   statLabel,
   statIconSpin
-}) => (
-  <div className="stat">
-    <div style={{textAlign: 'center'}}>
-      <span className="fa-stack fa-lg fa-3x">
-        <i
-          className="fa fa-circle fa-stack-2x"
-          style={{color: '#FFFFFF'}}>
-        </i>
-        <i
-          className={`fa ${statFaIconName} ${statIconSpin ? 'fa-spin' : ''} fa-stack-1x fa-inverse`}
-          style={{color: statIconColor}}>
-        </i>
-      </span>
+}) => {
+  //if (statFaIconName !== undefined) {
+    return (
+      <div className="stat">
+        <div style={{textAlign: 'center'}}>
+          <span className="fa-stack fa-lg fa-3x">
+            <i
+              className="fa fa-circle fa-stack-2x"
+              style={{color: '#eee'}}>
+            </i>
+            { statFaIconName !== undefined ? 
+            <i
+              className={`fa ${statFaIconName} ${statIconSpin ? 'fa-spin' : ''} fa-stack-1x fa-inverse`}
+              style={{color: statIconColor}}>
+            </i>
+            :
+            <i
+            className={`icon ${statIoniconName} fa-stack-1x`}
+            style={{color: statIconColor}}>
+            </i> }            
+          </span>
+        </div>
+        <h5 className="stat-info">
+          {statLabel}
+        </h5>
+      </div>
+    )
+  /*}
+  
+  return (
+    <div className="stat">
+      <div style={{textAlign: 'center'}}>
+        <span className="fa-stack fa-lg fa-3x">
+          <i
+            className="fa fa-circle fa-stack-2x"
+            style={{color: '#000'}}>
+          </i>
+          <i
+            className={`icon ${statIoniconName} fa-stack-1x`}
+            style={{color: statIconColor}}>
+          </i>
+        </span>
+      </div>
+      <h5 className="stat-info">
+        {statLabel}
+      </h5>
     </div>
-    <h5 className="stat-info">
-      {statLabel}
-    </h5>
-  </div>
-);
+  )*/
+
+}
 
 Stat.propTypes = {
   statFaIconName: PropTypes.string.isRequired,

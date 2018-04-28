@@ -6,7 +6,6 @@ import { store } from '../../Root'
 
 import AnalystMessages from '../../components/analysts/AnalystMessages'
 
-import AnalystStat from '../analystStat'
 import { AnimatedView, Breadcrumb } from '../../components'
 
 class Dashboard extends Component {

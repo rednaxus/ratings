@@ -1,14 +1,11 @@
 import React, { Component } from 'react'
 import { appConfig } from '../../config'
-import { store } from '../../Root'
-
-import AnalystStat from '../analystStat'
 
 import { 
   AnimatedView, 
   Breadcrumb, 
-  UserStatus,
-  AnalystRounds, AnalystPayouts
+  //UserStatus,
+  AnalystRounds, AnalystPayouts, AnalystStat, AnalystReferrals
 } from '../../components'
 
 class Status extends Component {
@@ -27,7 +24,8 @@ class Status extends Component {
 
   render() {
     const { currentView, userIsConnected, user, rounds } = this.props;
-
+    if ( user.id === undefined) return( '' )
+    
     console.log('rounds',rounds)
     console.log('user',user)
     let user_rounds = !user.rounds ? [] : [ 
@@ -57,14 +55,19 @@ class Status extends Component {
       <AnimatedView>
         <main className="container">
           <Breadcrumb path={["dashboard","status"]} />
-          <UserStatus user={ user }/>
-          <AnalystStat />
+          {/*<UserStatus user={ user }/>*/}
+          <AnalystStat analyst={ user } />
           <div className="row">
             <div className="col-md-6">
               <AnalystRounds analystRounds={user_rounds}/>
             </div>
             <div className="col-md-6">
               <AnalystPayouts analystPayouts={payouts}/>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-md-6">
+              <AnalystReferrals analyst={user} />
             </div>
           </div>
         </main>

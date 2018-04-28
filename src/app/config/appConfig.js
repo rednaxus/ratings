@@ -130,13 +130,22 @@ export const appConfig = {
   BOTTOM_JURISTS_X10: 0,    // level:2
 
   LEVELS: [
-    { name:  'white belt', points:   0, referrals:  2 },
-    { name: 'yellow belt', points:  10, referrals:  4 },
-    { name: 'orange belt', points:  50, referrals:  6 },
-    { name:   'blue belt', points: 100, referrals: 10 },
-    { name:    'red belt', points: 200, referrals: 20 },
-    { name:  'black belt', points: 500, referrals: 30 }
+    { name:  'white belt', points:   0, referrals:  2, styles: 'text-white bg-black' },
+    { name: 'yellow belt', points:  10, referrals:  4, styles: 'text-yellow bg-black' },
+    { name: 'orange belt', points:  50, referrals:  6, styles: 'text-orange bg-black' },
+    { name:   'blue belt', points: 100, referrals: 10, styles: 'text-blue bg-black' },
+    { name:    'red belt', points: 200, referrals: 20, styles: 'text-red bg-black' },
+    { name:  'black belt', points: 500, referrals: 30, styles: 'text-black bg-white' }
   ],
+  level_info: function( reputation ){
+    return this.LEVELS[ this.level( reputation ) ]
+  },
+  level: function ( reputation ){
+    let self=this
+    return _.findIndex(this.LEVELS,function(val,idx){
+      return idx === self.LEVELS.length-1 ? true : val < self.LEVELS[idx+1]
+    })
+  },
 
   customConfig
 

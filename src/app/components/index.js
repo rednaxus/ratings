@@ -95,3 +95,5 @@ export { default as JuristSurvey } from './jurist/JuristSurvey'
 
 export { default as AnalystRounds } from './analysts/AnalystRounds'
 export { default as AnalystPayouts } from './analysts/AnalystPayouts'
+export { default as AnalystStat } from './analysts/AnalystStat'
+export { default as AnalystReferrals } from './analysts/AnalystReferrals'

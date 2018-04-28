@@ -109,9 +109,12 @@ const login = (username, password, reload = true) => {
     userService.login(username, password).then(
       user => {
         dispatch(success(user))
-        dispatch(push('/')) //history.push
+
         //dispatch(getInfo(user.id))
-        if (reload) window.location.reload()
+        if (reload) {
+          dispatch(push('/')) //history.push
+          window.location.reload()
+        }
         else refreshInfo()(dispatch,getState).then( ( userInfo )=> { 
           console.log('got user info',userInfo) 
         })

@@ -31,8 +31,8 @@ const Header = ({
       />
       <div className="navbar-right">
         <ul className="nav navbar-nav">
-          <MessageMenu />
-          <TaskMenu />
+          {/*<MessageMenu />*/}
+          {/*<TaskMenu />*/}
           <UserMenu
             login={userLogin}
             firstname={userFirstname}

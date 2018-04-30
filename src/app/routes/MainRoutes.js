@@ -36,7 +36,7 @@ import UserListViewConnected        from '../views/userList'
 import Round from '../views/round'
 
 //import Survey from '../views/survey'
-import FileUploader from '../views/briefUpload/FileUploader'
+//import FileUploader from '../views/briefUpload/FileUploader'
 
 import GridView from '../views/examples/grid'
 import Cycles from '../views/cycles'
@@ -84,7 +84,7 @@ export const MainRoutes = () => (
     
 
 
-    <Route exact path="/fileUpload" component={ FileUploader } />
+    {/*<Route exact path="/fileUpload" component={ FileUploader } />*/}
 
     
     <Route path="/tokens" component={ Tokens } /> 

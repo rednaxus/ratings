@@ -86,7 +86,8 @@ export { default as TokenSummary }               from './tokens/TokenSummary'
 export { default as UserStatus }                 from './userStatus/UserStatus'
 
 
-export { default as FileInput }   from './file/FileInput'
+export { default as IpfsFileInput }   from './file/IpfsFileInput'
+export { default as BriefUpload }     from './briefUpload/BriefUpload'
 
 export { default as Graph }           from './graph/Graph'
 

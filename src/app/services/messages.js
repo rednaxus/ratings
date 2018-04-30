@@ -27,7 +27,7 @@ export const generateMessages = ( { user, cycles, rounds, tokens, timestamp }) =
 	console.log (user.reward_events)
 	console.log (user.reward_events)
 	console.log ("hghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghg")
-
+	console.log('test')
 	console.log (user.reward_events[0])
 
 	/* New Round Scheduling */
@@ -57,6 +57,8 @@ export const generateMessages = ( { user, cycles, rounds, tokens, timestamp }) =
 	})
 
 	/* Reputation Score */
+  let lastRewardEvent = user.reward_events
+  console.log ('again logging',lastRewardEvent)
 
 	messages.push({
 		type: 'reputation_score',

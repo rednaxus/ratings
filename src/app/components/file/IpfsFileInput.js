@@ -6,9 +6,10 @@ import IPFS from 'ipfs'
 
 import toBuffer from 'blob-to-buffer'
 
-class FileInput extends React.Component {
+class IpfsFileInput extends React.Component {
   constructor(props) {
     super(props)
+    console.log('ipfs file input, props',props)
     this.onChange = this.onChange.bind(this)
 
     this.url = 'https://ipfs.io/' // just to bypass the check.
@@ -19,6 +20,7 @@ class FileInput extends React.Component {
   }
  
   uploadFiles (files) {
+    console.log('files uploading',files, this.ipfsRepoName)
     if (this.node === null) {
       this.node = new Promise((resolve) => {
         let node = new IPFS({ repo: this.ipfsRepoName })
@@ -51,6 +53,7 @@ class FileInput extends React.Component {
         let buf = buffers[i]
         let file = files[i]
 
+        console.log('adding file',file,'at path',this.ipfsPath(file))
         node.files.add({
           path: this.ipfsPath(file),
           content: buf
@@ -72,12 +75,13 @@ class FileInput extends React.Component {
             return
           }
           console.log('finished',file)
+          if (this.props.onUploaded)
+            this.props.onUploaded(file)
           //this._finished([file])
         })
       }
     })
   }
-
 
   onChange(files) {
     // For Redux form
@@ -95,9 +99,11 @@ class FileInput extends React.Component {
   }
 
   render() {
+    //<Dropzone onDrop={ this.onChange } {...this.props} />
+ 
     return (
-      <Dropzone onDrop={ this.onChange } {...this.props} />
+      <Dropzone onDrop={ this.onChange } />
     )
   }
 }
-export default FileInput
+export default IpfsFileInput

@@ -10,12 +10,13 @@ import * as _ from 'lodash'
 import {
   AnimatedView,
   TokenSummary,
-  Breadcrumb
+  Breadcrumb,
+  BriefUpload
 }                         from '../../components'
 
 //import JuristSurvey from '../../components/juristSurvey'
 import { JuristSurvey } from '../../components'
-import BriefUploader from '../briefUpload/FileUploader'
+
 import { appConfig } from '../../config'
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
@@ -70,11 +71,12 @@ class Round extends PureComponent {
     const getActivity = (analyst_status) => {
       switch(analyst_status) {
         case 'brief due' :
-          return (<BriefUploader/>)
+          return (<BriefUpload/>)
         case 'brief submitted' :
           return (<Brief edit={true} />)
         case 'first survey due':
-          return (<JuristSurvey onSubmit={showResults} />)
+          return (<BriefUpload/>)
+          // return (<JuristSurvey onSubmit={showResults} />)
           //return (<JuristSurvey round={ round.id } pre={ true } roundAnalyst={ round.inround_id } />)
         case 'first survey submitted':
           return (<Brief />)

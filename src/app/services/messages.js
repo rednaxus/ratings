@@ -61,6 +61,7 @@ export const generateMessages = ( { user, cycles, rounds, tokens, timestamp }) =
 
   let activeRounds = []
 
+<<<<<<< HEAD
 
 	let oneHour = 3600 /*seconds*/
 	let oneDay = 86400 /*seconds*/
@@ -70,6 +71,14 @@ export const generateMessages = ( { user, cycles, rounds, tokens, timestamp }) =
 /********for testing -- if statement to hold and make NOT appear ********/
 let testVariable = 0
 
+=======
+	console.log ("hghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghg")
+	console.log (user.reward_events)
+	console.log (user.reward_events)
+	console.log ("hghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghghg")
+	console.log('test')
+	console.log (user.reward_events[0])
+>>>>>>> 99219439b29ede679ff890e94e5b32178032d1f2
 
 	/* New Round Scheduling */
 	if (comingSignupCycles.length) {
@@ -104,6 +113,8 @@ let testVariable = 0
 
 
 	/* Reputation Score */
+  let lastRewardEvent = user.reward_events
+  console.log ('again logging',lastRewardEvent)
 
 
 	let lastRewardEvent = user.reward_events

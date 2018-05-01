@@ -75,7 +75,7 @@ contract RatingAgency {
 
     struct RoundBrief {
         uint upload_time;
-        address filehash;
+        bytes32 filehash;
     }
     struct RoundAnalyst {
         uint32 analyst_id;
@@ -405,7 +405,7 @@ contract RatingAgency {
 
     }
     
-    function roundBriefs( uint16 _round ) public view returns ( uint, address, uint, address ){
+    function roundBriefs( uint16 _round ) public view returns ( uint, bytes32, uint, bytes32 ){
         Round storage round = rounds[ _round ];
         return (
             round.briefs[ 0 ].upload_time, round.briefs[ 0 ].filehash, 
@@ -466,8 +466,8 @@ contract RatingAgency {
         SurveySubmitted( _round, _analyst, _idx, _answers, _qualitatives, _recommendation );
     }
 
-    event BriefSubmitted( uint16 _round, uint8 _analyst, address _file );
-    function submitBrief( uint16 _round, uint8 _analyst, address _file ) public {
+    event BriefSubmitted( uint16 _round, uint8 _analyst, bytes32 _file );
+    function submitBrief( uint16 _round, uint8 _analyst, bytes32 _file ) public {
         Round storage round = rounds[ _round ];
         round.briefs[ _analyst ] = RoundBrief( lasttime, _file);
         round.analysts[ _analyst ].stat = BRIEF_SUBMITTED;

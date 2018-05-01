@@ -63,7 +63,7 @@ const columns = [
 ];
 
 export const Tokens = ({ store }) => {
-  console.log('api:',api)
+  //console.log('api:',api)
   const tokens = {
       columns,
       dataSource: api,
@@ -84,7 +84,7 @@ export const Tokens = ({ store }) => {
       stateKey: 'tokens'
   };
 
-  console.log('getting grid', tokens)
+  //console.log('getting grid', tokens)
   return <Grid { ...tokens } />
 };
 

@@ -60,7 +60,7 @@ class CyclesView extends Component {
             <Panel.Heading>
               <Panel.Title>Cycles -- Last cron run: 
                 <span className="text-red"><Moment date={crondate} /></span>
-                <button className="pull-right" bsStyle="primary" onClick={this.handlePulseCron} >
+                <button className="pull-right" onClick={this.handlePulseCron} >
                   pulse cron
                 </button>
               </Panel.Title>

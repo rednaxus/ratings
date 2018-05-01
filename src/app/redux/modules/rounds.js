@@ -29,7 +29,6 @@ const ERROR_SURVEY_SUBMIT     = 'ERROR_SURVEY_SUBMIT'
 const initialState = {
   isFetching: false,
   data:       [], // rounds
-  round: { status:0 }, 
   time:       null
 };
 

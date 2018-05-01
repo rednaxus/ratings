@@ -50,10 +50,13 @@ class Round extends PureComponent {
     leaveRound()
   }
 
-  componentDidUpdate() {
+
+  componentWillReceiveProps() {
     if (this.idx === +this.props.match.params.id) return
 
     this.idx = +this.props.match.params.id
+    console.log('component will receive props',this.idx)
+
     //const { actions: { fetchTokenData, fetchTokenRounds } } = this.props
     const { actions: { fetchRoundInfo, fetchRoundAnalystInfo, fetchTokenRounds } } = this.props
     fetchRoundInfo( this.idx )
@@ -76,13 +79,16 @@ class Round extends PureComponent {
     i = _.findIndex(rounds,['id',this.idx])
     console.log('finding for id:',this.idx, 'found at',i)
     round = rounds[i] // == -1 ? {}: rounds[ i ]
-    if (_.isEmpty(round)) return <div>fetching...</div>
+    if (_.isEmpty(round)) {
+      console.log('got empty round',round)
+      return <div>fetching...</div>
+    }
     i = _.findIndex(tokens,['id',round.covered_token])
     token = i == -1 ? {} : tokens[ i ]
     let analyst_status = appConfig.STATUSES[round.analyst_status]
     let leadPosition = round.inround_id == 0 ? 'bull' : (round.inround_id == 1 ? 'bear' : '' )
     console.log('analyst status is',round.analyst_status, analyst_status)
-    //analyst_status = 'first survey due' // testing
+    analyst_status = 'brief due' // testing
     const getActivity = (analyst_status) => {
       switch(analyst_status) {
         case 'brief due' :
@@ -105,7 +111,9 @@ class Round extends PureComponent {
           return(<div>Round completion at xxx</div>)
       }
     }
-
+    
+    console.log('appconfig',appConfig)
+    
     return(
       <AnimatedView>
         <Breadcrumb path={["dashboard","eval-round"]} />
@@ -128,15 +136,19 @@ class Round extends PureComponent {
             <Panel>
               <Panel.Heading>Briefs submitted</Panel.Heading>
               <Panel.Body>
-                <span>Bull { 
+                <span>{ 
                   round.briefs[0].timestamp ? 
-                    <Moment format="YYYY/MM/DD" date={round.briefs[0].timestamp*1000} />
-                    : <span> due by <Moment format="YYYY/MM/DD" /></span>
+                    <a href={ appConfig.ipfsRepoDownload+round.briefs[0].filehash }>Bull brief--
+                      <Moment format="YYYY/MM/DD" date={ round.briefs[0].timestamp*1000 } />
+                    </a>
+                    : <span>Bull brief due by <Moment format="YYYY/MM/DD" /></span>
                 }</span>
-                <span className="pull-right">Bear { 
+                <span className="pull-right">{ 
                   round.briefs[1].timestamp ? 
-                    <Moment format="YYYY/MM/DD" date={round.briefs[1].timestamp*1000} />
-                    : <span> due by <Moment format="YYYY/MM/DD" /></span>
+                    <a href={ appConfig.ipfsRepoDownload+round.briefs[1].filehash }>Bear brief--
+                      <Moment format="YYYY/MM/DD" date={ round.briefs[1].timestamp*1000 } />
+                    </a>
+                    : <span>Bear brief due by <Moment format="YYYY/MM/DD" /></span>
                 }</span>
               </Panel.Body>
             </Panel>

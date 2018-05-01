@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react'
 import { Panel } from 'react-bootstrap'
+
 import { IpfsFileInput } from '../../components'
 import { submitBrief } from '../../services/API'
 

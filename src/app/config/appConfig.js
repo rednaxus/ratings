@@ -147,7 +147,7 @@ export const appConfig = {
     })
   },
 
-  customConfig
+  ...customConfig
 
 }
 

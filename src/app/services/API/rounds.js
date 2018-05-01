@@ -61,6 +61,7 @@ export const getRoundAnalystInfo = ( round, analyst=0 ) => new Promise( (resolve
 // function submitBrief( uint16 _round, uint8 _analyst, address _file )
 export const submitBrief = ( round, analyst, filehash ) => new Promise( (resolve,reject) => {
   RatingAgency().then( ratingAgency => {
+    console.log('submitting brief',round,analyst,filehash)
     ratingAgency.submitBrief( round, analyst, bytes32FromIpfsHash(filehash) ).then( result => {
       console.log('submit brief result',result)
       resolve( 'done' )

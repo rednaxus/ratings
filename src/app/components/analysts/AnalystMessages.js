@@ -201,7 +201,7 @@ const message_templates = {
     }
   },
 
-  addition_referrals: {
+  additional_referrals: {
     ...base_message,
     url: '',
     heading: (data) => {
@@ -209,7 +209,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>You have earned enough rep points to get {data.new_raf} additional referrals, giving you a total of {data.referrals}.</div>
+      return <div>You have earned enough rep points to get {data.newRefsAvail} additional referrals, giving you a total of {data.referrals}.</div>
 
     },
     footer: (data) => {
@@ -228,7 +228,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Analysis round #{data.round} (began <Moment fromNow>{data.start}</Moment>) has finished. Thank you for partcipating!</div>
+      return <div>Analysis round  for {data.roundToken} (ended <Moment fromNow>{data.start}</Moment>) has finished. Thank you for partcipating!</div>
 
     },
     footer: (data) => {
@@ -247,7 +247,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>A new round has been scheduled to begin <Moment fromNow>{data.due}</Moment>. Can you participate?</div>
+      return <div>A new round for {data.roundToken} has been scheduled to begin <Moment fromNow>{data.due}</Moment>. It's worth {data.roundValue}--interested?</div>
 
     },
     footer: (data) => {
@@ -266,7 +266,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>We have added new tokens {data.tokens.name} to our system! Check out the tokens page for more information or to browse.</div>
+      return <div>We have added {data.tokens} tokens to our system! Check out the tokens page for more information or to browse.</div>
 
     },
     footer: (data) => {
@@ -285,7 +285,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return  <div> Analysis round #{data.round} (began <Moment fromNow>{data.start}</Moment>) is in progress.  You are a {data.analyst}. </div>
+      return  <div> A round for {data.roundToken} (began <Moment fromNow>{data.start}</Moment>) is in progress.  You are a {data.analyst}, and it's worth {data.roundValue}. </div>
     },
     footer: (data) => {
       return <div>view round info</div>
@@ -360,7 +360,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>You are a confirmed JURIST for round #{data.round}, which is starting now!</div>
+      return <div>You are a confirmed JURIST for the {data.token} round, which is starting very soon!</div>
 
     },
     footer: (data) => {
@@ -379,7 +379,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>A lead analyst in round #{data.round} has posted a new brief. You can access it until it closes <Moment fromNow>{data.due}</Moment>.</div>
+      return <div>A lead analyst in the {data.token} round has posted a new brief. You can access it until it closes <Moment fromNow>{data.due}</Moment>.</div>
 
     },
     footer: (data) => {
@@ -437,7 +437,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>You are a confirmed LEAD for round #{data.round}, which is starting now!</div>
+      return <div>You are a confirmed LEAD for the {data.token} round, which is confirmed and will be starting soon!</div>
 
     },
     footer: (data) => {
@@ -456,7 +456,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>You are a confirmed LEAD for round #{data.round}, which is starting now!</div>
+      return <div>Reminder! You are slated to participate in a round starting <Moment fromNow>{data.starting}</Moment>!</div>
 
     },
     footer: (data) => {
@@ -475,7 +475,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Your LEAD brief for round #{data.round} is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>
+      return <div>Your LEAD brief for {data.round} round is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>
 
     },
     footer: (data) => {
@@ -494,7 +494,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Your LEAD rebuttal for round #{data.round} is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>
+      return <div>Your LEAD rebuttal for {data.round} round is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>
 
     },
     footer: (data) => {
@@ -541,7 +541,7 @@ export const AnalystMessages = ( props ) => {
   return generatedMessages.map( (message,idx) =>
     <div className = "row" key={idx} >
       <div className={`panel panel-${message.priority} card card-style`}>
-        
+
         <div className="panel-heading">
           <h4 className="card-title mt-3">{message_templates[message.type].heading(message)}</h4>
           <a>Friends--{message.type}</a>

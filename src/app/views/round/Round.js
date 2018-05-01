@@ -35,6 +35,11 @@ class Round extends PureComponent {
 
   state = { path: ['round'] };
 
+  constructor( props ){
+    super( props )
+    this.onBriefUpload = this.onBriefUpload.bind( this )
+  }
+
   componentWillMount() {
     const { actions: { enterRound } } = this.props
     enterRound()
@@ -58,24 +63,34 @@ class Round extends PureComponent {
     //fetchTokenData( this.idx )
 
   }
+  onBriefUpload( filehash ) {
+    const { actions: { fetchRoundInfo, fetchRoundAnalystInfo, fetchTokenRounds } } = this.props
+    fetchRoundInfo( this.idx )
+    fetchRoundAnalystInfo( this.idx )
+  }
+
   render() {
     let i, token, round
-    const { rounds, tokens } = this.props
-    i = _.findIndex(rounds.data,['id',this.idx])
-    round = i == -1 ? {}: rounds.data[ i ]
+    const { rounds, tokens, user } = this.props
+    console.log('rounds are',rounds)
+    i = _.findIndex(rounds,['id',this.idx])
+    console.log('finding for id:',this.idx, 'found at',i)
+    round = rounds[i] // == -1 ? {}: rounds[ i ]
     if (_.isEmpty(round)) return <div>fetching...</div>
-    i = _.findIndex(tokens.data,['id',round.covered_token])
-    token = i == -1 ? {} : tokens.data[ i ]
+    i = _.findIndex(tokens,['id',round.covered_token])
+    token = i == -1 ? {} : tokens[ i ]
     let analyst_status = appConfig.STATUSES[round.analyst_status]
-    analyst_status = 'first survey due' // testing
+    let leadPosition = round.inround_id == 0 ? 'bull' : (round.inround_id == 1 ? 'bear' : '' )
+    console.log('analyst status is',round.analyst_status, analyst_status)
+    //analyst_status = 'first survey due' // testing
     const getActivity = (analyst_status) => {
       switch(analyst_status) {
         case 'brief due' :
-          return (<BriefUpload/>)
+          return (<BriefUpload round={ round.id } roundAnalyst={ round.inround_id } onComplete={ this.onBriefUpload } />)
         case 'brief submitted' :
           return (<Brief edit={true} />)
         case 'first survey due':
-          return (<BriefUpload/>)
+          return (<BriefUpload  round={ round.id } roundAnalyst={ round.inround_id } onComplete={ this.onBriefUpload } />)
           // return (<JuristSurvey onSubmit={showResults} />)
           //return (<JuristSurvey round={ round.id } pre={ true } roundAnalyst={ round.inround_id } />)
         case 'first survey submitted':
@@ -100,21 +115,32 @@ class Round extends PureComponent {
             <div>
               Round { this.idx } for token <Link to={"/token/"+token.id}><span className="text-success">{ token.name }</span></Link> with status <span className="text-danger">{ appConfig.STATUSES[round.status] }</span>
             </div>
-            <div>
-              Start: <Moment className="text-warning" format="YYYY-MM-DD HH:mm" date={ new Date(appConfig.cycleTime(round.cycle,true)) } />
+            <div className="row">
+              <div className="col-md-4">Start: <Moment className="bg-green" format="YYYY-MM-DD HH:mm" date={ new Date(appConfig.cycleTime(round.cycle,true)) } /></div>
+              <div className="col-md-4"> Finish: <Moment className="bg-red" format="YYYY-MM-DD HH:mm" date={ new Date(appConfig.cycleTime(round.cycle+4,true)) } /></div>
+              <div className="col-md-4">Number of analysts: {round.num_analysts}</div>
             </div>
-            <div>
-              Finish: <Moment className="text-warning" format="YYYY-MM-DD HH:mm" date={ new Date(appConfig.cycleTime(round.cycle+4,true)) } />
+            <div className="row">
+              <h2 className="text-center">My status in round => { analyst_status }&nbsp;{ `( ${leadPosition})` }</h2>  
             </div>
-            <div>
-              Number of analysts: {round.num_analysts}
-            </div>
-            <TokenSummary token={token} />
-            <hr/>
-            <div>
-              Analyst status in round: { analyst_status } => { round.inround_id }
-            </div>
-            { getActivity( analyst_status ) }
+            <div>{ getActivity( analyst_status ) }</div>
+            <TokenSummary token={token} format="small" />
+            <Panel>
+              <Panel.Heading>Briefs submitted</Panel.Heading>
+              <Panel.Body>
+                <span>Bull { 
+                  round.briefs[0].timestamp ? 
+                    <Moment format="YYYY/MM/DD" date={round.briefs[0].timestamp*1000} />
+                    : <span> due by <Moment format="YYYY/MM/DD" /></span>
+                }</span>
+                <span className="pull-right">Bear { 
+                  round.briefs[1].timestamp ? 
+                    <Moment format="YYYY/MM/DD" date={round.briefs[1].timestamp*1000} />
+                    : <span> due by <Moment format="YYYY/MM/DD" /></span>
+                }</span>
+              </Panel.Body>
+            </Panel>
+            
           </Panel.Body>
         </Panel>
 

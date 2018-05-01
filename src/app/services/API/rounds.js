@@ -1,6 +1,6 @@
 // @flow weak
-
-import { 
+import { bytes32FromIpfsHash, ipfsHashFromBytes32 } from '../ipfs'
+import {
   getRatingAgency as RatingAgency,
   getAnalystRegistry as AnalystRegistry
 } from '../contracts'
@@ -10,7 +10,7 @@ import { appConfig }        from '../../config'
 import { store } from '../../Root'
 
 export const getRoundInfo = ( round, analyst=0 ) => new Promise( (resolve,reject) => {
-  RatingAgency().then((ratingAgency) => {
+  RatingAgency().then( ratingAgency  => {
     ratingAgency.roundInfo( round ).then( rRound => { 
       var res = {
         id:rRound[0].toNumber(), 
@@ -22,9 +22,11 @@ export const getRoundInfo = ( round, analyst=0 ) => new Promise( (resolve,reject
       }
       console.log('got round',res)
       ratingAgency.roundBriefs( round ).then( rBriefs => {
-        res.briefs = [
-          { timestamp: rBriefs[0].toNumber(), filehash: rBriefs[1] },
-          { timestamp: rBriefs[2].toNumber(), filehash: rBriefs[3] }
+        console.log('got briefs',round, rBriefs)
+       
+        res.briefs = [ // timestamp 0 if no brief submitted
+          { timestamp: rBriefs[0].toNumber(), filehash: ipfsHashFromBytes32( rBriefs[1] ) },
+          { timestamp: rBriefs[2].toNumber(), filehash: ipfsHashFromBytes32( rBriefs[3] ) }
         ]
         resolve( res )
       })
@@ -57,9 +59,19 @@ export const getRoundAnalystInfo = ( round, analyst=0 ) => new Promise( (resolve
 })
 
 // function submitBrief( uint16 _round, uint8 _analyst, address _file )
-export const submitBrief = ( round, filehash, analyst ) => {
+export const submitBrief = ( round, analyst, filehash ) => new Promise( (resolve,reject) => {
+  RatingAgency().then( ratingAgency => {
+    ratingAgency.submitBrief( round, analyst, bytes32FromIpfsHash(filehash) ).then( result => {
+      console.log('submit brief result',result)
+      resolve( 'done' )
+    })
+    .catch( err => { 
+      console.error("Error submitting brief:"  + err ) 
+      reject( err )
+    })
+  })
+})
 
-}
 
 /*    function submitSurvey(uint16 _round,
         uint8 _analyst, // analyst by round index

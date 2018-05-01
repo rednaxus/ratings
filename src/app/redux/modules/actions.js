@@ -32,7 +32,7 @@ export {
 }       from './cycles'
 
 export { 
-  fetchRoundInfo, fetchRoundAnalystInfo 
+  fetchRoundInfo, fetchRoundAnalystInfo, setRoundInfo
 }  from './rounds'
 
 export { 

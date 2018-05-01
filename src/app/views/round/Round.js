@@ -58,18 +58,21 @@ class Round extends PureComponent {
     console.log('component will receive props',this.idx)
 
     //const { actions: { fetchTokenData, fetchTokenRounds } } = this.props
-    const { actions: { fetchRoundInfo, fetchRoundAnalystInfo, fetchTokenRounds } } = this.props
-    fetchRoundInfo( this.idx )
-    fetchRoundAnalystInfo( this.idx )
+    //const { actions: { fetchRoundInfo, fetchRoundAnalystInfo, fetchTokenRounds } } = this.props
+    //fetchRoundInfo( this.idx )
+    //fetchRoundAnalystInfo( this.idx )
     //fetchTokenRounds( this.idx ) 
 
     //fetchTokenData( this.idx )
 
   }
   onBriefUpload( filehash ) {
-    const { actions: { fetchRoundInfo, fetchRoundAnalystInfo, fetchTokenRounds } } = this.props
-    fetchRoundInfo( this.idx )
-    fetchRoundAnalystInfo( this.idx )
+    const { rounds, actions: { setRoundInfo } } = this.props
+    let round = {...rounds[_.findIndex(rounds,['id',this.idx])]}
+    round.briefs[round.inround_id] = { timestamp:Math.round(+new Date() / 1000), filehash:filehash }
+
+    setRoundInfo( round )
+    this.forceUpdate()
   }
 
   render() {
@@ -138,14 +141,20 @@ class Round extends PureComponent {
               <Panel.Body>
                 <span>{ 
                   round.briefs[0].timestamp ? 
-                    <a href={ appConfig.ipfsRepoDownload+round.briefs[0].filehash }>Bull brief--
+                    <a 
+                      href={ appConfig.ipfsRepoDownload+round.briefs[0].filehash }
+                      target="_blank"
+                    >Bull brief--
                       <Moment format="YYYY/MM/DD" date={ round.briefs[0].timestamp*1000 } />
                     </a>
                     : <span>Bull brief due by <Moment format="YYYY/MM/DD" /></span>
                 }</span>
                 <span className="pull-right">{ 
                   round.briefs[1].timestamp ? 
-                    <a href={ appConfig.ipfsRepoDownload+round.briefs[1].filehash }>Bear brief--
+                    <a 
+                      href={ appConfig.ipfsRepoDownload+round.briefs[1].filehash }
+                      target="_blank"
+                    >Bear brief--
                       <Moment format="YYYY/MM/DD" date={ round.briefs[1].timestamp*1000 } />
                     </a>
                     : <span>Bear brief due by <Moment format="YYYY/MM/DD" /></span>

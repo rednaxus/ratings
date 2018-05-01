@@ -18,6 +18,8 @@ const REQUEST_ROUND_INFO   = 'REQUEST_ROUND_INFO'
 const RECEIVED_ROUND_INFO  = 'RECEIVED_ROUND_INFO'
 const ERROR_ROUND_INFO     = 'ERROR_ROUND_INFO'
 
+const SET_ROUND_INFO = 'SET_ROUND_INFO'
+
 const REQUEST_ROUND_ANALYST_INFO   = 'REQUEST_ROUND_ANALYST_INFO'
 const RECEIVED_ROUND_ANALYST_INFO  = 'RECEIVED_ROUND_ANALYST_INFO'
 const ERROR_ROUND_ANALYST_INFO     = 'ERROR_ROUND_ANALYST_INFO'
@@ -46,7 +48,8 @@ const rounds = (state = initialState, action) => {
 
   case REQUEST_ROUND_INFO:
     return { ...state, time: action.time }
-  case RECEIVED_ROUND_INFO: // fix me!!
+  case RECEIVED_ROUND_INFO: 
+  case SET_ROUND_INFO: 
     console.log('round info action is',action)
     s = { data:[], ...state, time: action.time }
     i = _.findIndex(s.data,['id',action.roundInfo.id])
@@ -115,6 +118,11 @@ const shouldFetchRoundsData = (state) => {
 }
 
 */
+
+export const setRoundInfo = ( roundInfo ) => dispatch => {
+  dispatch(  { type: SET_ROUND_INFO, roundInfo, time: moment().format() } )
+}
+
 export const fetchRoundInfo = ( round ) => {
   const request = (time = moment().format()) => {
     return { type: REQUEST_ROUND_INFO, time }

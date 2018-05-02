@@ -23,6 +23,7 @@ class Slider extends Component {
     this.setState({
       volume: precisionRound(value,1)
     })
+    if (this.props.onChange) this.props.onChange(value)
   }
 
   render() {

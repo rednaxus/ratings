@@ -3,6 +3,10 @@ import PropTypes from 'prop-types'
 import { Panel } from 'react-bootstrap'
 import Question from './Question'
 import Moment from 'react-moment'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { clearData, setData, setComplete } from '../../redux/modules/survey'
+import { submitSurvey } from '../../redux/modules/rounds'
 import json from '../../../../survey.json'
 
 let indexer = {}
@@ -33,6 +37,10 @@ class JuristSurvey extends Component {
       page: 1,
     };
   }
+  onValueChange(question,value) {
+    console.log('value change',question,value)
+    //setData()
+  }
   nextPage() {
     this.setState({ page: this.state.page + 1 });
   }
@@ -57,7 +65,9 @@ class JuristSurvey extends Component {
               onSubmit={this.nextPage} 
               previousPage={this.previousPage}
               nextPage={this.nextPage}
+              onValueChange={ (question,value) => this.onValueChange(question,value) }
             />)}
+            <button>Submit Survey</button>
           </Panel.Body>
         </Panel>
 
@@ -88,4 +98,17 @@ JuristSurvey.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };
 
-export default JuristSurvey
+const mapStateToProps = state => ( {
+  data: state.survey.data
+} )
+
+const mapDispatchToProps = dispatch => bindActionCreators( {
+  clearData,
+  setData,
+  setComplete,
+  submitSurvey
+}, dispatch )
+
+export default connect( mapStateToProps, mapDispatchToProps )( JuristSurvey )
+
+//export default JuristSurvey

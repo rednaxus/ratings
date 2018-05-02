@@ -19,7 +19,8 @@ const mapDispatchToProps = (dispatch) => {
         enterRound: actions.enterRound,
         leaveRound: actions.leaveRound,
         fetchRoundInfo: actions.fetchRoundInfo,
-        fetchRoundAnalystInfo: actions.fetchRoundAnalystInfo
+        fetchRoundAnalystInfo: actions.fetchRoundAnalystInfo,
+        setRoundInfo: actions.setRoundInfo
       },
       dispatch)
   }

@@ -160,6 +160,7 @@ const Question = props => {
   let rating = 0 
   const handleOnSliderChange = (value) => {
     console.log('slider change',value)
+    if (props.onValueChange) props.onValueChange(questionNumber,value)
   }
 
   return (
@@ -182,7 +183,7 @@ const Question = props => {
                 max={5}
                 step={0.1}
                 orientation="horizontal"
-                onChange={this.handleOnSliderChange}
+                onChange={handleOnSliderChange}
               />
             </div>
             <div>{/*

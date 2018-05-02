@@ -193,7 +193,7 @@ class Availability extends PureComponent {
                       }
                     </div> 
                   )
-                  return <div className="row">{cols}</div>
+                  return <div className="row" key={rowIdx} >{cols}</div>
                 })
               }
             </Panel.Body>

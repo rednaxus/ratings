@@ -274,6 +274,7 @@ contract RatingAgency {
     function confirmAnalyst( uint16 _cycle, uint32 _analyst) public {
 
     }
+    event AnalystAssigned( uint16 _cycle, uint16 _ref, bool _lead, uint32 _analyst );
     // returns analyst so can know what to do with round
     function assignAnalyst( uint16 _cycle, uint16 _analystRef, bool _lead ) public returns ( uint32 analyst ) {  // move analyst from available to assigned
         Cycle storage cycle = cycles[_cycle];
@@ -284,11 +285,12 @@ contract RatingAgency {
             for ( i = _analystRef; i < cycle.num_leads_available; i++ ) cycle.leads_available[ i ] = cycle.leads_available[ i+1 ];
             analyst = cycle.leads_assigned[ cycle.num_leads_assigned++ ];
         } else {
-            cycle.jurists_assigned[ cycle.num_jurists_assigned++ ] = cycle.jurists_available[ _analystRef ];
+            cycle.jurists_assigned[ cycle.num_jurists_assigned ] = cycle.jurists_available[ _analystRef ];
             cycle.num_jurists_available--;
             for ( i = _analystRef; i < cycle.num_jurists_available; i++ ) cycle.jurists_available[ i ] = cycle.jurists_available[ i+1 ];
             analyst = cycle.jurists_assigned[ cycle.num_jurists_assigned++ ];
         }
+        AnalystAssigned( _cycle, _analystRef, _lead, analyst );
     }
 
     /*
@@ -297,6 +299,7 @@ contract RatingAgency {
 
     // assign available analysts from the cycle into the round
     event RoundPopulated( uint16 _cycle, uint16 _round, uint16 num_analysts, uint16 num_leads );
+    event RoundAnalystAdded( uint16 _cycle, uint16 _round, uint32 _analyst);
     function populateRound( uint16 _cycle, uint16 _round ) public {
         uint16 ref;
         uint32 analyst;
@@ -305,6 +308,7 @@ contract RatingAgency {
             ref = selectAvailableAnalyst( _cycle, i < 2 );  // first two are bull/bear leads
             analyst = assignAnalyst( _cycle, ref, i < 2 );
             round.analysts[ round.num_analysts++ ] = RoundAnalyst( analyst, i < 2 ? SCHEDULED_LEAD: SCHEDULED_JURIST );
+            RoundAnalystAdded( _cycle, _round, round.analysts[ round.num_analysts-1 ].analyst_id );
             registry.scheduleRound( analyst, _round );
         }
         RoundPopulated( _cycle, _round, round.num_analysts, 2 );
@@ -445,6 +449,9 @@ contract RatingAgency {
                 return( i, round.analysts[ i ].stat ); 
         }
         return ( 0, NONE );    // not found, no status
+    }
+    function roundAnalystId( uint16 _round, uint8 _inround_analyst) public view returns (uint32) {
+        return ( rounds[_round].analysts[ _inround_analyst ].analyst_id );        
     }
     event SurveySubmitted( uint16 _round, uint32 _analyst, uint8 _idx, bytes32 _answers, byte _qualitatives, uint8 _recommendation );
     function submitSurvey(

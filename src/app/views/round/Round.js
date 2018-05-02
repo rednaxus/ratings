@@ -91,24 +91,36 @@ class Round extends PureComponent {
     let analyst_status = appConfig.STATUSES[round.analyst_status]
     let leadPosition = round.inround_id == 0 ? 'bull' : (round.inround_id == 1 ? 'bear' : '' )
     console.log('analyst status is',round.analyst_status, analyst_status)
-    analyst_status = 'brief due' // testing
+    //analyst_status = 'brief due' // testing
     const getActivity = (analyst_status) => {
       switch(analyst_status) {
         case 'brief due' :
           return (<BriefUpload round={ round.id } roundAnalyst={ round.inround_id } onComplete={ this.onBriefUpload } />)
         case 'brief submitted' :
-          return (<Brief edit={true} />)
+          return ('') //<Brief edit={true} />)
         case 'first survey due':
-          return (<BriefUpload  round={ round.id } roundAnalyst={ round.inround_id } onComplete={ this.onBriefUpload } />)
-          // return (<JuristSurvey onSubmit={showResults} />)
-          //return (<JuristSurvey round={ round.id } pre={ true } roundAnalyst={ round.inround_id } />)
+          return (
+            <div>
+              <div>Pre survey due by xxx</div>
+              <JuristSurvey  
+                round={ round.id } 
+                pre={ true } 
+                roundAnalyst={ round.inround_id }
+                onSubmit={ showResults }
+              />
+            </div>
+          )
         case 'first survey submitted':
-          return (<Brief />)
+          return ('') //(<Brief />)
         case 'second survey due':
           return(
             <div>
-              <div>Post survey due</div>
-              {/*<JuristSurvey round={ round.id } roundAnalyst={ round.inround_id } pre={ false }/>*/}
+              <div>Post survey due by xxx</div>
+              <JuristSurvey 
+                round={ round.id } 
+                roundAnalyst={ round.inround_id } 
+                pre={ false }
+              />
             </div> )
         case 'second survey submitted':
           return(<div>Round completion at xxx</div>)
@@ -132,7 +144,7 @@ class Round extends PureComponent {
               <div className="col-md-4">Number of analysts: {round.num_analysts}</div>
             </div>
             <div className="row">
-              <h2 className="text-center">My status in round => { analyst_status }&nbsp;{ `( ${leadPosition})` }</h2>  
+              <h2 className="text-center">My status in round => { analyst_status }&nbsp;{ round.inround_id < 2 ? `( ${leadPosition})`: '' }</h2>  
             </div>
             <div>{ getActivity( analyst_status ) }</div>
             <TokenSummary token={token} format="small" />

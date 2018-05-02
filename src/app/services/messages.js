@@ -17,6 +17,7 @@ ToDo:
 5. clean up coding indentations, etc.
 6. clean up {data}
 7. Make sure to use timestamp data for catching everything
+8. linkage
 
 
 
@@ -186,19 +187,80 @@ let testVariable = 0
 /*tells user when a round has finished */
 /*take most recently finshed rounds and display them*/
 
-	/* toDo:  1) timestamps
-	*/
+	/* toDo: Ready for Testing */
 
 	//for Testing
-	user.rounds.finished = [9, 8, 0]
+	user.rounds.finished = [8, 9, 0, 4]
+
+	let getFinishRoundId
+	let finishedRound
+	let finishedCoveredToken
+	let getFinishedTokenName
+	let roundTokenF
+	let finishedCardCycle
+	let finishedCycleId
+	let finishedCycleStart
+	let finishedCycleEnd
+	let finishedTimeBool
 
 
-	let getFinishRoundId = user.rounds.finished[user.rounds.finished.length-1]  /* get round ID */
-	let finishedRound = _.find(rounds, ['id', getFinishRoundId])  /* find round ID in rounds data */
-	let finishedCoveredToken = finishedRound.covered_token				/* get covered Token iD */
-	let getFinishedTokenName = _.find(tokens, ['id', finishedCoveredToken])  /* find covered Token in token Array*/
-	let roundTokenF = getFinishedTokenName.name   /* set string name to variable */
+	for (var i=1; i<16; i++) {
 
+		getFinishRoundId = user.rounds.finished[user.rounds.finished.length-i]  /* get round ID */
+
+		//console.log()
+		let finishedCellLog = [user.rounds.finished.length-i]
+		console.log ("Round Finished Test -- Finished Round Array Member #", i, "(", finishedCellLog, "): ", getFinishRoundId)  //if nothing in array, comes back Undefined
+
+		finishedRound = _.find(rounds, ['id', getFinishRoundId])  /* find round ID in rounds data */
+
+		if (finishedRound) {
+
+		finishedCoveredToken = finishedRound.covered_token				/* get covered Token iD */
+		getFinishedTokenName = _.find(tokens, ['id', finishedCoveredToken])  /* find covered Token in token Array*/
+		roundTokenF = getFinishedTokenName.name   /* set string name to variable */
+
+		//for Testing
+
+/*
+		if (roundTokenF) {
+		finishedRound.timestamp = now+i;
+		console.log (now)
+		console.log ("xxxxxxxxxxxxxxxxxxxxxxxxxxXXXXXXXXXXXxxxxxxxxxxxxxxxxxxxxxx=:>")
+		console.log (finishedRound.timestamp)
+		}
+*/
+
+
+		finishedCardCycle = finishedRound.cycle
+		finishedCycleStart=appConfig.cycleTime(finishedCardCycle)
+		//finishedCycleId = _.find(cycles, ['id', activeRound.cycle])
+		finishedCycleEnd = finishedCycleStart + (appConfig.ACTIVE_TIME)
+
+		if (finishedCycleEnd > now - (5*oneDay)) {
+			finishedTimeBool = true
+		}
+
+		if (roundTokenF && finishedTimeBool) {
+					messages.push({
+						type: 'round_finished',
+						priority: 'info',
+						roundToken: roundTokenF,
+						roundValue: finishedRound.value
+					})
+				}
+			}
+	}
+
+
+	//OLD CODE, was used for first build.  DO NOT remove until system has been tested AND verified stable with LIVE ROUNDS
+
+	//let getFinishRoundId = user.rounds.finished[user.rounds.finished.length-1]  /* get round ID */
+	//let finishedRound = _.find(rounds, ['id', getFinishRoundId])  /* find round ID in rounds data */
+	//let finishedCoveredToken = finishedRound.covered_token				/* get covered Token iD */
+	//let getFinishedTokenName = _.find(tokens, ['id', finishedCoveredToken])  /* find covered Token in token Array*/
+	//let roundTokenF = getFinishedTokenName.name   /* set string name to variable */
+/*
 	if (roundTokenF) {
 				messages.push({
 					type: 'round_finished',
@@ -208,6 +270,10 @@ let testVariable = 0
 				})
 			}
 
+*/
+
+
+
 
 
 
@@ -215,31 +281,52 @@ let testVariable = 0
 /* lets user know when they are scheduled for a round */
 /* if user has any rounds in "rounds.scheduled", display */
 
-	/* toDo: 1) timestamps
+	/* toDo: ready for testing
 	*/
 
 	//for Testing
 	rounds[0].timestamp = now
-	user.rounds.scheduled = [1, 6, 0]
+	user.rounds.scheduled = [3, 5, 7, 2, 6, 0, 3, 8, 2, 0, 6, 3]
 
 
-	let getScheduledRoundId = user.rounds.scheduled[user.rounds.scheduled.length-1]  /* get round ID */
-	let scheduledRound = _.find(rounds, ['id', getScheduledRoundId])  /*find round ID in rounds data */
-	let scheduledCoveredToken = scheduledRound.covered_token					/*get covered token Id */
-	let getScheduledTokenName = _.find(tokens, ['id', scheduledCoveredToken])  /*find covered Token */
-	let roundTokenS = getScheduledTokenName.name											/* set to variable */
+	let getScheduledRoundId
+	let scheduledRound
+	let scheduledCoveredToken
+	let getScheduledTokenName
+	let roundTokenS
 
 
-	if (roundTokenS) {
+	//OLD CODE, was used for first build.  DO NOT remove until system has been tested AND verified stable with LIVE ROUNDS
 
-			messages.push({
-			type: 'round_scheduled',
-			priority: 'action-small',
-			due: now,
-			roundToken: roundTokenS,
-			roundValue: scheduledRound.value
-		})
+for (var i=1; i<16; i++) {
+	getScheduledRoundId = user.rounds.scheduled[user.rounds.scheduled.length-i]  /* get round ID */
+
+	//console.log()
+	let scheduledCellLog = [user.rounds.scheduled.length-i]
+	console.log ("Round Scheduled Test -- Scheduled Round Array Member #", i, "(", scheduledCellLog, "): ", getScheduledRoundId)  //if nothing in array, comes back Undefined
+
+
+	scheduledRound = _.find(rounds, ['id', getScheduledRoundId])  /*find round ID in rounds data */
+
+	if (scheduledRound) {
+		scheduledCoveredToken = scheduledRound.covered_token					/*get covered token Id */
+
+		getScheduledTokenName = _.find(tokens, ['id', scheduledCoveredToken])  /*find covered Token */
+		roundTokenS = getScheduledTokenName.name											/* set to variable */
+
+
+		if (roundTokenS) {
+
+				messages.push({
+				type: 'round_scheduled',
+				priority: 'action-small',
+				due: now,
+				roundToken: roundTokenS,
+				roundValue: scheduledRound.value
+			})
+		}
 	}
+}
 
 
 
@@ -248,7 +335,7 @@ let testVariable = 0
 /* if token timestamp is within the last week, display */
 
 
-	/* toDo: 1. make sure all new tokens added will get hit
+	/* toDo: Ready for Testing
 	*/
 
 
@@ -283,22 +370,108 @@ let testVariable = 0
 		transfersCount: 201290
 	}
 
+	tokens[2] =
+	{
+		address: "0xb5a5f22694352c15b00323844ad545abb2b11028",
+		countOps: 201290,
+		decimals: 18,
+		description: "Neo is the new smart economy.",
+		holdersCount: 44826,
+		id: 5,
+		issuancesCount: 0,
+		lastUpdated: 1524839258,
+		name: "Tron",
+		owner: "0xe16fd9b95758fe8f3a478ef9b750a64513bf2e80",
+
+		price: {
+		availableSupply: "387231348.0",
+		currency: "USD",
+		diff: 0.36,
+		diff7d: 22.81,
+		diff30d: 93.507901216658,
+		marketCapUsd: "1755896677.0",
+		rate: "4.53449",
+		ts: "1525090459",
+		volume24h: "94487400.0"
+	},
+		rounds: {},
+		symbol: "TRX",
+		totalSupply: "400228740000000000000000000",
+		transfersCount: 201290
+	}
+
+	tokens[3] =
+	{
+		address: "0xb5a5f22694352c15b00323844ad545abb2b11028",
+		countOps: 201290,
+		decimals: 18,
+		description: "Neo is the new smart economy.",
+		holdersCount: 44826,
+		id: 5,
+		issuancesCount: 0,
+		lastUpdated: 1524839258,
+		name: "Monero",
+		owner: "0xe16fd9b95758fe8f3a478ef9b750a64513bf2e80",
+
+		price: {
+		availableSupply: "387231348.0",
+		currency: "USD",
+		diff: 0.36,
+		diff7d: 22.81,
+		diff30d: 93.507901216658,
+		marketCapUsd: "1755896677.0",
+		rate: "4.53449",
+		ts: "1525090459",
+		volume24h: "94487400.0"
+	},
+		rounds: {},
+		symbol: "XMR",
+		totalSupply: "400228740000000000000000000",
+		transfersCount: 201290
+	}
+
 
 
 //for testing, will be removed
-	tokens[1].timestamp = (now - oneDay)
+	tokens[1].timestamp = (now - 8*oneDay)
+	tokens[2].timestamp = (now - oneDay)
+	tokens[3].timestamp = (now - 1)
 
 
 	let lastTokenAdded = tokens[tokens.length-1]  //captures last token added for now
- 	let lastTokenName = lastTokenAdded.name       //pulls the name
+	let lastTokenAddedArray = tokens.length-1			//sets array cell number
+ 	let lastTokenName = lastTokenAdded.name 			//pulls the name
+	let newTokenCounter = 0												//counts times through array
+
+
+
+
+	for (var i=0; i<1; i++) {
+
+	lastTokenAdded = tokens[lastTokenAddedArray-newTokenCounter]  //captures last token added for now
+
+	lastTokenName = lastTokenAdded.name       //pulls the name
 
 	if (now < lastTokenAdded.timestamp+(7*oneDay)) {
+
+		//console.log ()
+		console.log ('New Tokens Added: ', lastTokenName, "; Time Added: ", lastTokenAdded.timestamp, "; Current Time: ", now)
+
+			i--
 
 			messages.push({
 				type:'tokens_added',
 				tokens:lastTokenName
 			})
 		}
+
+		newTokenCounter++
+		//lastTokenAddedArray = lastTokenAdded
+
+	}
+
+
+
 
 
 /***** Rounds in progress *****/
@@ -327,7 +500,7 @@ let testVariable = 0
 			start: ("2018-03-27T14:06-0500"),
 			analyst:'lead',
 			roundToken: roundTokenA,
-			roundValue: scheduledRound.value
+			roundValue: 10 //scheduledRound.value
 		})
 	}
 
@@ -578,16 +751,18 @@ if (testVariable == 1) {
 	}
 
 //for testing
-	user.rounds.scheduled = [1, 6, 0]
+
+/*commented out to test scheduled round card */
+	//user.rounds.scheduled = [1, 6, 0]
 
 //get Round Info
-	let getConfirmRoundId = user.rounds.scheduled[user.rounds.scheduled.length-1]  // round ID
-	let confirmRound = _.find(rounds, ['id', getConfirmRoundId])  // find round ID in rounds data
-	let confirmCoveredToken = confirmRound.covered_token					//covered token name
-	let getConfirmTokenName = _.find(tokens, ['id', confirmCoveredToken])  // find covered Token
-	let roundTokenC = getConfirmTokenName.name										//name string set to var
+	//let getConfirmRoundId = user.rounds.scheduled[user.rounds.scheduled.length-1]  // round ID
+	//let confirmRound = _.find(rounds, ['id', getConfirmRoundId])  // find round ID in rounds data
+	//let confirmCoveredToken = confirmRound.covered_token					//covered token name
+	//let getConfirmTokenName = _.find(tokens, ['id', confirmCoveredToken])  // find covered Token
+	//let roundTokenC = getConfirmTokenName.name										//name string set to var
 
-
+/*
 	if (twoLeads && confirmRound.num_analysts >= 17 && isLeadConfirm) {
 
 		messages.push({
@@ -597,7 +772,7 @@ if (testVariable == 1) {
 			token:roundTokenC
 		})
 	}
-
+*/
 
 /*****Round Starting*****/
 /* reminds user that a round is starting */
@@ -614,7 +789,7 @@ if (testVariable == 1) {
 	let startReminder = (roundBeginTimeStart-(3*oneDay))  // how far back to remind user?  current: 3 days
 	let startReminderEnd = (roundBeginTimeStart)  //last time to remind user?  current: round Start
 
-
+/*  commented out for testing
 	//get Round Info
 	let getStartRoundId = user.rounds.scheduled[user.rounds.scheduled.length-1]  // round ID
 	let startRound = _.find(rounds, ['id', getStartRoundId])  // find round ID in rounds data
@@ -634,7 +809,7 @@ if (testVariable == 1) {
 				token:roundTokenSt
 			})
 	}
-
+*/
 
 /***** Briefs Due *****/
 /*reminds when briefs are due */
@@ -758,6 +933,8 @@ if (testVariable == 1) {
 			isJuristConfirm = false;
 		}
 
+
+/*comment out for testing
 		//for testing
 	user.rounds.scheduled = [1, 6, 0]
 
@@ -779,6 +956,9 @@ if (testVariable == 1) {
 		})
 	}
 
+
+
+*/
 
 	return messages
 }

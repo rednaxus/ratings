@@ -6,18 +6,20 @@ toAdd:
 1. store.user.info.newLevel — bool noting whether a new level has been achieved
 2. store.user.info.level - array showing level progression
 3. store.user.info.new_referrals_available - int showing number of referrals user has available (or maybe array?)
-4. rounds.data[] -> timestamp
+4. rounds.data[] -> timestamp (when round will start or did start)
+5. confirmed rounds
 
 
 ToDo:
 1. fix New Token Added timestamp
 2. add new tokens -> timestamp PLUS array elements
-3. add time restrictions
+3. -------------
 4. make sure Analyst Messages makes sense and uses all data
 5. clean up coding indentations, etc.
 6. clean up {data}
-7. Make sure to use timestamp data for catching everything
+7. condense code (reuse vars, etc)
 8. linkage
+9. let ==> var
 
 
 
@@ -31,12 +33,9 @@ toAskAlan: Minor Bugs and Questions
 
 
 /* TIMES USED
-
 1 hour: 3600 seconds
 1 day: 86400 seconds
-
 */
-
 
 
 import { appConfig }  from '../config'
@@ -64,18 +63,21 @@ export const generateMessages = ( { user, cycles, rounds, tokens, timestamp }) =
   let activeRounds = []
 
 
-
 	let oneHour = 3600 /*seconds*/
 	let oneDay = 86400 /*seconds*/
-
 
 
 /********for testing -- 'if' statement to hold and make NOT appear ********/
 let testVariable = 0
 
+//Rounds
+user.rounds.scheduled = [3, 0, 5, 0, 2]
+user.rounds.active = [3, 4, 0, 6]
+user.rounds.finished = [8, 9, 0, 7]
+
+
 
 /********** BEGIN MESSAGES **********/
-
 
 /***** New Round Scheduling *****/
 	if (comingSignupCycles.length) {
@@ -85,7 +87,6 @@ let testVariable = 0
 			signupCycles:comingSignupCycles.length
 		})
 	}
-
 
 
 /***** Round Activated *****/
@@ -100,13 +101,35 @@ let testVariable = 0
 
 
 /***** Payment *****/
-	//toDo: add rewardType
 
-	messages.push({
-		type: 'payment',
-		priority: 'info',
-		balance: user.token_balance
-	})
+	//toDo: ready for testing
+
+	for (var i=1; i<2; i++) {
+
+		if (user.reward_events) {
+
+	  	let lastRewardEventP = user.reward_events //pulls reward_events array
+
+			//for testing
+			let rewardCellP = lastRewardEventP[lastRewardEventP.length-i]  //runs through reward array
+
+			if (rewardCellP.timestamp > now-(7*oneDay)) {
+
+				i--
+
+				if (rewardCellP.reward_type>=2 && rewardCellP.reward_type <=7) {
+
+					console.log ("New Payment!")
+
+					messages.push({
+						type: 'payment',
+						priority: 'info',
+						tokens: rewardCellP.value
+					})
+				}
+			}
+		}
+	}
 
 
 
@@ -114,33 +137,45 @@ let testVariable = 0
 /* Alerts user to any updates in reputation score, hopeully up */
 /*if Last Reward was a reputation score and it's been less than a week, display card*/
 
-	/* toDo: 1) build time restrictions
-					2) fix rewardType in Contract
+	/* toDo: ready for testing
 	*/
 
-  let lastRewardEvent = user.reward_events //pulls reward_events array
 
-	//for testing
-	let rewardCell = lastRewardEvent[lastRewardEvent.length-1]  //for now, last reward event
+	for (var i=1; i<2; i++) {
 
-/*change rewardCell.reward_type when done testing */
+		if (user.reward_events) {
 
-	if (rewardCell.reward_type==10) {
+  		let lastRewardEventR = user.reward_events //pulls reward_events array
 
-				messages.push({
-				type: 'reputation_score',
-				priority: 'info',
-				reputation:user.reputation,
-				new_points: rewardCell.value
-				})
+			//for testing
+			let rewardCellR = lastRewardEventR[lastRewardEventR.length-i]  //runs through reward array
+
+			if (rewardCellR.timestamp > now-(7*oneDay)) {
+
+				i--
+
+				/*change rewardCell.reward_type when done testing */
+				if (rewardCellR.reward_type >= 8 || rewardCellR.reward_type <= 13) {
+
+					console.log ("New Rep Score!")
+
+					messages.push({
+						type: 'reputation_score',
+						priority: 'info',
+						reputation:user.reputation,
+						new_points: rewardCellR.value
+					})
+				}
 			}
+		}
+	}
 
 
 /***** New Level *****/
 /* alerts user when they've reached a new level */
 /* if user got a new level, display */
 
-	/* toDo:  1) determine if newLevel is an array or reward type
+	/* toDo:  ready for testing
 	*/
 
 	//for Testing
@@ -152,35 +187,69 @@ let testVariable = 0
 	let currentUserLevel = user.level[user.level.length-1]
 
 
-	if (user.newLevel) {
+	for (var i=1; i<2; i++) {
 
-			messages.push({
-				type: 'new_level',
-				priority: 'info',
-				previous_level:lastUserLevel,
-				new_level: currentUserLevel
-			})
+		if (user.reward_events) {
+
+	  	let lastRewardEventL = user.reward_events //pulls reward_events array
+
+				//for testing
+			let rewardCellL = lastRewardEventL[lastRewardEventL.length-i]  //runs through reward array
+
+			if (rewardCellL.timestamp > now-(30*oneDay)) {
+
+				i--
+
+				if (rewardCellL.reward_type == 20 ) {
+
+					messages.push({
+						type: 'new_level',
+						priority: 'info',
+						previous_level:lastUserLevel,
+						new_level: currentUserLevel
+					})
+				}
+			}
 		}
+	}
 
 
 /***** Additional Referrals *****/
 /* user gets additonal referrals if they get 100 reputation points */
 /* check and see if user has num_referrals, and if new referrals were recently issued */
 
-	/* toDo:  timestamp restrictions
+	/* toDo:  timestamp restrictions?  maybe.  Otherwise, ready for testing
 	*/
 
-		user.num_referrals=2
+		//for testing
+	user.num_referrals=2
 
-		if (user.num_referrals) {
 
-				messages.push({
-					type: 'additional_referrals',
-					priority: 'info',
-					newRefsAvail: user.num_referrals,
-					referrals: user.referrals.length
-				})
+	for (var i=1; i<2; i++) {
+
+		if (user.reward_events) {
+
+			let lastRewardEventRef = user.reward_events //pulls reward_events array
+
+				//for testing
+			let rewardCellRef = lastRewardEventRef[lastRewardEventRef.length-i]  //runs through reward array
+
+			if (rewardCellRef.timestamp > now-(30*oneDay)) {
+
+				i--
+
+				if (rewardCellL.reward_type == 1) {
+
+					messages.push({
+						type: 'additional_referrals',
+						priority: 'info',
+						newRefsAvail: user.num_referrals,
+						referrals: user.referrals.length
+					})
+				}
 			}
+		}
+	}
 
 
 /***** Round Finished *****/
@@ -189,20 +258,16 @@ let testVariable = 0
 
 	/* toDo: Ready for Testing */
 
-	//for Testing
-	user.rounds.finished = [8, 9, 0, 4]
-
-	let getFinishRoundId
-	let finishedRound
-	let finishedCoveredToken
-	let getFinishedTokenName
-	let roundTokenF
-	let finishedCardCycle
-	let finishedCycleId
-	let finishedCycleStart
-	let finishedCycleEnd
-	let finishedTimeBool
-
+	var getFinishRoundId
+	var finishedRound
+	var finishedCoveredToken
+	var getFinishedTokenName
+	var roundTokenF
+	var finishedCardCycle
+	var finishedCycleId
+	var finishedCycleStart
+	var finishedCycleEnd
+	var finishedTimeBool
 
 	for (var i=1; i<16; i++) {
 
@@ -216,42 +281,39 @@ let testVariable = 0
 
 		if (finishedRound) {
 
-		finishedCoveredToken = finishedRound.covered_token				/* get covered Token iD */
-		getFinishedTokenName = _.find(tokens, ['id', finishedCoveredToken])  /* find covered Token in token Array*/
-		roundTokenF = getFinishedTokenName.name   /* set string name to variable */
+			finishedCoveredToken = finishedRound.covered_token				/* get covered Token iD */
+			getFinishedTokenName = _.find(tokens, ['id', finishedCoveredToken])  /* find covered Token in token Array*/
+			roundTokenF = getFinishedTokenName.name   /* set string name to variable */
 
 		//for Testing
-
-/*
+		/*
 		if (roundTokenF) {
 		finishedRound.timestamp = now+i;
 		console.log (now)
 		console.log ("xxxxxxxxxxxxxxxxxxxxxxxxxxXXXXXXXXXXXxxxxxxxxxxxxxxxxxxxxxx=:>")
 		console.log (finishedRound.timestamp)
 		}
-*/
+		*/
 
+			finishedCardCycle = finishedRound.cycle
+			finishedCycleStart=appConfig.cycleTime(finishedCardCycle)
+			//finishedCycleId = _.find(cycles, ['id', activeRound.cycle])
+			finishedCycleEnd = finishedCycleStart + (appConfig.ACTIVE_TIME)
 
-		finishedCardCycle = finishedRound.cycle
-		finishedCycleStart=appConfig.cycleTime(finishedCardCycle)
-		//finishedCycleId = _.find(cycles, ['id', activeRound.cycle])
-		finishedCycleEnd = finishedCycleStart + (appConfig.ACTIVE_TIME)
-
-		if (finishedCycleEnd > now - (5*oneDay)) {
-			finishedTimeBool = true
-		}
-
-		if (roundTokenF && finishedTimeBool) {
-					messages.push({
-						type: 'round_finished',
-						priority: 'info',
-						roundToken: roundTokenF,
-						roundValue: finishedRound.value
-					})
-				}
+			if (finishedCycleEnd > now - (5*oneDay)) {
+				finishedTimeBool = true
 			}
-	}
 
+			if (roundTokenF && finishedTimeBool) {
+				messages.push({
+					type: 'round_finished',
+					priority: 'info',
+					roundToken: roundTokenF,
+					roundValue: finishedRound.value
+				})
+			}
+		}
+	}
 
 	//OLD CODE, was used for first build.  DO NOT remove until system has been tested AND verified stable with LIVE ROUNDS
 
@@ -260,21 +322,17 @@ let testVariable = 0
 	//let finishedCoveredToken = finishedRound.covered_token				/* get covered Token iD */
 	//let getFinishedTokenName = _.find(tokens, ['id', finishedCoveredToken])  /* find covered Token in token Array*/
 	//let roundTokenF = getFinishedTokenName.name   /* set string name to variable */
-/*
-	if (roundTokenF) {
-				messages.push({
-					type: 'round_finished',
-					priority: 'info',
-					roundToken: roundTokenF,
-					roundValue: finishedRound.value
-				})
-			}
+	/*
+		if (roundTokenF) {
+					messages.push({
+						type: 'round_finished',
+						priority: 'info',
+						roundToken: roundTokenF,
+						roundValue: finishedRound.value
+					})
+				}
 
-*/
-
-
-
-
+	*/
 
 
 /***** Scheduled in round *****/
@@ -286,60 +344,52 @@ let testVariable = 0
 
 	//for Testing
 	rounds[0].timestamp = now
-	user.rounds.scheduled = [3, 5, 7, 2, 6, 0, 3, 8, 2, 0, 6, 3]
+
+	var getScheduledRoundId
+	var scheduledRound
+	var scheduledCoveredToken
+	var getScheduledTokenName
+	var roundTokenS
 
 
-	let getScheduledRoundId
-	let scheduledRound
-	let scheduledCoveredToken
-	let getScheduledTokenName
-	let roundTokenS
+	for (var i=1; i<16; i++) {
+		getScheduledRoundId = user.rounds.scheduled[user.rounds.scheduled.length-i]  /* get round ID */
 
+		//console.log()
+		let scheduledCellLog = [user.rounds.scheduled.length-i]
+		console.log ("Round Scheduled Test -- Scheduled Round Array Member #", i, "(", scheduledCellLog, "): ", getScheduledRoundId)  //if nothing in array, comes back Undefined
 
-	//OLD CODE, was used for first build.  DO NOT remove until system has been tested AND verified stable with LIVE ROUNDS
+		scheduledRound = _.find(rounds, ['id', getScheduledRoundId])  /*find round ID in rounds data */
 
-for (var i=1; i<16; i++) {
-	getScheduledRoundId = user.rounds.scheduled[user.rounds.scheduled.length-i]  /* get round ID */
+		if (scheduledRound) {
 
-	//console.log()
-	let scheduledCellLog = [user.rounds.scheduled.length-i]
-	console.log ("Round Scheduled Test -- Scheduled Round Array Member #", i, "(", scheduledCellLog, "): ", getScheduledRoundId)  //if nothing in array, comes back Undefined
+			scheduledCoveredToken = scheduledRound.covered_token					/*get covered token Id */
 
+			getScheduledTokenName = _.find(tokens, ['id', scheduledCoveredToken])  /*find covered Token */
+			roundTokenS = getScheduledTokenName.name											/* set to variable */
 
-	scheduledRound = _.find(rounds, ['id', getScheduledRoundId])  /*find round ID in rounds data */
-
-	if (scheduledRound) {
-		scheduledCoveredToken = scheduledRound.covered_token					/*get covered token Id */
-
-		getScheduledTokenName = _.find(tokens, ['id', scheduledCoveredToken])  /*find covered Token */
-		roundTokenS = getScheduledTokenName.name											/* set to variable */
-
-
-		if (roundTokenS) {
+			if (roundTokenS) {
 
 				messages.push({
-				type: 'round_scheduled',
-				priority: 'action-small',
-				due: now,
-				roundToken: roundTokenS,
-				roundValue: scheduledRound.value
-			})
+					type: 'round_scheduled',
+					priority: 'action-small',
+					due: now,
+					roundToken: roundTokenS,
+					roundValue: scheduledRound.value
+				})
+			}
 		}
 	}
-}
 
 
-
-/* Tokens added */
+/* New Tokens added */
 /* alerts user to new tokens being added to the system within the last week*/
 /* if token timestamp is within the last week, display */
-
 
 	/* toDo: Ready for Testing
 	*/
 
-
-//for testing. will be removed
+	//for testing. will be removed
 	tokens[1] =
 	{
 		address: "0xb5a5f22694352c15b00323844ad545abb2b11028",
@@ -347,7 +397,7 @@ for (var i=1; i<16; i++) {
 		decimals: 18,
 		description: "Neo is the new smart economy.",
 		holdersCount: 44826,
-		id: 5,
+		id: 1,
 		issuancesCount: 0,
 		lastUpdated: 1524839258,
 		name: "Neo",
@@ -377,7 +427,7 @@ for (var i=1; i<16; i++) {
 		decimals: 18,
 		description: "Neo is the new smart economy.",
 		holdersCount: 44826,
-		id: 5,
+		id: 3,
 		issuancesCount: 0,
 		lastUpdated: 1524839258,
 		name: "Tron",
@@ -431,31 +481,27 @@ for (var i=1; i<16; i++) {
 	}
 
 
-
-//for testing, will be removed
-	tokens[1].timestamp = (now - 8*oneDay)
-	tokens[2].timestamp = (now - oneDay)
+	//for testing, will be removed
+	tokens[1].timestamp = (now - 9*oneDay)
+	tokens[2].timestamp = (now - 8*oneDay)
 	tokens[3].timestamp = (now - 1)
 
-
-	let lastTokenAdded = tokens[tokens.length-1]  //captures last token added for now
-	let lastTokenAddedArray = tokens.length-1			//sets array cell number
- 	let lastTokenName = lastTokenAdded.name 			//pulls the name
-	let newTokenCounter = 0												//counts times through array
-
-
+	var lastTokenAdded = tokens[tokens.length-1]  //captures last token added for now
+	var lastTokenAddedArray = tokens.length-1			//sets array cell number
+ 	var lastTokenName = lastTokenAdded.name 			//pulls the name
+	var newTokenCounter = 0												//counts times through array
 
 
 	for (var i=0; i<1; i++) {
 
-	lastTokenAdded = tokens[lastTokenAddedArray-newTokenCounter]  //captures last token added for now
+		lastTokenAdded = tokens[lastTokenAddedArray-newTokenCounter]  //captures last token added for now
 
-	lastTokenName = lastTokenAdded.name       //pulls the name
+		lastTokenName = lastTokenAdded.name       //pulls the name
 
-	if (now < lastTokenAdded.timestamp+(7*oneDay)) {
+		if (now < lastTokenAdded.timestamp+(7*oneDay)) {
 
-		//console.log ()
-		console.log ('New Tokens Added: ', lastTokenName, "; Time Added: ", lastTokenAdded.timestamp, "; Current Time: ", now)
+			//console.log ()
+			console.log ('New Tokens Added: ', lastTokenName, "; Time Added: ", lastTokenAdded.timestamp, "; Current Time: ", now)
 
 			i--
 
@@ -471,37 +517,48 @@ for (var i=1; i<16; i++) {
 	}
 
 
-
-
-
 /***** Rounds in progress *****/
 /* reminds user about rounds that they are currently participating in */
 /* if round.active, remind user */
 
-	/* toDo: 1) capture all rounds
+	/* toDo: ready for testing
 	*/
 
-	//for testing
-	user.rounds.active = [3, 4, 0]
+	var getActiveRoundId
+	var activeRound
+	var activeCoveredToken
+	var getActiveTokenName
+	var roundTokenA
 
+	for (var i=1; i<16; i++) {
+		getActiveRoundId = user.rounds.active[user.rounds.active.length-i]  /* get round ID */
 
-	let getActiveRoundId = user.rounds.active[user.rounds.active.length-1]  /* get round ID */
-	let activeRound = _.find(rounds, ['id', getActiveRoundId])  /*find round ID in rounds data */
-	let activeCoveredToken = activeRound.covered_token					/* get covered Token */
-	let getActiveTokenName = _.find(tokens, ['id', activeCoveredToken])  /*find covered Token */
-	let roundTokenA = getActiveTokenName.name										/* set to string variable */
+		//console.log()
+		let activeCellLog = [user.rounds.active.length-i]
+		console.log ("Round Active Test -- Active Round Array Member #", i, "(", activeCellLog, "): ", getActiveRoundId)  //if nothing in array, comes back Undefined
 
+		activeRound = _.find(rounds, ['id', getActiveRoundId])  /*find round ID in rounds data */
 
-	if (roundTokenA) {
+		if (activeRound) {
 
-		messages.push({
-			type: 'rounds_in_progress',
-			priority: 'info',
-			start: ("2018-03-27T14:06-0500"),
-			analyst:'lead',
-			roundToken: roundTokenA,
-			roundValue: 10 //scheduledRound.value
-		})
+			activeCoveredToken = activeRound.covered_token					/* get covered Token */
+
+			getActiveTokenName = _.find(tokens, ['id', activeCoveredToken])  /*find covered Token */
+
+			roundTokenA = getActiveTokenName.name										/* set to string variable */
+
+			if (roundTokenA) {
+
+				messages.push({
+					type: 'rounds_in_progress',
+					priority: 'info',
+					start: ("2018-03-27T14:06-0500"),
+					analyst:'lead',
+					roundToken: roundTokenA,
+					roundValue: 10 //scheduledRound.value
+				})
+			}
+		}
 	}
 
 
@@ -512,15 +569,14 @@ for (var i=1; i<16; i++) {
 	/* toDo: 1) figure out how to do this
 	*/
 
-
-if (testVariable == 1) {
-			messages.push({
-				type: 'sponsored_analyst_joins',
-				priority: 'info',
-				analyst:22,
-				reputation_points:3
-			})
-		}
+	if (testVariable == 1) {
+		messages.push({
+			type: 'sponsored_analyst_joins',
+			priority: 'info',
+			analyst:22,
+			reputation_points:3
+		})
+	}
 
 
 	/***** New ratings in *****/
@@ -556,16 +612,16 @@ if (testVariable == 1) {
 /* Reminds Jurists that a round is starting*/
 /* if JURIST, and if they are in an upcoming round, display */
 
-	/* toDo: timestamps
+	/* toDo: ready for testing
 	*/
 
-
 	//testData
+	/*
 	rounds[1] = {
 		analyst: 1,
 		analyst_status: 9,
-		briefs: {},
-		covered_token: 4,
+		briefs: [],
+		covered_token: 2,
 		cycle: 1,
 		id: 1,
 		inround_id: 0,
@@ -574,32 +630,64 @@ if (testVariable == 1) {
 		timestamp: 1514764901,
 		value: 10
 	}
+	*/
 
+	//for testing only
+	//rounds[1].timestamp = now-1
 
+	var getStartingRoundId
+	var startingRound
+	var startingCoveredToken
+	var getStartingTokenName
+	var roundTokenStart
 	let displayRSjurist = false;
 	let displayRStime = false;
 
-	//let rsTimestamp = scheduledRound.timestamp
-	let rsTimestamp = rounds[1].timestamp
 
-	//test to see if jurist or lead
-	if (!(appConfig.isRoundLead(rounds.in_round_id) == 0 || appConfig.isRoundLead(rounds.in_round_id) == 1)) {
-			displayRSjurist = true;
-	}
+	for (var i=1; i<16; i++) {
 
-	//checks to see if round is upcoming
-	if (now < rsTimestamp) {
-		displayRStime = true;
-	}
+		getStartingRoundId = user.rounds.scheduled[user.rounds.scheduled.length-i]  /* get round ID of scheduled rounds*/
 
-	if (displayRSjurist && displayRStime) {
+		//console.log()
+		let startingCellLog = [user.rounds.scheduled.length-i]
+		console.log ("Round Starting Test -- Starting Round Array Member #", i, "(", startingCellLog, "): ", getStartingRoundId)  //if nothing in array, comes back Undefined
 
-		messages.push({
-			type: 'jurist_round_starting',
-			priority: 'info',
-			token: roundTokenS,
-			startTime: now
-		})
+		startingRound = _.find(rounds, ['id', getStartingRoundId])  /*find round ID in rounds data */
+
+		if (startingRound) {
+
+			startingCoveredToken = startingRound.covered_token					/*get covered token Id */
+
+			getStartingTokenName = _.find(tokens, ['id', startingCoveredToken])  /*find covered Token */
+
+			roundTokenStart = getStartingTokenName.name											/* set to variable */
+
+			//let rsTimestamp = scheduledRound.timestamp
+			let rsTimestamp = startingRound.timestamp
+
+			//test to see if jurist or lead:  to test with just leads: remove !
+			if (!(appConfig.isRoundLead(startingRound.in_round_id) == 0 || appConfig.isRoundLead(startingRound.in_round_id) == 1)) {
+				displayRSjurist = true;
+			}
+
+			//for Testing
+			//rsTimestamp = now+1
+
+			//checks to see if round is upcoming
+			if (now < rsTimestamp) {
+				displayRStime = true;
+			}
+
+			if (displayRSjurist && displayRStime) {
+
+				messages.push({
+					type: 'jurist_round_starting',
+					priority: 'info',
+					token: roundTokenS,
+					startTime: now
+				})
+			}
+		}
 	}
 
 
@@ -607,35 +695,61 @@ if (testVariable == 1) {
 /* alerts user when both briefs are in (jury AND lead) */
 /* checks active rounds  -> checks to see if two briefs have been submitted */
 
-	/* toDo: 1) timestamps
+	/* toDo: ready for testing
 	*/
 
-	let briefCheck = activeRound.briefs.length
+	var getBRRoundId
+	var brRound
+	var brCoveredToken
+	var getBRTokenName
+	var roundTokenBR
+	var briefCheck
 
-	if (briefCheck == 2) {
-		messages.push({
-			type: 'brief_posted',
-			priority: 'info',
-			due: ("2018-03-28T19:06-0500"),
-			token: roundTokenA
-			})
+	for (var i=1; i<16; i++) {
+		getBRRoundId = user.rounds.active[user.rounds.active.length-i]  /* get round ID */
+
+		//console.log()
+		let brCellLog = [user.rounds.active.length-i]
+		console.log ("Round Brief Due Test -- Active Round Array Member #", i, "(", brCellLog, "): ", getBRRoundId)  //if nothing in array, comes back Undefined
+
+		brRound = _.find(rounds, ['id', getBRRoundId])  /*find round ID in rounds data */
+
+		if (brRound) {
+
+			brCoveredToken = brRound.covered_token					/* get covered Token */
+
+			getBRTokenName = _.find(tokens, ['id', brCoveredToken])  /*find covered Token */
+
+			roundTokenBR = getBRTokenName.name										/* set to string variable */
+
+			briefCheck =  brRound.briefs.length
+
+			if (briefCheck == 2) {
+				messages.push({
+					type: 'brief_posted',
+					priority: 'info',
+					due: ("2018-03-28T19:06-0500"),
+					token: roundTokenBR
+				})
+			}
 		}
+	}
 
 
 /***** Pre-Survey Due *****/
 /*reminds when pre-survey is due */
 /* if JURY, and if 4-6 days after active round start, display */
 
-	/*toDo:   1. fix timestamp (once timestamps are avaiable)
-	2. make sure it captures all rounds a user is a part of
-	3. change 'DUE'
+	/*toDo:   ready for testing
 	*/
 
 	/*determine if analyst is jury or lead */
 	let preJurist = false;
 	//why does this need to be declared here?
 
+	//REMOVE ONCE TESTED
 	//to test with just leads, remove !
+	/*
 	if (!(appConfig.isRoundLead(rounds.in_round_id) == 0 || appConfig.isRoundLead(rounds.in_round_id) == 1)) {
 		preJurist = true;
 	}
@@ -643,33 +757,61 @@ if (testVariable == 1) {
 	else {
 		preJurist = false;
 	}
+	*/
 
-
-	/*test data (timestamp) */
-		rounds[0].timestamp = (now-(5*oneDay))
+	/*test only data (timestamp) */
+	rounds[0].timestamp = (now-(5*oneDay))
 
 	/*variables to see if brief reminder needs to be shown*/
-	let roundBeginTimePre = rounds[rounds.length-2].timestamp
-	let preDueReminder = (roundBeginTimePre+(4*oneDay))
-	let preDueDate = (roundBeginTimePre+(6*oneDay))
+	var getActiveRoundIdPre
+	var activeRoundPre
+	var activeCoveredTokenPre
+	var getActiveTokenNamePre
+	var roundTokenPre
 
+	var roundBeginTimePre
+	var preDueReminder
+	var preDueDate
 
 	/*determine round(s) user is involved in*/
-	let getActiveRoundIdPre = user.rounds.active[user.rounds.active.length-1]  // get round ID
-	let activeRoundPre = _.find(rounds, ['id', getActiveRoundIdPre])  //find round ID in rounds data
-	let activeCoveredTokenPre = activeRoundPre.covered_token					//get token being covered
-	let getActiveTokenNamePre = _.find(tokens, ['id', activeCoveredTokenPre])  //find covered Token
-	let roundTokenPre = getActiveTokenNamePre.name  //name of token set to var
+	for (var i=1; i<16; i++) {
 
+		//roundBeginTimePre = rounds[rounds.length-i].timestamp
+		preDueReminder = (roundBeginTimePre+(4*oneDay))
+		preDueDate = (roundBeginTimePre+(6*oneDay))
 
-	if (preJurist && user.rounds.active && (now >= preDueReminder) && (now <= preDueDate)) {
+		getActiveRoundIdPre = user.rounds.active[user.rounds.active.length-i]  // get round ID
 
-		messages.push({
-			type: 'pre_survey_due',
-			priority: 'info',
-			due:("2018-03-27T14:06-0500"),
-			round:3
-		})
+		activeRoundPre = _.find(rounds, ['id', getActiveRoundIdPre])  //find round ID in rounds data
+
+		if (activeRoundPre) {
+			preDueReminder = (activeRoundPre.timestamp+(4*oneDay))
+			preDueDate = (activeRoundPre.timestamp+(6*oneDay))
+			activeCoveredTokenPre = activeRoundPre.covered_token					//get token being covered
+			getActiveTokenNamePre = _.find(tokens, ['id', activeCoveredTokenPre])  //find covered Token
+			roundTokenPre = getActiveTokenNamePre.name  //name of token set to var
+
+			//to test with just leads, remove !
+			if (!(appConfig.isRoundLead(activeRoundPre.in_round_id) == 0 || appConfig.isRoundLead(activeRoundPre.in_round_id) == 1)) {
+				preJurist = true
+			}
+			else {preJurist = false}
+
+			//console.log()
+			let preCellLog = [user.rounds.active.length-i]
+			console.log ("Round Brief Due Test -- Active Round Array Member #", i, "(", preCellLog, "): ", getActiveRoundIdPre)  //if nothing in array, comes back Undefined
+			console.log ("timestamps => NOW: ", now, " Round Begin: ", activeRoundPre.timestamp, " Brief Alert Start: ", preDueReminder, " Brief Alert End: ", preDueDate)
+
+			if (preJurist && user.rounds.active && (now >= preDueReminder) && (now <= preDueDate)) {
+
+				messages.push({
+					type: 'pre_survey_due',
+					priority: 'info',
+					due:("2018-03-27T14:06-0500"),
+					round:3
+				})
+			}
+		}
 	}
 
 
@@ -677,48 +819,78 @@ if (testVariable == 1) {
 /*reminds when pre-survey is due */
 /* if JURY, and if 5-7 days after active round start, display */
 
-	/*toDo  1. fix timestamp (once timestamps are avaiable)
-	2. make sure it captures all rounds a user is a part of
-	3. change 'DUE'
+	/*toDo:   ready for testing
 	*/
-
 
 	/*determine if analyst is jury or lead */
 	let postJurist = false;
 	//why does this need to be declared here?
 
+	//REMOVE ONCE TESTED
 	//to test with just leads, remove !
+	/*
 	if (!(appConfig.isRoundLead(rounds.in_round_id) == 0 || appConfig.isRoundLead(rounds.in_round_id) == 1)) {
 		postJurist = true;
 	}
+
 	else {
 		postJurist = false;
 	}
+	*/
 
-	/*test data (timestamp) */
+	/*test only data (timestamp) */
 	rounds[0].timestamp = (now-(6*oneDay))
 
 	/*variables to see if brief reminder needs to be shown*/
-	let roundBeginTimePost = rounds[rounds.length-2].timestamp
-	let postDueReminder = (roundBeginTimePost+(5*oneDay))
-	let postDueDate = (roundBeginTimePost+(7*oneDay))
+	var getActiveRoundIdPost
+	var activeRoundPost
+	var activeCoveredTokenPost
+	var getActiveTokenNamePost
+	var roundTokenPost
+
+	var roundBeginTimePost
+	var postDueReminder
+	var postDueDate
 
 	/*determine round(s) user is involved in*/
-	let getActiveRoundIdPost = user.rounds.active[user.rounds.active.length-1]  // round ID
-	let activeRoundPost = _.find(rounds, ['id', getActiveRoundIdPost])  //find round ID in rounds data
-	let activeCoveredTokenPost = activeRoundPost.covered_token					//get covered token
-	let getActiveTokenNamePost = _.find(tokens, ['id', activeCoveredTokenPost])  //find covered Token
-	let roundTokenPost = getActiveTokenNamePost.name  //name of token set to var
+	for (var i=1; i<16; i++) {
 
+		//roundBeginTimePre = rounds[rounds.length-i].timestamp
+		postDueReminder = (roundBeginTimePost+(4*oneDay))
+		postDueDate = (roundBeginTimePost+(6*oneDay))
 
-	if (postJurist && user.rounds.active && (now >= postDueReminder) && (now <= postDueDate)) {
+		getActiveRoundIdPost = user.rounds.active[user.rounds.active.length-i]  // get round ID
 
-		messages.push({
-			type: 'post_survey_due',
-			priority: 'info',
-			due:("2018-03-27T14:06-0500"),
-			round:3
-		})
+		activeRoundPost = _.find(rounds, ['id', getActiveRoundIdPost])  //find round ID in rounds data
+
+		if (activeRoundPost) {
+			postDueReminder = (activeRoundPost.timestamp+(5*oneDay))
+			postDueDate = (activeRoundPost.timestamp+(7*oneDay))
+			activeCoveredTokenPost = activeRoundPost.covered_token					//get token being covered
+			getActiveTokenNamePost = _.find(tokens, ['id', activeCoveredTokenPost])  //find covered Token
+			roundTokenPost = getActiveTokenNamePost.name  //name of token set to var
+
+			//to test with just leads, remove !
+			if (!(appConfig.isRoundLead(activeRoundPost.in_round_id) == 0 || appConfig.isRoundLead(activeRoundPost.in_round_id) == 1)) {
+				postJurist = true
+			}
+			else {postJurist = false}
+
+			//console.log()
+			let postCellLog = [user.rounds.active.length-i]
+			console.log ("Round Brief Due Test -- Active Round Array Member #", i, "(", postCellLog, "): ", getActiveRoundIdPost)  //if nothing in array, comes back Undefined
+			console.log ("timestamps => NOW: ", now, " Round Begin: ", activeRoundPost.timestamp, " Brief Alert Start: ", postDueReminder, " Brief Alert End: ", postDueDate)
+
+			if (postJurist && user.rounds.active && (now >= postDueReminder) && (now <= postDueDate)) {
+
+				messages.push({
+					type: 'post_survey_due',
+					priority: 'info',
+					due:("2018-03-27T14:06-0500"),
+					round:3
+				})
+			}
+		}
 	}
 
 
@@ -726,136 +898,185 @@ if (testVariable == 1) {
 /* lets user know that round has actually been confirmed */
 /* if round has two leads and at least 15 other analysts, confirm round IF analyst is a lead*/
 
+	//toDo: CHANGE TO SOME KIND OF LEAD STATUS, then ready to test
+
 	//check for two Leads
-	//toDo: double-check that function will kick back both ints
 	let twoLeads = false;
 	//why declare here??
-
-	if ((appConfig.isRoundLead(rounds.in_round_id) == 0 && appConfig.isRoundLead(rounds.in_round_id) == 1)) {
-		twoLeads = true;
-	}
-
-	else {
-		twoLeads = false;
-	}
 
 	//check to see if user is LEAD
 	let isLeadConfirm = false;
 	//why declare?
 
-	if ((appConfig.isRoundLead(rounds.in_round_id) == 0 || appConfig.isRoundLead(rounds.in_round_id) == 1)) {
-		isLeadConfirm = true;
-	}
-	else {
-		isLeadConfirm = false;
-	}
-
-//for testing
-
-/*commented out to test scheduled round card */
-	//user.rounds.scheduled = [1, 6, 0]
-
 //get Round Info
-	//let getConfirmRoundId = user.rounds.scheduled[user.rounds.scheduled.length-1]  // round ID
-	//let confirmRound = _.find(rounds, ['id', getConfirmRoundId])  // find round ID in rounds data
-	//let confirmCoveredToken = confirmRound.covered_token					//covered token name
-	//let getConfirmTokenName = _.find(tokens, ['id', confirmCoveredToken])  // find covered Token
-	//let roundTokenC = getConfirmTokenName.name										//name string set to var
+	var getConfirmRoundId
+	var confirmRound
+	var confirmCoveredToken
+	var getConfirmTokenName
+	var roundTokenC
 
-/*
-	if (twoLeads && confirmRound.num_analysts >= 17 && isLeadConfirm) {
 
-		messages.push({
-			type: 'lead_confirmation',
-			priority: 'info',
-			round: 91,
-			token:roundTokenC
-		})
+for (var i=1; i<16; i++) {
+
+	getConfirmRoundId = user.rounds.scheduled[user.rounds.scheduled.length-i]  // round ID
+	confirmRound = _.find(rounds, ['id', getConfirmRoundId])  // find round ID in rounds data
+
+	if (confirmRound) {
+		confirmCoveredToken = confirmRound.covered_token					//covered token name
+		getConfirmTokenName = _.find(tokens, ['id', confirmCoveredToken])  // find covered Token
+		roundTokenC = getConfirmTokenName.name										//name string set to var
+
+		//checks to see if user is a lead
+		if ((appConfig.isRoundLead(confirmRound.in_round_id) == 0 || appConfig.isRoundLead(confirmRound.in_round_id) == 1)) {
+			isLeadConfirm = true
+		}
+		else {isLeadConfirm = false}
+
+		//change to make sure there are two leads
+		if ((appConfig.isRoundLead(confirmRound.in_round_id) == 0 || appConfig.isRoundLead(confirmRound.in_round_id) == 1)) {
+			twoLeads = true
+		}
+		else {twoLeads = false}
+
+		//console.log()
+		let rcCellLog = [user.rounds.scheduled.length-i]
+		console.log ("Round Confirm Test -- Scheduled Round Array Member #", i, "(", rcCellLog, "): ", getConfirmRoundId)  //if nothing in array, comes back Undefined
+
+		//for testing -- needs to be deleted
+		//confirmRound.num_analysts = 18
+
+			if (twoLeads && confirmRound.num_analysts >= 17 && isLeadConfirm) {
+
+				messages.push({
+					type: 'lead_confirmation',
+					priority: 'info',
+					round: 91,
+					token:roundTokenC
+				})
+			}
+		}
 	}
-*/
+
 
 /*****Round Starting*****/
 /* reminds user that a round is starting */
 /* if user is scheduled for a round, and round is starting within 3 days, remind user about round */
 
-	/* toDo: 1) timestamps
+	/* toDo: ready to test
 	*/
 
 	/*test data (timestamp) */
 		rounds[0].timestamp = (now+(oneDay))
 
 	/*variables to see if brief reminder needs to be shown*/
-	let roundBeginTimeStart = rounds[rounds.length-2].timestamp  //round start time -- should capture all upcoming rounds
-	let startReminder = (roundBeginTimeStart-(3*oneDay))  // how far back to remind user?  current: 3 days
-	let startReminderEnd = (roundBeginTimeStart)  //last time to remind user?  current: round Start
+	var startReminder // how far back to remind user?  current: 3 days
+	var startReminderEnd //last time to remind user?  current: round Start
 
-/*  commented out for testing
+	//commented out for testing
 	//get Round Info
-	let getStartRoundId = user.rounds.scheduled[user.rounds.scheduled.length-1]  // round ID
-	let startRound = _.find(rounds, ['id', getStartRoundId])  // find round ID in rounds data
-	let startCoveredToken = startRound.covered_token				//gets covered token
-	let getStartTokenName = _.find(tokens, ['id', startCoveredToken])  // find covered Token
-	let roundTokenSt = getStartTokenName.name								//sets name string to var
+	var getStartRoundId  // round ID
+	var startRound // find round ID in rounds data
+	var startCoveredToken //gets covered token
+	var getStartTokenName // find covered Token
+	var roundTokenSt //sets name string to var
 
+	for (var i=1; i<16; i++) {
 
+		//get Round Info
+		getStartRoundId = user.rounds.scheduled[user.rounds.scheduled.length-i]  // round ID
+		startRound = _.find(rounds, ['id', getStartRoundId])  // find round ID in rounds data
 
-	if (user.rounds.scheduled && (now >= startReminder) && (now <= startReminderEnd)) {
+		if (startRound) {
 
-			messages.push({
-				type: 'round_starting',
-				priority: 'info',
-				round:44,
-				starting:roundBeginTimeStart,
-				token:roundTokenSt
-			})
+			startReminder = (startRound.timestamp-(3*oneDay))  // how far back to remind user?  current: 3 days
+			startReminderEnd = (startRound.timestamp)  //last time to remind user?  current: round Start
+
+			startCoveredToken = startRound.covered_token				//gets covered token
+			getStartTokenName = _.find(tokens, ['id', startCoveredToken])  // find covered Token
+			roundTokenSt = getStartTokenName.name								//sets name string to var
+
+			//console.log()
+			let rsCellLog = [user.rounds.scheduled.length-i]
+			console.log ("Round Start Test -- Scheduled Round Array Member #", i, "(", rsCellLog, "): ", getStartRoundId)  //if nothing in array, comes back Undefined
+			console.log ("round starts: ", startRound.timestamp)
+			console.log ("reminder starts: ", startReminder)
+			console.log ("reminder ends: ", startReminderEnd)
+
+			if (user.rounds.scheduled && (now >= startReminder) && (now <= startReminderEnd)) {
+
+				messages.push({
+					type: 'round_starting',
+					priority: 'info',
+					round:44,
+					starting:startRound.timestamp,
+					token:roundTokenSt
+				})
+			}
+		}
 	}
-*/
+
 
 /***** Briefs Due *****/
 /*reminds when briefs are due */
 /* if user is lead, and round started between 4-5 days ago, display */
 
-	/* toDo  1. fix timestamp (once timestamps are avaiable)
-	2. make sure it captures all rounds a user is a part of
-	3. change 'DUE'
+	/* toDo  ready to test
 	*/
 
 	//check to see if user is LEAD
 	let isLeadBD = false;
 	//why declare?
 
-	if ((appConfig.isRoundLead(rounds.in_round_id) == 0 || appConfig.isRoundLead(rounds.in_round_id) == 1)) {
-		isLeadBD = true;
-	}
-
-	else {
-		isLeadBD = false;
-	}
-
-	/*test data (timestamp) */
-	rounds[0].timestamp = (now-(3*oneDay))
+	/*test ONLY data (timestamp) */
+	rounds[0].timestamp = (now-((4*oneDay)+1))
 
 	/*variables to see if brief reminder needs to be shown*/
-	let roundBeginTime = rounds[rounds.length-1].timestamp
-	let briefDueReminder = (roundBeginTime+(4*oneDay))
-	let briefDueDate = (roundBeginTime+(5*oneDay))
+	var briefDueReminder
+	var briefDueDate
 
+	var getActiveRoundIdBD // round ID
+	var activeRoundBD //find round ID in rounds data
+	var activeCoveredTokenBD //get Covered Token
+	var getActiveTokenNameBD //find covered Token
+	var roundTokenBD //name of token
 
-	/*determine round(s) user is involved in*/
-	let getActiveRoundIdBD = user.rounds.active[user.rounds.active.length-1]  // round ID
-	let activeRoundBD = _.find(rounds, ['id', getActiveRoundIdBD])  //find round ID in rounds data
-	let activeCoveredTokenBD = activeRoundBD.covered_token					//get Covered Token
-	let getActiveTokenNameBD = _.find(tokens, ['id', activeCoveredTokenBD])  //find covered Token
-	let roundTokenBD = getActiveTokenNameBD.name  //name of token
+	for (var i=1; i<16; i++) {
 
+		/*determine round(s) user is involved in*/
+		getActiveRoundIdBD = user.rounds.active[user.rounds.active.length-i]  // round ID
+		activeRoundBD = _.find(rounds, ['id', getActiveRoundIdBD])  //find round ID in rounds data
 
-	if (isLeadBD && user.rounds.active && (now > briefDueReminder) && (now < briefDueDate)) {
+		if (activeRoundBD) {
 
-		messages.push({
-			type: 'briefs_due',
-			due:("2018-03-28T19:06-0500"),
-			round: roundTokenBD
-		})
+			/*variables to see if brief reminder needs to be shown*/
+			briefDueReminder = (activeRoundBD.timestamp+(4*oneDay))
+			briefDueDate = (activeRoundBD.timestamp+(5*oneDay))
+
+			activeCoveredTokenBD = activeRoundBD.covered_token					//get Covered Token
+			getActiveTokenNameBD = _.find(tokens, ['id', activeCoveredTokenBD])  //find covered Token
+			roundTokenBD = getActiveTokenNameBD.name  //name of token
+
+			if ((appConfig.isRoundLead(activeRoundBD.in_round_id) == 0 || appConfig.isRoundLead(activeRoundBD.in_round_id) == 1)) {
+				isLeadBD = true
+			}
+			else {isLeadBD = false}
+
+			//console.log()
+			let bdCellLog = [user.rounds.scheduled.length-i]
+			console.log ("Brief Due Test -- Active Round Array Member #", i, "(", bdCellLog, "): ", getActiveRoundIdBD)  //if nothing in array, comes back Undefined
+			console.log ("round starts: ", activeRoundBD.timestamp)
+			console.log ("reminder starts: ", briefDueReminder)
+			console.log ("reminder ends: ", briefDueDate)
+
+			if (isLeadBD && user.rounds.active && (now > briefDueReminder) && (now < briefDueDate)) {
+
+				messages.push({
+					type: 'briefs_due',
+					due:("2018-03-28T19:06-0500"),
+					round: roundTokenBD
+				})
+			}
+		}
 	}
 
 
@@ -863,102 +1084,115 @@ if (testVariable == 1) {
 /*reminds when rebuttals are due */
 /* if user is lead, and round started between 4-6 days ago, display */
 
-
-	/*toDo 1. fix timestamp (once timestamps are avaiable)
-	2. make sure it captures all rounds a user is a part of
-	3. change "DUE"
+	/*toDo ready for testing
 	*/
 
 	//check to see if user is LEAD
 	let isLeadRD = false;
 	//why declare?
 
-	if ((appConfig.isRoundLead(rounds.in_round_id) == 0 || appConfig.isRoundLead(rounds.in_round_id) == 1)) {
-		isLeadRD = true;
-	}
-	else {
-		isLeadRD = false;
-	}
-
 	/*test data (timestamp) */
-	rounds[0].timestamp = (now-(3*oneDay))
+	rounds[0].timestamp = (now-((4*oneDay)+1))
 
 	/*variables to see if brief reminder needs to be shown*/
-	let roundBeginTimeRD = rounds[rounds.length-1].timestamp
-	let rebutDueReminder = (roundBeginTimeRD+(4*oneDay))
-	let rebutDueDate = (roundBeginTimeRD+(6*oneDay))
+	var roundBeginTimeRD
+	var rebutDueReminder
+	var rebutDueDate
 
 	/*determine round(s) user is involved in*/
-	let getActiveRoundIdRD = user.rounds.active[user.rounds.active.length-1]  // round ID
-	let activeRoundRD = _.find(rounds, ['id', getActiveRoundIdRD])  //find round ID in rounds data
-	let activeCoveredTokenRD = activeRoundRD.covered_token					//get Covered Token
-	let getActiveTokenNameRD = _.find(tokens, ['id', activeCoveredTokenRD])  //find covered Token
-	let roundTokenRD = getActiveTokenNameRD.name  //name of token
+	var getActiveRoundIdRD // round ID
+	var activeRoundRD //find round ID in rounds data
+	var activeCoveredTokenRD //get Covered Token
+	var getActiveTokenNameRD //find covered Token
+	var roundTokenRD //name of token
 
-	if (isLeadRD && user.rounds.active && (now > rebutDueReminder) && (now < rebutDueDate)) {
+	for (var i=1; i<16; i++) {
+			/*determine round(s) user is involved in*/
+		getActiveRoundIdRD = user.rounds.active[user.rounds.active.length-i]  // round ID
+		activeRoundRD = _.find(rounds, ['id', getActiveRoundIdRD])  //find round ID in rounds data
 
-		messages.push({
-			type: 'briefs_due',
-			due:("2018-03-28T19:06-0500"),
-			round: roundTokenRD
-		})
+		if (activeRoundRD) {
+
+			/*variables to see if brief reminder needs to be shown*/
+			rebutDueReminder = (activeRoundRD.timestamp+(4*oneDay))
+			rebutDueDate = (activeRoundRD.timestamp+(6*oneDay))
+
+			activeCoveredTokenRD = activeRoundRD.covered_token					//get Covered Token
+			getActiveTokenNameRD = _.find(tokens, ['id', activeCoveredTokenRD])  //find covered Token
+			roundTokenRD = getActiveTokenNameRD.name  //name of token
+
+			//is user a lead?
+			if ((appConfig.isRoundLead(activeRoundRD.in_round_id) == 0 || appConfig.isRoundLead(activeRoundRD.in_round_id) == 1)) {
+				isLeadRD = true
+			}
+			else {isLeadRD = false}
+
+			if (isLeadRD && user.rounds.active && (now > rebutDueReminder) && (now < rebutDueDate)) {
+
+				messages.push({
+					type: 'rebuttal_due',
+					due:("2018-03-28T19:06-0500"),
+					round: roundTokenRD
+				})
+			}
+		}
 	}
+
 
 
 /***** JURIST Round Confirmation *****/
 /* lets user know that round has actually been confirmed */
 /* if round has two leads and at least 15 other analysts, confirm round IF analyst is a jurist*/
 
-	/* toDo: 1) timestamps
+	/* toDo: ready for testing
 	*/
 
-	//check for two Leads
-	//toDo: double-check that function will kick back both ints
-	let twoLeadsJ = false;
-
-	if ((appConfig.isRoundLead(rounds.in_round_id) == 0 && appConfig.isRoundLead(rounds.in_round_id) == 1)) {
-		twoLeadsJ = true;
-	}
-	else {
-		twoLeadsJ = false;
-	}
-
-//check to see if user is JURIST
+	//check to see if user is JURIST
 	let isJuristConfirm = false;
 
-		if (!(appConfig.isRoundLead(rounds.in_round_id) == 0 || appConfig.isRoundLead(rounds.in_round_id) == 1)) {
-			isJuristConfirm = true;
+	var getConfirmRoundIdJ // round ID
+	var confirmRoundJ // find round ID in rounds data
+	var confirmCoveredTokenJ //name of covered token
+	var getConfirmTokenNameJ // find covered Token
+	var roundTokenCj //token name set to var
+
+
+	for (var i=1; i<16; i++) {
+
+		//get Round Info
+		getConfirmRoundIdJ = user.rounds.scheduled[user.rounds.scheduled.length-i]  // round ID
+		confirmRoundJ = _.find(rounds, ['id', getConfirmRoundIdJ])  // find round ID in rounds data
+
+		if (confirmRoundJ) {
+			confirmCoveredTokenJ = confirmRoundJ.covered_token					//name of covered token
+			getConfirmTokenNameJ = _.find(tokens, ['id', confirmCoveredTokenJ])  // find covered Token
+			roundTokenCj = getConfirmTokenNameJ.name										//token name set to var
+
+			//to test with leads: remove !
+			if (!(appConfig.isRoundLead(confirmRoundJ.in_round_id) == 0 || appConfig.isRoundLead(confirmRoundJin_round_id) == 1)) {
+				isJuristConfirm = true
+			}
+			else {isJuristConfirm = false}
+
+			//console.log()
+			let rcjCellLog = [user.rounds.scheduled.length-i]
+			console.log ("Round Confirm Test (JURY) -- Scheduled Round Array Member #", i, "(", rcjCellLog, "): ", getConfirmRoundIdJ)  //if nothing in array, comes back Undefined
+
+			//for Testing
+			confirmRoundJ.num_analysts = 18
+
+			if (confirmRoundJ.num_analysts >= 17 && isJuristConfirm) {
+
+				messages.push({
+					type: 'round_confirmed',
+					priority: 'info',
+					round: 32,
+					start: now,
+					Token: roundTokenCj
+				})
+			}
 		}
-		else {
-			isJuristConfirm = false;
-		}
-
-
-/*comment out for testing
-		//for testing
-	user.rounds.scheduled = [1, 6, 0]
-
-//get Round Info
-	let getConfirmRoundIdJ = user.rounds.scheduled[user.rounds.scheduled.length-1]  // round ID
-	let confirmRoundJ = _.find(rounds, ['id', getConfirmRoundIdJ])  // find round ID in rounds data
-	let confirmCoveredTokenJ = confirmRoundJ.covered_token					//name of covered token
-	let getConfirmTokenNameJ = _.find(tokens, ['id', confirmCoveredTokenJ])  // find covered Token
-	let roundTokenCj = getConfirmTokenNameJ.name										//token name set to var
-
-	if (twoLeadsJ && confirmRoundJ.num_analysts >= 17 && isJuristConfirm) {
-
-		messages.push({
-			type: 'round_confirmed',
-			priority: 'info',
-			round: 32,
-			start: now,
-			Token: roundTokenCj
-		})
 	}
-
-
-
-*/
 
 	return messages
 }

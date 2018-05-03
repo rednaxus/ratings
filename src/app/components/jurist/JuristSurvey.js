@@ -60,6 +60,7 @@ class JuristSurvey extends Component {
           <Panel.Body className="question-panel">
           {elements.map( (element,idx) => 
             <Question
+              key={idx}
               questionData={element} 
               questionNumber={idx}
               onSubmit={this.nextPage} 

@@ -104,9 +104,9 @@ user.rounds.finished = [8, 9, 0, 7]
 
 	//toDo: ready for testing
 
-	for (var i=1; i<2; i++) {
+	for (let i=1; i<2; i++) {
 
-		if (user.reward_events) {
+		if (user.reward_events.length) {
 
 	  	let lastRewardEventP = user.reward_events //pulls reward_events array
 
@@ -141,7 +141,7 @@ user.rounds.finished = [8, 9, 0, 7]
 	*/
 
 
-	for (var i=1; i<2; i++) {
+	for (let i=1; i<2; i++) {
 
 		if (user.reward_events.length) {
 
@@ -187,9 +187,9 @@ user.rounds.finished = [8, 9, 0, 7]
 	let currentUserLevel = user.level[user.level.length-1]
 
 
-	for (var i=1; i<2; i++) {
+	for (let i=1; i<2; i++) {
 
-		if (user.reward_events) {
+		if (user.reward_events.length) {
 
 	  	let lastRewardEventL = user.reward_events //pulls reward_events array
 
@@ -225,9 +225,9 @@ user.rounds.finished = [8, 9, 0, 7]
 	user.num_referrals=2
 
 
-	for (var i=1; i<2; i++) {
+	for (let i=1; i<2; i++) {
 
-		if (user.reward_events) {
+		if (user.reward_events.length) {
 
 			let lastRewardEventRef = user.reward_events //pulls reward_events array
 

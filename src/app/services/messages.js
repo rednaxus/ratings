@@ -143,7 +143,7 @@ user.rounds.finished = [8, 9, 0, 7]
 
 	for (var i=1; i<2; i++) {
 
-		if (user.reward_events) {
+		if (user.reward_events.length) {
 
   		let lastRewardEventR = user.reward_events //pulls reward_events array
 

@@ -14,7 +14,29 @@ contract C {
 import "./strings.sol";
 import "./TokenERC20.sol";
 import "./RatingAgency.sol";
-
+contract test3 {
+    struct TestStruct {
+        uint num;
+        mapping( uint => uint) testnums;
+    }
+    mapping( uint => TestStruct) testmapping;
+    uint numtest;
+    event Log( uint num ); 
+    function test3() public {
+        TestStruct storage theStruct = testmapping[ numtest++ ];
+        theStruct.num = 45;
+        theStruct = testmapping[ numtest++ ];
+        theStruct.num = 65;
+        for (uint i=0;i< numtest; i++){
+            Log( testmapping[ i ].num );
+        }
+        
+    }
+    function uint16InserttoBytes32( bytes32 _bytes, uint16 _ui, uint8 _position ) public pure returns ( bytes32 ){
+        bytes32( ( bytes32( _ui ) >> ( _position * 8 ) ) | _bytes );
+    }
+    
+}
 contract test2 {
     address defaultRa = 0x3dac6baecd2846aced5b514f3ef85cd547bea6bb;
     using strings for *;
@@ -121,7 +143,7 @@ contract test2 {
     //event TokenInfo( uint32 token_id, address token_addr, string token_name, string token_symbol );
     event LogRound( uint cycle, uint round, uint token, uint num_analysts);
     function bootstrapRound( uint16 _cycle, uint32 _token ) public {
-        ratingAgency.generateAvailabilities( _cycle );
+        ratingAgency.cycleGenerateAvailabilities( _cycle );
         ratingAgency.scheduleRound( _cycle, _token );
         uint16 round = ratingAgency.num_rounds() - 1;  
         ( round, cycle, token, value, stat, num_analysts) = ratingAgency.roundInfo( round ); 

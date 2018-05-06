@@ -21,7 +21,9 @@ contract test3 {
     }
     mapping( uint => TestStruct) testmapping;
     uint numtest;
+    
     event Log( uint num ); 
+    event LogBytes32 (uint i, bytes32 b);
     function test3() public {
         TestStruct storage theStruct = testmapping[ numtest++ ];
         theStruct.num = 45;
@@ -30,12 +32,25 @@ contract test3 {
         for (uint i=0;i< numtest; i++){
             Log( testmapping[ i ].num );
         }
-        
+        bytes32 b32 = 'veva\0\0@veva.one';
+        byte[32] memory b;
+        for(i=0; i<20; i++) {
+            b[0] = byte( i / 10 + 0x30 );
+            b[1] = byte( i % 10 + 0x30 );
+            LogBytes32( i, bytesOntoBytes32( b32, b, 4, 2 ) );
+        }
     }
     function uint16InserttoBytes32( bytes32 _bytes, uint16 _ui, uint8 _position ) public pure returns ( bytes32 ){
-        bytes32( ( bytes32( _ui ) >> ( _position * 8 ) ) | _bytes );
+        return bytes32( ( bytes32( _ui ) << ( (15 - _position) * 16 ) ) | _bytes );
     }
-    
+    function uint16ToBytes32( uint16 _ui ) public pure returns ( bytes32 ) {
+        return bytes32( _ui );
+    }
+    function bytesOntoBytes32(bytes32 b32, byte[32] b, uint8 start, uint8 length) private pure returns ( bytes32 out ) {
+        out = b32;
+        for (uint8 i = 0; i < length; i++)
+            out |= bytes32(b[ i ]) >> ( (i+start) * 8);
+    }
 }
 contract test2 {
     address defaultRa = 0x3dac6baecd2846aced5b514f3ef85cd547bea6bb;
@@ -144,7 +159,7 @@ contract test2 {
     event LogRound( uint cycle, uint round, uint token, uint num_analysts);
     function bootstrapRound( uint16 _cycle, uint32 _token ) public {
         ratingAgency.cycleGenerateAvailabilities( _cycle );
-        ratingAgency.scheduleRound( _cycle, _token );
+        ratingAgency.roundActivate( _cycle, _token );
         uint16 round = ratingAgency.num_rounds() - 1;  
         ( round, cycle, token, value, stat, num_analysts) = ratingAgency.roundInfo( round ); 
         LogRound(cycle, round, token, num_analysts );        
@@ -162,7 +177,7 @@ contract test2 {
             recommendation = 4;
             ratingAgency.submitSurvey( _round, a, 1, answers, qualitatives, recommendation, comment );
         }
-        ratingAgency.tallyRound( _round );
+        ratingAgency.roundTally( _round );
     }
     
     function coverToken( uint i ) public {

@@ -131,8 +131,8 @@ contract RatingAgency {
 
     mapping ( uint16 => uint16 ) rounds_scheduled; // scheduled rounds by id
     mapping ( uint16 => uint16 ) rounds_active;
-    uint16 num_rounds_scheduled = 0;
-    uint16 num_rounds_active = 0;
+    //uint16 public num_rounds_scheduled = 0;
+    uint16 public num_rounds_active = 0;
 
     address public registryAddress;
 
@@ -279,13 +279,13 @@ contract RatingAgency {
         CycleVolunteer( _cycle, _analyst, _role, cycle.statuses[ _role ].num_volunteers );
     }
 
-    event CycleConfirmed( uint16 cycle, uint32 analyst, uint8 role, uint16 ref_avail, uint16 cs_num_volunteers, uint16 cs_num_availables, uint16 num_volunteers, uint16 num_confirms );
+    event CycleConfirmed( uint16 cycle, uint32 analyst, uint8 role, uint16 ref_avail, uint16 cs_num_volunteers, uint16 cs_num_availables, uint8 num_volunteers, uint8 num_confirms );
     function cycleConfirm( uint16 _cycle, uint32 _analyst, uint8 _role ) public {
         Cycle storage cycle = cycles[ _cycle ];
         uint16 ref = cycleAnalystRef( _cycle, _analyst );
         require( ref != 0xffff );
-        uint16 num_confirms = ++cycle.analysts[ ref ].analyst_status[ _role ].num_confirms;
-        uint16 num_volunteers = --cycle.analysts[ ref ].analyst_status[ _role ].num_volunteers;
+        uint8 num_confirms = ++cycle.analysts[ ref ].analyst_status[ _role ].num_confirms;
+        uint8 num_volunteers = --cycle.analysts[ ref ].analyst_status[ _role ].num_volunteers;
         
         CycleRoleStatus storage cs = cycle.statuses[ _role ];
         uint16 ref_avail = cycleAvailabilityRef( _cycle, _role, ref );
@@ -348,25 +348,26 @@ contract RatingAgency {
         Cycle storage cycle = cycles[ _cycle ];
         return ( cycle.statuses[ 0 ].num_availables > 1 && cycle.statuses[ 1 ].num_availables >= JURISTS_MIN );
     }
+    //event Log( uint num, uint num2 );
     function cycleAvailabilityReduce( uint16 _cycle, uint8 _role, uint16 _ref_avail ) public {
         Cycle storage cycle = cycles[ _cycle ];
         CycleRoleStatus storage cs = cycle.statuses[ _role ];
         uint16 ref = cs.availables[ _ref_avail ];
         CycleAnalystStatus storage cas = cycle.analysts[ ref ].analyst_status[ _role ];
-        cas.num_confirms--;
-        if ( cas.num_confirms == 0 ) { // remove from avail list
+        //Log( cs.num_availables, cas.num_confirms );
+
+        if ( --cas.num_confirms == 0 ) { // remove from avail list
             cs.num_availables--;
             for( uint16 i = _ref_avail; i < cs.num_availables; i++ ) 
                 cs.availables[ i ] = cs.availables[ i + 1 ];
         }
-            
     }
     event CycleAnalystAssigned( uint16 _cycle, uint16 _round, uint16 _ref, uint8 _role, uint32 _analyst );
     // returns analyst so can know what to do with round
     function cycleAssign( uint16 _cycle, uint16 _round, uint16 _ref, uint8 _role ) public returns ( uint32 ) {  // move analyst from available to assigned
         Cycle storage cycle = cycles[ _cycle ];
         uint16 ref_avail = cycleAvailabilityRef( _cycle, _role, _ref );
-        cycleAvailabilityReduce ( _cycle, _role, ref_avail );
+        cycleAvailabilityReduce( _cycle, _role, ref_avail );
         CycleAnalyst storage ca = cycle.analysts[ _ref ];
         CycleAnalystStatus storage cas = ca.analyst_status[ _role ];
         cas.rounds = uint16InserttoBytes32( cas.rounds, _round, cas.num_rounds++ );
@@ -387,7 +388,9 @@ contract RatingAgency {
         uint16 avail_ref;
         uint32 analyst;
         Round storage round = rounds[ _round ];
-        for ( uint16 i = 0; i < 2+JURY_SIZE; i++ ) {
+        uint16 num_jurists = cycles[ _cycle ].statuses[ 1 ].num_availables;
+        if ( num_jurists > JURY_SIZE ) num_jurists = JURY_SIZE;
+        for ( uint16 i = 0; i < 2+num_jurists; i++ ) {
             ( avail_ref, ref ) = cycleSelect( _cycle, i < 2 ? 0 : 1 );  // first two are bull/bear leads
             analyst = cycleAssign( _cycle, _round, ref, i < 2 ? 0 : 1 );
             round.analysts[ round.num_analysts++ ] = RoundAnalyst( analyst, i < 2 ? SCHEDULED_LEAD: SCHEDULED_JURIST );
@@ -590,14 +593,14 @@ contract RatingAgency {
                 roundFinish( round_id );
         }
         
-        for ( i = 0; i< cycle_now; i++ ) // deactivate any past cycles
+        for ( i = 0; i < cycle_now; i++ ) // deactivate any past cycles
             if (cycles[ i ].stat == ACTIVE) cycles[ i ].stat = FINISHED;
  
         if ( cycle.stat == NONE ) {
             cycle.stat = ACTIVE;
             uint16 cyc4 = cycle_now % CYCLE_FRACTIONS; // e.g. 0--3
             for ( uint16 itoken = 0; itoken < num_tokens; itoken++ ) {
-                if (!cycleRoundCanCreate( cycle_now ) ) break; // stop cycle when out of availables
+                if ( !cycleRoundCanCreate( cycle_now ) ) break; // stop cycle when out of availables
                 if ( itoken % CYCLE_FRACTIONS == cyc4 ) // e.g. every 4th token at this particular timeperiod
                     roundActivate( cycle_now, itoken );
             }

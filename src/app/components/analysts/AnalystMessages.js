@@ -152,7 +152,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Nice work! You have earned a new payment of {data.tokens} VEVA! Your new balance is {data.balance} VEVA</div>
+      return <div>Nice work! You have earned a new payment of {data.tokens} VEVA! Your new balance is {data.balance} VEVA.</div>
 
     },
     footer: (data) => {
@@ -171,7 +171,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Well done! You have earned {data.new_points} reputation points! You now have {data.reputation} points.</div>
+      return <div>Well done! You have earned {data.new_points} new reputation points! You now have {data.reputation} points.</div>
 
     },
     footer: (data) => {
@@ -360,7 +360,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>You are a confirmed JURIST for the {data.token} round, which is starting very soon!</div>
+      return <div>You are a confirmed JURIST for the {data.token} round, which is starting now!</div>
 
     },
     footer: (data) => {
@@ -398,7 +398,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Reminder: Please take the pre-survey for round #{data.round}--it is due <Moment fromNow>{data.due}</Moment>.</div>
+      return <div>Reminder: Please take the pre-survey for the {data.round} round--it's due <Moment fromNow>{data.due}</Moment>.</div>
 
     },
     footer: (data) => {
@@ -437,7 +437,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>You are a confirmed LEAD for the {data.token} round, which is confirmed and will be starting soon!</div>
+      return <div>You are a LEAD for an upcoming round, which is confirmed and will be starting soon!</div>
 
     },
     footer: (data) => {
@@ -475,7 +475,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Your LEAD brief for {data.round} round is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>
+      return <div>Your LEAD brief for the {data.round} round is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>
 
     },
     footer: (data) => {
@@ -494,7 +494,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Your LEAD rebuttal for {data.round} round is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>
+      return <div>Your LEAD rebuttal for the {data.round} round is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>
 
     },
     footer: (data) => {
@@ -513,7 +513,7 @@ const message_templates = {
     },
     body: (data) => {
 
-      return <div>Round #{data.round} has been confirmed and will be starting <Moment fromNow>{data.start}</Moment>!</div>
+      return <div>One of your requested rounds has been confirmed and will be starting <Moment fromNow>{data.start}</Moment>!</div>
 
     },
     footer: (data) => {

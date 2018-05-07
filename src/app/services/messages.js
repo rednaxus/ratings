@@ -124,7 +124,8 @@ user.rounds.finished = [8, 9, 0, 7]
 					messages.push({
 						type: 'payment',
 						priority: 'info',
-						tokens: rewardCellP.value
+						tokens: rewardCellP.value,
+						balance: user.token_balance
 					})
 				}
 			}
@@ -309,7 +310,7 @@ user.rounds.finished = [8, 9, 0, 7]
 					type: 'round_finished',
 					priority: 'info',
 					roundToken: roundTokenF,
-					roundValue: finishedRound.value
+					/*roundValue: finishedRound.value*/
 				})
 			}
 		}
@@ -373,7 +374,7 @@ user.rounds.finished = [8, 9, 0, 7]
 				messages.push({
 					type: 'round_scheduled',
 					priority: 'action-small',
-					due: now,
+					due: scheduledRound.timestamp,
 					roundToken: roundTokenS,
 					roundValue: scheduledRound.value
 				})
@@ -552,10 +553,10 @@ user.rounds.finished = [8, 9, 0, 7]
 				messages.push({
 					type: 'rounds_in_progress',
 					priority: 'info',
-					start: ("2018-03-27T14:06-0500"),
+					start: activeRound.timestamp,
 					analyst:'lead',
 					roundToken: roundTokenA,
-					roundValue: 10 //scheduledRound.value
+					roundValue: activeRound.value
 				})
 			}
 		}
@@ -603,7 +604,8 @@ user.rounds.finished = [8, 9, 0, 7]
 	if (user.num_referrals) {
 		messages.push({
 			type: 'make_referral',
-			priority: 'action-big'
+			priority: 'action-big',
+			unused_refs: user.num_referrals.length
 		})
 	}
 
@@ -684,7 +686,7 @@ user.rounds.finished = [8, 9, 0, 7]
 					type: 'jurist_round_starting',
 					priority: 'info',
 					token: roundTokenS,
-					startTime: now
+					/*startTime: now*/
 				})
 			}
 		}
@@ -728,7 +730,7 @@ user.rounds.finished = [8, 9, 0, 7]
 				messages.push({
 					type: 'brief_posted',
 					priority: 'info',
-					due: ("2018-03-28T19:06-0500"),
+					due: brRound.timestamp+(appConfig.ACTIVE_TIME),
 					token: roundTokenBR
 				})
 			}
@@ -807,8 +809,8 @@ user.rounds.finished = [8, 9, 0, 7]
 				messages.push({
 					type: 'pre_survey_due',
 					priority: 'info',
-					due:("2018-03-27T14:06-0500"),
-					round:3
+					due:activeRoundPre.timestamp+(appConfig.ACTIVE_TIME),
+					round: rountTokenPre
 				})
 			}
 		}
@@ -886,8 +888,8 @@ user.rounds.finished = [8, 9, 0, 7]
 				messages.push({
 					type: 'post_survey_due',
 					priority: 'info',
-					due:("2018-03-27T14:06-0500"),
-					round:3
+					due:activeRoundPost.timestamp+(appConfig.ACTIVE_TIME),
+					round:roundTokenPost
 				})
 			}
 		}
@@ -950,8 +952,8 @@ for (var i=1; i<16; i++) {
 				messages.push({
 					type: 'lead_confirmation',
 					priority: 'info',
-					round: 91,
-					token:roundTokenC
+					/*round: 91,
+					token:roundTokenC*/
 				})
 			}
 		}
@@ -1007,9 +1009,8 @@ for (var i=1; i<16; i++) {
 				messages.push({
 					type: 'round_starting',
 					priority: 'info',
-					round:44,
 					starting:startRound.timestamp,
-					token:roundTokenSt
+					/*token:roundTokenSt*/
 				})
 			}
 		}
@@ -1072,7 +1073,7 @@ for (var i=1; i<16; i++) {
 
 				messages.push({
 					type: 'briefs_due',
-					due:("2018-03-28T19:06-0500"),
+					due:activeRoundBD.timestamp+(5*oneDay),
 					round: roundTokenBD
 				})
 			}
@@ -1131,7 +1132,7 @@ for (var i=1; i<16; i++) {
 
 				messages.push({
 					type: 'rebuttal_due',
-					due:("2018-03-28T19:06-0500"),
+					due:activeRoundRD.timestamp+(6*oneDay),
 					round: roundTokenRD
 				})
 			}
@@ -1186,9 +1187,7 @@ for (var i=1; i<16; i++) {
 				messages.push({
 					type: 'round_confirmed',
 					priority: 'info',
-					round: 32,
-					start: now,
-					Token: roundTokenCj
+					start: confirmRoundJ.timestamp
 				})
 			}
 		}

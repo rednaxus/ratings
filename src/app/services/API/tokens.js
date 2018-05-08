@@ -54,7 +54,7 @@ export default dataSource
 export const getTokenData = ( i ) => {
   return new Promise((resolve,reject) => {
     RatingAgency().then( (ratingAgency) => {
-      ratingAgency.coveredTokenInfo( i ).then( raToken => { // idx, addr
+      ratingAgency.tokenInfo( i ).then( raToken => { // idx, addr
         let token = {id:raToken[0].toNumber(),address:raToken[1]}
         getTokenInfo( token.address ).then( info => {
           info.data.id = token.id

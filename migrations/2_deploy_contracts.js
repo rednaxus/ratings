@@ -3,11 +3,11 @@ var AnalystRegistry = artifacts.require("AnalystRegistry")
 var RatingAgency = artifacts.require("RatingAgency")
 var Tests = artifacts.require("test2")
 
-module.exports = function(deployer) {
-	deployer.deploy(AnalystRegistry).then( () => AnalystRegistry.deployed() )
-	.then( registry => deployer.deploy(RatingAgency,registry.address) )
+module.exports = function( deployer ) {
+	deployer.deploy( AnalystRegistry ).then( () => AnalystRegistry.deployed() )
+	.then( registry => deployer.deploy( RatingAgency,registry.address, 0 ) )
 	.then( () => RatingAgency.deployed() )
-	.then( ra => deployer.deploy(Tests,ra.address) )
+	.then( ra => deployer.deploy( Tests, ra.address ) )
 	.then( () => Tests.deployed() )
 
 	/*

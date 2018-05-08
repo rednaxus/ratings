@@ -21,8 +21,8 @@ contract test3 {
     }
     mapping( uint => TestStruct) testmapping;
     uint numtest;
-
-    event Log( uint num );
+    
+    event Log( uint num ); 
     event LogBytes32 (uint i, bytes32 b);
     function test3() public {
         TestStruct storage theStruct = testmapping[ numtest++ ];
@@ -60,26 +60,26 @@ contract test2 {
     uint num_tokens;
 
     uint16 cycle;
-    uint time;
+    uint time; 
     uint32 token;
     uint16 value;
     uint8 stat;
     address repr;
-    uint8 num_analysts;
+    uint8 num_analysts; 
     bytes32 avg_answer;
     uint8 r1_avg;
     uint8 r2_avg;
     uint8 sways;
     uint8 winner;
 
-
+    
     event Log( string str, uint num1, uint num2 );
     event Log4( string str, uint num1, uint num2, uint num3, uint num4 );
     function test2(address _ra) public {
         address ra = _ra == 0 ? defaultRa: _ra;
         ratingAgency = RatingAgency( ra );
     }
-
+  
     function SetRatingAgency(address ra) public {
         ratingAgency = RatingAgency( ra );
         Log( "", ratingAgency.num_tokens(), ratingAgency.num_cycles()  );
@@ -91,7 +91,7 @@ contract test2 {
         string tokenSymbol
     */
     event TokenCreated( string name, string symbol, address addr );
-    function bootstrapDummyTokens( uint8 _num ) public {
+    function bootstrapDummyTokens( uint8 _num ) public { 
         uint8 num = _num == 0 ? 4 : _num;
         uint start = num_tokens;
         uint finish = num_tokens+num;
@@ -103,12 +103,12 @@ contract test2 {
             address token = new TokenERC20( 10000, name, symbol );
             tokens[ num_tokens++ ] = token;
             TokenCreated( name, symbol, token );
-            ratingAgency.coverToken( token, 0 );
+            ratingAgency.tokenCover( token, 0 );
         }
     }
-
+    
     address[16] live_tokens = [
-        0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0, //EOS
+        0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0, //EOS 
         0xf230b790e05390fc8295f4d3f60332c93bed42e2, // Tronix
         0xd850942ef8811f2a866692a623011bde52a462c1, // VeChain
         0xd26114cd6ee289accf82350c8d8487fedb8a0c07, // OMG
@@ -123,31 +123,31 @@ contract test2 {
         0x5ca9a71b1d01849c0a95490cc00559717fcf0d1d, // Aeternity
         0xcb97e65f07da24d46bcdd078ebebd7c6e6e3d750, // Byteom
         0xb7cb1c96db6b22b0d3d9536e0108d062bd488f74, // Walton
-        0x4ceda7906a5ed2179785cd3a40a69ee8bc99c466 // Aeon
+        0x4ceda7906a5ed2179785cd3a40a69ee8bc99c466 // Aeon 
     ];
 
-    function bootstrapTokens( ) public {
+    function bootstrapTokens( ) public { 
         for ( uint i = 0; i < live_tokens.length; i++ ) {
-            ratingAgency.coverToken( live_tokens[i], 0 );
+            ratingAgency.tokenCover( live_tokens[i], 0 );
         }
     }
     event RoundInfo(
         uint16 cycle,
-        uint time,
+        uint time, 
         uint32 token,
         uint16 value,
         uint8 stat,
         address repr,
-        uint8 num_analysts,
+        uint8 num_analysts, 
         bytes32 avg_answer,
         uint8 r1_avg,
         uint8 r2_avg,
         uint8 sways,
         uint8 winner
     );
-
+    
     event RoundSummary(
-        uint16 round,
+        uint16 round, 
         uint8 num_analysts,
         bytes32 avg_answer,
         uint8 r1_avg,
@@ -158,14 +158,14 @@ contract test2 {
     //event TokenInfo( uint32 token_id, address token_addr, string token_name, string token_symbol );
     event LogRound( uint cycle, uint round, uint token, uint num_analysts);
     function bootstrapRound( uint16 _cycle, uint32 _token ) public {
-        //ratingAgency.cycleGenerateAvailabilities( _cycle );
-        //ratingAgency.roundActivate( _cycle, _token );
-        //uint16 round = ratingAgency.num_rounds() - 1;
-        //( round, cycle, token, value, stat, num_analysts) = ratingAgency.roundInfo( round );
-        //LogRound(cycle, round, token, num_analysts );
+        ratingAgency.cycleGenerateAvailabilities( _cycle );
+        ratingAgency.roundActivate( _cycle, _token );
+        uint16 round = ratingAgency.num_rounds() - 1;  
+        ( round, cycle, token, value, stat, num_analysts) = ratingAgency.roundInfo( round ); 
+        LogRound(cycle, round, token, num_analysts );        
     }
     function bootstrapSurveys( uint16 _round ) public {
-        ( _round, cycle, token, value, stat, num_analysts) = ratingAgency.roundInfo( _round );
+        ( _round, cycle, token, value, stat, num_analysts) = ratingAgency.roundInfo( _round ); 
         LogRound(cycle, _round, token, num_analysts );
         /* generate surveys */
         for ( uint8 a = 2; a < num_analysts; a++ ) {
@@ -173,16 +173,16 @@ contract test2 {
             byte qualitatives = 6;
             uint8 recommendation = 1;
             bytes32 comment = "wow";
-            ratingAgency.submitSurvey( _round, a, 0, answers, qualitatives, recommendation, comment );
+            ratingAgency.roundSurveySubmit( _round, a, 0, answers, qualitatives, recommendation, comment );
             recommendation = 4;
-            ratingAgency.submitSurvey( _round, a, 1, answers, qualitatives, recommendation, comment );
+            ratingAgency.roundSurveySubmit( _round, a, 1, answers, qualitatives, recommendation, comment );
         }
-        //ratingAgency.roundTally( _round );
+        ratingAgency.roundTally( _round );
     }
-
+    
     function coverToken( uint i ) public {
         address tokenAddr = tokens[ i ];
-        ratingAgency.coverToken( tokenAddr, 0 );
+        ratingAgency.tokenCover( tokenAddr, 0 );
     }
     function uint2str(uint i) internal pure returns (string){
         if (i == 0) return "0";
@@ -203,37 +203,37 @@ contract test2 {
 }
 
 contract test1 {
-
+    
     struct RoundSurvey {// Round evaluations
-        bytes32 answers;
+        bytes32 answers;  
         byte qualitatives; // yes / no
         uint8 recommendation; // 1-10
         bytes32 comment;
     }
-    mapping ( uint8 => RoundSurvey[2] ) evaluations;
+    mapping ( uint8 => RoundSurvey[2] ) evaluations; 
     struct RoundAssessment {
         bytes32 avg_answer;
         uint8 avg_recommendation;
         uint8 sways;
     }
     struct Round {
-        mapping ( uint8 => RoundSurvey ) evaluations;
+        mapping ( uint8 => RoundSurvey ) evaluations;  
     }
-
+    
     mapping ( uint16 => Round ) rounds;
     function test(address _ratingAgency) public {
 
-        rounds[0] = Round();
+        rounds[0] = Round();  
         rounds[1] = Round();
     }
-
-
+    
+    
     function submitSurvey(uint16 _round, bool _pre, bytes32 _answers, byte _qualitatives, uint8 recommendation, bytes32 comment) {
-
-
+    
+    
     }
-
-
+    
+    
     event showbyte(byte b);
     function bytesToBytes32(bytes b, uint offset) public returns (bytes32) {
         bytes32 out;
@@ -244,7 +244,7 @@ contract test1 {
         }
         return out;
     }
-
+    
     function bytes32toUints(bytes32 b) public pure returns (uint8[32] result){
         for (uint i=0; i< 32; i++){
             result[i] = uint8(b[i]);
@@ -252,3 +252,4 @@ contract test1 {
     }
 
 }
+

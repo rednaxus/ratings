@@ -1,7 +1,6 @@
 pragma solidity ^0.4.19;
 
 contract AnalystRegistry {
-    uint32 constant LEAD_LEVEL = 2;
 
     // reward types
     uint8 constant REWARD_REFERRAL = 1;
@@ -36,6 +35,7 @@ contract AnalystRegistry {
     int8 constant MIDDLE_JURISTS_POINTS = 4;
     int8 constant BOTTOM_JURISTS_POINTS = 0;
     
+    uint32 constant LEAD_LEVEL = 2;
     uint16[2][] public levels;
 
     
@@ -67,13 +67,13 @@ contract AnalystRegistry {
         uint32 token_balance;
         uint8 referral_balance;
         
-        uint16 num_rounds_scheduled;
+        //uint16 num_rounds_scheduled;
         uint16 num_rounds_active;
         uint16 num_rounds_finished;
         uint16 num_reward_events;
         uint16 num_referrals;
 
-        mapping ( uint16 => uint16 ) rounds_scheduled;
+        //mapping ( uint16 => uint16 ) rounds_confirmed;
         mapping ( uint16 => uint16 ) rounds_active;
         mapping ( uint16 => uint16 ) rounds_finished;
         mapping ( uint16 => RewardEvent ) reward_events;
@@ -97,40 +97,43 @@ contract AnalystRegistry {
         levels.push( [100,10] );
         levels.push( [200,20] );
         levels.push( [500,30] );
-        bootstrap(12,4);
+        bootstrap(14,4);
     }
 
-    event Register( uint32 id, bytes32 name, bytes32 email, uint32 referral );
-    function register(bytes32 _name, bytes32 _pw, bytes32 _email, uint32 _referral ) public {
-        analysts[ num_analysts ] = Analyst(
-            _name, _pw, _email, 0, _referral, msg.sender, false,
-            0, 0, 5,
-            0, 0, 0, 0, 0
-        );
-        if (_referral > 0){
+    event Register( uint32 id, bytes32 email, uint32 referral );
+    function register(bytes32 _email, bytes32 _pw, uint32 _referral ) public {
+        Analyst storage a = analysts[ num_analysts ];
+        a.password = _pw;
+        a.email = _email;
+        a.referred_by = _referral;
+        a.user_addr = msg.sender;
+        a.is_lead = false;
+        a.referral_balance = 5;
+
+        if ( _referral > 0 ){
             Analyst storage referredBy = analysts[ _referral ];
             require( referredBy.num_referrals > 0 );
             for (uint8 i = 0; i < referredBy.num_referrals; i++ ) {
                 if (referredBy.referrals[ i ].email == _email) {
                     referredBy.points += REFERRAL_POINTS;
-                    referredBy.reward_events[referredBy.num_reward_events++] =
-                        RewardEvent(REWARD_REFERRAL,timenow,REFERRAL_POINTS,num_analysts);
+                    referredBy.reward_events[ referredBy.num_reward_events++ ] =
+                        RewardEvent( REWARD_REFERRAL, timenow, REFERRAL_POINTS, num_analysts );
                     break;
                 }
                 require( i != referredBy.num_referrals - 1 ); // referral not found, invalid
             }
         }
         address_lookup[ msg.sender ] = num_analysts;
-        name_lookup[ _name ] = num_analysts;
+        name_lookup[ _email ] = num_analysts;
 
-        Register( num_analysts++, _name, _email, _referral );
+        Register( num_analysts++, _email, _referral );
     }
 
-    function login(bytes32 _name, bytes32 _pw) public view returns (uint32, bytes32, int32, uint32) {
-        uint32 id = name_lookup[ _name ];
-        Analyst storage analyst = analysts[id];
-        require(analyst.password == _pw);
-        return (id,analyst.email,analyst.points,analyst.token_balance);
+    function login(bytes32 _email, bytes32 _pw) public view returns ( uint32, bytes32, int32, uint32 ) {
+        uint32 id = name_lookup[ _email ];
+        Analyst storage analyst = analysts[ id ];
+        require( analyst.password == _pw );
+        return ( id, analyst.email, analyst.points, analyst.token_balance );
     }
 
     function loginByAddress(bytes32 _password, address force) public view returns ( uint32 id ) { // force is for testing, so can login with another address
@@ -162,42 +165,39 @@ contract AnalystRegistry {
         return analysts[ _analyst ].referred_by;
     }
     function analystInfo( uint32 _analyst ) public view returns (
-        uint32, bytes32, bytes32, uint32, 
+        uint32, bytes32, uint32, 
         int32, bool, uint32,
-        uint16, uint16, uint16, uint16, uint16
+        uint16, uint16, 
+        uint16, uint16
     ) {
         Analyst storage a = analysts[ _analyst ];
         return (
-            _analyst, a.name, a.email, a.auth_status,
+            _analyst, a.email, a.auth_status,
             a.points, a.is_lead, a.token_balance, 
-            a.num_rounds_scheduled, a.num_rounds_active, a.num_rounds_finished,
+            a.num_rounds_active, a.num_rounds_finished,
             a.num_reward_events,a.num_referrals
         );
     }
-    function scheduleRound( uint32 _analyst, uint16 _round )  public {
-        Analyst storage a = analysts[ _analyst ];
-        a.rounds_scheduled[ a.num_rounds_scheduled++ ] = _round;
-    }
+    /*
     function scheduledRound( uint32 _analyst, uint8 _roundRef ) public view returns (uint16) {
         Analyst storage a = analysts[ _analyst ];
         require( _roundRef <= a.num_rounds_scheduled );
         return a.rounds_scheduled[ _roundRef ];
     }
-    function activeRound( uint32 _analyst, uint8 _roundRef ) public view returns (uint16) {
-        Analyst storage a = analysts[ _analyst ];
-        require( _roundRef <= a.num_rounds_active );
-        return a.rounds_active[ _roundRef ];
+    */
+    function activeRound( uint32 _analyst, uint8 _roundRef ) public view returns ( uint16 ) {
+        return analysts[ _analyst ].rounds_active[ _roundRef ];
     }
-    function finishedRound( uint32 _analyst, uint8 _roundRef ) public view returns (uint16) {
-        Analyst storage a = analysts[ _analyst ];
-        require( _roundRef <= a.num_rounds_finished );
-        return a.rounds_finished[ _roundRef ];
+    function finishedRound( uint32 _analyst, uint8 _roundRef ) public view returns ( uint16 ) {
+        return analysts[ _analyst ].rounds_finished[ _roundRef ];
     }
+    
     function activateRound( uint32 _analyst, uint16 _round ) public {
         Analyst storage a = analysts[ _analyst ];
-        for( uint16 i = 0; i < a.num_rounds_scheduled; i++ ) {
+        a.rounds_active[ a.num_rounds_active++ ] = _round;
+        /*for( uint16 i = 0; i < a.num_rounds_scheduled; i++ ) {
             if (a.rounds_scheduled[ i ] == _round ){
-                a.rounds_active[ a.num_rounds_active++ ] = _round;
+
                 while (i < a.num_rounds_scheduled ){
                     a.rounds_scheduled[ i ] = a.rounds_scheduled[ i + 1 ];
                     i++;
@@ -207,14 +207,15 @@ contract AnalystRegistry {
             }
         }
         require(false); // error, called with round not scheduled
+        */
     }
 
-    function finishRound( uint32 _analystId, uint16 _roundId ) public {
-        Analyst storage a = analysts[ _analystId ];
+    function finishRound( uint32 _analyst, uint16 _round ) public {
+        Analyst storage a = analysts[ _analyst ];
         for( uint16 i = 0; i < a.num_rounds_active; i++ ) {
-            if (a.rounds_active[ i ] == _roundId ){
-                a.rounds_finished[ a.num_rounds_finished++ ] = _roundId;
-                while (i++ < a.num_rounds_active ){
+            if (a.rounds_active[ i ] == _round ){
+                a.rounds_finished[ a.num_rounds_finished++ ] = _round;
+                while ( i++ < a.num_rounds_active - 1 ){
                     a.rounds_active[ i - 1 ] = a.rounds_active[ i ];
                 }
                 a.num_rounds_active--;
@@ -223,7 +224,6 @@ contract AnalystRegistry {
         }
         require(false); // error, called without active round
     }
-
 
     function rewardToken( uint32 _analyst, uint8 _rewardType, uint32 _value, uint32 _ref ) public {
         Analyst storage a = analysts[ _analyst ];
@@ -243,7 +243,7 @@ contract AnalystRegistry {
         } else if ( _win == 0 ) {
             rewardToken( _analyst, REWARD_ROUND_TOKENS_LOSER, _roundValue * LOSER_PCT / 100, _round );
             rewardPoints( _analyst, REWARD_ROUND_POINTS_LOSER, LOSER_POINTS, _round );
-        } else {
+        } else { // Complaints about analyst, punishment
             rewardPoints( _analyst, REWARD_ROUND_POINTS_NEGATIVE, NEGATIVE_RATING, _round );
         }
     }
@@ -291,23 +291,33 @@ contract AnalystRegistry {
     }
     
     // create some analysts... testing only!
-    function bootstrap(uint32 _numanalysts,uint32 _numleads) public {
-        uint32 new_analysts = _numanalysts == 0 ? 12 : _numanalysts;
-        uint32 new_leads = _numleads == 0 ? 2 : _numleads;
-        uint32 start = num_analysts;
-        uint32 finish = num_analysts+new_analysts;
-        bytes32 basename = 'alan'; // alan1
-        bytes32 emailbase = 'alan_@veva.one';
-        uint32 startat = 0x30;  // '0'
-        for ( uint32 i = start; i < finish; i++ ) {
-            bytes32 appendname = bytes32(i+startat);
-            bytes32 name = (appendname << 216) | basename;
-            bytes32 email = emailbase;
-            register( name, 'veva', email, 0); // make up phony name based on id
+    function bootstrap(uint16 _numanalysts, uint16 _numleads) public {
+        uint16 new_analysts = _numanalysts == 0 ? 12 : _numanalysts;
+        uint16 new_leads = _numleads == 0 ? 2 : _numleads;
+        uint16 start = uint16( num_analysts );
+        uint16 finish = start + new_analysts;
+        bytes32 b32 = 'veva\0\0@veva.one';
+        byte[32] memory b;
+        for(uint16 i = start; i < finish; i++) {
+            b[0] = byte( i / 10 + 0x30 );
+            b[1] = byte( i % 10 + 0x30 );
+            bytes32 email = bytesOntoBytes32( b32, b, 4, 2 );
+            register( email, 'veva', 0); // make up phony name based on id
             if ( new_leads > 0 ) {
                 rewardPoints( i, REWARD_PROMOTION, levels[LEAD_LEVEL][0], LEAD_LEVEL);
                 new_leads--;
             }
         }
     }
+    function bytesOntoBytes32( bytes32 b32, byte[32] b, uint8 start, uint8 length ) private pure returns ( bytes32 out ) {
+        out = b32;
+        for (uint8 i = 0; i < length; i++)
+            out |= bytes32(b[ i ]) >> ( (i+start) * 8);
+    }
+    /*
+    function bytesToBytes32(bytes b) private pure returns (bytes32 out) {
+        for (uint i = 0; i < 32; i++)
+            out |= bytes32(b[ i ] & 0xFF) >> (i * 8);
+    }
+    */
 }

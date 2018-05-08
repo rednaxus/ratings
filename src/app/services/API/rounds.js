@@ -13,12 +13,12 @@ export const getRoundInfo = ( round, analyst=0 ) => new Promise( (resolve,reject
   RatingAgency().then( ratingAgency  => {
     ratingAgency.roundInfo( round ).then( rRound => { 
       var res = {
-        id:rRound[0].toNumber(), 
-        cycle: rRound[1].toNumber(),
-        covered_token: rRound[2].toNumber(),
-        value: rRound[3].toNumber(),
-        status: rRound[4].toNumber(),
-        num_analysts: rRound[5].toNumber()
+        id:             rRound[0].toNumber(), 
+        cycle:          rRound[1].toNumber(),
+        covered_token:  rRound[2].toNumber(),
+        value:          rRound[3].toNumber(),
+        status:         rRound[4].toNumber(),
+        num_analysts:   rRound[5].toNumber()
       }
       console.log('got round',res)
       ratingAgency.roundBriefs( round ).then( rBriefs => {
@@ -31,9 +31,9 @@ export const getRoundInfo = ( round, analyst=0 ) => new Promise( (resolve,reject
         resolve( res )
       })
     })
-    .catch(result => { 
+    .catch( result => { 
       console.error("Error from server on getRoundInfo:"  + result) 
-      reject(result)
+      reject( result )
     })
   })
 })
@@ -43,17 +43,17 @@ export const getRoundAnalystInfo = ( round, analyst=0 ) => new Promise( (resolve
   RatingAgency().then((ratingAgency) => {
     ratingAgency.roundAnalyst( round, analyst ).then( rRound => { 
       var res = {
-        id:round,
-        analyst:analyst,
-        inround_id:rRound[0].toNumber(), 
+        id:             round,
+        analyst:        analyst,
+        inround_id:     rRound[0].toNumber(), 
         analyst_status: rRound[1].toNumber()
       }
       console.log('got round analyst',res)
       resolve( res )
     })
-    .catch(result => { 
+    .catch( result => { 
       console.error("Error from server on getRoundAnalystInfo:"  + result) 
-      reject(result)
+      reject( result )
     })
   })
 })
@@ -62,7 +62,7 @@ export const getRoundAnalystInfo = ( round, analyst=0 ) => new Promise( (resolve
 export const submitBrief = ( round, analyst, filehash ) => new Promise( (resolve,reject) => {
   RatingAgency().then( ratingAgency => {
     console.log('submitting brief',round,analyst,filehash)
-    ratingAgency.submitBrief( round, analyst, bytes32FromIpfsHash(filehash) ).then( result => {
+    ratingAgency.roundBriefSubmit( round, analyst, bytes32FromIpfsHash(filehash) ).then( result => {
       console.log('submit brief result',result)
       resolve( 'done' )
     })
@@ -94,9 +94,8 @@ export const submitRoundSurvey = (
   preOrPost = 0 
 ) => {
   return new Promise( (resolve,reject) => {
-    //console.log(' beginning cycles fetch')
-    RatingAgency().then((ratingAgency) => {
-      ratingAgency.submitSurvey(
+    RatingAgency().then( ratingAgency => {
+      ratingAgency.roundSurveySubmit(
         round, 
         roundAnalyst,
         preOrPost, 
@@ -108,9 +107,9 @@ export const submitRoundSurvey = (
         console.log('submit survey result',result)
         resolve( 'done' )
       })
-      .catch(result => { 
+      .catch( result => { 
         console.error("Error submitting survey:"  + result) 
-        reject(result)
+        reject( result )
       })
     })
 
@@ -122,11 +121,10 @@ export const submitRoundSurvey = (
 export const dataSource = function getData({
     pageIndex, pageSize
 }) {
-  return new Promise((resolve,reject) => {
+  return new Promise( resolve,reject => {
     console.log(' beginning rounds fetch')
     RatingAgency().then((ratingAgency) => {
-      ratingAgency.num_rounds()
-      .then(result => {
+      ratingAgency.num_rounds().then( result => {
         var numRounds = result.toNumber()
         console.log("number of rounds:",numRounds)
         var numFetch = 0

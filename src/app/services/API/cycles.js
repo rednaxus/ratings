@@ -6,16 +6,16 @@ import { appConfig }        from '../../config'
 import { store } from '../../Root'
 
 export const getCronInfo = () => {
-  return new Promise( (resolve,reject) => {
+  return new Promise( ( resolve,reject ) => {
     //console.log(' beginning cycles fetch')
 
-    RatingAgency().then((ratingAgency) => {
-      ratingAgency.lasttime().then(result => {
-        resolve(1000*result.toNumber())
+    RatingAgency().then( ratingAgency => {
+      ratingAgency.lasttime().then( result => {
+        resolve( 1000*result.toNumber() )
       })
-      .catch(result => { 
-        console.error("Error from server on cron:"  + result) 
-        reject(result)
+      .catch( result => { 
+        console.error( "Error from server on cron:"  + result ) 
+        reject( result )
       })
     })
     
@@ -31,18 +31,18 @@ export const pulseCron = () => {
         let lasttime = result.toNumber()
         console.log('pulsing cron from ' + lasttime + ' to '+ (lasttime+appConfig.CRON_INTERVAL))
         lasttime += appConfig.CRON_INTERVAL
-        ratingAgency.cron(lasttime).then( cronResult => {
+        ratingAgency.cron( lasttime ).then( cronResult => {
           console.log('cron result',cronResult)
           resolve( 1000*result.toNumber() )
         })
-        .catch(result => { 
+        .catch( result => { 
           console.error("Error cron on cron:"  + result) 
-          reject(result)
+          reject( result ) 
         })
       })    
-      .catch(result => { 
+      .catch( result => { 
         console.error("Error lasttime on cron:"  + result) 
-        reject(result)
+        reject( result )
       })
     })
 
@@ -64,28 +64,44 @@ export const cycleSignup = ( cycle, analyst, lead = false ) => new Promise( (res
 
 
 export const getCycleInfo = ( cycle, analyst = 0) => new Promise( (resolve, reject ) => {
+
+
   RatingAgency().then((ratingAgency) => {
-    ratingAgency.cycleInfo( cycle, analyst ).then( rCycle => { // idx, addr
+    ratingAgency.cycleInfo( cycle ).then( rCycle => { // idx, addr
+
       let timestart = rCycle[1].toNumber()
       let res = {
         id:rCycle[0].toNumber(),   
         timestart: timestart,
         timefinish: timestart+rCycle[2].toNumber(),
         status: rCycle[3].toNumber(),
-        num_jurists_available: rCycle[4].toNumber(),
-        num_jurists_assigned: rCycle[5].toNumber(),
-        num_leads_available: rCycle[6].toNumber(),
-        num_leads_assigned: rCycle[7].toNumber(),
-        analyst_status: rCycle[8].toNumber()
+        num_availables_lead: rCycle[4].toNumber(),
+        num_availables_jury: rCycle[5].toNumber(),
+        //num_leads_available: rCycle[6].toNumber(),
+        //num_leads_assigned: rCycle[7].toNumber(),
+        //analyst_status: rCycle[8].toNumber()
       }
-      //console.log('got cycle',res)
-      resolve( res )
-    })
-    .catch(result => { 
-      console.error("Error from server:"  + result) 
-      reject(result)
-    })
+      console.log('got cycle info',res)
+      ratingAgency.cycleAnalystInfo( cycle, analyst ).then ( rCycleAnalyst => {
+        res.incycle_ref = rCycleAnalyst[ 0 ].toNumber()
+        res.role = []
+        for ( let i=0; i<2; i++ ){
+          res.role.push( { 
+            num_volunteers: rCycleAnalyst[ 1 + i*4 ].toNumber(),
+            num_confirms: rCycleAnalyst[ 2 + i*4 ].toNumber(),
+            num_rounds: rCycleAnalyst[ 3 + i*4 ].toNumber(),
+            rounds: rCycleAnalyst[ 4 + i*4 ] // need to convert to array
+          } )
+        }
+        console.log( 'got cycle info all ',res)     
+        resolve( res )
+      }).catch( error )
+    }).catch( error )
   })
+  const error = ( err => {
+    console.error("Error from server" + err)
+    reject( err )
+  }) 
 })
 
 

@@ -1,7 +1,6 @@
 pragma solidity ^0.4.19;
 
 contract AnalystRegistry {
-    uint32 constant LEAD_LEVEL = 2;
 
     // reward types
     uint8 constant REWARD_REFERRAL = 1;
@@ -36,6 +35,7 @@ contract AnalystRegistry {
     int8 constant MIDDLE_JURISTS_POINTS = 4;
     int8 constant BOTTOM_JURISTS_POINTS = 0;
     
+    uint32 constant LEAD_LEVEL = 2;
     uint16[2][] public levels;
 
     
@@ -97,7 +97,7 @@ contract AnalystRegistry {
         levels.push( [100,10] );
         levels.push( [200,20] );
         levels.push( [500,30] );
-        bootstrap(12,4);
+        bootstrap(14,4);
     }
 
     event Register( uint32 id, bytes32 email, uint32 referral );
@@ -225,7 +225,6 @@ contract AnalystRegistry {
         require(false); // error, called without active round
     }
 
-
     function rewardToken( uint32 _analyst, uint8 _rewardType, uint32 _value, uint32 _ref ) public {
         Analyst storage a = analysts[ _analyst ];
         a.reward_events[ a.num_reward_events++ ] =
@@ -244,7 +243,7 @@ contract AnalystRegistry {
         } else if ( _win == 0 ) {
             rewardToken( _analyst, REWARD_ROUND_TOKENS_LOSER, _roundValue * LOSER_PCT / 100, _round );
             rewardPoints( _analyst, REWARD_ROUND_POINTS_LOSER, LOSER_POINTS, _round );
-        } else {
+        } else { // Complaints about analyst, punishment
             rewardPoints( _analyst, REWARD_ROUND_POINTS_NEGATIVE, NEGATIVE_RATING, _round );
         }
     }
@@ -310,7 +309,7 @@ contract AnalystRegistry {
             }
         }
     }
-    function bytesOntoBytes32(bytes32 b32, byte[32] b, uint8 start, uint8 length) private pure returns ( bytes32 out ) {
+    function bytesOntoBytes32( bytes32 b32, byte[32] b, uint8 start, uint8 length ) private pure returns ( bytes32 out ) {
         out = b32;
         for (uint8 i = 0; i < length; i++)
             out |= bytes32(b[ i ]) >> ( (i+start) * 8);

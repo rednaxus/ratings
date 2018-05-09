@@ -79,7 +79,7 @@ export const refreshInfo = (deep = true) => { // get from id, deep means to get 
           userService.getAnalystRounds( userInfo ).then( rounds => {
             userInfo.rounds = rounds
             let numFetches = 0
-            let allRounds = [ ...rounds.scheduled,...rounds.active,...rounds.finished ]
+            let allRounds = [ ...rounds.active,...rounds.finished ]
             if ( !allRounds.length ) returnSuccess( userInfo )
             allRounds.forEach( round => {
               numFetches++

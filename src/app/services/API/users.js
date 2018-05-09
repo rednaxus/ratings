@@ -5,6 +5,7 @@
 import auth                   from '../auth'
 import { getAnalystRegistry as AnalystRegistry } from '../contracts'
 import { getRatingAgency as RatingAgency } from '../contracts'
+import { parseB32StringtoUintArray } from '../utils'
 
 // cycle statuses :
 /*
@@ -15,12 +16,6 @@ import { getRatingAgency as RatingAgency } from '../contracts'
 4: jurist assigned
 */
 
-/*
-            _analyst, a.email, a.auth_status,
-            a.points, a.is_lead, a.token_balance, 
-            a.num_rounds_active, a.num_rounds_finished,
-            a.num_reward_events,a.num_referrals
-*/
 const info = userId => new Promise((resolve,reject) => {
   console.log(' beginning user info fetch')
   
@@ -56,6 +51,7 @@ const info = userId => new Promise((resolve,reject) => {
           reward_events: [],
           referrals: []
         }
+        userInfo.name = userInfo.email.slice(0,userInfo.email.indexOf('@'))
         //console.log('got user info',userInfo)
         //console.log('rating agency',ratingAgency)
         var numFetch = 0
@@ -70,55 +66,57 @@ const info = userId => new Promise((resolve,reject) => {
           let numCyclesFetch = numCycles
           numFetch++
           for (var iCyc = 0; iCyc < numCycles; iCyc++) {
-            (function ( iCycle ){
+            ( function( iCycle ) {
               agency.cycleAnalystInfo(iCyc,userId).then( result => {
                 let idx = 0
-                //console.log('result',result[0])
+                console.log('result from cycleAnalystInfo',result)
                 let ref = result[idx++].toNumber()
-                if ( ref !== 0xffff ) userInfo.cycleInfo[ iCycle ] = {
-                  incycle_ref: ref,
-                  role: [ { 
-                    num_volunteers: result[idx++].toNumber(), 
-                    num_confirms: result[idx++].toNumber(),
-                    num_rounds: result[idx++].toNumber(),
-                    rounds: result[idx++]
-                  }, {
-                    num_volunteers: result[idx++].toNumber(),
-                    num_confirms: result[idx++].toNumber(),
-                    num_rounds: result[idx++].toNumber(),
-                    rounds: result[idx++]
-                  }]
+                if ( ref !== 0xffff ) {
+                  userInfo.cycleInfo[ iCycle ] = {
+                    incycle_ref: ref,
+                    role: [ { 
+                      num_volunteers: result[idx++].toNumber(), 
+                      num_confirms: result[idx++].toNumber(),
+                      num_rounds: result[idx++].toNumber(),
+                      rounds: result[idx++],
+                    }, {
+                      num_volunteers: result[idx++].toNumber(),
+                      num_confirms: result[idx++].toNumber(),
+                      num_rounds: result[idx++].toNumber(),
+                      rounds: result[idx++]
+                    }]
+                  }
+                  for (let irole = 0; irole < 2; irole++ ) {
+                    let roleObj = userInfo.cycleInfo[ iCycle ].role[irole]
+                    roleObj.rounds = parseB32StringtoUintArray(roleObj.rounds, roleObj.num_rounds)
+                  }
                 }
                 if ( !--numCyclesFetch ) {
                   if ( !--numFetch ) resolve(userInfo)
                 }
               })
             } ( iCyc ) )
-            /*
-            ref,
-            ca.analyst_status[0].num_volunteers, ca.analyst_status[0].num_confirms, 
-            ca.analyst_status[0].num_rounds, ca.analyst_status[0].rounds,
-            ca.analyst_status[1].num_volunteers, ca.analyst_status[1].num_confirms,
-            ca.analyst_status[1].num_rounds, ca.analyst_status[1].rounds
-            */
           }
         })        
         if (userInfo.num_reward_events) {
           numFetch++
           let numRewardsFetch = userInfo.num_reward_events
           for (var e = 0; e < userInfo.num_reward_events; e++) {
-            registry.getAnalystEvent( userId, e ).then( result => {
-              let idx = 0
-              userInfo.reward_events[ e ] = {
-                reward_type: result[ idx++ ].toNumber(), 
-                timestamp: result[ idx++ ].toNumber(),
-                value: result[ idx++ ].toNumber(),
-                ref: result[ idx++ ].toNumber()
-              }
-              if ( !--numRewardsFetch ) {
-                if ( !--numFetch ) resolve(userInfo)
-              }
-            }, e )
+            ( function( event ){
+              registry.getAnalystEvent( userId, event ).then( result => {
+                let idx = 0
+                userInfo.reward_events[ event ] = {
+                  reward_type: result[ idx++ ].toNumber(), 
+                  timestamp: result[ idx++ ].toNumber(),
+                  value: result[ idx++ ].toNumber(),
+                  ref: result[ idx++ ].toNumber()
+                }
+                if ( !--numRewardsFetch ) {
+                  if ( !--numFetch ) resolve(userInfo)
+                }
+              } )
+            } ( e ) )
+
           }
         }
       })

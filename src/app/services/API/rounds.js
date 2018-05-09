@@ -121,7 +121,7 @@ export const submitRoundSurvey = (
 export const dataSource = function getData({
     pageIndex, pageSize
 }) {
-  return new Promise( resolve,reject => {
+  return new Promise( (resolve,reject) => {
     console.log(' beginning rounds fetch')
     RatingAgency().then((ratingAgency) => {
       ratingAgency.num_rounds().then( result => {

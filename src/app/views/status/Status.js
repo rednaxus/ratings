@@ -29,7 +29,7 @@ class Status extends Component {
     console.log('rounds',rounds)
     console.log('user',user)
     let user_rounds = !user.rounds ? [] : [ 
-      ...user.rounds.scheduled,
+      //...user.rounds.scheduled,
       ...user.rounds.active,
       ...user.rounds.finished 
     ].map( round_id => _.find( rounds,['id',round_id] ) )

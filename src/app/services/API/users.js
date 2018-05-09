@@ -30,23 +30,29 @@ const info = userId => new Promise((resolve,reject) => {
     cycleInfo: []
   }
   AnalystRegistry().then( registry => {
-    RatingAgency().then( agency => {    
+    RatingAgency().then( agency => { 
+      /*
+                  _analyst, a.email, a.auth_status,
+            a.points, a.is_lead, a.token_balance, 
+            a.num_rounds_active, a.num_rounds_finished,
+            a.num_reward_events,a.num_referrals
+      */   
       registry.analystInfo(userId).then( result => {
         // _analystId, a.name, a.email, a.auth_status, a.reputation, a.is_lead, a.token_balance, a.num_rounds_scheduled, a.num_rounds_active, a.num_rounds_finished
+        let i = 0
         userInfo = { 
           ...userInfo,
-          id: result[0].toNumber(),
-          name: web3.toAscii(result[1]).replace(/\W/g,''),
-          email: web3.toAscii(result[2]).replace(/\W/g,''),
-          auth_status: result[3].toNumber(),
-          reputation: result[4].toNumber(),
-          lead: result[5],
-          token_balance: result[6].toNumber(),
-          num_rounds_scheduled: result[7].toNumber(),
-          num_rounds_active: result[8].toNumber(),
-          num_rounds_finished: result[9].toNumber(),
-          num_reward_events: result[10].toNumber(),
-          num_referrals: result[11].toNumber(),
+          id: result[i++].toNumber(),
+          email: web3.toAscii(result[i++]).replace(/\0/g,''),
+          auth_status: result[i++].toNumber(),
+          reputation: result[i++].toNumber(),
+          lead: result[i++],
+          token_balance: result[i++].toNumber(),
+          //num_rounds_scheduled: result[7].toNumber(),
+          num_rounds_active: result[i++].toNumber(),
+          num_rounds_finished: result[i++].toNumber(),
+          num_reward_events: result[i++].toNumber(),
+          num_referrals: result[i++].toNumber(),
           reward_events: [],
           referrals: []
         }
@@ -63,13 +69,38 @@ const info = userId => new Promise((resolve,reject) => {
           }
           let numCyclesFetch = numCycles
           numFetch++
-          for (var i = 0; i < numCycles; i++) {
-            agency.cycleAnalystInfo(i,userId).then( result => {
-              userInfo.cycleInfo.push( result.toNumber() )
-              if ( !--numCyclesFetch ) {
-                if ( !--numFetch ) resolve(userInfo)
-              }
-            })
+          for (var iCyc = 0; iCyc < numCycles; iCyc++) {
+            (function ( iCycle ){
+              agency.cycleAnalystInfo(iCyc,userId).then( result => {
+                let idx = 0
+                //console.log('result',result[0])
+                let ref = result[idx++].toNumber()
+                if ( ref !== 0xffff ) userInfo.cycleInfo[ iCycle ] = {
+                  incycle_ref: ref,
+                  role: [ { 
+                    num_volunteers: result[idx++].toNumber(), 
+                    num_confirms: result[idx++].toNumber(),
+                    num_rounds: result[idx++].toNumber(),
+                    rounds: result[idx++]
+                  }, {
+                    num_volunteers: result[idx++].toNumber(),
+                    num_confirms: result[idx++].toNumber(),
+                    num_rounds: result[idx++].toNumber(),
+                    rounds: result[idx++]
+                  }]
+                }
+                if ( !--numCyclesFetch ) {
+                  if ( !--numFetch ) resolve(userInfo)
+                }
+              })
+            } ( iCyc ) )
+            /*
+            ref,
+            ca.analyst_status[0].num_volunteers, ca.analyst_status[0].num_confirms, 
+            ca.analyst_status[0].num_rounds, ca.analyst_status[0].rounds,
+            ca.analyst_status[1].num_volunteers, ca.analyst_status[1].num_confirms,
+            ca.analyst_status[1].num_rounds, ca.analyst_status[1].rounds
+            */
           }
         })        
         if (userInfo.num_reward_events) {
@@ -77,16 +108,17 @@ const info = userId => new Promise((resolve,reject) => {
           let numRewardsFetch = userInfo.num_reward_events
           for (var e = 0; e < userInfo.num_reward_events; e++) {
             registry.getAnalystEvent( userId, e ).then( result => {
-              userInfo.reward_events.push( {
-                reward_type: result[ 0 ].toNumber(), 
-                timestamp: result[ 1 ].toNumber(),
-                value: result[ 2 ].toNumber(),
-                ref: result[ 3 ].toNumber()
-              } )
+              let idx = 0
+              userInfo.reward_events[ e ] = {
+                reward_type: result[ idx++ ].toNumber(), 
+                timestamp: result[ idx++ ].toNumber(),
+                value: result[ idx++ ].toNumber(),
+                ref: result[ idx++ ].toNumber()
+              }
               if ( !--numRewardsFetch ) {
                 if ( !--numFetch ) resolve(userInfo)
               }
-            })
+            }, e )
           }
         }
       })

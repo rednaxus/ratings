@@ -201,12 +201,20 @@ contract RatingAgency {
     /*
      ***   Round Cycler  ***
     */
-
-    function cycleAnalystRef( uint16 _cycle, uint32 _analyst ) public view returns ( uint16 ref ){
-        Cycle storage cycle = cycles[ _cycle ];
-        for ( uint16 i = 0; i < cycle.num_analysts; i++ )
-            if ( cycle.analysts[ i ].analyst == _analyst ) return i;
-        return 0xffff;
+    
+    event CycleActivated( uint16 _cycle, uint time, uint16 num_rounds );
+    function cycleActivate( uint16 _cycle ) public returns ( bool activated ) {
+        Cycle storage c = cycles[ _cycle ];
+        if ( c.stat == ACTIVE ) return false;
+        c.stat = ACTIVE; 
+        uint16 cyc4 = _cycle % CYCLE_FRACTIONS; // e.g. 0--3
+        for ( uint16 i = 0; i < num_tokens; i++ ) {
+            if ( !cycleRoundCanCreate( _cycle ) ) break; // stop cycle when out of availables
+            if ( i % CYCLE_FRACTIONS == cyc4 ) // e.g. every 4th token at this particular timeperiod
+                roundActivate( _cycle, i );
+        }
+        CycleActivated( _cycle, time, i );
+        return true;
     }
 
     function cycleAnalystInfo( uint16 _cycle, uint32 _analyst ) public view returns ( 
@@ -226,19 +234,11 @@ contract RatingAgency {
         );
     }
   
-    event CycleActivated( uint16 _cycle, uint time, uint16 num_rounds );
-    function cycleActivate( uint16 _cycle ) public returns ( bool activated ) {
-        Cycle storage c = cycles[ _cycle ];
-        if ( c.stat == ACTIVE ) return false;
-        c.stat = ACTIVE; 
-        uint16 cyc4 = _cycle % CYCLE_FRACTIONS; // e.g. 0--3
-        for ( uint16 i = 0; i < num_tokens; i++ ) {
-            if ( !cycleRoundCanCreate( _cycle ) ) break; // stop cycle when out of availables
-            if ( i % CYCLE_FRACTIONS == cyc4 ) // e.g. every 4th token at this particular timeperiod
-                roundActivate( _cycle, i );
-        }
-        CycleActivated( _cycle, time, i );
-        return true;
+    function cycleAnalystRef( uint16 _cycle, uint32 _analyst ) public view returns ( uint16 ref ){
+        Cycle storage cycle = cycles[ _cycle ];
+        for ( uint16 i = 0; i < cycle.num_analysts; i++ )
+            if ( cycle.analysts[ i ].analyst == _analyst ) return i;
+        return 0xffff;
     }
 
     // for iterating through availabilities, i.e. getting a single one by availability reference
@@ -343,14 +343,17 @@ contract RatingAgency {
         return ( cycle.statuses[ 0 ].num_availables > 1 && cycle.statuses[ 1 ].num_availables >= JURISTS_MIN );
     }
     
+    /*
     function cycleSelect( uint16 _cycle, uint8 _role ) public view returns ( uint16 ref_avail, uint16 ref ) {  // returns local reference to an available analyst
         Cycle storage cycle = cycles[_cycle];
         CycleRoleStatus storage cs = cycle.statuses[ _role ];
         require( cs.num_availables > 0 );
-        ref_avail = cs.num_availables == 1 ? cs.availables[0] : uint16( randomIdx( cs.availables[ 0 ], cs.num_availables ) );
+        //ref_avail = cs.num_availables == 1 ? cs.availables[0] : uint16( randomIdx( cs.availables[ 0 ], cs.num_availables ) );
+        ref_avail = uint16( randomIdx( cs.availables[ 0 ], cs.num_availables ) );
         ref = cs.availables[ ref_avail ];
     }
-
+    */
+    
     // start time for a cycle
     function cycleTime( uint16 _idx ) public view returns ( uint ){
         return cycle_period * _idx / 4 + ZERO_BASE_TIME;    // cycles offset
@@ -447,26 +450,59 @@ contract RatingAgency {
     // assign available analysts from the cycle into the round
     event RoundPopulated( uint16 _cycle, uint16 _round, uint8 num_analysts, uint8 num_leads );
     event RoundAnalystAdded( uint16 _cycle, uint16 _round, uint32 _analyst, uint8 _inround_analyst );
+    //event LogLottery( uint16 ref_avail, uint8 num_needed, uint32 num_availables );
     function roundPopulate( uint16 _cycle, uint16 _round ) public {
         uint16 ref;
         uint16 ref_avail;
+        uint32 analyst;
         Round storage round = rounds[ _round ];
         Cycle storage cycle = cycles[ _cycle ];
-        uint8 num_jurists = min_jury( JURY_SIZE, cycles[ _cycle ].statuses[ 1 ].num_availables );
-        for ( uint16 i = 0; i < 2+num_jurists; i++ ) {
-            uint8 role = i < 2 ? 0 : 1; // first two are bull/bear leads
-            ( ref_avail, ref ) = cycleSelect( _cycle, role );  
-            cycleAvailabilityReduce( _cycle, role, ref_avail );
+        uint8 num_jurists = min_jury( JURY_SIZE, cycle.statuses[ 1 ].num_availables );
+        uint8 num_needed;
+        uint8 role;
+        for ( uint8 i = 0; i < 2 + num_jurists; i++ ) {
+            if (i == 0) { // first two are bull/bear leads
+                role = 0;
+                num_needed = 2;
+                ref_avail = 0;
+            } else if (i == 2) {
+                role = 1;
+                num_needed = num_jurists;
+                ref_avail = 0;
+            }
+            //( ref_avail, ref ) = cycleSelect( _cycle, role );  
+
+            ref = cycle.statuses[ role ].availables[ ref_avail ];
             CycleAnalystStatus storage cas = cycle.analysts[ ref ].analyst_status[ role ];
             cas.rounds = uint16InserttoBytes32( cas.rounds, _round, cas.num_rounds++ );
     
             RoundAnalyst storage ra = round.analysts[ round.num_analysts ];
-            ra.analyst = cycle.analysts[ ref ].analyst; 
-            ra.stat = i < 2 ? SCHEDULED_LEAD: SCHEDULED_JURIST;
-            RoundAnalystAdded( _cycle, _round, ra.analyst, round.num_analysts );
+            analyst = cycle.analysts[ ref ].analyst;
+            ra.analyst = ref_avail;  // temporarily put ref_avail here....cycle.analysts[ ref ].analyst; 
+            ra.stat = role == 0 ? SCHEDULED_LEAD: SCHEDULED_JURIST;
+            RoundAnalystAdded( _cycle, _round, analyst, round.num_analysts );
             round.num_analysts++;
             registry.activateRound( ra.analyst, _round );
+
+            if (--num_needed > 0) {
+                //LogLottery( ref_avail, num_needed, cycle.statuses[ role ].num_availables );
+                // Note: repeat if already lead in this round!! fix me.
+                ref_avail = lotteryNext( ref_avail, num_needed, cycle.statuses[ role ].num_availables );
+                //LogLottery( ref_avail, num_needed, cycle.statuses[ role ].num_availables );
+            }
+                
         }
+        
+        // reduce availabiles from the bottom, so don't disturb other avail refs while reducing
+        i = 2 + num_jurists;
+        do {
+            role = --i < 2 ? 0 : 1;
+            ra = round.analysts[ i ];
+            ref_avail = uint16( ra.analyst ); // take it back and put the real analyst
+            ra.analyst = cycle.analysts[ cycle.statuses[ role ].availables[ ref_avail ] ].analyst;
+            cycleAvailabilityReduce( _cycle, role, ref_avail ); 
+        } while ( i != 0 );
+        
         RoundPopulated( _cycle, _round, round.num_analysts, 2 );
     }
     
@@ -595,10 +631,13 @@ contract RatingAgency {
         min = uint16(a) < b ? a : uint8(b); 
     }
     /* Generate random number 0 to n-1 (based on last block hash) */
-    function randomIdx(uint seed, uint n) public constant returns (uint randomNumber) {
-        return(uint(keccak256(block.blockhash(block.number-1), seed ))%(n-1));
+    function randomIdx( uint seed, uint n ) public constant returns ( uint rand ) {
+        rand = n <= 1 ? 0 : uint(keccak256(block.blockhash( block.number-1 ), seed ) ) % ( n - 1 ) ;
     }
     
+    function lotteryNext( uint16 _last, uint16 _need, uint16 _total ) public view returns ( uint16 next ) {
+        next = _last + uint16( randomIdx( _last, ( _total - _last ) / _need - 1 ) ) + 1;  
+    } 
     /* 
      *  Test code
     */

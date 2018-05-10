@@ -2,7 +2,7 @@
 
 import { getRatingAgency as RatingAgency } from '../contracts'
 import { appConfig }        from '../../config'
-
+import { parseB32StringtoUintArray } from '../utils'
 import { store } from '../../Root'
 
 export const getCronInfo = () => {
@@ -98,11 +98,14 @@ export const getCycleInfo = ( cycle, analyst = 0) => new Promise( (resolve, reje
         res.incycle_ref = rCycleAnalyst[ 0 ].toNumber()
         res.role = []
         for ( let i=0; i<2; i++ ){
+          let num_volunteers = rCycleAnalyst[ 1 + i*4 ].toNumber()
+          let num_confirms = rCycleAnalyst[ 2 + i*4 ].toNumber()
+          let num_rounds = rCycleAnalyst[ 3 + i*4 ].toNumber()
           res.role.push( { 
-            num_volunteers: rCycleAnalyst[ 1 + i*4 ].toNumber(),
-            num_confirms: rCycleAnalyst[ 2 + i*4 ].toNumber(),
-            num_rounds: rCycleAnalyst[ 3 + i*4 ].toNumber(),
-            rounds: rCycleAnalyst[ 4 + i*4 ] // need to convert to array
+            num_volunteers: num_volunteers,
+            num_confirms: num_confirms,
+            num_rounds: num_rounds,
+            rounds: parseB32StringtoUintArray( rCycleAnalyst[ 4 + i*4 ], num_rounds ) 
           } )
         }
         console.log( 'got cycle info all ',res)     

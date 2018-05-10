@@ -9,6 +9,7 @@ import {
   AnimatedView, 
   Breadcrumb 
 } from '../../components'
+import * as _ from 'lodash'
 
 import { appConfig as config } from '../../config'
 
@@ -59,7 +60,7 @@ class Availability extends PureComponent {
       name: 'Sign-Up',
       className: colDefault,
       dataIndex: 'analyst_status',
-      renderer: ( { cycle, id } ) => 
+      renderer: ( { value, id } ) => 
         <div>
         { cycle.role[1].num_volunteers < config.ROUNDS_PER_CYCLE_JURIST && 
           <button type="button" className="btn btn-primary btn-xs" onClick={(e)=> this.signup(e,id)}>
@@ -82,22 +83,18 @@ class Availability extends PureComponent {
       name: 'Token',
       className: colDefault,
       dataIndex: 'token',
-      renderer: ( { token, id } ) => 
-        <Link to={"/token/"+token.id}>{ token.symbol }</Link>
-    },
-    {
+      renderer: ( { value, id } ) => 
+        <Link to={"/token/"+value.token}>{ _.find(tokens,['id',value.token]).symbol }</Link>
+    },{
       name: 'Round',
       className: colDefault,
       dataIndex: 'round',
-      renderer: ( { round, id } ) => 
-        <Link to={"/round/"+round.id}>{ round.id }</Link>
-    },
-    {
+      renderer: ( { value, id } ) => 
+        <Link to={"/round/"+value.round}>{ value.round }</Link>
+    },{
       name: 'Role',
       dataIndex: 'role',
-      className: colDefault,
-      renderer: ( { role, id } ) => 
-        <span>{ role == 0?"Lead":"Jurist" }</span> 
+      className: colDefault
     }
   ]
 
@@ -107,8 +104,8 @@ class Availability extends PureComponent {
       name: 'Token',
       className: colDefault,
       dataIndex: 'token',
-      renderer: ( { token, id } ) => 
-        <Link to={"/token/"+token.id}>{ token.symbol }</Link>
+      renderer: ( { value, id } ) => 
+        <Link to={"/token/"+value.token}>{ _.find(tokens,['id',value.token]).symbol }</Link>
     },{
       name: 'Role',
       className: colDefault,
@@ -116,8 +113,8 @@ class Availability extends PureComponent {
     },{
       name: 'Confirm',
       className: colDefault,
-      renderer: ( { role, id } ) =>
-        <button type="button" className="btn btn-primary btn-xs" onClick={(e)=> this.confirm(e,id,role)}>
+      renderer: ( { value, id } ) =>
+        <button type="button" className="btn btn-primary btn-xs" onClick={(e)=> this.confirm(e,id,value)}>
           <span className="glyphicon glyphicon-star" aria-hidden="true" /> Confirm
         </button>
     }
@@ -183,6 +180,7 @@ class Availability extends PureComponent {
 
   render() {
     const { cycles, rounds, user, cronInfo, tokens } = this.props
+    console.log('props',this.props,tokens)
     //let columns = this.columns
     let signupColumns = this.signupColumns
     let activeColumns = this.activeColumns
@@ -197,12 +195,19 @@ class Availability extends PureComponent {
 
     const isVolunteer = cycle => cycle.role[ 0 ].num_volunteers || cycle.role[ 1 ].num_volunteers
     const isConfirmed = cycle => cycle.role[ 0 ].num_confirms || cycle.role[ 1 ].num_confirms
-    const hasRounds = cycle => cycle.role[ 0 ].num_rounds || cycle.role[ 1 ].num_rounds
+    const hasRounds = cycle => cycle.role.length && (cycle.role[ 0 ].num_rounds || cycle.role[ 1 ].num_rounds)
     const hasSignups = cycle => !isVolunteer( cycle ) && !isConfirmed( cycle ) && !hasRounds( cycle ) 
+    const isFuture = cycle => cycle.id > activeNow
     const isActive = cycle => cycle.timestart >= now && cycle.timestart < nextTime 
     const isFinished = cycle => activeNow != cycle.id && cycle.timestart < now
 
-    const getRound = round_id => ( _.find( rounds,['id',round_id] ) )
+    const getRound = round_id => {
+      console.log('round_id',round_id,'rounds',...rounds)
+      let round = _.find( rounds,['id',round_id] )
+      console.log('found',round)
+      return round
+    }
+
     
 
     let comingVolunteerCycles = [] // signed up, need to confirm
@@ -229,16 +234,19 @@ class Availability extends PureComponent {
       })
     })
 
-    let comingSignupCycles = cycles.filter( hasSignups )
+    let comingSignupCycles = cycles.filter( isFuture )
 
     let activeCycles = []
     cycles.forEach( cycle => {
       if ( !isActive( cycle ) || !hasRounds( cycle ) ) return
       cycle.role.forEach( (role,idx) => {
         for ( let i = 0; i < role.num_rounds; i++ ){
-          let round = getRound( role.rounds[ i ] )
+          console.log('rounds for role',role,i,role.rounds)
+          console.log('tokens',...tokens)
+          let round = _.find( rounds,['id',role.rounds[ i ]] )
+          let token = _.find( tokens,['id',round.covered_token] )
           activeCycles.push(
-            [ ...cycle,{ role: config.role_name[idx], token: tokens[round.token].symbol, round: role.rounds[ i ]} ]
+            [ ...cycle,{ role: config.role_name[idx], token: token.symbol, round: role.rounds[ i ]} ]
           )
         }        
       })
@@ -249,9 +257,10 @@ class Availability extends PureComponent {
       if ( !isFinished( cycle ) ) return
       cycle.role.forEach( (role,idx) => {
         for ( let i = 0; i < role.num_rounds; i++ ){
-          let round = getRound( role.rounds[ i ] )
+          let round = _.find( rounds,['id',role.rounds[ i ]] )
+          let token = _.find( tokens,['id',round.covered_token] )
           finishedCycles.push(
-            [ ...cycle,{ role: role_name[idx], token: tokens[round.token].symbol, round: role.rounds[ i ]} ]
+            [ ...cycle,{ role: role_name[idx], token: token.symbol, round: role.rounds[ i ]} ]
           )
         }
       } )
@@ -349,13 +358,13 @@ class Availability extends PureComponent {
               }
               </div>
               { activeCycles.map( ( cycle, rowIdx ) => { 
-                  let cols = columns.map( ( col, colIdx ) => 
+                  let cols = activeColumns.map( ( col, colIdx ) => 
                     <div className={col.className} key={colIdx}>
                     { 
                       col.renderer && col.renderer({
                         column:colIdx,
                         row:rowIdx, 
-                        value:cycle[col.dataIndex]
+                        value:cycle
                       }) || cycle[col.dataIndex] 
                     }
                     </div> 
@@ -388,7 +397,7 @@ class Availability extends PureComponent {
                           column:colIdx, 
                           row:rowIdx, 
                           id:cycle.id, 
-                          value:cycle[col.dataIndex]
+                          value:cycle
                         }) || cycle[col.dataIndex] 
                       }
                     </div> 
@@ -415,7 +424,7 @@ class Availability extends PureComponent {
               }
               </div>
               { finishedCycles.map( (cycle,rowIdx) => { 
-                  let cols = columns.map( (col,colIdx) => 
+                  let cols = finishedColumns.map( (col,colIdx) => 
                     <div className={col.className} key={colIdx}>
                       { col.renderer 
                         && col.renderer({

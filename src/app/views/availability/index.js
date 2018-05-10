@@ -7,10 +7,12 @@ import Availability           from './Availability'
 
 const mapStateToProps = (state) => {
   return {
-    currentView:  state.views.currentView,
-    cycles: state.cycles.data,
-    cronInfo: state.cycles.cronInfo,
-    user: state.user
+    currentView:          state.views.currentView,
+    cycles:               state.cycles.data,
+    user:                 state.user.info,
+    tokens:               state.tokens.data,
+    rounds:               state.rounds.data,
+    cronInfo:             state.cycles.cronInfo
   }
 }
 

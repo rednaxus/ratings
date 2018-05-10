@@ -1,0 +1,6 @@
+rm -rf ./nets/01
+mkdir ./nets/01
+cp -r config/keystore ./nets/01
+geth \
+  --datadir ./nets/01 \
+  init config/genesis.json

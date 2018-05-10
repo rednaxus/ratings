@@ -1,0 +1,8 @@
+geth \
+  --datadir ./nets/01 \
+  --networkid 1042 \
+  --rpc \
+  --rpcport 8045 \
+  --ipcpath ./nets/01/geth.ipc \
+  --nodiscover
+  console

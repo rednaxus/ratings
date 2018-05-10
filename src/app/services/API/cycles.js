@@ -49,19 +49,31 @@ export const pulseCron = () => {
   })
 }
 
-export const cycleSignup = ( cycle, analyst, lead = false ) => new Promise( (resolve,reject) => {
+export const cycleSignup = ( cycle, analyst, role ) => new Promise( (resolve,reject) => {
   RatingAgency().then((ratingAgency) => {
-    ratingAgency.addAvailability( cycle, analyst, lead ).then( result => {
+    ratingAgency.cycleVolunteer( cycle, analyst, role ).then( result => {
       resolve( result ) // transaction, so only resolve is important
     })    
     .catch(result => { 
-      console.error("Error on addAvailability:"  + result) 
+      console.error("Error on cycleSignup:"  + result) 
       reject(result)
     })
   })
 
 })
 
+export const cycleConfirm = ( cycle, analyst, role ) => new Promise( (resolve,reject) => {
+  RatingAgency().then((ratingAgency) => {
+    ratingAgency.cycleConfirm( cycle, analyst, role ).then( result => {
+      resolve( result ) // transaction, so only resolve is important
+    })    
+    .catch(result => { 
+      console.error("Error on cycleConfirm:"  + result) 
+      reject(result)
+    })
+  })
+
+})
 
 export const getCycleInfo = ( cycle, analyst = 0) => new Promise( (resolve, reject ) => {
 

@@ -81,7 +81,7 @@ export const appConfig = {
   ],
   
   CYCLES_AHEAD: 4,
-
+  CYCLE_FRACTIONS: 4,  
   CYCLE_PERIOD: 86400 * 28,
   ACTIVE_TIME: 86400 * 28,
 
@@ -91,6 +91,12 @@ export const appConfig = {
   
   cycleTime: function ( cycle, ms = false ) {
     return ( ms ? 1000 : 1 ) * ( this.CYCLE_PERIOD * cycle / 4 + this.ZERO_BASE_TIME )
+  },
+
+  cycleIdx: function ( _time, ms = false ) {
+    if (ms) _time /= 1000
+    return( _time <= this.ZERO_BASE_TIME ? 0 
+      : this.CYCLE_FRACTIONS * ( _time - this.ZERO_BASE_TIME ) / this.CYCLE_PERIOD )
   },
 
   REPUTATION_LEAD: 12,
@@ -123,6 +129,8 @@ export const appConfig = {
   },
 
   REFERRAL_POINTS: 8,
+  ROUNDS_PER_CYCLE_LEAD: 2, // max rounds per cycle
+  ROUNDS_PER_CYCLE_JURIST: 5,
   WINNER_PCT: 40,
   LOSER_PCT: 10,
   TOP_JURISTS_X10: 34,   // percentages * 10   ... level:0
@@ -146,7 +154,10 @@ export const appConfig = {
       return idx === self.LEVELS.length-1 ? true : val < self.LEVELS[idx+1]
     })
   },
-
+  role_name: [ 
+    "Lead" : "Jurist" 
+  ],
+  
   ...customConfig
 
 }

@@ -18,7 +18,8 @@ export {
 	getCyclesData, 
 	getCronInfo, 
 	pulseCron, 
-	cycleSignup 
+	cycleSignup,
+	cycleConfirm
 } from './cycles'
 
 export { 

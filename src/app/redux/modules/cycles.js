@@ -9,7 +9,8 @@ import {
   getCyclesData, 
   getCronInfo, 
   pulseCron as pulse, 
-  cycleSignup as signup 
+  cycleSignup as signup,
+  cycleConfirm as confirm
 } from '../../services/API'
 
 const REQUEST_CYCLES_DATA   = 'REQUEST_CYCLES_DATA'
@@ -27,6 +28,10 @@ const ERROR_PULSE_CRON      = 'ERROR_PULSE_CRON'
 const REQUEST_CYCLE_SIGNUP  = 'REQUEST_CYCLE_SIGNUP'
 const RECEIVED_CYCLE_SIGNUP = 'RECEIVED_CYCLE_SIGNUP'
 const ERROR_CYCLE_SIGNUP    = 'ERROR_CYCLE_SIGNUP'
+
+const REQUEST_CYCLE_CONFIRM  = 'REQUEST_CYCLE_CONFIRM'
+const RECEIVED_CYCLE_CONFIRM = 'RECEIVED_CYCLE_CONFIRM'
+const ERROR_CYCLE_CONFIRM    = 'ERROR_CYCLE_CONFIRM'
 
 const initialState = {
   isFetching: false,
@@ -120,15 +125,9 @@ export const fetchCronInfo = () => {
 }
 
 export const pulseCron = () => {
-  const request = (time = moment().format()) => {
-    return { type: REQUEST_PULSE_CRON, time }
-  }
-  const success = (cron, time = moment().format()) => {
-    return { type: RECEIVED_PULSE_CRON, cron, time }
-  }
-  const failure = (time = moment().format()) => {
-    return { type: ERROR_PULSE_CRON, time }
-  }
+  const request = (time = moment().format()) => ( { type: REQUEST_PULSE_CRON, time } )
+  const success = (cron, time = moment().format()) => ( { type: RECEIVED_PULSE_CRON, cron, time } )
+  const failure = (time = moment().format()) => ( { type: ERROR_PULSE_CRON, time } )  
   return dispatch => {
     dispatch(request())
     console.log('pulsing cron')
@@ -141,21 +140,31 @@ export const pulseCron = () => {
   }
 }
 
-export const cycleSignup = ( cycle, lead = false ) => {
-  const request = (time = moment().format()) => {
-    return { type: REQUEST_CYCLE_SIGNUP, time }
-  }
-  const success = (time = moment().format()) => {
-    return { type: RECEIVED_CYCLE_SIGNUP, time }
-  }
-  const failure = (time = moment().format()) => {
-    return { type: ERROR_CYCLE_SIGNUP, time }
-  }
+export const cycleSignup = ( cycle, role ) => {
+  const request = (time = moment().format()) => ( { type: REQUEST_CYCLE_SIGNUP, time } )
+  const success = (time = moment().format()) => ( { type: RECEIVED_CYCLE_SIGNUP, time } )
+  const failure = (time = moment().format()) => ( { type: ERROR_CYCLE_SIGNUP, time } )
   return ( dispatch, getState ) => {
     dispatch(request())
     console.log('signing up')
     let analyst = getUser( getState() )
-    signup( cycle, analyst, lead ).then( result => {
+    signup( cycle, analyst, role ).then( result => {
+      dispatch( success() ) 
+      dispatch( fetchCyclesData() )
+    })
+    .catch( error => dispatch( failure(error) ) )
+  }
+}
+
+export const cycleConfirm = ( cycle, role ) => {
+  const request = (time = moment().format()) => ( { type: REQUEST_CYCLE_CONFIRM, time } )
+  const success = (time = moment().format()) => ( { type: RECEIVED_CYCLE_CONFIRM, time } )
+  const failure = (time = moment().format()) => ( { type: ERROR_CYCLE_CONFIRM, time } )
+  return ( dispatch, getState ) => {
+    dispatch(request())
+    console.log('confirming')
+    let analyst = getUser( getState() )
+    confirm( cycle, analyst, role ).then( result => {
       dispatch( success() ) 
       dispatch( fetchCyclesData() )
     })
@@ -167,5 +176,6 @@ export const cycleActions = {
   fetchCronInfo,
   pulseCron,
   fetchCyclesData,
-  cycleSignup
+  cycleSignup,
+  cycleConfirm
 }

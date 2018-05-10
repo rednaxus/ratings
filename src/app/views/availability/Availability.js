@@ -10,10 +10,10 @@ import {
   Breadcrumb 
 } from '../../components'
 
-import { appConfig } from '../../config'
+import { appConfig as config } from '../../config'
 
 const dateView = ({value,convert=true}) =>
-  <Moment className="text-warning" format="dddd YYYY-MM-DD HH:mm" date={ new Date(convert?value*1000:value) } />
+  <Moment className="text-purple" format="dddd YYYY-MM-DD HH:mm" date={ new Date(convert?value*1000:value) } />
 
 /*
                           id={id} 
@@ -50,21 +50,96 @@ class Availability extends PureComponent {
       className: colDefault,
       dataIndex: 'timefinish',
       renderer: dateView
-    },
+    }
+  ]
+
+  signupColumns = [
+    ...this.columns,
     {
-      name: 'Status',
+      name: 'Sign-Up',
       className: colDefault,
       dataIndex: 'analyst_status',
-      renderer: ({value,id}) => 
-        value && appConfig.CYCLE_STATUSES[value] || 
+      renderer: ( { cycle, id } ) => 
         <div>
+        { cycle.role[1].num_volunteers < config.ROUNDS_PER_CYCLE_JURIST && 
           <button type="button" className="btn btn-primary btn-xs" onClick={(e)=> this.signup(e,id)}>
             <span className="glyphicon glyphicon-star" aria-hidden="true"></span> Sign-Up
-          </button>
-          {this.canLead() && <button type="button" className="btn btn-primary btn-xs" onClick={(e)=> this.signup(e,id,true)}>
+          </button> || ""
+        }
+        { this.canLead() && 
+          cycle.role[0].num_volunteers < config.ROUNDS_PER_CYCLE_LEAD && 
+          <button type="button" className="btn btn-primary btn-xs" onClick={(e)=> this.signup(e,id,true)}>
             <span className="glyphicon glyphicon-star" aria-hidden="true"></span> Sign-Up Lead
-          </button> || ""}
+          </button> || ""
+        }
         </div>
+    }
+  ]
+
+  activeColumns = [
+    ...this.columns,
+    {
+      name: 'Token',
+      className: colDefault,
+      dataIndex: 'token',
+      renderer: ( { token, id } ) => 
+        <Link to={"/token/"+token.id}>{ token.symbol }</Link>
+    },
+    {
+      name: 'Round',
+      className: colDefault,
+      dataIndex: 'round',
+      renderer: ( { round, id } ) => 
+        <Link to={"/round/"+round.id}>{ round.id }</Link>
+    },
+    {
+      name: 'Role',
+      dataIndex: 'role',
+      className: colDefault,
+      renderer: ( { role, id } ) => 
+        <span>{ role == 0?"Lead":"Jurist" }</span> 
+    }
+  ]
+
+  volunteerColumns = [
+    ...this.columns,
+    {
+      name: 'Token',
+      className: colDefault,
+      dataIndex: 'token',
+      renderer: ( { token, id } ) => 
+        <Link to={"/token/"+token.id}>{ token.symbol }</Link>
+    },{
+      name: 'Role',
+      className: colDefault,
+      dataIndex: 'role', 
+    },{
+      name: 'Confirm',
+      className: colDefault,
+      renderer: ( { role, id } ) =>
+        <button type="button" className="btn btn-primary btn-xs" onClick={(e)=> this.confirm(e,id,role)}>
+          <span className="glyphicon glyphicon-star" aria-hidden="true" /> Confirm
+        </button>
+    }
+  ]
+
+  confirmedColumns = [
+    ...this.columns,
+    {
+      name: 'Role',
+      className: colDefault,
+      dataIndex: 'role'
+    }
+  ]
+
+  finishedColumns = [
+    ...this.activeColumns,
+    {
+      name: 'Earnings',
+      className: colDefault,
+      dataIndex: 'earnings',
+      renderer: ( { value, id } ) => 
+        <span>{ value }</span>
     }
   ]
 
@@ -86,13 +161,19 @@ class Availability extends PureComponent {
   }
 
   canLead() { 
-    return this.props.user.info.reputation >= appConfig.REPUTATION_LEAD
+    return this.props.user.info.reputation >= config.REPUTATION_LEAD
   }
 
-  signup(e,id,lead=false) {
+  signup( e, id, role ) {
     const { actions: { cycleSignup } } = this.props
     console.log('signup',id,lead)
     cycleSignup( id,lead )
+  }
+  
+  confirm( e, id, role ) {
+    const { actions: { cycleConfirm } } = this.props
+    console.log('signup',id,lead)
+    cycleConfirm( id,lead )
   }
 
   cyclesPanel({cycles,title}) {
@@ -101,24 +182,194 @@ class Availability extends PureComponent {
   }
 
   render() {
-    const { cycles, user, cronInfo } = this.props
-    let columns = this.columns
-    let now = cronInfo / 1000
-    console.log('cycles',cycles,now)
+    const { cycles, rounds, user, cronInfo, tokens } = this.props
+    //let columns = this.columns
+    let signupColumns = this.signupColumns
+    let activeColumns = this.activeColumns
+    let finishedColumns = this.finishedColumns
+    let confirmedColumns = this.confirmedColumns
+    let volunteerColumns = this.volunteerColumns
 
-    let comingSignupCycles = cycles.filter( cycle => !cycle.analyst_status && cycle.timestart > now )
-    let comingCycles = cycles.filter( cycle => cycle.analyst_status && cycle.timestart > now )
-    let activeCycles = cycles.filter( cycle => cycle.analyst_status && cycle.timestart <= now && cycle.timefinish >= now )
+    let now = cronInfo / 1000
+    let nextTime = config.cycleTime( config.cycleIdx( now ) + 1 )
+    let activeNow = config.cycleIdx( now )
+    console.log('cycles',cycles,now,nextTime)
+
+    const isVolunteer = cycle => cycle.role[ 0 ].num_volunteers || cycle.role[ 1 ].num_volunteers
+    const isConfirmed = cycle => cycle.role[ 0 ].num_confirms || cycle.role[ 1 ].num_confirms
+    const hasRounds = cycle => cycle.role[ 0 ].num_rounds || cycle.role[ 1 ].num_rounds
+    const hasSignups = cycle => !isVolunteer( cycle ) && !isConfirmed( cycle ) && !hasRounds( cycle ) 
+    const isActive = cycle => cycle.timestart >= now && cycle.timestart < nextTime 
+    const isFinished = cycle => activeNow != cycle.id && cycle.timestart < now
+
+    const getRound = round_id => ( _.find( rounds,['id',round_id] ) )
+    
+
+    let comingVolunteerCycles = [] // signed up, need to confirm
+    cycles.forEach ( cycle => {
+      if ( !isVolunteer( cycle ) ) return
+      cycle.role.forEach( (role,idx) => {
+        for ( let i = 0; i < role.num_volunteers; i++ ){
+          comingVolunteerCycles.push(
+            [ ...cycle, { role: config.role_name[idx] } ]
+          )
+        }
+      } )
+    } )
+
+    let comingConfirmedCycles = [] // signed up, need to confirm
+    cycles.forEach ( cycle => {
+      if ( !isVolunteer( cycle ) ) return
+      cycle.role.forEach( ( role,idx ) => {
+        for ( let i = 0; i < role.num_confirms; i++ ){
+          comingConfirmedCycles.push(
+            [ ...cycle, { role: config.role_name[idx] } ]
+          )
+        }
+      })
+    })
+
+    let comingSignupCycles = cycles.filter( hasSignups )
+
+    let activeCycles = []
+    cycles.forEach( cycle => {
+      if ( !isActive( cycle ) || !hasRounds( cycle ) ) return
+      cycle.role.forEach( (role,idx) => {
+        for ( let i = 0; i < role.num_rounds; i++ ){
+          let round = getRound( role.rounds[ i ] )
+          activeCycles.push(
+            [ ...cycle,{ role: config.role_name[idx], token: tokens[round.token].symbol, round: role.rounds[ i ]} ]
+          )
+        }        
+      })
+    })    
+    
+    let finishedCycles = []
+    cycles.forEach ( cycle => {
+      if ( !isFinished( cycle ) ) return
+      cycle.role.forEach( (role,idx) => {
+        for ( let i = 0; i < role.num_rounds; i++ ){
+          let round = getRound( role.rounds[ i ] )
+          finishedCycles.push(
+            [ ...cycle,{ role: role_name[idx], token: tokens[round.token].symbol, round: role.rounds[ i ]} ]
+          )
+        }
+      } )
+    } )
+
     console.log('signup cycles',comingSignupCycles)
-    console.log('coming cycles',comingCycles)
+    console.log('volunteer cycles',comingVolunteerCycles)
+    console.log('confirmed cycles',comingConfirmedCycles)
     console.log('active cycles',activeCycles)
+    console.log('finished cycles',finishedCycles)
+
     return(
       <AnimatedView>
         <Breadcrumb path={["dashboard","availability"]}></Breadcrumb>
         <small className="pull-right">time last checked: { dateView( { value:cronInfo,convert:false} ) }</small> 
-        { !comingSignupCycles.length ? <h2>All rounds signed up, check back later</h2> :
+         { !comingVolunteerCycles.length ? "" :
         <div>
-          <h2>Sign up for coming rounds</h2>
+          <h2 className="text-red">Awaiting confirmations</h2>
+          <Panel>
+            <Panel.Heading>
+              <Panel.Title>Rounds forming...confirm now</Panel.Title>
+            </Panel.Heading>
+            <Panel.Body>
+              <div className="row">
+              { 
+                volunteerColumns.map( ( col, colIdx ) => 
+                  <div key={colIdx} className={col.className}>{col.name}</div> 
+                )
+              }
+              </div>
+              { comingVolunteerCycles.map( ( cycle, rowIdx ) => {
+                  let cols = confirmColumns.map( ( col,colIdx ) => 
+                    <div className={ col.className } key={ colIdx }>
+                    { 
+                      col.renderer && col.renderer({
+                        column: colIdx, 
+                        row:    rowIdx, 
+                        id:     cycle.id, 
+                        value:  cycle
+                      }) || cycle[col.dataIndex] 
+                    }
+                    </div> 
+                  )
+                  return <div className="row" key={rowIdx}>{cols}</div>
+                })
+              }
+            </Panel.Body>
+          </Panel>
+         </div>
+        }
+        <div>
+          <Panel>
+            <Panel.Heading>
+              <Panel.Title>Confirmed rounds, awaiting start</Panel.Title>
+            </Panel.Heading>
+            <Panel.Body>
+              <div className="row">
+              { 
+                confirmedColumns.map( ( col, colIdx ) => 
+                  <div key={colIdx} className={col.className}>{col.name}</div> 
+                )
+              }
+              </div>
+              { comingConfirmedCycles.map( ( cycle, rowIdx ) => {
+                  let cols = confirmedColumns.map( ( col,colIdx ) => 
+                    <div className={ col.className } key={ colIdx }>
+                    { 
+                      col.renderer && col.renderer({
+                        column: colIdx, 
+                        row:    rowIdx, 
+                        id:     cycle.id, 
+                        value:  cycle
+                      }) || cycle[col.dataIndex] 
+                    }
+                    </div> 
+                  )
+                  return <div className="row" key={rowIdx}>{cols}</div>
+                })
+              }
+            </Panel.Body>
+          </Panel>
+         </div>
+        }
+        { !activeCycles.length ? "" : 
+        <div> 
+          <Panel>
+            <Panel.Heading>
+              <Panel.Title>Currently active rounds</Panel.Title>
+            </Panel.Heading>
+            <Panel.Body>
+              <div className="row">
+              { 
+                activeColumns.map( (col,colIdx) => 
+                  <div className={col.className} key={colIdx}>{col.name}</div> )
+              }
+              </div>
+              { activeCycles.map( ( cycle, rowIdx ) => { 
+                  let cols = columns.map( ( col, colIdx ) => 
+                    <div className={col.className} key={colIdx}>
+                    { 
+                      col.renderer && col.renderer({
+                        column:colIdx,
+                        row:rowIdx, 
+                        value:cycle[col.dataIndex]
+                      }) || cycle[col.dataIndex] 
+                    }
+                    </div> 
+                  )
+                  return <div className="row" key={rowIdx} >{cols}</div>
+                })
+              }
+            </Panel.Body>
+          </Panel>
+        </div>
+        }
+        { !comingSignupCycles.length ? <h2>All rounds signed up</h2> :
+        <div>
+          <h2 className="text-red">Sign up for coming rounds</h2>
           <Panel>
             <Panel.Heading>
               <Panel.Title>Upcoming rounds available....</Panel.Title>
@@ -126,15 +377,19 @@ class Availability extends PureComponent {
             <Panel.Body>
               <div className="row">
               { 
-                columns.map( (col,colIdx) => <div key={colIdx} className={col.className}>{col.name}</div> )
+                signupColumns.map( (col,colIdx) => <div key={colIdx} className={col.className}>{col.name}</div> )
               }
               </div>
-              { comingSignupCycles.map( (cycle,rowIdx) => { 
-                  let cols = columns.map( (col,colIdx) => 
+              { comingSignupCycles.map( ( cycle, rowIdx ) => { 
+                  let cols = signupColumns.map( ( col, colIdx ) => 
                     <div className={col.className} key={colIdx}>
                       { col.renderer 
-                        && col.renderer({column:colIdx, row:rowIdx, id:cycle.id, value:cycle[col.dataIndex]}) 
-                        || cycle[col.dataIndex] 
+                        && col.renderer({
+                          column:colIdx, 
+                          row:rowIdx, 
+                          id:cycle.id, 
+                          value:cycle[col.dataIndex]
+                        }) || cycle[col.dataIndex] 
                       }
                     </div> 
                   )
@@ -145,23 +400,29 @@ class Availability extends PureComponent {
           </Panel>
          </div>
         }
-        { !comingCycles.length ? "" : 
+        { !finishedCycles.length ? "" : 
         <div>
           <hr/>
           <Panel>
             <Panel.Heading>
-              <Panel.Title>Rounds signed up</Panel.Title>
+              <Panel.Title>Evaluation rounds finished</Panel.Title>
             </Panel.Heading>
             <Panel.Body>
               <div className="row">
-                { columns.map( (col,colIdx) => <div className={col.className} key={colIdx}>{col.name}</div> )
-                }
+              { 
+                finishedColumns.map( ( col,colIdx ) => 
+                  <div className={col.className} key={colIdx}>{col.name}</div> )
+              }
               </div>
-              { comingCycles.map( (cycle,rowIdx) => { 
+              { finishedCycles.map( (cycle,rowIdx) => { 
                   let cols = columns.map( (col,colIdx) => 
                     <div className={col.className} key={colIdx}>
                       { col.renderer 
-                        && col.renderer({column:colIdx,row:rowIdx, value:cycle[col.dataIndex]}) 
+                        && col.renderer({
+                          column:colIdx,
+                          row:rowIdx, 
+                          value:cycle[col.dataIndex]
+                        }) 
                         || cycle[col.dataIndex] 
                       }
                     </div> 
@@ -173,33 +434,7 @@ class Availability extends PureComponent {
           </Panel>
         </div>
         }
-        { !activeCycles.length ? "" : 
-        <div> 
-          <Panel>
-            <Panel.Heading>
-              <Panel.Title>Currently active rounds</Panel.Title>
-            </Panel.Heading>
-            <Panel.Body>
-              <div className="row">
-                { columns.map( (col,colIdx) => <div className={col.className} key={colIdx}>{col.name}</div> )
-                }
-              </div>
-              { activeCycles.map( (cycle,rowIdx) => { 
-                  let cols = columns.map( (col,colIdx) => 
-                    <div className={col.className} key={colIdx}>
-                      { col.renderer 
-                        && col.renderer({column:colIdx,row:rowIdx, value:cycle[col.dataIndex]}) 
-                        || cycle[col.dataIndex] 
-                      }
-                    </div> 
-                  )
-                  return <div className="row" key={rowIdx} >{cols}</div>
-                })
-              }
-            </Panel.Body>
-          </Panel>
-        </div>
-        }
+
       </AnimatedView>
     );
   }

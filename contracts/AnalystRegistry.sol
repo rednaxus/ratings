@@ -18,7 +18,8 @@ contract AnalystRegistry {
     uint8 constant REWARD_ROUND_POINTS_JURY_MIDDLE = 11;
     uint8 constant REWARD_ROUND_POINTS_JURY_BOTTOM = 12;
     uint8 constant REWARD_ROUND_POINTS_NEGATIVE = 13;
-    
+
+    uint8 constant REWARD_BONUS = 19;
     uint8 constant REWARD_PROMOTION = 20;
     uint8 constant REFERRAL_POINTS = 21;
 
@@ -304,7 +305,7 @@ contract AnalystRegistry {
             bytes32 email = bytesOntoBytes32( b32, b, 4, 2 );
             register( email, 'veva', 0); // make up phony name based on id
             if ( new_leads > 0 ) {
-                rewardPoints( i, REWARD_PROMOTION, levels[LEAD_LEVEL][0], LEAD_LEVEL);
+                rewardPoints( i, REWARD_BONUS, levels[LEAD_LEVEL][0], LEAD_LEVEL);
                 new_leads--;
             }
         }

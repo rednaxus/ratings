@@ -14,7 +14,7 @@ import * as _ from 'lodash'
 import { appConfig as config } from '../../config'
 
 const dateView = ({value,convert=true}) =>
-  <Moment className="text-purple" format="dddd YYYY-MM-DD HH:mm" date={ new Date(convert?value*1000:value) } />
+  <Moment className="text-purple" format="dddd YYYY-MM-DD" date={ new Date(convert?value*1000:value) } />
 
 /*
                           id={id} 
@@ -28,7 +28,8 @@ const dateView = ({value,convert=true}) =>
 
 */
 
-const colDefault = 'col-md-3 col-xs-3 text-center'
+const colDefault = 'col-md-2 col-xs-2 text-center'
+//const colDefault2 = 'col-md-2 col-md-2 text-center'
 
 class Availability extends PureComponent {
   enterAnimationTimer = null
@@ -60,17 +61,17 @@ class Availability extends PureComponent {
       name: 'Sign-Up',
       className: colDefault,
       dataIndex: 'analyst_status',
-      renderer: ( { value, id } ) => 
+      renderer: ( { cycle, id } ) => // i.e. cycle
         <div>
         { cycle.role[1].num_volunteers < config.ROUNDS_PER_CYCLE_JURIST && 
           <button type="button" className="btn btn-primary btn-xs" onClick={(e)=> this.signup(e,id)}>
-            <span className="glyphicon glyphicon-star" aria-hidden="true"></span> Sign-Up
+            <span className="glyphicon glyphicon-star" aria-hidden="true"></span> { config.role_name[1] }
           </button> || ""
         }
         { this.canLead() && 
           cycle.role[0].num_volunteers < config.ROUNDS_PER_CYCLE_LEAD && 
           <button type="button" className="btn btn-primary btn-xs" onClick={(e)=> this.signup(e,id,true)}>
-            <span className="glyphicon glyphicon-star" aria-hidden="true"></span> Sign-Up Lead
+            <span className="glyphicon glyphicon-star" aria-hidden="true"></span> { config.role_name[0] }
           </button> || ""
         }
         </div>
@@ -83,14 +84,16 @@ class Availability extends PureComponent {
       name: 'Token',
       className: colDefault,
       dataIndex: 'token',
-      renderer: ( { value, id } ) => 
-        <Link to={"/token/"+value.token}>{ _.find(tokens,['id',value.token]).symbol }</Link>
+      renderer: ( { cycle, id } ) => {
+        console.log('tokens',this.props.tokens,'token',cycle)
+        return <Link to={"/token/"+cycle.token}>{ _.find(this.props.tokens,['id',cycle.token]).symbol }</Link>
+      }
     },{
       name: 'Round',
       className: colDefault,
       dataIndex: 'round',
-      renderer: ( { value, id } ) => 
-        <Link to={"/round/"+value.round}>{ value.round }</Link>
+      renderer: ( { cycle, id } ) => 
+        <Link to={"/round/"+cycle.round}>{ cycle.round }</Link>
     },{
       name: 'Role',
       dataIndex: 'role',
@@ -101,12 +104,6 @@ class Availability extends PureComponent {
   volunteerColumns = [
     ...this.columns,
     {
-      name: 'Token',
-      className: colDefault,
-      dataIndex: 'token',
-      renderer: ( { value, id } ) => 
-        <Link to={"/token/"+value.token}>{ _.find(tokens,['id',value.token]).symbol }</Link>
-    },{
       name: 'Role',
       className: colDefault,
       dataIndex: 'role', 
@@ -158,7 +155,7 @@ class Availability extends PureComponent {
   }
 
   canLead() { 
-    return this.props.user.info.reputation >= config.REPUTATION_LEAD
+    return this.props.user.reputation >= config.REPUTATION_LEAD
   }
 
   signup( e, id, role ) {
@@ -215,9 +212,7 @@ class Availability extends PureComponent {
       if ( !isVolunteer( cycle ) ) return
       cycle.role.forEach( (role,idx) => {
         for ( let i = 0; i < role.num_volunteers; i++ ){
-          comingVolunteerCycles.push(
-            [ ...cycle, { role: config.role_name[idx] } ]
-          )
+          comingVolunteerCycles.push( { ...cycle, role: config.role_name[idx] } )
         }
       } )
     } )
@@ -227,9 +222,7 @@ class Availability extends PureComponent {
       if ( !isVolunteer( cycle ) ) return
       cycle.role.forEach( ( role,idx ) => {
         for ( let i = 0; i < role.num_confirms; i++ ){
-          comingConfirmedCycles.push(
-            [ ...cycle, { role: config.role_name[idx] } ]
-          )
+          comingConfirmedCycles.push( { ...cycle, role: config.role_name[idx] } )
         }
       })
     })
@@ -244,9 +237,9 @@ class Availability extends PureComponent {
           console.log('rounds for role',role,i,role.rounds)
           console.log('tokens',...tokens)
           let round = _.find( rounds,['id',role.rounds[ i ]] )
-          let token = _.find( tokens,['id',round.covered_token] )
+          //let token = _.find( tokens,['id',round.covered_token] )
           activeCycles.push(
-            [ ...cycle,{ role: config.role_name[idx], token: token.symbol, round: role.rounds[ i ]} ]
+            { ...cycle,role: config.role_name[idx], token: round.covered_token, round: role.rounds[ i ] }
           )
         }        
       })
@@ -258,9 +251,9 @@ class Availability extends PureComponent {
       cycle.role.forEach( (role,idx) => {
         for ( let i = 0; i < role.num_rounds; i++ ){
           let round = _.find( rounds,['id',role.rounds[ i ]] )
-          let token = _.find( tokens,['id',round.covered_token] )
+          //let token = _.find( tokens,['id',round.covered_token] )
           finishedCycles.push(
-            [ ...cycle,{ role: role_name[idx], token: token.symbol, round: role.rounds[ i ]} ]
+            { ...cycle, role: role_name[idx], token: round.covered_token, round: role.rounds[ i ]}
           )
         }
       } )
@@ -299,7 +292,8 @@ class Availability extends PureComponent {
                         column: colIdx, 
                         row:    rowIdx, 
                         id:     cycle.id, 
-                        value:  cycle
+                        value:  cycle[col.dataIndex],
+                        cycle:  cycle
                       }) || cycle[col.dataIndex] 
                     }
                     </div> 
@@ -332,8 +326,9 @@ class Availability extends PureComponent {
                         column: colIdx, 
                         row:    rowIdx, 
                         id:     cycle.id, 
-                        value:  cycle
-                      }) || cycle[col.dataIndex] 
+                        value:  cycle[ col.dataIndex ],
+                        cycle:  cycle
+                      }) || cycle[ col.dataIndex ] 
                     }
                     </div> 
                   )
@@ -364,7 +359,8 @@ class Availability extends PureComponent {
                       col.renderer && col.renderer({
                         column:colIdx,
                         row:rowIdx, 
-                        value:cycle
+                        value:cycle[col.dataIndex],
+                        cycle: cycle
                       }) || cycle[col.dataIndex] 
                     }
                     </div> 
@@ -394,10 +390,11 @@ class Availability extends PureComponent {
                     <div className={col.className} key={colIdx}>
                       { col.renderer 
                         && col.renderer({
-                          column:colIdx, 
-                          row:rowIdx, 
-                          id:cycle.id, 
-                          value:cycle
+                          column:   colIdx, 
+                          row:      rowIdx, 
+                          id:       cycle.id, 
+                          value:    cycle[ col.dataIndex ],
+                          cycle:    cycle
                         }) || cycle[col.dataIndex] 
                       }
                     </div> 
@@ -428,9 +425,10 @@ class Availability extends PureComponent {
                     <div className={col.className} key={colIdx}>
                       { col.renderer 
                         && col.renderer({
-                          column:colIdx,
-                          row:rowIdx, 
-                          value:cycle[col.dataIndex]
+                          column:   colIdx,
+                          row:      rowIdx, 
+                          value:    cycle[ col.dataIndex ],
+                          cycle:    cycle
                         }) 
                         || cycle[col.dataIndex] 
                       }

@@ -460,6 +460,7 @@ contract RatingAgency {
         uint8 num_jurists = min_jury( JURY_SIZE, cycle.statuses[ 1 ].num_availables );
         uint8 num_needed;
         uint8 role;
+        uint16[2]  memory leads_ref; // exclude from jury
         for ( uint8 i = 0; i < 2 + num_jurists; i++ ) {
             if (i == 0) { // first two are bull/bear leads
                 role = 0;
@@ -479,16 +480,19 @@ contract RatingAgency {
             RoundAnalyst storage ra = round.analysts[ round.num_analysts ];
             analyst = cycle.analysts[ ref ].analyst;
             ra.analyst = ref_avail;  // temporarily put ref_avail here....cycle.analysts[ ref ].analyst; 
-            ra.stat = role == 0 ? SCHEDULED_LEAD: SCHEDULED_JURIST;
+            if (role == 0) {
+                ra.stat = SCHEDULED_LEAD;
+                leads_ref[ i ] = ref;
+            } else ra.stat = SCHEDULED_JURIST;
             RoundAnalystAdded( _cycle, _round, analyst, round.num_analysts );
             round.num_analysts++;
-            registry.activateRound( ra.analyst, _round );
 
             if (--num_needed > 0) {
-                //LogLottery( ref_avail, num_needed, cycle.statuses[ role ].num_availables );
-                // Note: repeat if already lead in this round!! fix me.
-                ref_avail = lotteryNext( ref_avail, num_needed, cycle.statuses[ role ].num_availables );
-                //LogLottery( ref_avail, num_needed, cycle.statuses[ role ].num_availables );
+                do { // for jury don't use leads already in round
+                    ref_avail = lotteryNext( ref_avail, num_needed, cycle.statuses[ role ].num_availables );
+                    //LogLottery( ref_avail, num_needed, cycle.statuses[ role ].num_availables );
+                    ref = cycle.statuses[ role ].availables[ ref_avail ];
+                } while ( role == 1 && ( ref == leads_ref[0] || ref == leads_ref[1] ) );
             }
                 
         }

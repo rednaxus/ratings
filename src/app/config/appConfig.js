@@ -154,9 +154,7 @@ export const appConfig = {
       return idx === self.LEVELS.length-1 ? true : val < self.LEVELS[idx+1]
     })
   },
-  role_name: [ 
-    "Lead" : "Jurist" 
-  ],
+  role_name: [ "Lead","Jurist" ],
   
   ...customConfig
 

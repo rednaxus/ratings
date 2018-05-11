@@ -26,8 +26,8 @@ export const navigation = {
           faIconName: 'fa-server'
         },
         {
-          name: 'Availability',
-          linkTo: '/availability',
+          name: 'Scheduling',
+          linkTo: '/scheduling',
           faIconName: 'fa-eye'
         },
         /*{

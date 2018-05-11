@@ -536,7 +536,7 @@ const data = [
 
 export const AnalystMessages = ( props ) => {
   console.log('analyst messages',props)
-  let generatedMessages =[] //generateMessages( props )
+  let generatedMessages = generateMessages( props )
   console.log('generated messages',generatedMessages)
   return generatedMessages.map( (message,idx) =>
     <div className = "row" key={idx} >

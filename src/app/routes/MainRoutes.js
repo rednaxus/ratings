@@ -73,7 +73,7 @@ export const MainRoutes = () => (
     */ }
     <Route path="/token/:token_id" component={ Token } />
     
-    <Route path="/availability" component={ Availability }  />
+    <Route path="/scheduling" component={ Availability }  />
     { /* <Route path="/Analyst/survey" component={ Survey } /> 
         <Route path="/admin/roundCycles" component={ RoundCycles } />
     */}

@@ -12,6 +12,7 @@ import {
   cycleSignup as signup,
   cycleConfirm as confirm
 } from '../../services/API'
+import { userActions } from './actions'
 
 const REQUEST_CYCLES_DATA   = 'REQUEST_CYCLES_DATA'
 const RECEIVED_CYCLES_DATA  = 'RECEIVED_CYCLES_DATA'
@@ -150,6 +151,7 @@ export const cycleSignup = ( cycle, role ) => {
     let analyst = getUser( getState() )
     signup( cycle, analyst, role ).then( result => {
       dispatch( success() ) 
+      //dispatch( userActions.refreshInfo() )
       dispatch( fetchCyclesData() )
     })
     .catch( error => dispatch( failure(error) ) )
@@ -166,6 +168,7 @@ export const cycleConfirm = ( cycle, role ) => {
     let analyst = getUser( getState() )
     confirm( cycle, analyst, role ).then( result => {
       dispatch( success() ) 
+      //dispatch( userActions.refreshInfo() )
       dispatch( fetchCyclesData() )
     })
     .catch( error => dispatch( failure(error) ) )

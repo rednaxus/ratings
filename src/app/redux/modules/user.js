@@ -83,7 +83,7 @@ export const refreshInfo = (deep = true) => { // get from id, deep means to get 
             if ( !allRounds.length ) returnSuccess( userInfo )
             allRounds.forEach( round => {
               numFetches++
-              fetchRoundInfo( round )( dispatch, getState ).then( ( roundInfo ) => {
+              fetchRoundInfo( round )( dispatch, getState ).then( roundInfo => {
                 console.log('got round info', round, roundInfo )
                 fetchRoundAnalystInfo( round, user_id )( dispatch, getState ).then( ( roundAnalystInfo ) => {
                   console.log('got round analyst info', round, roundAnalystInfo )

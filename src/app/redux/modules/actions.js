@@ -28,7 +28,8 @@ export {
   fetchCyclesDataIfNeeded, 
   fetchCronInfo, 
   pulseCron,
-  cycleSignup
+  cycleSignup,
+  cycleConfirm
 }       from './cycles'
 
 export { 

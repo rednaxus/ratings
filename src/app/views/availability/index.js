@@ -20,11 +20,12 @@ const mapDispatchToProps = (dispatch) => {
   return {
     actions : bindActionCreators(
       {
-        enterAvailability: actions.enterAvailability,
-        leaveAvailability: actions.leaveAvailability,
-        fetchCyclesDataIfNeeded: actions.fetchCyclesDataIfNeeded,
-        fetchCronInfo: actions.fetchCronInfo,
-        cycleSignup: actions.cycleSignup
+        enterAvailability:        actions.enterAvailability,
+        leaveAvailability:        actions.leaveAvailability,
+        fetchCyclesDataIfNeeded:  actions.fetchCyclesDataIfNeeded,
+        fetchCronInfo:            actions.fetchCronInfo,
+        cycleSignup:              actions.cycleSignup,
+        cycleConfirm:             actions.cycleConfirm
       },
       dispatch)
   }

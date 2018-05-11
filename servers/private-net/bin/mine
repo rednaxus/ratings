@@ -1,0 +1,14 @@
+#/Users/chafey/src/OpenSource/go-ethereum/build/bin/geth \
+geth \
+  --datadir ./nets/01 \
+  --networkid 1042 \
+  --rpc \
+  --rpcapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" \
+  --rpcport 8045
+  --ipcpath ./nets/01/geth.ipc \
+  --nodiscover \
+  --mine \
+  --minerthreads 1 \
+  --verbosity 3 \
+  --rpccorsdomain "*" \
+  --etherbase 0x5DFE021F45f00Ae83B0aA963bE44A1310a782fCC

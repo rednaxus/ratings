@@ -42,6 +42,8 @@ import { appConfig }  from '../config'
 
 import { store } from '../Root'
 
+import { referralCode } from '../services/referralCode.js'
+
 export const generateMessages = ( { user, cycles, rounds, tokens, timestamp }) => {
 	let messages = []
 
@@ -601,10 +603,16 @@ user.rounds.finished = [8, 9, 0, 7]
 	/* reminds user to use any available referrals */
 	/* should show up whenever there are unused referrals */
 
+
+//if we decide to use keypairs
+	let newCode = referralCode.getRefCodePair()
+
+
 	if (user.num_referrals) {
 		messages.push({
 			type: 'make_referral',
 			priority: 'action-big',
+			refCode: newCode,
 			unused_refs: user.num_referrals.length
 		})
 	}

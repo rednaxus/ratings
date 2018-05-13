@@ -40,15 +40,9 @@ toAskAlan: Minor Bugs and Questions
 
 import { appConfig }  from '../config'
 
-import { getCyclesByStatus } from './rounds'
+import { store } from '../Root'
 
-//import { store } from '../Root'
-
-import { referralCode } from '../services/referralCode.js'
-
-export const generateMessages = ( { user, cycles, rounds, tokens, timestamp } ) => {
-	console.log('generate messages', user,cycles,rounds,tokens,timestamp)
-
+export const generateMessages = ( { user, cycles, rounds, tokens, timestamp }) => {
 	let messages = []
 
 	//const { tokens, cycles, rounds } = store.getState()
@@ -61,39 +55,31 @@ export const generateMessages = ( { user, cycles, rounds, tokens, timestamp } ) 
 
 	//const user = s.user.info
 
-	//let now = timestamp
-  //let comingSignupCycles = cycles.filter( cycle => !cycle.analyst_status && cycle.timestart > now )
-  //let comingCycles = cycles.filter( cycle => cycle.analyst_status && cycle.timestart > now )
-  //let activeCycles = cycles.filter( cycle => cycle.analyst_status && cycle.timestart <= now && cycle.timefinish >= now )
+	let now = timestamp
+  let comingSignupCycles = cycles.filter( cycle => !cycle.analyst_status && cycle.timestart > now )
+  let comingCycles = cycles.filter( cycle => cycle.analyst_status && cycle.timestart > now )
+  let activeCycles = cycles.filter( cycle => cycle.analyst_status && cycle.timestart <= now && cycle.timefinish >= now )
 
-  //let activeRounds = []
+  let activeRounds = []
 
 
-  let {     
-    comingSignupCycles, 
-    comingVolunteerCycles, 
-    comingConfirmedCycles,
-    activeCycles,
-    finishedCycles
-  } = getCyclesByStatus( { cycles, rounds, timestamp } )
-
-	//let oneHour = 3600 /*seconds*/
-	//let oneDay = 86400 /*seconds*/
+	let oneHour = 3600 /*seconds*/
+	let oneDay = 86400 /*seconds*/
 
 
 /********for testing -- 'if' statement to hold and make NOT appear ********/
-/*let testVariable = 0
+let testVariable = 0
 
 //Rounds
 user.rounds.scheduled = [3, 0, 5, 0, 2]
 user.rounds.active = [3, 4, 0, 6]
 user.rounds.finished = [8, 9, 0, 7]
-*/
 
 
-	/********** BEGIN MESSAGES **********/
 
-	/***** New Round Scheduling *****/
+/********** BEGIN MESSAGES **********/
+
+/***** New Round Scheduling *****/
 	if (comingSignupCycles.length) {
 		messages.push({
 			type: 'new_round_scheduling',
@@ -103,21 +89,18 @@ user.rounds.finished = [8, 9, 0, 7]
 	}
 
 
-	/***** Round Activated *****/
-	activeCycles.map( cycle => {
+/***** Round Activated *****/
+	activeRounds.map( round => {
 		messages.push({
 			type: 'round_activated',
 			priority: 'info',
-			cycle: cycle.id,
-			round: cycle.round,
-			token: cycle.token
+			round: round
 		})
 	})
 
-	console.log('generated messages', messages )
-	return messages
 
-	/***** Payment *****/
+
+/***** Payment *****/
 
 	//toDo: ready for testing
 
@@ -618,16 +601,10 @@ user.rounds.finished = [8, 9, 0, 7]
 	/* reminds user to use any available referrals */
 	/* should show up whenever there are unused referrals */
 
-
-//if we decide to use keypairs
-	let newCode = referralCode.getRefCodePair()
-
-
 	if (user.num_referrals) {
 		messages.push({
 			type: 'make_referral',
 			priority: 'action-big',
-			refCode: newCode,
 			unused_refs: user.num_referrals.length
 		})
 	}

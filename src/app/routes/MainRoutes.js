@@ -29,6 +29,7 @@ import Dashboard  from '../views/dashboard'
 import Rules from '../views/rules'
 import Availability from '../views/availability'
 import About from '../views/about'
+import Wallet from '../views/wallet'
 import Tokens from '../views/tokens'
 import Token from '../views/token'
 import UserListViewConnected        from '../views/userList'
@@ -72,24 +73,25 @@ export const MainRoutes = () => (
     <Route exact path="/general" component={ GeneralConnected } />
     */ }
     <Route path="/token/:token_id" component={ Token } />
-    
+
     <Route path="/scheduling" component={ Availability }  />
-    { /* <Route path="/Analyst/survey" component={ Survey } /> 
+    { /* <Route path="/Analyst/survey" component={ Survey } />
         <Route path="/admin/roundCycles" component={ RoundCycles } />
     */}
     <Route path="/status" component={ Status } />
     <Route path="/admin/userList" component={ UserListViewConnected } />
     <Route path="/admin/analysts" component={ Analysts } />
     <Route path="/admin/cycles" component = { Cycles } />
-    
+
 
 
     {/*<Route exact path="/fileUpload" component={ FileUploader } />*/}
 
-    
-    <Route path="/tokens" component={ Tokens } /> 
+
+    <Route path="/tokens" component={ Tokens } />
     <Route path="/rules" component={ Rules } />
     <Route path="/about" component={ About } />
+    <Route path="/wallet" component={ Wallet } />
 
 
     <Route path="/round/:id" component={ Round } />

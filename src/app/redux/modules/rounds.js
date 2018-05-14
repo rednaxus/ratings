@@ -134,17 +134,21 @@ export const fetchRoundInfo = ( round ) => {
     return { type: ERROR_ROUND_INFO, time }
   }
   return (dispatch, getState) => {
-    dispatch( request() )
-    console.log('getting round info',round)
-    return getRoundInfo(round).then( roundInfo => {
-      console.log('got round info for round',round)
-      dispatch( success( roundInfo ) ) 
-      dispatch( fetchTokenData( roundInfo.covered_token ) )
-      return roundInfo
-    })
-    .catch( error => {
-      dispatch( failure(error) )
-    })
+    const err = ( error ) => dispatch( failure( error ) )
+    return new Promise( (resolve,reject) => {
+      dispatch( request() )
+      console.log('getting round info',round)
+      getRoundInfo(round).then( roundInfo => {
+        console.log('got round info for round',round)
+        fetchTokenData( roundInfo.covered_token, false )( dispatch, getState ).then( ( tokenData ) => {
+          console.log(' got token data',tokenData)
+          resolve( roundInfo )
+          dispatch( success( roundInfo ) ) 
+        }).catch( ( error ) => {
+          reject( error )
+        })
+      }).catch( err ) 
+    }) 
   }
 }
 

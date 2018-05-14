@@ -4,7 +4,7 @@ import * as _ from 'lodash'
 import { appConfig as config } from '../config'
 
 
-export const getCyclesByStatus = ( { cycles, rounds, timestamp } ) => {
+export const getCyclesByStatus = ( { cycles, rounds, timestamp, tokens } ) => {
 
   let now = timestamp // cronInfo / 1000
   let nextTime = config.cycleTime( config.cycleIdx( now ) + 1 )
@@ -40,7 +40,7 @@ export const getCyclesByStatus = ( { cycles, rounds, timestamp } ) => {
 
   let comingConfirmedCycles = [] // signed up, need to confirm
   cycles.forEach ( cycle => {
-    if ( !isVolunteer( cycle ) ) return
+    if ( !isConfirmed( cycle ) ) return
     cycle.role.forEach( ( role,idx ) => {
       for ( let i = 0; i < role.num_confirms; i++ ){
         comingConfirmedCycles.push( { ...cycle, role: idx } )
@@ -56,7 +56,7 @@ export const getCyclesByStatus = ( { cycles, rounds, timestamp } ) => {
     cycle.role.forEach( (role,idx) => {
       for ( let i = 0; i < role.num_rounds; i++ ){
         console.log('rounds for role',role,i,role.rounds)
-        console.log('tokens',...tokens)
+        console.log('tokens',tokens)
         let round = _.find( rounds,['id',role.rounds[ i ]] )
         //let token = _.find( tokens,['id',round.covered_token] )
         activeCycles.push(

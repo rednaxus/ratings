@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Moment from 'react-moment'
 import TokenListView from '../tokenList'
 import UserStatus from '../../components/userStatus/UserStatus'
 
@@ -41,11 +42,16 @@ class Dashboard extends Component {
     const { user, tokens, rounds, cycles, cronInfo } = this.props
     const { currentView } = this.props
     //const userFullName = `${userInfos.firstname} ${userInfos.lastname.toUpperCase()}`;
-    console.log('dashboard render',this.props)
+    console.log('dashboard render',...user,...tokens,...rounds,...cycles)
     if ( user.id === undefined) return( '' )
     return(
       <AnimatedView>
         <main className="container">
+          <div className="row">
+            <div className="col-md-10 text-right text-green small">
+              <Moment format="YYYY-MM-DD HH:MM" date={cronInfo}/>
+            </div>
+          </div>
           <AnalystMessages 
             user={ user } 
             cycles={ cycles } 

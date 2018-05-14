@@ -144,12 +144,13 @@ export const fetchTokenData = ( id, full=true ) => { // if full is set get all r
     return { type: ERROR_TOKEN_DATA, time }
   }
   console.log('fetch token data',id)
-  return dispatch => {
+  return ( dispatch, getState ) => {
     dispatch( request( id ) )
     if (full) dispatch( fetchTokenRounds( id ) )
     //console.log('getting token info from ethplorer')
-    getTokenData( id ).then( info => {
+    return getTokenData( id ).then( info => {
       dispatch( receive( info ) )
+      return info
     })
     .catch(
       err => dispatch( error( err ) )

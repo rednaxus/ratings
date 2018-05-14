@@ -21,7 +21,6 @@ import UserIMG                from '../../img/user.jpg'
 
 //import 'bootstrap/dist/css/bootstrap.css'
 
-import { store } from '../../Root'
 
 class App extends Component {
   static propTypes = {

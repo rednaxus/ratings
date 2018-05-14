@@ -38,7 +38,7 @@ toAskAlan: Minor Bugs and Questions
 */
 
 
-import { appConfig }  from '../config'
+import { appConfig as config }  from '../config'
 
 import { getCyclesByStatus } from './rounds'
 
@@ -47,7 +47,7 @@ import { getCyclesByStatus } from './rounds'
 import { referralCode } from '../services/referralCode.js'
 
 export const generateMessages = ( { user, cycles, rounds, tokens, timestamp } ) => {
-	console.log('generate messages', user,cycles,rounds,tokens,timestamp)
+	console.log('generate messages', 'user',...user,'cycles',...cycles,'rounds',...rounds,'tokens',...tokens,timestamp)
 
 	let messages = []
 
@@ -75,7 +75,7 @@ export const generateMessages = ( { user, cycles, rounds, tokens, timestamp } ) 
     comingConfirmedCycles,
     activeCycles,
     finishedCycles
-  } = getCyclesByStatus( { cycles, rounds, timestamp } )
+  } = getCyclesByStatus( { cycles, rounds, tokens, timestamp } )
 
 	//let oneHour = 3600 /*seconds*/
 	//let oneDay = 86400 /*seconds*/
@@ -97,11 +97,20 @@ user.rounds.finished = [8, 9, 0, 7]
 	if (comingSignupCycles.length) {
 		messages.push({
 			type: 'new_round_scheduling',
-			priority:'info',
+			priority: 'info',
 			signupCycles:comingSignupCycles.length
 		})
 	}
 
+	/***** Round Scheduled ******/
+	comingConfirmedCycles.map( cycle =>
+		messages.push({
+			type: 'round_scheduled',
+			priority: 'action-small',
+			due: config.cycleTime( cycle.id + 1, true ),
+			roundValue: config.DEFAULT_ROUND_VALUE
+		})
+	)
 
 	/***** Round Activated *****/
 	activeCycles.map( cycle => {

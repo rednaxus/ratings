@@ -140,7 +140,7 @@ contract RatingAgency {
     /**
      * test data
     */
-    address constant testregistry1 = 0x05173a385c1dd5ba0bf778cd098015a4ae0a3ba0;
+    address constant testregistry1 = 0x380cb3e3fc13e0728170a8299fd85085269bfef8;
     address[16] live_tokens = [
         0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0, //EOS
         0xf230b790e05390fc8295f4d3f60332c93bed42e2, // Tronix

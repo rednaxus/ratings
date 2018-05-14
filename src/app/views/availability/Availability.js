@@ -194,7 +194,7 @@ class Availability extends PureComponent {
       comingConfirmedCycles,
       activeCycles,
       finishedCycles
-    } = getCyclesByStatus( { cycles, rounds, timestamp: cronInfo / 1000 } )
+    } = getCyclesByStatus( { cycles, rounds, timestamp: cronInfo / 1000, tokens } )
 
     return(
       <AnimatedView>

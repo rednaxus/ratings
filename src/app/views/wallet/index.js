@@ -638,14 +638,26 @@ function onItemClick() {
   var amount = $("#amount").val();
 
 
+if (amount <= vevaBalance) {
 
 contractInstance.transfer(toAddress, amount, {from: web3.eth.defaultAccount});
 
 
+  alert ("You have successfully transferred " + amount + " VEVA to " + toAddress + " !")
 
   console.log (toAddress, amount);
 
   console.log ("hurray!  You sent VEVA tokens to " + toAddress);
+
+}
+
+else {
+
+alert("So sorry! You don't have enough VEVA tokens to send! Please try transferring  a different amount.");
+
+console.log ("Insufficient Balance");
+
+}
 
 };
 

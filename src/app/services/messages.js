@@ -64,7 +64,11 @@ export const generateMessages = ( { user, cycles, rounds, tokens, timestamp } ) 
 
 	//const user = s.user.info
 
-	//let now = timestamp
+	let now = timestamp   //delete this later so everything will still compile with old code.
+	let oneHour = 3600 /*seconds*/
+	let oneDay = 86400 /*seconds*/   //delete all of this later
+
+
   //let comingSignupCycles = cycles.filter( cycle => !cycle.analyst_status && cycle.timestart > now )
   //let comingCycles = cycles.filter( cycle => cycle.analyst_status && cycle.timestart > now )
   //let activeCycles = cycles.filter( cycle => cycle.analyst_status && cycle.timestart <= now && cycle.timefinish >= now )
@@ -72,16 +76,14 @@ export const generateMessages = ( { user, cycles, rounds, tokens, timestamp } ) 
   //let activeRounds = []
 
 
-  let {     
-    comingSignupCycles, 
-    comingVolunteerCycles, 
+  let {
+    comingSignupCycles,
+    comingVolunteerCycles,
     comingConfirmedCycles,
     activeCycles,
     finishedCycles
   } = getCyclesByStatus( { cycles, rounds, tokens, timestamp } )
 
-	//let oneHour = 3600 /*seconds*/
-	//let oneDay = 86400 /*seconds*/
 
 
 /********for testing -- 'if' statement to hold and make NOT appear ********/
@@ -148,7 +150,7 @@ user.rounds.finished = [8, 9, 0, 7]
 			tokenAddress: token.address,
 			round: cycle.round,
 			roundValue: round.value
-		})		
+		})
 	})
 
 	/***** Payment *****/
@@ -183,6 +185,13 @@ user.rounds.finished = [8, 9, 0, 7]
 		}
 	}
 
+
+	messages.push({
+		type: 'payment',
+		priority: 'info',
+		tokens: 34,
+		balance: 99
+	})
 
 
 /***** Reputation Score *****/

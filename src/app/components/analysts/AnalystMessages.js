@@ -105,11 +105,11 @@ const message_templates = {
   new_round_scheduling: {
     link: data => 'scheduling',
     heading: data => <div>Upcoming rounds available</div>,
-    body: data => 
+    body: data =>
       <div>We have scheduled {data.signupCycles} new rounds! Please make sure your availability is updated in your profile.</div>
     ,
     footer: data => <div>Scheduling</div>,
-    glyph: data => <div><Glyphicon glyph="calendar"></Glyphicon></div>    
+    glyph: data => <div><Glyphicon glyph="calendar"></Glyphicon></div>
   },
 
   round_activated: {
@@ -127,16 +127,16 @@ const message_templates = {
     footer: data => {
       return data.role ?
         <div>Survey is due <Moment from={data.now}>{data.due}</Moment>.</div>
-        : <div>Brief is due <Moment from={data.now}>{data.due}</Moment>.</div> 
+        : <div>Brief is due <Moment from={data.now}>{data.due}</Moment>.</div>
     },
     glyph: data => <div><Glyphicon glyph="ok-circle"></Glyphicon></div>
-  
+
   },
 
   round_finished: {
     link: data => '',
     heading: data => <div>Round Finished</div>,
-    body: data => 
+    body: data =>
       <div>Analysis round  for {data.roundToken} (ended <Moment from={data.now}>{data.start}</Moment>) has finished. Thank you for partcipating!</div>
     ,
     footer: data => <div>view round</div>,
@@ -146,354 +146,175 @@ const message_templates = {
   round_scheduled: {
     link: data => 'scheduling',
     heading: data => <div>Round Scheduled</div>,
-    body: data => 
+    body: data =>
       <div>A new round has been scheduled to begin <Moment fromNow>{data.due}</Moment>. It's worth {data.roundValue}--interested?</div>
     ,
     footer: data => <div>Details</div>,
     glyph: data => <div><Glyphicon glyph="time"></Glyphicon></div>
   },
 
+
   payment: {
-    ...base_message,
-    link: data => 'status',
-    heading: data => {
-      return <div>New Payment Available!</div>
-    },
-    body: data => {
-
-      return <div>Nice work! You have earned a new payment of {data.tokens} VEVA! Your new balance is {data.balance} VEVA.</div>
-
-    },
-    footer: data => {
-      return <div><Link to={'/Analyst/status'}>click here to go to statuses</Link></div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="usd"></Glyphicon></div>
-    }
+    link: data => 'wallet',
+    heading: data => <div>New Payment Available!</div>,
+    body: data => <div>Nice work! You have earned a new payment of {data.tokens} VEVA! Your new balance is {data.balance} VEVA.</div>
+    ,
+    footer: data => <div>View Balance</div>,
+    glyph: data => <div><Glyphicon glyph="usd"></Glyphicon></div>
   },
 
   reputation_score: {
-    ...base_message,
-    link: data => '',
-    heading: data => {
-      return <div>New Rep Points!</div>
-    },
-    body: data => {
-
-      return <div>Well done! You have earned {data.new_points} new reputation points! You now have {data.reputation} points.</div>
-
-    },
-    footer: data => {
-      return <div>see in profile</div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="thumbs-up"></Glyphicon></div>
-    }
+    link: data => 'status',
+    heading: data => <div>New Rep Points!</div>,
+    body: data => <div>Well done! You have earned {data.new_points} new reputation points! You now have {data.reputation} points.</div>
+    ,
+    footer: data => <div>see in profile</div>,
+    glyph: data => <div><Glyphicon glyph="thumbs-up"></Glyphicon></div>
   },
 
   new_level: {
-    ...base_message,
-    link: data => '',
-    heading: data => {
-      return <div>New Level!</div>
-    },
-    body: data => {
-
-      return <div>All right! You have earned sufficient reputation points to move from a {data.previous_level} to a {data.new_level}!</div>
-
-    },
-    footer: data => {
-      return <div>see in profile</div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="knight"></Glyphicon></div>
-    }
+    link: data => 'status',
+    heading: data => <div>New Level!</div>,
+    body: data => <div>All right! You have earned sufficient reputation points to move from a {data.previous_level} to a {data.new_level}!</div>
+    ,
+    footer: data => <div>see in profile</div>,
+    glyph: data => <div><Glyphicon glyph="knight"></Glyphicon></div>
   },
 
   additional_referrals: {
-    ...base_message,
-    link: data => '',
-    heading: data => {
-      return <div>New Referrals!</div>
-    },
-    body: data => {
-
-      return <div>You have earned enough rep points to get {data.newRefsAvail} additional referrals, giving you a total of {data.referrals}.</div>
-
-    },
-    footer: data => {
-      return <div>view referrals</div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="plus-sign"></Glyphicon></div>
-    }
+    link: data => 'status',
+    heading: data => <div>New Referrals!</div>,
+    body: data => <div>You have earned enough rep points to get {data.newRefsAvail} additional referrals, giving you a total of {data.referrals}.</div>,
+    footer: data => <div>view referrals on status page</div>,
+    glyph: data => <div><Glyphicon glyph="plus-sign"></Glyphicon></div>
   },
 
 
   tokens_added: {
-    ...base_message,
-    link: data => '',
-    heading: data => {
-      return <div>New Tokens Added!</div>
-    },
-    body: data => {
-
-      return <div>We have added {data.tokens} tokens to our system! Check out the tokens page for more information or to browse.</div>
-
-    },
-    footer: data => {
-      return <div>Go Now</div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="plus"></Glyphicon></div>
-    }
+    link: data => 'tokens',
+    heading: data => <div>New Tokens Added!</div>,
+    body: data => <div>We have added {data.tokens} tokens to our system! Check out the tokens page for more information or to browse.</div>
+    ,
+    footer: data => <div>See Tokens</div>,
+    glyph: data => <div><Glyphicon glyph="plus"></Glyphicon></div>
   },
 
   rounds_in_progress:{
-    ...base_message,
-    link: data => '',
-    heading: data => {
-      return <div>Round In Progress</div>
-    },
-    body: data => {
-
-      return  <div> A round for {data.roundToken} (began <Moment fromNow>{data.start}</Moment>) is in progress.  You are a {data.analyst}, and it's worth {data.roundValue}. </div>
-    },
-    footer: data => {
-      return <div>view round info</div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="star-empty"></Glyphicon></div>
-    }
+    link: data => 'scheduling',
+    heading: data => <div>Round In Progress</div>,
+    body: data => <div> A round for {data.roundToken} (began <Moment fromNow>{data.start}</Moment>) is in progress.  You are a {data.analyst}, and it's worth {data.roundValue}. </div>
+    ,
+    footer: data => <div>view round info</div>,
+    glyph: data => <div><Glyphicon glyph="star-empty"></Glyphicon></div>
   },
 
   sponsored_analyst_joins: {
-    ...base_message,
-    link: data => '',
-    heading: data => {
-      return <div>New Sponsored Analyst!</div>
-    },
-    body: data => {
-
-      return <div>Hurray! One of your referrals (Analyst #{data.analyst}) has joined. Thank you for participating in the Veva ecosystem! You have earned an additional {data.reputation_points} rep points.</div>
-
-    },
-    footer: data => {
-      return <div>view referrals</div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="heart"></Glyphicon></div>
-    }
+    link: data => 'status',
+    heading: data => <div>New Sponsored Analyst!</div>,
+    body: data => <div>Hurray! One of your referrals (Analyst #{data.analyst}) has joined. Thank you for participating in the Veva ecosystem! You have earned an additional {data.reputation_points} rep points.</div>
+    ,
+    footer: data => <div>view referrals on Status page</div>,
+    glyph: data => <div><Glyphicon glyph="heart"></Glyphicon></div>
   },
 
   new_ratings: {
-    ...base_message,
-    link: data => '',
-    heading: data => {
-      return <div>New Ratings!</div>
-    },
-    body: data => {
-
-      return <div>New token rating data has been added for rounds {data.rounds}! Check out the tokens page for more information or to browse.</div>
-
-    },
-    footer: data => {
-      return <div>Go Now</div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="th-list"></Glyphicon></div>
-    }
+    link: data => 'tokens',
+    heading: data => <div>New Ratings!</div>,
+    body: data => <div>New token rating data has been added for rounds {data.rounds}! Check out the tokens page for more information or to browse.</div>
+    ,
+    footer: data => <div>See Latest Ratings</div>,
+    glyph: data => <div><Glyphicon glyph="th-list"></Glyphicon></div>
   },
 
   make_referral: {
-    ...base_message,
-    link: data => '',
-    heading: data => {
-      return <div>Reminder: You have unused referrals!</div>
-    },
-    body: data => {
-
-      return <div>You have {data.unused_refs} unused referrals. Your referrals help keep the Veva system healthy and secure—and you get a cut of their winnings! </div>
-
-    },
-    footer: data => {
-      return <div>view referrals</div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="user"></Glyphicon></div>
-    }
+    link: data => 'status',
+    heading: data => <div>Reminder: You have unused referrals!</div>,
+    body: data => <div>You have {data.unused_refs} unused referrals. Your referrals help keep the Veva system healthy and secure—and you get a cut of their winnings! </div>
+    ,
+    footer: data => <div>view referrals on status page</div>,
+    glyph: data => <div><Glyphicon glyph="user"></Glyphicon></div>
   },
 
   jurist_round_starting: {
-    ...base_message,
-    link: data => '',
-    heading: data => {
-      return <div>Round Starting!</div>
-    },
-    body: data => {
-
-      return <div>You are a confirmed JURIST for the {data.token} round, which is starting now!</div>
-
-    },
-    footer: data => {
-      return <div>view info</div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="bullhorn"></Glyphicon></div>
-    }
+    link: data => 'scheduling',
+    heading: data => <div>Round Starting!</div>,
+    body: data => <div>You are a confirmed JURIST for the {data.token} round, which is starting now!</div>
+    ,
+    footer: data => <div>view info</div>,
+    glyph: data => <div><Glyphicon glyph="bullhorn"></Glyphicon></div>
   },
 
   brief_posted: {
-    ...base_message,
-    link: data => '',
-    heading: data => {
-      return <div>New Brief Posted!</div>
-    },
-    body: data => {
-
-      return <div>A lead analyst in the {data.token} round has posted a new brief. You can access it until it closes <Moment fromNow>{data.due}</Moment>.</div>
-
-    },
-    footer: data => {
-      return <div>View Now</div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="edit"></Glyphicon></div>
-    }
+    link: data => 'admin/cycles',
+    heading: data => <div>New Brief Posted!</div>,
+    body: data => <div>A lead analyst in the {data.token} round has posted a new brief. You can access it until it closes <Moment fromNow>{data.due}</Moment>.</div>
+    ,
+    footer: data => <div>View Now</div>,
+    glyph: data => <div><Glyphicon glyph="edit"></Glyphicon></div>
   },
 
   pre_survey_due: {
-    ...base_message,
-    link: data => '',
-    heading: data => {
-      return <div>Pre-Survey Due</div>
-    },
-    body: data => {
-
-      return <div>Reminder: Please take the pre-survey for the {data.round} round--it's due <Moment fromNow>{data.due}</Moment>.</div>
-
-    },
-    footer: data => {
-      return <div>Take it Now</div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="list-alt"></Glyphicon></div>
-    }
+    link: data => 'admin/cycles',
+    heading: data => <div>Pre-Survey Due</div>,
+    body: data => <div>Reminder: Please take the pre-survey for the {data.round} round--it's due <Moment fromNow>{data.due}</Moment>.</div>
+    ,
+    footer: data => <div>Take it Now</div>,
+    glyph: data => <div><Glyphicon glyph="list-alt"></Glyphicon></div>
   },
 
   post_survey_due:{
-    ...base_message,
-    link: data => '',
-    heading: data => {
-      return <div>Post-Survey Due!</div>
-    },
-    body: data => {
-
-      return <div>Reminder: Please take the post-survey for round #{data.round}--it is due <Moment fromNow>{data.due}</Moment>.</div>
-
-    },
-    footer: data => {
-      return <div>Take it Now</div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="list-alt"></Glyphicon></div>
-    }
+    link: data => 'admin/cycles',
+    heading: data => <div>Post-Survey Due!</div>,
+    body: data => <div>Reminder: Please take the post-survey for round #{data.round}--it is due <Moment fromNow>{data.due}</Moment>.</div>
+    ,
+    footer: data => <div>Take it Now</div>,
+    glyph: data => <div><Glyphicon glyph="list-alt"></Glyphicon></div>
   },
 
   /* Round Confirmation */
   lead_confirmation: {
-    ...base_message,
-    link: data => '',
-    heading: data => {
-      return <div>You are confirmed as a lead!</div>
-    },
-    body: data => {
-
-      return <div>You are a LEAD for an upcoming round, which is confirmed and will be starting soon!</div>
-
-    },
-    footer: data => {
-      return <div>view info</div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="check"></Glyphicon></div>
-    }
+    link: data => 'admin/cycles',
+    heading: data => <div>You are confirmed as a lead!</div>,
+    body: data => <div>You are a LEAD for an upcoming round, which is confirmed and will be starting soon!</div>
+    ,
+    footer: data => <div>view info</div>,
+    glyph: data => <div><Glyphicon glyph="check"></Glyphicon></div>
   },
 
   round_starting: {
-    ...base_message,
-    link: data => '',
-    heading: data => {
-      return <div>Round Starting!</div>
-    },
-    body: data => {
-
-      return <div>Reminder! You are slated to participate in a round starting <Moment fromNow>{data.starting}</Moment>!</div>
-
-    },
-    footer: data => {
-      return <div>view info</div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="bell"></Glyphicon></div>
-    }
+    link: data => 'admin/cycles',
+    heading: data => <div>Round Starting!</div>,
+    body: data => <div>Reminder! You are slated to participate in a round starting <Moment fromNow>{data.starting}</Moment>!</div>
+    ,
+    footer: data => <div>view info</div>,
+    glyph: data => <div><Glyphicon glyph="bell"></Glyphicon></div>
   },
 
   briefs_due: {
-    ...base_message,
-    link: data => '',
-    heading: data => {
-      return <div>Reminder: Brief Due!</div>
-    },
-    body: data => {
-
-      return <div>Your LEAD brief for the {data.round} round is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>
-
-    },
-    footer: data => {
-      return <div>Upload Now</div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="paperclip"></Glyphicon></div>
-    }
+    link: data => 'admin/cycles',
+    heading: data => <div>Reminder: Brief Due!</div>,
+    body: data => <div>Your LEAD brief for the {data.round} round is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>
+    ,
+    footer: data => <div>Upload Now</div>,
+    glyph: data => <div><Glyphicon glyph="paperclip"></Glyphicon></div>
   },
 
   rebuttal_due: {
-    ...base_message,
-    link: data => '',
-    heading: data => {
-      return <div>Rebuttal Due!</div>
-    },
-    body: data => {
-
-      return <div>Your LEAD rebuttal for the {data.round} round is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>
-
-    },
-    footer: data => {
-      return <div>View Opposing Brief</div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="paperclip"></Glyphicon></div>
-    }
+    link: data => 'admin/cycles',
+    heading: data => <div>Rebuttal Due!</div>,
+    body: data => <div>Your LEAD rebuttal for the {data.round} round is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>
+    ,
+    footer: data => <div>View Opposing Brief</div>,
+    glyph: data => <div><Glyphicon glyph="paperclip"></Glyphicon></div>
   },
 
   round_confirmed: {
-    ...base_message,
-    link: data => '',
-    heading: data => {
-      return <div>Round confirmed!</div>
-    },
-    body: data => {
-
-      return <div>One of your requested rounds has been confirmed and will be starting <Moment fromNow>{data.start}</Moment>!</div>
-
-    },
-    footer: data => {
-      return <div>View Info</div>
-    },
-    glyph: data => {
-      return <div><Glyphicon glyph="ok-sign"></Glyphicon></div>
-    }
+    link: data => 'admin/cycles',
+    heading: data => <div>Round confirmed!</div>,
+    body: data => <div>One of your requested rounds has been confirmed and will be starting <Moment fromNow>{data.start}</Moment>!</div>
+    ,
+    footer: data => <div>View Info</div>,
+    glyph: data => <div><Glyphicon glyph="ok-sign"></Glyphicon></div>
   }
 
 }

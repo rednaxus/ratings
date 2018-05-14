@@ -95,6 +95,10 @@ export const getCycleInfo = ( cycle, analyst = 0) => new Promise( (resolve, reje
       }
       console.log('got cycle info',res)
       ratingAgency.cycleAnalystInfo( cycle, analyst ).then ( rCycleAnalyst => {
+        for (let i=0;i<3;i++){
+          console.log(i+1,rCycleAnalyst[ i + 1 ].toNumber())
+          console.log(i+5,rCycleAnalyst[ i + 5 ].toNumber())
+        }
         res.incycle_ref = rCycleAnalyst[ 0 ].toNumber()
         res.role = []
         for ( let i=0; i<2; i++ ){

@@ -103,7 +103,6 @@ const base_message = {
 const message_templates = {
 
   new_round_scheduling: {
-    ...base_message,
     link: data => 'scheduling',
     heading: data => <div>Upcoming rounds available</div>,
     body: data => 
@@ -114,40 +113,37 @@ const message_templates = {
   },
 
   round_activated: {
-    ...base_message,
     link: data => `round/${data.round}`,
     heading: data => <div>Active Round</div>,
     body: data => {
-      return data.analyst && data.analyst.isLead ?
-        <div>You are Lead for {round.token.name} round that began <Moment fromNow>{data.start}</Moment>.
-          <div>Brief is due for this round <Moment fromNow>{data.due}</Moment></div>
+      return data.role ?
+        <div>You are jurist for {data.tokenName} round that began <Moment from={data.now}>{data.start}</Moment>.
+          <div>Survey is due for this round <Moment from={data.now}>{data.due}</Moment></div>
         </div> :
-        <div>You are jurist for round #{data.round} that began <Moment fromNow>{data.start}</Moment>.
-          <div>Survey is due for this round <Moment fromNow>{data.due}</Moment></div>
+        <div>You are Lead for {data.tokenName} round that began <Moment from={data.now}>{data.start}</Moment>.
+          <div>Brief is due for this round <Moment from={data.now}>{data.due}</Moment></div>
         </div>
     },
     footer: data => {
-      return data.analyst && data.analyst.isLead ?
-        <div>Brief is due <Moment fromNow>{data.due}</Moment>.</div>
-        : <div>Survey is due <Moment fromNow>{data.due}</Moment>.</div>
+      return data.role ?
+        <div>Survey is due <Moment from={data.now}>{data.due}</Moment>.</div>
+        : <div>Brief is due <Moment from={data.now}>{data.due}</Moment>.</div> 
     },
     glyph: data => <div><Glyphicon glyph="ok-circle"></Glyphicon></div>
   
   },
 
   round_finished: {
-    ...base_message,
     link: data => '',
     heading: data => <div>Round Finished</div>,
     body: data => 
-      <div>Analysis round  for {data.roundToken} (ended <Moment fromNow>{data.start}</Moment>) has finished. Thank you for partcipating!</div>
+      <div>Analysis round  for {data.roundToken} (ended <Moment from={data.now}>{data.start}</Moment>) has finished. Thank you for partcipating!</div>
     ,
     footer: data => <div>view round</div>,
     glyph: data => <div><Glyphicon glyph="education"></Glyphicon></div>
   },
 
   round_scheduled: {
-    ...base_message,
     link: data => 'scheduling',
     heading: data => <div>Round Scheduled</div>,
     body: data => 
@@ -159,7 +155,7 @@ const message_templates = {
 
   payment: {
     ...base_message,
-    link: 'status',
+    link: data => 'status',
     heading: data => {
       return <div>New Payment Available!</div>
     },

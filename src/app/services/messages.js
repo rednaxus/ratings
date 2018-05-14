@@ -37,6 +37,7 @@ toAskAlan: Minor Bugs and Questions
 1 day: 86400 seconds
 */
 
+import * as _ from 'lodash'
 
 import { appConfig as config }  from '../config'
 
@@ -45,6 +46,8 @@ import { getCyclesByStatus } from './rounds'
 //import { store } from '../Root'
 
 import { referralCode } from '../services/referralCode.js'
+
+const ms = secs => secs * 1000
 
 export const generateMessages = ( { user, cycles, rounds, tokens, timestamp } ) => {
 	console.log('generate messages', 'user',...user,'cycles',...cycles,'rounds',...rounds,'tokens',...tokens,timestamp)
@@ -107,24 +110,46 @@ user.rounds.finished = [8, 9, 0, 7]
 		messages.push({
 			type: 'round_scheduled',
 			priority: 'action-small',
+			role: cycle.role,
 			due: config.cycleTime( cycle.id + 1, true ),
+			now: ms( timestamp ),
 			roundValue: config.DEFAULT_ROUND_VALUE
 		})
 	)
 
 	/***** Round Activated *****/
 	activeCycles.map( cycle => {
+		let token  = _.find( tokens,['id',cycle.token]	)
 		messages.push({
 			type: 'round_activated',
 			priority: 'info',
+			role: cycle.role,
+			start: ms( config.cycleTime( cycle.id ) ),
+			due: ms( config.cycleTime( cycle.id ) + config.CYCLE_PERIOD / config.CYCLE_SURVEY_DUE ),
+			now: ms( timestamp ),
 			cycle: cycle.id,
 			round: cycle.round,
-			token: cycle.token
+			tokenName: token.name
 		})
 	})
 
-	console.log('generated messages', messages )
-	return messages
+	/***** Round Finished *****/
+	finishedCycles.map( cycle => {
+		let round = _.find(rounds,['id',cycle.round])
+		let token  = _.find(tokens,['id',cycle.token])
+		messages.push({
+			type: 'round_finished',
+			priority: 'info',
+			role: cycle.role,
+			start: ms( config.cycleTime( cycle.id ) ),
+			now: ms( timestamp ),
+			tokenName: token.name,
+			tokenSymbol: token.symbol,
+			tokenAddress: token.address,
+			round: cycle.round,
+			roundValue: round.value
+		})		
+	})
 
 	/***** Payment *****/
 
@@ -239,6 +264,9 @@ user.rounds.finished = [8, 9, 0, 7]
 			}
 		}
 	}
+
+	console.log('generated messages', messages )
+	return messages
 
 
 /***** Additional Referrals *****/

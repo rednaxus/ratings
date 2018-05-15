@@ -187,9 +187,24 @@ contract AnalystRegistry {
         require(analysts[id].password == _password);
     }
 
-    function referralInfo( uint32 _analyst, uint16 _referral ) public view returns ( uint256, uint256, bytes32, uint32 ) {
+    function referralInfo( uint32 _analyst, uint16 _referral ) public view returns ( 
+        uint256, uint256, bytes32, uint32 
+    ) {
         Referral storage r = analysts[ _analyst ].referrals[_referral];
         return ( r.timestamp, r.reg_timestamp, r.email, r.analyst ); 
+    }
+    
+    function referralInfoByRegCode( bytes32 _regcode ) public view returns (
+        uint256, uint256, bytes32, uint32     
+    ) {
+        address identity = identity_lookup[ _regcode ];
+        require( identity != 0 );
+        uint32 referring_analyst = referrals[ identity ];
+        Analyst storage a = analysts[ referring_analyst ];
+        for( uint16 i = 0; i < a.num_referrals; i++ ){
+            if ( a.referrals[ i ].identity == identity ) return referralInfo( referring_analyst, i );
+        }
+        require( false );
     }
 
     function referralSubmit( uint32 _analyst, bytes32 _email, address _identity, bytes32 _regcode ) public {

@@ -71,20 +71,20 @@ const info = userId => new Promise((resolve,reject) => {
               agency.cycleAnalystInfo(iCyc,userId).then( result => {
                 let idx = 0
                 //console.log('result from cycleAnalystInfo',result)
-                let ref = result[idx++].toNumber()
+                let ref = result[ idx++ ].toNumber()
                 if ( ref !== 0xffff ) {
                   userInfo.cycleInfo[ iCycle ] = {
                     incycle_ref: ref,
                     role: [ { 
-                      num_volunteers: result[idx++].toNumber(), 
-                      num_confirms: result[idx++].toNumber(),
-                      num_rounds: result[idx++].toNumber(),
-                      rounds: result[idx++],
+                      num_volunteers: result[ idx++ ].toNumber(), 
+                      num_confirms: result[ idx++ ].toNumber(),
+                      num_rounds: result[ idx++ ].toNumber(),
+                      rounds: result[ idx++ ],
                     }, {
-                      num_volunteers: result[idx++].toNumber(),
-                      num_confirms: result[idx++].toNumber(),
-                      num_rounds: result[idx++].toNumber(),
-                      rounds: result[idx++]
+                      num_volunteers: result[ idx++ ].toNumber(),
+                      num_confirms: result[ idx++ ].toNumber(),
+                      num_rounds: result[ idx++ ].toNumber(),
+                      rounds: result[ idx++ ]
                     }]
                   }
                   for (let irole = 0; irole < 2; irole++ ) {
@@ -231,13 +231,12 @@ const login = (username, password) => new Promise((resolve,reject) => {
 })
 
 
-const register = ( user, email, password, regcode ) => new Promise( (resolve,reject) => {
-  console.log(' register',user,password,email)
-  web3 = window.web3
+const register = ( email, password, regcode ) => new Promise( (resolve,reject) => {
+  console.log(' register', email, password, regcode)
   AnalystRegistry().then( analystRegistry => {
-    analystRegistry.register( user, password, email, regcode ).then(result => { // transaction object
-      console.log('result',result)
-      resolve(result)
+    analystRegistry.register( email, password, regcode ).then( result => { // transaction object
+      console.log('reg result',result)
+      resolve( email )
     })
   }).catch(result => { 
     console.error("Error from server on register:"  + result) 

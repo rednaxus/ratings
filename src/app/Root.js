@@ -42,7 +42,8 @@ class Root extends Component<Props, State> {
             <ConnectedRouter history={history}>
               <ScrollTop>
                 <Switch>
-                  <Route exact path="/login" component={ Login } />
+                  <Route path='/login/:email' component={ Login } />
+                  <Route path="/login" component={ Login } />
                   <Route path="/register/:regcode" component={ Register } />
                   { isAuthenticated ? <App />:<Route exact path="/" component={ Tokens } /> }
                   <Route component={PageNotFound} />

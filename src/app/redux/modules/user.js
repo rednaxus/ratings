@@ -103,23 +103,23 @@ export const refreshInfo = (deep = true) => { // get from id, deep means to get 
   }
 }
 
-const login = (username, password, reload = true) => {
-  const request = user => { return { type: userConstants.LOGIN_REQUEST, user } }
-  const success = user => { return { type: userConstants.LOGIN_SUCCESS, user } }
-  const failure = error => { return { type: userConstants.LOGIN_FAILURE, error } }
+const login = ( email, password, reload = true ) => {
+  const request = email => ( { type: userConstants.LOGIN_REQUEST, email } )
+  const success = email => ( { type: userConstants.LOGIN_SUCCESS, email } )
+  const failure = error => ( { type: userConstants.LOGIN_FAILURE, error } )
 
   return (dispatch,getState) => {
-    dispatch(request({ username }))
-    userService.login(username, password).then(
+    dispatch(request({ email }))
+    userService.login( email, password ).then(
       user => {
-        dispatch(success(user))
+        dispatch(success( email ))
 
         //dispatch(getInfo(user.id))
         if (reload) {
           dispatch(push('/')) //history.push
           window.location.reload()
         }
-        else refreshInfo()(dispatch,getState).then( ( userInfo )=> { 
+        else refreshInfo()(dispatch,getState).then( userInfo => { 
           console.log('got user info',userInfo) 
         })
       },
@@ -137,18 +137,18 @@ const logout = () => {
   return { type: userConstants.LOGOUT }
 }
 
-const register = ( user, email, password, regcode = '' ) => {
-  const request = (user) => { return { type: userConstants.REGISTER_REQUEST, user } }
-  const success = (user) => { return { type: userConstants.REGISTER_SUCCESS, user } }
-  const failure = (error) => { return { type: userConstants.REGISTER_FAILURE, error } }
+const register = ( email, password, regcode = '' ) => {
+  const request = email => ( { type: userConstants.REGISTER_REQUEST, email } )
+  const success = email => ( { type: userConstants.REGISTER_SUCCESS, email } )
+  const failure = error => ( { type: userConstants.REGISTER_FAILURE, error } )
 
   return dispatch => {
-    dispatch(request(user))
-    userService.register( user, email, password, regcode ).then(
-      user => { 
-        dispatch(success());
+    dispatch( request( email ) )
+    userService.register( email, password, regcode ).then(
+      email => { 
+        dispatch( success( email ) );
         dispatch(alertActions.success('Registration successful'))
-        dispatch(push('/login'))
+        dispatch( push('/login') )
       },
       error => {
         dispatch(failure(error))

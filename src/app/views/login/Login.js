@@ -79,6 +79,13 @@ class Login extends PureComponent<Props, State> {
     leaveLogin()
   }
 
+  componentWillReceiveProps() {
+    if (this.state.email == this.props.match.params.email ) return
+
+    this.state.email = this.props.match.params.email
+    console.log('component will receive props',this.props, this.state.email) 
+  }
+
   render() {
     const { email, password } = this.state
 
@@ -148,7 +155,7 @@ class Login extends PureComponent<Props, State> {
             <Row>
               <Col md={4} mdOffset={4} xs={10} xsOffset={1} >
                 <div className="pull-right" >
-                  <Button bsStyle="default" onClick={this.goRegister} >
+                  <Button bsStyle="default" disabled="true" onClick={this.goRegister} >
                     register new user
                   </Button>
                 </div>

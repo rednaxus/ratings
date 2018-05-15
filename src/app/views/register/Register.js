@@ -58,7 +58,6 @@ class Register extends PureComponent<Props, State> {
   }
 
   state = {
-    user:           '',
     email:          '',
     password:       '',
     regcode:        '' 
@@ -86,7 +85,7 @@ class Register extends PureComponent<Props, State> {
   }
 
   render() {
-    const { user, email, password, regcode } = this.state
+    const { email, password, regcode } = this.state
 
     const { registering } = this.props
 
@@ -102,19 +101,6 @@ class Register extends PureComponent<Props, State> {
                     <h2>Register</h2>
                   </legend>
 
-                  <div className="form-group">
-                    <label htmlFor="inputUser" className="col-lg-2 control-label">User</label>
-                    <div className="col-lg-10">
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="inputUser"
-                        placeholder="User name"
-                        value={user}
-                        onChange={this.handlesOnUserChange}
-                      />
-                    </div>
-                  </div>
                   <div className="form-group">
                     <label htmlFor="inputEmail" className="col-lg-2 control-label">Email</label>
                     <div className="col-lg-10">
@@ -177,6 +163,20 @@ class Register extends PureComponent<Props, State> {
   // #endregion
 
   // #region form inputs change callbacks
+  /*  name not used now
+                    <div className="form-group">
+                    <label htmlFor="inputUser" className="col-lg-2 control-label">User</label>
+                    <div className="col-lg-10">
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="inputUser"
+                        placeholder="User name"
+                        value={user}
+                        onChange={this.handlesOnUserChange}
+                      />
+                    </div>
+                  </div>
   handlesOnUserChange = (
     event: SyntheticEvent<>
   ) => {
@@ -188,6 +188,7 @@ class Register extends PureComponent<Props, State> {
       console.log('state',this.state)
     }
   }
+  */ 
 
   handlesOnEmailChange = (
     event: SyntheticEvent<>
@@ -216,17 +217,17 @@ class Register extends PureComponent<Props, State> {
     if (event) event.preventDefault()
 
     const { register } = this.props
-    console.log('state on register',this.state)
-    const { user, email, password } = this.state
+    const { email, password, regcode } = this.state
 
-    register(user, email, password)
+    console.log('state on register',this.state, email, password, regcode )
+    register( email, password, regcode )
   }
 
   goLogin = ( event: SyntheticEvent<> ) => {
     if (event) event.preventDefault()
     const { history } = this.props
-
-    history.push({ pathname: '/login' })
+    const { email } = this.state
+    history.push({ pathname: '/login' + (email ? `/${email}` : '') })
   }
 }
 

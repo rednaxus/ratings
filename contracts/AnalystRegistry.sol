@@ -23,6 +23,8 @@ contract AnalystRegistry {
     uint8 constant REWARD_PROMOTION = 20;
     uint8 constant REFERRAL_POINTS = 21;
 
+    uint8 constant REFERRALS_DEFAULT = 5;
+    
     // payoffs
     uint8 constant WINNER_PCT = 40;
     uint8 constant LOSER_PCT = 10;
@@ -192,6 +194,7 @@ contract AnalystRegistry {
 
     function referralSubmit( uint32 _analyst, bytes32 _email, address _identity, bytes32 _regcode ) public {
         Analyst storage a = analysts[ _analyst ]; 
+        require( a.referral_balance-- > 0 );
         Referral storage r = a.referrals[ a.num_referrals++ ];
         r.timestamp = timenow;
         r.email = _email;
@@ -213,7 +216,7 @@ contract AnalystRegistry {
         //a.referred_by = _referral;
         a.user_addr = msg.sender;
         a.is_lead = false;
-        a.referral_balance = 5;
+        a.referral_balance = REFERRALS_DEFAULT;
 
         if ( _regcode > 0 ){
             a.identity = identity_lookup[ _regcode ];

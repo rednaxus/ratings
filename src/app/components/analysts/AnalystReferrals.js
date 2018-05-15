@@ -45,33 +45,34 @@ class AnalystReferrals extends Component {
     console.log('analystReferrals props',this.props)
     return (
       <div className="panel panel-success card card-style">
-
-        { analyst.referred_by ? <div>Referred by: { analyst.referred_by }</div> : '' }
         <div className="panel-heading">
           <h4 className="card-title mt-3">Referrals</h4>
         </div>
 
         <div className="panel-body">
+          { analyst.referred_by ? <div className="small text-purple">Referred by: { analyst.referred_by }</div> : '' }
+
           { analyst.referrals.length ? 
             <div>
-              <h4 className="row">Referrals Made</h4>
+              <h4 className="row text-center text-orange">{ analyst.referrals.length } Referrals Made</h4>
               <div className="row">
-              { ['referral made','registered','email','id'].map( (txt, idx) => <div key={idx} className="col-md-3">{txt}</div> )}
+              { ['referral made','registered','email','id'].map( (txt, idx) => <div key={idx} className="col-md-3">{txt}</div> ) }
               </div>
             </div> : ''
           }
           { analyst.referrals.map( ( referral, idx ) => // timestamp,reg_timestamp,email,analyst
-            <div className="row infoRow" key={idx}>
-              <div className="col-md-3"><Moment from={timestamp} date={referral.timestamp}/></div>
-              <div className="col-md-3">{ referral.reg_timestamp ? <Moment from={timestamp} date={referral.reg_timestamp}/> : '' }</div>
-              <div className="col-md-3">{ referral.email }</div>
-              <div className="col-md-3">{ referral.analyst ? referral.analyst : '' }></div>
+            <div className="row" key={idx}>
+              <div className="col-md-3 small"><Moment from={timestamp} date={referral.timestamp}/></div>
+              <div className="col-md-3 small">{ referral.reg_timestamp ? <Moment from={timestamp} date={referral.reg_timestamp}/> : 'no' }</div>
+              <div className="col-md-3 small">{ referral.email }</div>
+              <div className="col-md-3 small">{ referral.analyst ? referral.analyst : 'none' }</div>
             </div>
-          )}
+          ) }
           
           { analyst.referral_balance ? 
           <div>
-            <div className="row">{analyst.referral_balance} referrals available</div> 
+            <hr/>
+            <h4 className="row text-center text-orange">{analyst.referral_balance} available -- refer somebody</h4> 
 
             <div className="form-group">
               <label htmlFor="referral-email" className="control-label">

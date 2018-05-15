@@ -64,6 +64,7 @@ contract AnalystRegistry {
         uint32 auth_status;  // user authentication status
         uint32 referred_by; // analyst that referred me
         address user_addr;
+        address identity;   // generated identity based on ethereumjs-wallet
         bool is_lead;
         int32 points;
         //uint32 points;
@@ -82,9 +83,12 @@ contract AnalystRegistry {
         mapping ( uint16 => RewardEvent ) reward_events;
         mapping ( uint16 => Referral ) referrals;
     }
-    mapping (uint32 => Analyst) analysts;
-    mapping (address => uint32) address_lookup;
-    mapping (bytes32 => uint32) name_lookup;
+    mapping ( uint32 => Analyst ) analysts;
+    mapping ( address => uint32 ) address_lookup;
+    mapping ( bytes32 => address ) identity_lookup; // gives identity based on regcode
+    mapping ( address => uint32 ) referrals;    // gives referring analyst based on identity
+    mapping ( bytes32 => uint32 ) name_lookup;
+    
     uint32 public num_analysts;
 
     mapping (uint32 => uint32) leads;
@@ -103,18 +107,20 @@ contract AnalystRegistry {
         bootstrap(14,4);
     }
 
-    event Register( uint32 id, bytes32 email, uint32 referral );
-    function register( bytes32 _email, bytes32 _pw, uint32 _referral ) public {
+    event Register( uint32 id, bytes32 email, bytes32 regcode, address identity );
+    function register( bytes32 _email, bytes32 _pw, bytes32 _regcode ) public {
         Analyst storage a = analysts[ num_analysts ];
         a.password = _pw;
         a.email = _email;
-        a.referred_by = _referral;
+        //a.referred_by = _referral;
         a.user_addr = msg.sender;
         a.is_lead = false;
         a.referral_balance = 5;
 
-        if ( _referral > 0 ){
-            Analyst storage referredBy = analysts[ _referral ];
+        if ( _regcode > 0 ){
+            a.identity = identity_lookup[ _regcode ];
+            require( a.identity != 0 );
+            Analyst storage referredBy = analysts[ referrals[ a.identity ] ];
             require( referredBy.num_referrals > 0 );
             for (uint8 i = 0; i < referredBy.num_referrals; i++ ) {
                 if (referredBy.referrals[ i ].email == _email) {
@@ -129,7 +135,7 @@ contract AnalystRegistry {
         address_lookup[ msg.sender ] = num_analysts;
         name_lookup[ _email ] = num_analysts;
 
-        Register( num_analysts++, _email, _referral );
+        Register( num_analysts++, _email, _regcode, a.identity );
     }
 
     function login(bytes32 _email, bytes32 _pw) public view returns ( uint32, bytes32, int32, uint32 ) {
@@ -168,15 +174,19 @@ contract AnalystRegistry {
         r.email = _email;
         r.identity = _identity;
         r.regcode = _regcode;
+        identity_lookup[ _regcode ] = _identity;
+        referrals[ _identity ] = _analyst;
+    }
+    
+    function referredBy( uint32 _analyst ) public view returns ( uint32 ) {
+        return analysts[ _analyst ].referred_by;
     }
     
     function isLead( uint32 _analyst ) public view returns (bool){
         return( analysts[ _analyst ].points >= levels[LEAD_LEVEL][0] );
     }
 
-    function referredBy( uint32 _analyst ) public view returns ( uint32 ) {
-        return analysts[ _analyst ].referred_by;
-    }
+
     function analystInfo( uint32 _analyst ) public view returns (
         uint32, bytes32, uint32, uint32,
         int32, bool, uint32, uint8,

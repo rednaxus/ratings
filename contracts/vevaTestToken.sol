@@ -120,8 +120,8 @@ contract vevaTest is ERC20Interface, Owned, SafeMath {
         //change back decimals to 18:
         //decimals = 18;
         //FOR TESTING ONLY
-        decimals = 4;
-        _totalSupply = 1000000;
+        decimals = 18;
+        _totalSupply = 100000000000000000000000000;
         balances[0x9f943ed85fb1b63b2a68af79290e5023d32f5e96] = _totalSupply;
         Transfer(address(0), 0x9f943ed85fb1b63b2a68af79290e5023d32f5e96, _totalSupply);
     }

@@ -1021,6 +1021,8 @@ $("#button").click(function() {
 
   var accounts;
   var vevaBalance;
+  var fromWeiOne;
+  var fromWeiTwo;
 
   web3.eth.getAccounts(
 
@@ -1035,7 +1037,21 @@ $("#button").click(function() {
     console.log  (web3.eth.getBalance(web3.eth.defaultAccount));
     console.log (contractInstance.balanceOf(web3.eth.defaultAccount));
     //console.log (contractInstance.getBalance(web3.eth.defaultAccount));
-    vevaBalance = contractInstance.balanceOf(web3.eth.defaultAccount).c[0];
+    //vevaBalance = new BigNumber (contractInstance.balanceOf(web3.eth.defaultAccount).c[0]);
+    //vevaBalance.plus(21).toString(10);
+
+    fromWeiOne = contractInstance.balanceOf(web3.eth.defaultAccount).c[0].toString();
+    fromWeiTwo = contractInstance.balanceOf(web3.eth.defaultAccount).c[1].toString();
+
+    vevaBalance = web3.fromWei(fromWeiOne+fromWeiTwo, 'ether');
+
+    //vevaBalance = web3.fromWei(contractInstance.balanceOf(web3.eth.defaultAccount), 'ether');
+
+    console.log ("xxxxxxxxxxxxxxxxxcxcxcxcxcxcxcxcxc");
+    console.log (vevaBalance);
+    console.log ("xxxxxxxxxxxxxxxxxcxcxcxcxcxcxcxcxc");
+
+
   }
 
 
@@ -1072,12 +1088,12 @@ export class Wallet extends PureComponent {
 
 
 
-              <label for="address" >Send to address</label>
+              <label >Send to address</label>
               <input id="address" type="text" />
 
               <br/>
 
-              <label for="amount">Amount</label>
+              <label >Amount</label>
               <input id="amount" type="text"/>
 
               <br/>
@@ -1097,27 +1113,85 @@ function onItemClick() {
   var toAddress = $("#address").val();
   var amount = $("#amount").val();
 
-
-if (amount <= vevaBalance) {
-
-contractInstance.transfer(toAddress, amount, {from: web3.eth.defaultAccount});
+  var amountWei = web3.toWei(amount);
 
 
-  alert ("You have successfully transferred " + amount + " VEVA to " + toAddress + " !")
+  if (amount <= vevaBalance) {
 
-  console.log (toAddress, amount);
+  contractInstance.transfer(toAddress, amountWei, {from: web3.eth.defaultAccount});
 
-  console.log ("hurray!  You sent VEVA tokens to " + toAddress);
 
-}
+    alert ("You have successfully transferred " + amount + " VEVA to " + toAddress + " !")
 
-else {
+    console.log (toAddress, amount);
 
-alert("So sorry! You don't have enough VEVA tokens to send! Please try transferring  a different amount.");
+    console.log ("hurray!  You sent" + amount + " VEVA tokens to " + toAddress);
 
-console.log ("Insufficient Balance");
+  }
 
-}
+  else {
+
+  alert("So sorry! You don't have enough VEVA tokens to send! Please try transferring  a different amount.");
+
+  console.log ("Insufficient Balance");
+
+  }
+
+
+
+
+/*
+  if (stringSearch == -1) {
+
+    alert("No Decimal, whew");
+
+  }
+
+  else {
+
+    var amountLong = (amountString + '000000000000000000')
+
+
+
+    var amountBigNumber = web3.toBigNumber (amountLong);
+
+    var transferWeiOne = amountBigNumber.c[0];
+    var transferWeiTwo = amountBigNumber.c[1];
+
+    amount = web3.fromWei(transferWeiOne+transferWeiTwo, 'ether');
+
+    console.log ('sdfhsdgisfhdghsfdgoshfdgposdfngsdfg');
+    console.log (amountLong);
+    console.log ('sdfhsdgisfhdghsfdgoshfdgposdfngsdfg')
+
+    if (amount <= vevaBalance) {
+
+    contractInstance.transfer(toAddress, amount, {from: web3.eth.defaultAccount});
+
+
+      alert ("You have successfully transferred " + amount + " VEVA to " + toAddress + " !")
+
+      console.log (toAddress, amount);
+
+      console.log ("hurray!  You sent VEVA tokens to " + toAddress);
+
+    }
+
+    else {
+
+    alert("So sorry! You don't have enough VEVA tokens to send! Please try transferring  a different amount.");
+
+    console.log ("Insufficient Balance");
+
+    }
+
+  }
+
+*/
+
+
+
+
 
 };
 
@@ -1129,13 +1203,6 @@ console.log ("Insufficient Balance");
      contract.methods.transfer(toAddress, amount).send({from: web3js.eth.defaultAccount});
   });
   */
-
-
-  var addressTest = TestTokenERC20Contract.networks["7"].address;
-
-  console.log ("xxxxxxxxxxxxxxxxxcxcxcxcxcxcxcxcxc");
-  console.log (addressTest);
-  console.log ("xxxxxxxxxxxxxxxxxcxcxcxcxcxcxcxcxc");
 
 
 export default Wallet

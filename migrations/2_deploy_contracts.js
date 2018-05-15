@@ -10,7 +10,7 @@ module.exports = function( deployer ) {
 	.then( () => RatingAgency.deployed() )
 	.then( ra => deployer.deploy( Tests, ra.address ) )
 	.then( () => Tests.deployed() )
-	,
+
 	deployer.deploy( vevaTest ).then( () => vevaTest.deployed() )
 
 	/*

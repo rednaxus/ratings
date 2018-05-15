@@ -114,7 +114,7 @@ contract vevaTest is ERC20Interface, Owned, SafeMath {
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
-    function vevaTest() public {
+    constructor() public {
         symbol = "VEEVAA";
         name = "vevaTest";
         decimals = 18;

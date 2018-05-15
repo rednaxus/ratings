@@ -37,17 +37,18 @@ const info = userId => new Promise((resolve,reject) => {
         let i = 0
         userInfo = { 
           ...userInfo,
-          id: result[i++].toNumber(),
-          email: web3.toAscii(result[i++]).replace(/\0/g,''),
-          auth_status: result[i++].toNumber(),
-          reputation: result[i++].toNumber(),
-          lead: result[i++],
-          token_balance: result[i++].toNumber(),
-          //num_rounds_scheduled: result[7].toNumber(),
-          num_rounds_active: result[i++].toNumber(),
-          num_rounds_finished: result[i++].toNumber(),
-          num_reward_events: result[i++].toNumber(),
-          num_referrals: result[i++].toNumber(),
+          id: result[ i++ ].toNumber(),
+          email: web3.toAscii(result[ i++ ]).replace(/\0/g,''),
+          auth_status: result[ i++ ].toNumber(),
+          referred_by: result[ i++ ].toNumber(),
+          reputation: result[ i++ ].toNumber(),
+          lead: result[ i++ ],
+          token_balance: result[ i++ ].toNumber(),
+          referral_balance: result[ i++ ].toNumber(),
+          num_rounds_active: result[ i++ ].toNumber(),
+          num_rounds_finished: result[ i++ ].toNumber(),
+          num_reward_events: result[ i++ ].toNumber(),
+          num_referrals: result[ i++ ].toNumber(),
           reward_events: [],
           referrals: []
         }
@@ -69,7 +70,7 @@ const info = userId => new Promise((resolve,reject) => {
             ( function( iCycle ) {
               agency.cycleAnalystInfo(iCyc,userId).then( result => {
                 let idx = 0
-                console.log('result from cycleAnalystInfo',result)
+                //console.log('result from cycleAnalystInfo',result)
                 let ref = result[idx++].toNumber()
                 if ( ref !== 0xffff ) {
                   userInfo.cycleInfo[ iCycle ] = {
@@ -116,8 +117,27 @@ const info = userId => new Promise((resolve,reject) => {
                 }
               } )
             } ( e ) )
-
           }
+        }
+        if (userInfo.num_referrals ){
+          numFetch++
+          let numReferralsFetch = userInfo.num_referrals
+          for (var r = 0; r < userInfo.num_referrals; r++) {
+            ( function( referral ){
+              registry.referralInfo( userId, referral ).then( result => {
+                let idx = 0
+                userInfo.referrals[ referral ] = {
+                  timestamp: result[ idx++ ].toNumber(),
+                  reg_timestamp: result[ idx++ ].toNumber(),
+                  email: web3.toAscii( result[ idx++ ] ).replace(/\0/g,''), 
+                  analyst: result[ idx++ ].toNumber()
+                }
+                if ( !--numReferralsFetch ) {
+                  if ( !--numFetch ) resolve(userInfo)
+                }
+              } )
+            } ( r ) )
+          }         
         }
       })
       .catch(result => { 
@@ -129,6 +149,19 @@ const info = userId => new Promise((resolve,reject) => {
 })
 
 
+export const referralSubmit = ( analyst, email, identity, regcode ) => new Promise( (resolve,reject) => {
+  AnalystRegistry().then( analystRegistry => {
+    console.log( 'submitting referral',analyst, email, identity, regcode )
+    analystRegistry.submitReferral( analyst, email, identity, regcode ).then( result => {
+      console.log('submit referral result',result)
+      resolve( 'done' )
+    })
+    .catch( err => { 
+      console.error("Error submitting referral:"  + err ) 
+      reject( err )
+    })
+  })
+})
 
 /*
     Promise.all([...Array(analystInfo.num_rounds_scheduled)].map((_, i) => analystRegistry.scheduledRound(analystInfo.id,i)))
@@ -137,7 +170,7 @@ const info = userId => new Promise((resolve,reject) => {
 */
 const getAnalystRounds = ( analystInfo ) => new Promise( (resolve,reject) => {
   const result = { }
-  console.log('analyst info',analystInfo)
+  //console.log('analyst info',analystInfo)
   AnalystRegistry().then( analystRegistry => {
     Promise.all([...Array(analystInfo.num_rounds_active)].map((_, i) => analystRegistry.activeRound(analystInfo.id,i)))
     .then( res => {
@@ -174,7 +207,7 @@ const login = (username, password) => new Promise((resolve,reject) => {
   AnalystRegistry().then( analystRegistry => {
     analystRegistry.login(username,password).then(result => {
       // id,email,reputation,token_balance
-      console.log('login result',result)
+      //console.log('login result',result)
       let user = { 
         id: result[0].toNumber(),
         name: username,
@@ -223,7 +256,8 @@ export const userService = {
   logout,
   register,
   info,
-  getAnalystRounds
+  getAnalystRounds,
+  referralSubmit
 }
 /*
 export const getUsersData = () => {

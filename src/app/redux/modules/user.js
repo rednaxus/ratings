@@ -31,7 +31,11 @@ const userConstants = {
 
   DELETE_REQUEST: 'USERS_DELETE_REQUEST',
   DELETE_SUCCESS: 'USERS_DELETE_SUCCESS',
-  DELETE_FAILURE: 'USERS_DELETE_FAILURE'    
+  DELETE_FAILURE: 'USERS_DELETE_FAILURE',
+
+  REFERRAL_SUBMIT_REQUEST: 'USERS_REFERRAL_SUBMIT_REQUEST',
+  REFERRAL_SUBMIT_REQUEST: 'USERS_REFERRAL_SUBMIT_SUCCESS',
+  REFERRAL_SUBMIT_REQUEST: 'USERS_REFERRAL_SUBMIT_FAILURE'
 }
 
 const getInfo = (user_id) => { // get from id
@@ -154,6 +158,25 @@ const register = (user,email,password) => {
   }
 }
 
+const referralSubmit = ( analyst, email, hashcode ) => {
+  const request = user => ( { type: userConstants.REFERRAL_SUBMIT_REQUEST, user } )
+  const success = user => ( { type: userConstants.REFERRAL_SUBMIT_SUCCESS, user } )
+  const failure = error => ( { type: userConstants.REFERRAL_SUBMIT_FAILURE, error } )
+
+  return dispatch => {
+    dispatch( request( analyst ) )
+    userService.referralSubmit( analyst, email, hashcode ).then(
+      () => { 
+        dispatch( alertActions.success( 'referral added' ) )
+        dispatch( success() );
+      },
+      error => {
+        dispatch( failure( error) )
+        dispatch( alertActions.error( error ) )
+      }
+    )
+  }
+}
 export const userActions = {
   login,
   logout,

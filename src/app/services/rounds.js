@@ -9,7 +9,7 @@ export const getCyclesByStatus = ( { cycles, rounds, timestamp, tokens } ) => {
   let now = timestamp // cronInfo / 1000
   let nextTime = config.cycleTime( config.cycleIdx( now ) + 1 )
   let activeNow = config.cycleIdx( now )
-  console.log('cycles',cycles,now,nextTime)
+  //console.log('cycles',cycles,now,nextTime)
 
   const isVolunteer = cycle => cycle.role[ 0 ].num_volunteers || cycle.role[ 1 ].num_volunteers
   const isConfirmed = cycle => cycle.role[ 0 ].num_confirms || cycle.role[ 1 ].num_confirms
@@ -20,9 +20,9 @@ export const getCyclesByStatus = ( { cycles, rounds, timestamp, tokens } ) => {
   const isFinished = cycle => activeNow != cycle.id && cycle.timestart < now
 
   const getRound = round_id => {
-    console.log('round_id',round_id,'rounds',...rounds)
+    //console.log('round_id',round_id,'rounds',...rounds)
     let round = _.find( rounds,['id',round_id] )
-    console.log('found',round)
+    //console.log('found',round)
     return round
   }
 

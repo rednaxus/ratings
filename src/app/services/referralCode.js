@@ -1,14 +1,14 @@
-import { appConfig }  from '../config'
-
+//import { appConfig }  from '../config'
+import { generate } from 'ethereumjs-wallet'
 
 export const referralCode = {
 
-  getRefCodePair: function () {
+  getRefCodePair: () => {
 
     console.log ("ID -> REGISTRATION CODE")
 
-    const pairGen = require('ethereumjs-wallet');
-    const keyPair = pairGen.generate();
+    //const pairGen = require('ethereumjs-wallet');
+    const keyPair = generate()
 
     var regKey = keyPair.getPrivateKey()
 
@@ -18,8 +18,11 @@ export const referralCode = {
     console.log ("Analyst ID: " + analystId)
     console.log ("Registration Code: " + regKeyString)
 
-    return analystId
+    return { identity: analystId, regcode: regKeyString }
 
   }
 
 }
+
+export default referralCode
+

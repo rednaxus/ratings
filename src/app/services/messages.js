@@ -666,14 +666,14 @@ user.rounds.finished = [8, 9, 0, 7]
 
 
 //if we decide to use keypairs
-	let newCode = referralCode.getRefCodePair()
+	let { identity } = referralCode.getRefCodePair()
 
 
 	if (user.num_referrals) {
 		messages.push({
 			type: 'make_referral',
 			priority: 'action-big',
-			refCode: newCode,
+			refCode: identity,
 			unused_refs: user.num_referrals.length
 		})
 	}

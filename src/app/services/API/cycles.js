@@ -32,7 +32,7 @@ export const pulseCron = () => {
         console.log('pulsing cron from ' + lasttime + ' to '+ (lasttime+appConfig.CRON_INTERVAL))
         lasttime += appConfig.CRON_INTERVAL
         ratingAgency.cron( lasttime ).then( cronResult => {
-          console.log('cron result',cronResult)
+          //console.log('cron result',cronResult)
           resolve( 1000*result.toNumber() )
         })
         .catch( result => { 
@@ -93,12 +93,8 @@ export const getCycleInfo = ( cycle, analyst = 0) => new Promise( (resolve, reje
         //num_leads_assigned: rCycle[7].toNumber(),
         //analyst_status: rCycle[8].toNumber()
       }
-      console.log('got cycle info',res)
+      //console.log('got cycle info',res)
       ratingAgency.cycleAnalystInfo( cycle, analyst ).then ( rCycleAnalyst => {
-        for (let i=0;i<3;i++){
-          console.log(i+1,rCycleAnalyst[ i + 1 ].toNumber())
-          console.log(i+5,rCycleAnalyst[ i + 5 ].toNumber())
-        }
         res.incycle_ref = rCycleAnalyst[ 0 ].toNumber()
         res.role = []
         for ( let i=0; i<2; i++ ){
@@ -112,7 +108,7 @@ export const getCycleInfo = ( cycle, analyst = 0) => new Promise( (resolve, reje
             rounds: parseB32StringtoUintArray( rCycleAnalyst[ 4 + i*4 ], num_rounds ) 
           } )
         }
-        console.log( 'got cycle info all ',res)     
+        //console.log( 'got cycle info all ',res)     
         resolve( res )
       }).catch( error )
     }).catch( error )
@@ -126,7 +122,7 @@ export const getCycleInfo = ( cycle, analyst = 0) => new Promise( (resolve, reje
 
 export const dataSource = function getData({ pageIndex, pageSize }) {
   return new Promise((resolve,reject) => {
-    console.log(' beginning cycles fetch')
+    //console.log(' beginning cycles fetch')
     RatingAgency().then((ratingAgency) => {
       ratingAgency.num_cycles()
       .then(result => {

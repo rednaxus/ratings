@@ -636,7 +636,7 @@ contract RatingAgency {
     }
     /* Generate random number 0 to n-1 (based on last block hash) */
     function randomIdx( uint seed, uint n ) public constant returns ( uint rand ) {
-        rand = n <= 1 ? 0 : uint(keccak256(block.blockhash( block.number-1 ), seed ) ) % ( n - 1 ) ;
+        rand = n <= 1 ? 0 : uint(keccak256(blockhash( block.number-1 ), seed ) ) % ( n - 1 ) ;
     }
     
     function lotteryNext( uint16 _last, uint16 _need, uint16 _total ) public view returns ( uint16 next ) {

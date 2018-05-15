@@ -10,7 +10,8 @@ const mapStateToProps = (state) => {
   return {
     currentView:         state.views.currentView,
     user:                state.user.info,
-    rounds:              state.rounds.data
+    rounds:              state.rounds.data,
+    cronInfo:            state.cycles.cronInfo 
   }
 }
 

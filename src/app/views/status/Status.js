@@ -23,7 +23,7 @@ class Status extends Component {
   }
 
   render() {
-    const { currentView, userIsConnected, user, rounds } = this.props;
+    const { currentView, userIsConnected, user, rounds, cronInfo } = this.props;
     if ( user.id === undefined) return( '' )
     
     console.log('rounds',rounds)
@@ -67,7 +67,7 @@ class Status extends Component {
           </div>
           <div className="row">
             <div className="col-md-6">
-              <AnalystReferrals analyst={user} />
+              <AnalystReferrals timestamp={ cronInfo / 1000 } analyst={ user } />
             </div>
           </div>
         </main>

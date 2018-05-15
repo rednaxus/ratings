@@ -30,15 +30,15 @@ export const navigation = {
           linkTo: '/scheduling',
           faIconName: 'fa-eye'
         },
-        /*{
-          name: 'Survey',
-          linkTo: '/Analyst/survey',
-          faIconName: 'fa-eye'
-        },*/
         {
           name: 'Statuses',
           linkTo: '/status',
           faIconName: 'fa-gear'
+        },
+        {
+          name: 'Wallet',
+          linkTo: '/wallet',
+          faIconName: 'fa-certificate'
         }
       ]
     },

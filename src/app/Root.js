@@ -43,7 +43,7 @@ class Root extends Component<Props, State> {
               <ScrollTop>
                 <Switch>
                   <Route exact path="/login" component={ Login } />
-                  <Route exact path="/register" component={ Register } />
+                  <Route path="/register/:regcode" component={ Register } />
                   { isAuthenticated ? <App />:<Route exact path="/" component={ Tokens } /> }
                   <Route component={PageNotFound} />
                 </Switch>

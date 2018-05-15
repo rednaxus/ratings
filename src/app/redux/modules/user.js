@@ -34,8 +34,8 @@ const userConstants = {
   DELETE_FAILURE: 'USERS_DELETE_FAILURE',
 
   REFERRAL_SUBMIT_REQUEST: 'USERS_REFERRAL_SUBMIT_REQUEST',
-  REFERRAL_SUBMIT_REQUEST: 'USERS_REFERRAL_SUBMIT_SUCCESS',
-  REFERRAL_SUBMIT_REQUEST: 'USERS_REFERRAL_SUBMIT_FAILURE'
+  REFERRAL_SUBMIT_SUCCESS: 'USERS_REFERRAL_SUBMIT_SUCCESS',
+  REFERRAL_SUBMIT_FAILURE: 'USERS_REFERRAL_SUBMIT_FAILURE'
 }
 
 const getInfo = (user_id) => { // get from id
@@ -137,14 +137,14 @@ const logout = () => {
   return { type: userConstants.LOGOUT }
 }
 
-const register = (user,email,password) => {
+const register = ( user, email, password, regcode = '' ) => {
   const request = (user) => { return { type: userConstants.REGISTER_REQUEST, user } }
   const success = (user) => { return { type: userConstants.REGISTER_SUCCESS, user } }
   const failure = (error) => { return { type: userConstants.REGISTER_FAILURE, error } }
 
   return dispatch => {
     dispatch(request(user))
-    userService.register(user,email,password).then(
+    userService.register( user, email, password, regcode ).then(
       user => { 
         dispatch(success());
         dispatch(alertActions.success('Registration successful'))
@@ -158,14 +158,14 @@ const register = (user,email,password) => {
   }
 }
 
-const referralSubmit = ( analyst, email, hashcode ) => {
+const referralSubmit = ( analyst, email, identity, regcode ) => {
   const request = user => ( { type: userConstants.REFERRAL_SUBMIT_REQUEST, user } )
   const success = user => ( { type: userConstants.REFERRAL_SUBMIT_SUCCESS, user } )
   const failure = error => ( { type: userConstants.REFERRAL_SUBMIT_FAILURE, error } )
 
   return dispatch => {
     dispatch( request( analyst ) )
-    userService.referralSubmit( analyst, email, hashcode ).then(
+    userService.referralSubmit( analyst, email, identity, regcode ).then(
       () => { 
         dispatch( alertActions.success( 'referral added' ) )
         dispatch( success() );
@@ -181,7 +181,8 @@ export const userActions = {
   login,
   logout,
   register,
-  refreshInfo
+  refreshInfo,
+  referralSubmit
 }
 
 let user = JSON.parse(localStorage.getItem('user'));

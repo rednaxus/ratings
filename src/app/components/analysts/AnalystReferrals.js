@@ -1,13 +1,47 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import Moment from 'react-moment'
 import referralCode from '../../services/referralCode'
+import { userActions } from '../../redux/modules/actions'
 
 class AnalystReferrals extends Component {
-  submitReferral( event, r){
-    let { identity, regcode } = referralCode.getRefCodePair()
-    console.log('got event ',r, identity, regcode )    
+  state = {
+    email:          ''
+  };
+
+  handlesOnEmailChange = (
+    event: SyntheticEvent<>
+  ) => {
+    if (event) {
+      event.preventDefault();
+      // should add some validator before setState in real use cases
+      this.setState({ email: event.target.value.trim() })
+    }
   }
+
+  handlesOnSubmit = async ( event: SyntheticEvent<> ) => {
+    if (event) event.preventDefault()
+
+    const { email } = this.state
+
+    let { identity, regcode } = referralCode.getRefCodePair()
+    console.log('ready to submit',email,identity,regcode)
+    
+    this.boundActions.referralSubmit( this.props.analyst.id, email, identity, regcode )
+
+  }
+
+  constructor( props ){
+    super(props)
+    const { dispatch } = this.props
+    this.boundActions = bindActionCreators( { ...userActions }, dispatch )
+  }
+
   render() {
     const { analyst, timestamp } = this.props
+    const { email } = this.state
+
     console.log('analystReferrals props',this.props)
     return (
       <div className="panel panel-success card card-style">
@@ -35,31 +69,35 @@ class AnalystReferrals extends Component {
             </div>
           )}
           
-          { analyst.referral_balance ? <div className="row">Referrals Available</div> : '' }
-          { Array(analyst.referral_balance).fill().map( ( _, r ) => 
-            <div className="row" key={r}>
-              <div className="col-md-6">
-                <input
-                  type="text"
-                  className="form-control"
-                  id={ `email-${r}` }
-                  placeholder="Referral Email"
-                  value=""
-                />
-              </div>
-              <button className="col_md-6" onClick={ event => this.submitReferral( event, r ) }>
-                submit
-              </button>
-            </div>
-            )
-          }
-        </div>
+          { analyst.referral_balance ? 
+          <div>
+            <div className="row">{analyst.referral_balance} referrals available</div> 
 
+            <div className="form-group">
+              <label htmlFor="referral-email" className="control-label">
+                Referral by email
+              </label>
+              <div className="row">
+                <div className="col-md-6">
+                  <input type="text" className="form-control" id="referral-email"
+                    placeholder="Referral Email" value={ email }
+                    onChange={ this.handlesOnEmailChange }
+                  />
+                </div>
+                <div className="col-md-3">
+                  <button className="form-control" onClick={ this.handlesOnSubmit }>
+                    submit
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div> 
+          : '' }
+        </div>
       </div>
- 
     )
   }
 }
 
-export default AnalystReferrals
+export default connect()(AnalystReferrals)
 

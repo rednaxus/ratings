@@ -60,7 +60,8 @@ class Register extends PureComponent<Props, State> {
   state = {
     user:           '',
     email:          '',
-    password:       ''
+    password:       '',
+    regcode:        '' 
   };
 
   
@@ -71,13 +72,21 @@ class Register extends PureComponent<Props, State> {
     enterRegister()
   }
 
+
+  componentWillReceiveProps() {
+    if (this.state.regcode == this.props.match.params.regcode ) return
+
+    this.state.regcode = this.props.match.params.regcode
+    console.log('component will receive props',this.state.regcode) 
+  }
+
   componentWillUnmount() {
     const { leaveRegister } = this.props
     leaveRegister()
   }
 
   render() {
-    const { user, email, password } = this.state
+    const { user, email, password, regcode } = this.state
 
     const { registering } = this.props
 

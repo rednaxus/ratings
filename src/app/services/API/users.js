@@ -148,11 +148,10 @@ const info = userId => new Promise((resolve,reject) => {
   })
 })
 
-
 export const referralSubmit = ( analyst, email, identity, regcode ) => new Promise( (resolve,reject) => {
   AnalystRegistry().then( analystRegistry => {
     console.log( 'submitting referral',analyst, email, identity, regcode )
-    analystRegistry.submitReferral( analyst, email, identity, regcode ).then( result => {
+    analystRegistry.referralSubmit( analyst, email, identity, regcode ).then( result => {
       console.log('submit referral result',result)
       resolve( 'done' )
     })
@@ -232,11 +231,11 @@ const login = (username, password) => new Promise((resolve,reject) => {
 })
 
 
-const register = ( user, email, password, referral = 0 ) => new Promise( (resolve,reject) => {
+const register = ( user, email, password, regcode ) => new Promise( (resolve,reject) => {
   console.log(' register',user,password,email)
   web3 = window.web3
   AnalystRegistry().then( analystRegistry => {
-    analystRegistry.register( user, password, email, referral ).then(result => { // transaction object
+    analystRegistry.register( user, password, email, regcode ).then(result => { // transaction object
       console.log('result',result)
       resolve(result)
     })

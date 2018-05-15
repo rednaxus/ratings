@@ -40,8 +40,8 @@ export const getContractInstance = (contractDesc, addr = null) =>
 
 export const getTokenERC20 = (addr) => getContractInstance( TokenERC20Contract, addr )
 export const getTestTokenERC20 = (addr) => getTestContractInstance( TestTokenERC20Contract, addr )
-export const getRatingAgency = () => getContractInstance( RatingAgencyContract, appConfig.RATING_AGENCY )
-export const getAnalystRegistry = () => getContractInstance( AnalystRegistryContract, appConfig.ANALYST_REGISTRY )
+export const getRatingAgency = () => getContractInstance( RatingAgencyContract ) //, appConfig.RATING_AGENCY )
+export const getAnalystRegistry = () => getContractInstance( AnalystRegistryContract ) //, appConfig.ANALYST_REGISTRY )
 
 export const promisify = (inner) =>
   new Promise((resolve, reject) =>

@@ -169,7 +169,7 @@ contract RatingAgency {
     /**
      * Constructor
     */
-    function RatingAgency( address _registry, uint _period ) public {
+    constructor( address _registry, uint _period ) public {
         lasttime = ZERO_BASE_TIME;
         cycle_period = _period == 0 ? CYCLE_PERIOD : _period;
 
@@ -190,7 +190,7 @@ contract RatingAgency {
     event TokenAdd( uint32, address);
     function tokenCover( address _tokenContract, uint _timeperiod ) public {  // only specify period if different
         covered_tokens[ num_tokens ] = CoveredToken( _tokenContract, _timeperiod, msg.sender );
-        TokenAdd( num_tokens, _tokenContract );
+        emit TokenAdd( num_tokens, _tokenContract );
         num_tokens++;
     }
 
@@ -213,7 +213,7 @@ contract RatingAgency {
             if ( i % CYCLE_FRACTIONS == cyc4 ) // e.g. every 4th token at this particular timeperiod
                 roundActivate( _cycle, i );
         }
-        CycleActivated( _cycle, time, i );
+        emit CycleActivated( _cycle, time, i );
         return true;
     }
 
@@ -291,7 +291,7 @@ contract RatingAgency {
             cs.availables[ ref_avail ] = ref;
         }
         //cs.num_volunteers--;
-        CycleConfirmed( _cycle, _analyst, _role, ref_avail, cs.num_availables, num_volunteers, num_confirms );
+        emit CycleConfirmed( _cycle, _analyst, _role, ref_avail, cs.num_availables, num_volunteers, num_confirms );
     }
         
     event CycleAdded( uint16 cycle );    
@@ -303,7 +303,7 @@ contract RatingAgency {
             cycles[i].timestart = cycleTime( i );
             cycles[i].period = cycle_period;
             cycles[i].stat = NONE;
-            CycleAdded( i );
+            emit CycleAdded( i );
         }
         num_cycles = num_target;
     }
@@ -318,7 +318,7 @@ contract RatingAgency {
         }
         for ( i = 0; i < _cycle; i++ ){ // deactivate any past cycles
             if (cycles[ i ].stat == ACTIVE) cycles[ i ].stat = FINISHED;
-            CycleFinished( _cycle, i, time );
+            emit CycleFinished( _cycle, i, time );
         }
     }
 
@@ -369,7 +369,7 @@ contract RatingAgency {
         }
         //cycle.statuses[ _role ].num_volunteers++; 
         uint8 num_volunteers = ++cycle.analysts[ ref ].analyst_status[ _role ].num_volunteers;
-        CycleVolunteer( _cycle, _analyst, _role, num_volunteers );
+        emit CycleVolunteer( _cycle, _analyst, _role, num_volunteers );
     }
 
     /*
@@ -392,7 +392,7 @@ contract RatingAgency {
             ra.stat = a<2 ? BRIEF_DUE: FIRST_SURVEY_DUE;
             registry.activateRound( ra.analyst, round );
         }       
-        RoundActivated( r.cycle, round, num_rounds_active, r.num_analysts );
+        emit RoundActivated( r.cycle, round, num_rounds_active, r.num_analysts );
     }
     
     function roundAnalyst( uint16 _round, uint32 _analyst ) public view returns (uint8, uint8) {
@@ -419,7 +419,7 @@ contract RatingAgency {
         Round storage round = rounds[ _round ];
         round.briefs[ _analyst ] = RoundBrief( lasttime, _file);
         round.analysts[ _analyst ].stat = BRIEF_SUBMITTED;
-        BriefSubmitted( _round, _analyst, _file );
+        emit BriefSubmitted( _round, _analyst, _file );
     }
 
     event RoundFinished( uint16 _cycle, uint16 _round, uint16 num_rounds_active );
@@ -434,7 +434,7 @@ contract RatingAgency {
                 break;
             }
         }
-        RoundFinished( rounds[ _round ].cycle, _round, num_rounds_active );
+        emit RoundFinished( rounds[ _round ].cycle, _round, num_rounds_active );
     }
 
     function roundInfo ( uint16 _round ) public view returns (
@@ -484,7 +484,7 @@ contract RatingAgency {
                 ra.stat = SCHEDULED_LEAD;
                 leads_ref[ i ] = ref;
             } else ra.stat = SCHEDULED_JURIST;
-            RoundAnalystAdded( _cycle, _round, analyst, round.num_analysts );
+            emit RoundAnalystAdded( _cycle, _round, analyst, round.num_analysts );
             round.num_analysts++;
 
             if (--num_needed > 0) {
@@ -507,7 +507,7 @@ contract RatingAgency {
             cycleAvailabilityReduce( _cycle, role, ref_avail ); 
         } while ( i != 0 );
         
-        RoundPopulated( _cycle, _round, round.num_analysts, 2 );
+        emit RoundPopulated( _cycle, _round, round.num_analysts, 2 );
     }
     
     function roundSummary ( uint16 _round ) public view returns (
@@ -555,7 +555,7 @@ contract RatingAgency {
         //require( _idx==0 && analyst.stat == FIRST_SURVEY_DUE || _idx==1 && analyst.stat == SECOND_SURVEY_DUE );
         round.surveys[_analyst][_idx] = RoundSurvey( _answers, _qualitatives, _recommendation, _comment );
         analyst.stat = _idx == 0 ? FIRST_SURVEY_SUBMITTED : SECOND_SURVEY_SUBMITTED;
-        SurveySubmitted( _round, _analyst, _idx, _answers, _qualitatives, _recommendation );
+        emit SurveySubmitted( _round, _analyst, _idx, _answers, _qualitatives, _recommendation );
     }
 
     event TallyLog( uint16 round, uint8 analyst, uint8 recommendation);
@@ -573,8 +573,8 @@ contract RatingAgency {
         */
         uint8 n = 0;
         for ( uint8 aref = 2; aref < round.num_analysts; aref++ ) {
-            TallyLog( _round, aref, round.surveys[aref][0].recommendation );
-            TallyLog( _round, aref, round.surveys[aref][1].recommendation );
+            emit TallyLog( _round, aref, round.surveys[aref][0].recommendation );
+            emit TallyLog( _round, aref, round.surveys[aref][1].recommendation );
 
             //if (round.surveys[a][0] && round.surveys[a][1] ) {
                 round.r1_avg = (round.r1_avg*n + 10*round.surveys[aref][0].recommendation) / (n+1);
@@ -583,8 +583,8 @@ contract RatingAgency {
 
             //}
         }
-        TallyLog( _round, 100, round.r1_avg );
-        TallyLog( _round, 101, round.r2_avg );
+        emit TallyLog( _round, 100, round.r1_avg );
+        emit TallyLog( _round, 101, round.r2_avg );
 
         if ( round.r2_avg > round.r1_avg + 20) round.winner = 0;
         else if ( round.r2_avg < round.r1_avg - 20) round.winner = 1;
@@ -597,7 +597,7 @@ contract RatingAgency {
         for ( i = 2; i < round.num_analysts; i++ )
             registry.rewardJurist( round.analysts[ i ].analyst, _round, round.value, 0 ); // for now, every jurist is a winner, pending tally above
 
-        TallyWin( _round, round.winner );
+        emit TallyWin( _round, round.winner );
 
     }
 
@@ -607,7 +607,7 @@ contract RatingAgency {
         time = _time == 0 ? ZERO_BASE_TIME : _time; // e.g. block.timestamp
         uint16 cycle = cycleIdx( time );
 
-        Cron( lasttime, time, cycle );
+        emit Cron( lasttime, time, cycle );
 
         if ( time < lasttime ) return; // don't repeat for times already run
         registry.update( time ); // keep time in sync
@@ -683,7 +683,7 @@ contract Survey {  // "read-only" survey questions
   uint16 public version = 1;
   uint16 num_questions = 24;  // num questions not including final
   string public questions; // ipfs hash for questions json
-  function Survey(string _questionsfile) public {
+  constructor(string _questionsfile) public {
       questions = _questionsfile;
   }
 }

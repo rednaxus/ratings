@@ -1,6 +1,7 @@
 import { store } from '../Root'
 import { appConfig } from '../config'
 import TokenERC20Contract from '../../../build/contracts/TokenERC20.json'
+import TestTokenERC20Contract from '../../../build/contracts/vevaTest.json'
 import RatingAgencyContract from '../../../build/contracts/RatingAgency.json'
 import AnalystRegistryContract from '../../../build/contracts/AnalystRegistry.json'
 
@@ -38,6 +39,7 @@ export const getContractInstance = (contractDesc, addr = null) =>
   })
 
 export const getTokenERC20 = (addr) => getContractInstance( TokenERC20Contract, addr )
+export const getTestTokenERC20 = (addr) => getTestContractInstance( TestTokenERC20Contract, addr )
 export const getRatingAgency = () => getContractInstance( RatingAgencyContract, appConfig.RATING_AGENCY )
 export const getAnalystRegistry = () => getContractInstance( AnalystRegistryContract, appConfig.ANALYST_REGISTRY )
 

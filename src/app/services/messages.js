@@ -76,6 +76,7 @@ export const generateMessages = ( { user, cycles, rounds, tokens, timestamp } ) 
   //let activeRounds = []
 
 
+
   let {
     comingSignupCycles,
     comingVolunteerCycles,
@@ -153,6 +154,7 @@ user.rounds.finished = [8, 9, 0, 7]
 		})
 	})
 
+	return messages
 	/***** Payment *****/
 
 	//toDo: ready for testing

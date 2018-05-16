@@ -233,7 +233,12 @@ const login = (email, password) => new Promise((resolve,reject) => {
 
 
 const register = ( email, password, regcode ) => new Promise( (resolve,reject) => {
+  web3 = window.web3
   console.log(' register', email, password, regcode)
+  let email_a = web3.fromAscii(email)
+  let password_a = web3.fromAscii(password)
+  console.log(email_a,password_a)
+
   AnalystRegistry().then( analystRegistry => {
     analystRegistry.register( email, password, regcode ).then( result => { // transaction object
       console.log('reg result',result)

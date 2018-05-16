@@ -233,6 +233,7 @@ contract AnalystRegistry {
         a.is_lead = false;
         a.referral_balance = REFERRALS_DEFAULT;
 
+        
         if ( _regcode > 0 ){
             a.identity = identity_lookup[ _regcode ];
             require( a.identity != 0 );
@@ -245,8 +246,8 @@ contract AnalystRegistry {
                         RewardEvent( REWARD_REFERRAL, timenow, REFERRAL_POINTS, num_analysts );
                     break;
                 }
-                require( i != referred_by.num_referrals - 1 ); // referral not found, invalid
             }
+            require( i != referred_by.num_referrals ); // referral not found, invalid
         }
         address_lookup[ msg.sender ] = num_analysts;
         name_lookup[ _email ] = num_analysts;

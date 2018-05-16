@@ -139,7 +139,7 @@ const message_templates = {
     body: data =>
       <div>Analysis round  for {data.roundToken} (ended <Moment from={data.now}>{data.start}</Moment>) has finished. Thank you for partcipating!</div>
     ,
-    footer: data => <div>view round</div>,
+    footer: data => <div>Round Info</div>,
     glyph: data => <div><Glyphicon glyph="education"></Glyphicon></div>
   },
 
@@ -149,13 +149,13 @@ const message_templates = {
     body: data =>
       <div>A new round has been scheduled to begin <Moment fromNow>{data.due}</Moment>. It's worth {data.roundValue}--interested?</div>
     ,
-    footer: data => <div>Details</div>,
+    footer: data => <div>Round Details</div>,
     glyph: data => <div><Glyphicon glyph="time"></Glyphicon></div>
   },
 
 
   payment: {
-    link: data => 'wallet',
+    link: data => 'status',
     heading: data => <div>New Payment Available!</div>,
     body: data => <div>Nice work! You have earned a new payment of {data.tokens} VEVA! Your new balance is {data.balance} VEVA.</div>
     ,
@@ -168,7 +168,7 @@ const message_templates = {
     heading: data => <div>New Rep Points!</div>,
     body: data => <div>Well done! You have earned {data.new_points} new reputation points! You now have {data.reputation} points.</div>
     ,
-    footer: data => <div>see in profile</div>,
+    footer: data => <div>See in Profile</div>,
     glyph: data => <div><Glyphicon glyph="thumbs-up"></Glyphicon></div>
   },
 
@@ -177,7 +177,7 @@ const message_templates = {
     heading: data => <div>New Level!</div>,
     body: data => <div>All right! You have earned sufficient reputation points to move from a {data.previous_level} to a {data.new_level}!</div>
     ,
-    footer: data => <div>see in profile</div>,
+    footer: data => <div>See in Profile</div>,
     glyph: data => <div><Glyphicon glyph="knight"></Glyphicon></div>
   },
 
@@ -185,7 +185,7 @@ const message_templates = {
     link: data => 'status',
     heading: data => <div>New Referrals!</div>,
     body: data => <div>You have earned enough rep points to get {data.newRefsAvail} additional referrals, giving you a total of {data.referrals}.</div>,
-    footer: data => <div>view referrals on status page</div>,
+    footer: data => <div>View in Profile</div>,
     glyph: data => <div><Glyphicon glyph="plus-sign"></Glyphicon></div>
   },
 
@@ -195,7 +195,7 @@ const message_templates = {
     heading: data => <div>New Tokens Added!</div>,
     body: data => <div>We have added {data.tokens} tokens to our system! Check out the tokens page for more information or to browse.</div>
     ,
-    footer: data => <div>See Tokens</div>,
+    footer: data => <div>Tokens Page</div>,
     glyph: data => <div><Glyphicon glyph="plus"></Glyphicon></div>
   },
 
@@ -204,7 +204,7 @@ const message_templates = {
     heading: data => <div>Round In Progress</div>,
     body: data => <div> A round for {data.roundToken} (began <Moment fromNow>{data.start}</Moment>) is in progress.  You are a {data.analyst}, and it's worth {data.roundValue}. </div>
     ,
-    footer: data => <div>view round info</div>,
+    footer: data => <div>View Round Info</div>,
     glyph: data => <div><Glyphicon glyph="star-empty"></Glyphicon></div>
   },
 
@@ -213,7 +213,7 @@ const message_templates = {
     heading: data => <div>New Sponsored Analyst!</div>,
     body: data => <div>Hurray! One of your referrals (Analyst #{data.analyst}) has joined. Thank you for participating in the Veva ecosystem! You have earned an additional {data.reputation_points} rep points.</div>
     ,
-    footer: data => <div>view referrals on Status page</div>,
+    footer: data => <div>See on Status Page</div>,
     glyph: data => <div><Glyphicon glyph="heart"></Glyphicon></div>
   },
 
@@ -231,7 +231,7 @@ const message_templates = {
     heading: data => <div>Reminder: You have unused referrals!</div>,
     body: data => <div>You have {data.unused_refs} unused referrals. Your referrals help keep the Veva system healthy and secure—and you get a cut of their winnings! </div>
     ,
-    footer: data => <div>view referrals on status page</div>,
+    footer: data => <div>Go to Status Page</div>,
     glyph: data => <div><Glyphicon glyph="user"></Glyphicon></div>
   },
 
@@ -240,7 +240,7 @@ const message_templates = {
     heading: data => <div>Round Starting!</div>,
     body: data => <div>You are a confirmed JURIST for the {data.token} round, which is starting now!</div>
     ,
-    footer: data => <div>view info</div>,
+    footer: data => <div>Round Info</div>,
     glyph: data => <div><Glyphicon glyph="bullhorn"></Glyphicon></div>
   },
 
@@ -277,7 +277,7 @@ const message_templates = {
     heading: data => <div>You are confirmed as a lead!</div>,
     body: data => <div>You are a LEAD for an upcoming round, which is confirmed and will be starting soon!</div>
     ,
-    footer: data => <div>view info</div>,
+    footer: data => <div>See Rounds</div>,
     glyph: data => <div><Glyphicon glyph="check"></Glyphicon></div>
   },
 
@@ -286,7 +286,7 @@ const message_templates = {
     heading: data => <div>Round Starting!</div>,
     body: data => <div>Reminder! You are slated to participate in a round starting <Moment fromNow>{data.starting}</Moment>!</div>
     ,
-    footer: data => <div>view info</div>,
+    footer: data => <div>Round Information</div>,
     glyph: data => <div><Glyphicon glyph="bell"></Glyphicon></div>
   },
 
@@ -313,7 +313,7 @@ const message_templates = {
     heading: data => <div>Round confirmed!</div>,
     body: data => <div>One of your requested rounds has been confirmed and will be starting <Moment fromNow>{data.start}</Moment>!</div>
     ,
-    footer: data => <div>View Info</div>,
+    footer: data => <div>View Rounds</div>,
     glyph: data => <div><Glyphicon glyph="ok-sign"></Glyphicon></div>
   }
 

@@ -199,23 +199,24 @@ const getRewardEvents = ( analystInfo ) => new Promise( (resolve,reject) => {
 })
 */
 
-const login = (username, password) => new Promise((resolve,reject) => {
+const login = (email, password) => new Promise((resolve,reject) => {
     //console.log(' beginning users fetch')
   
   web3 = window.web3
   AnalystRegistry().then( analystRegistry => {
-    analystRegistry.login(username,password).then(result => {
+    analystRegistry.login( email, password ).then(result => {
       // id,email,reputation,token_balance
-      //console.log('login result',result)
+      let email = web3.toAscii(result[1])
+      console.log('login result',result, email)
       let user = { 
         id: result[0].toNumber(),
-        name: username,
         password: password,
-        email: web3.toAscii(result[1]).replace(/\W/g,''),
+        email: web3.toAscii(result[1]).replace(/\0/g,''),
         reputation: result[2].toNumber(),
         token_balance: result[3].toNumber()
       }
       auth.setToken( 'mock token' )
+      console.log('setting user info', user)
       auth.setUserInfo( user )
       resolve(user) // should push user data
     })

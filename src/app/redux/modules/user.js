@@ -104,15 +104,15 @@ export const refreshInfo = (deep = true) => { // get from id, deep means to get 
 }
 
 const login = ( email, password, reload = true ) => {
-  const request = email => ( { type: userConstants.LOGIN_REQUEST, email } )
-  const success = email => ( { type: userConstants.LOGIN_SUCCESS, email } )
+  const request = user => ( { type: userConstants.LOGIN_REQUEST, user } )
+  const success = user => ( { type: userConstants.LOGIN_SUCCESS, user } )
   const failure = error => ( { type: userConstants.LOGIN_FAILURE, error } )
 
   return (dispatch,getState) => {
     dispatch(request({ email }))
     userService.login( email, password ).then(
       user => {
-        dispatch(success( email ))
+        dispatch(success( user ))
 
         //dispatch(getInfo(user.id))
         if (reload) {

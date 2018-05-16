@@ -89,7 +89,7 @@ class App extends Component {
     let user = auth.getUserInfo()
     console.log('user from local storage',user)
     if (user) {
-      login( user.name, user.password, false )  // login, don't reload
+      login( user.email, user.password, false )  // login, don't reload
     }
   }
 

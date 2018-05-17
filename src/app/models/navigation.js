@@ -34,11 +34,6 @@ export const navigation = {
           name: 'Statuses',
           linkTo: '/status',
           faIconName: 'fa-gear'
-        },
-        {
-          name: 'Wallet',
-          linkTo: '/wallet',
-          faIconName: 'fa-certificate'
         }
       ]
     },

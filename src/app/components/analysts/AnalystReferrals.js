@@ -46,7 +46,7 @@ class AnalystReferrals extends Component {
     return (
       <div className="panel panel-success card card-style">
         <div className="panel-heading">
-          <h4 className="card-title mt-3">Referrals</h4>
+          <h4 className="card-title mt-3"><i className="fa fa-user-circle"/>&nbsp;Referrals</h4>
         </div>
 
         <div className="panel-body">

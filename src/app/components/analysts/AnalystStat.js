@@ -17,12 +17,13 @@ class AnalystStat extends PureComponent {
       <div>
         <div className="row">
           <div className="col-xs-12">
-            <Panel>
-              <Panel.Heading>Analyst Summary</Panel.Heading>
+            <Panel className="card card-style panel-success">
+              <Panel.Heading className="card-heading">
+                <h4 className="card-title mt-3">Analyst Summary
+                  <span className="pull-right">Level: <span className={`profile-rank ${levelInfo.styles}`}>{ levelInfo.name }</span></span>
+                </h4>
+              </Panel.Heading>
               <Panel.Body>
-                <div className="row">
-                  <span className="pull-right profile-level">Level: <span className={`profile-rank ${levelInfo.styles}`}>{ levelInfo.name }</span></span>
-                </div>
                 <div className="row">
                   <div className="col-md-4">
                     <Stat

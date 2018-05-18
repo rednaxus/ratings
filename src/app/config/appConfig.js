@@ -152,6 +152,9 @@ export const appConfig = {
   LEAD_LEVEL:                        2,
   // <== end from contract
 
+  ROUNDS_PER_CYCLE_LEAD:             2,
+  ROUNDS_PER_CYCLE_JURIST:           5, 
+  
   reward_is_tokens: function ( reward ) { 
     return [
       this.REWARD_ROUND_TOKENS_WINNER,

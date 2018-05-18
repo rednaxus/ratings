@@ -70,7 +70,7 @@ class Availability extends PureComponent {
             <span className="glyphicon glyphicon-star" aria-hidden="true"></span> { config.role_name[1] }
           </button> || ""
         }
-        { this.canLead() && 
+        { this.props.user.lead && 
           cycle.role[0].num_volunteers < config.ROUNDS_PER_CYCLE_LEAD && 
           <button type="button" className="btn btn-primary btn-xs" onClick={(e)=> this.signup( e, id, 0 )}>
             <span className="glyphicon glyphicon-star" aria-hidden="true"></span> { config.role_name[0] }
@@ -155,10 +155,6 @@ class Availability extends PureComponent {
     const { actions: { leaveAvailability } } = this.props
     leaveAvailability()
     clearTimeout(this.enterAnimationTimer)
-  }
-
-  canLead() { 
-    return this.props.user.reputation >= config.REPUTATION_LEAD
   }
 
   signup( e, id, role ) {

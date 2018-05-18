@@ -51,6 +51,17 @@ contract test3 {
         for (uint8 i = 0; i < length; i++)
             out |= bytes32(b[ i ]) >> ( (i+start) * 8);
     }
+    function getBytes(bytes32 b32) public pure returns (bytes32) {
+        return b32;
+    }
+    function stringToBytes32(string memory source) public pure returns (bytes32 result) {
+        bytes memory tempEmptyStringTest = bytes(source);
+        if (tempEmptyStringTest.length == 0) return 0x0;
+
+        assembly {
+            result := mload(add(source, 32))
+        }
+    }
 }
 contract test2 {
     address defaultRa = 0x3dac6baecd2846aced5b514f3ef85cd547bea6bb;
@@ -102,8 +113,8 @@ contract test2 {
             string memory symbol = basesymbol.toSlice().concat(uint2str(num_tokens).toSlice());
             address token = new TokenERC20( 10000, name, symbol );
             tokens[ num_tokens++ ] = token;
-            TokenCreated( name, symbol, token );
-            ratingAgency.tokenCover( token, 0 );
+            emit TokenCreated( name, symbol, token );
+            ratingAgency.tokenCover( token, name, 0 );
         }
     }
     
@@ -126,9 +137,28 @@ contract test2 {
         0x4ceda7906a5ed2179785cd3a40a69ee8bc99c466 // Aeon 
     ];
 
+    string[16] token_names = [ 
+        'EOS',
+        'Tronix',
+        'VeChain',
+        'OMG',
+        'Icon',
+        'BnB',
+        'Digix',
+        'Populous',
+        'Maker',
+        'status',
+        'RHOC',
+        'Reputation',
+        'Aeternity',
+        'Byteom',
+        'Walton',
+        'Aeon'
+    ];
+    
     function bootstrapTokens( ) public { 
         for ( uint i = 0; i < live_tokens.length; i++ ) {
-            ratingAgency.tokenCover( live_tokens[i], 0 );
+            ratingAgency.tokenCover( live_tokens[i], token_names[i], 0 );
         }
     }
     event RoundInfo(
@@ -182,7 +212,7 @@ contract test2 {
     
     function coverToken( uint i ) public {
         address tokenAddr = tokens[ i ];
-        ratingAgency.tokenCover( tokenAddr, 0 );
+        ratingAgency.tokenCover( tokenAddr, token_names[i], 0 );
     }
     function uint2str(uint i) internal pure returns (string){
         if (i == 0) return "0";

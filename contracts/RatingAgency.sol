@@ -56,9 +56,8 @@ contract RatingAgency {
     AnalystRegistry registry;
 
     struct CoveredToken {
-      // rules:
       address token_addr;
-  //    uint timestart;
+      bytes32 name;
       uint timeperiod;
       address representative;
       uint timestamp;
@@ -161,9 +160,29 @@ contract RatingAgency {
         0x4ceda7906a5ed2179785cd3a40a69ee8bc99c466 // Aeon
     ];
 
-    function bootstrapTokens( ) public {
-        for ( uint i = 0; i < live_tokens.length; i++ ) {
-            tokenCover( live_tokens[i], 0 );
+    string[16] token_names = [ 
+        'EOS',
+        'Tronix',
+        'VeChain',
+        'OMG',
+        'Icon',
+        'BnB',
+        'Digix',
+        'Populous',
+        'Maker',
+        'status',
+        'RHOC',
+        'Reputation',
+        'Aeternity',
+        'Byteom',
+        'Walton',
+        'Aeon'
+    ];
+    
+    function bootstrapTokens( uint _num ) public {
+        uint num = _num == 0 ? live_tokens.length : _num;
+        for ( uint i = 0; i < num; i++ ) {
+            tokenCover( live_tokens[ i ], token_names[ i ], 0 );
         }
     }
 
@@ -172,15 +191,17 @@ contract RatingAgency {
     */
     constructor( address _registry, uint _period ) public {
         lasttime = ZERO_BASE_TIME;
+        time = lasttime;
+
         cycle_period = _period == 0 ? CYCLE_PERIOD : _period;
 
         if ( _registry == 0 ) _registry = testregistry1;
         registryAddress = _registry;
         registry = AnalystRegistry( _registry );
-        registry.update( lasttime );
+        registry.update( time );
 
-        cycleExtend( lasttime, 0 ); // bootstrap cycles
-        bootstrapTokens( );
+        cycleExtend( time, 0 ); // bootstrap cycles
+        bootstrapTokens( 6 );
     }
 
 
@@ -189,17 +210,17 @@ contract RatingAgency {
     */
 
     event TokenAdd( uint32, address);
-    function tokenCover( address _tokenContract, uint _timeperiod ) public {  // only specify period if different
-        covered_tokens[ num_tokens ] = CoveredToken( _tokenContract, _timeperiod, msg.sender, time );
+    function tokenCover( address _tokenContract, string _name, uint _timeperiod ) public {  // only specify period if different
+        covered_tokens[ num_tokens ] = CoveredToken( _tokenContract, stringToBytes32( _name ), _timeperiod, msg.sender, time );
         emit TokenAdd( num_tokens, _tokenContract );
         num_tokens++;
     }
 
     function tokenInfo( uint32 _idx ) public view returns ( 
-        uint32, address, address, uint, uint 
+        uint32, address, bytes32, address, uint, uint 
     ){
         CoveredToken storage t = covered_tokens[ _idx ];
-        return ( _idx, t.token_addr, t.representative, t.timeperiod, t.timestamp );
+        return ( _idx, t.token_addr, t.name, t.representative, t.timeperiod, t.timestamp );
     }
 
     /*
@@ -634,6 +655,13 @@ contract RatingAgency {
     function bytesToBytes32(bytes b, uint offset) internal pure returns (bytes32 out) {
         for (uint i = 0; i < 32; i++)
             out |= bytes32(b[offset + i] & 0xFF) >> (i * 8);
+    }
+    function stringToBytes32(string memory source) public pure returns (bytes32 result) {
+        bytes memory tempEmptyStringTest = bytes(source);
+        if (tempEmptyStringTest.length == 0) return 0x0;
+        assembly {
+            result := mload( add( source, 32 ) )
+        }
     }
     function min_jury( uint8 a, uint16 b ) internal pure returns ( uint8 min ) {
         min = uint16(a) < b ? a : uint8(b);

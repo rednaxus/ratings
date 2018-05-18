@@ -53,12 +53,14 @@ export default dataSource
 
 export const getTokenData = (i, full=true ) => {
   return new Promise((resolve,reject) => {
+    let web3 = window.web3
     RatingAgency().then( (ratingAgency) => {
       ratingAgency.tokenInfo( i ).then( raToken => { // idx, addr
         let i = 0
         let token = {
           id: raToken[ i++ ].toNumber(),
           address: raToken[ i++ ],
+          name: web3.toAscii( raToken[ i++ ] ).replace(/\0/g,''),
           representative: raToken[ i++ ],
           timeperiod: raToken[ i++ ].toNumber(),
           timestamp: raToken[ i++ ].toNumber()

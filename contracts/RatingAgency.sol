@@ -61,6 +61,7 @@ contract RatingAgency {
   //    uint timestart;
       uint timeperiod;
       address representative;
+      uint timestamp;
     }
     mapping( uint32 => CoveredToken) covered_tokens;
     uint32 public num_tokens = 0;
@@ -189,13 +190,16 @@ contract RatingAgency {
 
     event TokenAdd( uint32, address);
     function tokenCover( address _tokenContract, uint _timeperiod ) public {  // only specify period if different
-        covered_tokens[ num_tokens ] = CoveredToken( _tokenContract, _timeperiod, msg.sender );
+        covered_tokens[ num_tokens ] = CoveredToken( _tokenContract, _timeperiod, msg.sender, time );
         emit TokenAdd( num_tokens, _tokenContract );
         num_tokens++;
     }
 
-    function tokenInfo( uint32 _idx ) public view returns ( uint32, address ){
-        return ( _idx, covered_tokens[ _idx ].token_addr );
+    function tokenInfo( uint32 _idx ) public view returns ( 
+        uint32, address, address, uint, uint 
+    ){
+        CoveredToken storage t = covered_tokens[ _idx ];
+        return ( _idx, t.token_addr, t.representative, t.timeperiod, t.timestamp );
     }
 
     /*

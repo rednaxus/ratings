@@ -66,6 +66,7 @@ class App extends Component {
       actions: {
         //fetchUserInfoDataIfNeeded,
         //refreshInfo,
+        fetchTokensDataIfNeeded,
         clear,  // alert
         getSideMenuCollapsedStateFromLocalStorage
       },
@@ -78,9 +79,10 @@ class App extends Component {
       clear()
     })
 
+    fetchTokensDataIfNeeded()
     //refreshInfo()
     //fetchUserInfoDataIfNeeded();
-    getSideMenuCollapsedStateFromLocalStorage();
+    getSideMenuCollapsedStateFromLocalStorage()
   }
 
   componentWillMount() {
@@ -101,13 +103,14 @@ class App extends Component {
       sideMenuIsCollapsed, 
       currentView, 
       alert,
-      user
+      user,
+      userAuth
     } = this.props
     console.log('props in app',this.props)
 
     //const userFullName = `${userInfos.firstname} ${userInfos.lastname.toUpperCase()}`;
-    const userFullName = user.info && user.info.name ? user.info.name : '' // should not get here if not logged in but during testing
-    const username = user.info && user.info.name ? user.info.name: ''
+    const userFullName = user.name ? user.name : '' // should not get here if not logged in but during testing
+    const username = user.name ? user.name: ''
     console.log( 'alert:',alert )
     return (
       <div>
@@ -117,7 +120,7 @@ class App extends Component {
           userFirstname={userFullName}
           userLastname={""}
           userPicture={UserIMG}
-          showPicture={user.info.showPicture}
+          showPicture={user.showPicture}
           currentView={currentView}
           toggleSideMenu={this.handlesMenuButtonClick}
           onLogout={this.handlesOnLogout}
@@ -130,10 +133,10 @@ class App extends Component {
             isCollapsed={sideMenuIsCollapsed}
             helloWord={helloWord}
             connectionStatus={connectionStatus}
-            userIsConnected={user.authentication.loggedIn}
+            userIsConnected={userAuth.loggedIn}
             username={userFullName}
-            userPicture={ user.info.picture || UserIMG }
-            showPicture={ user.info.showPicture }
+            userPicture={ user.picture || UserIMG }
+            showPicture={ user.showPicture }
           />
           <AsideRight isAnimated={true} isExpanded={sideMenuIsCollapsed} >
             {alert.message &&

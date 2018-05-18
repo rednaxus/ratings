@@ -51,21 +51,32 @@ export const dataSource = function getData({
 
 export default dataSource
 
-export const getTokenData = ( i ) => {
+export const getTokenData = (i, full=true ) => {
   return new Promise((resolve,reject) => {
     RatingAgency().then( (ratingAgency) => {
       ratingAgency.tokenInfo( i ).then( raToken => { // idx, addr
-        let token = {id:raToken[0].toNumber(),address:raToken[1]}
+        let i = 0
+        let token = {
+          id: raToken[ i++ ].toNumber(),
+          address: raToken[ i++ ],
+          representative: raToken[ i++ ],
+          timeperiod: raToken[ i++ ].toNumber(),
+          timestamp: raToken[ i++ ].toNumber()
+        }
+        if ( !full ){
+          resolve( token )
+          return
+        }
         getTokenInfo( token.address ).then( info => {
-          info.data.id = token.id
-          resolve( info.data )
-        }).catch(result => { 
-          console.error("Error from ethplorer:"  + result) 
-          reject(result)
+          //info.data.id = token.id
+          resolve( { ...info.data, ...token } )
+        }).catch( err => { 
+          console.error("Error from ethplorer:"  + err ) 
+          reject( err )
         })
-      }).catch(result => { 
-        console.error("Error from server:"  + result) 
-        reject(result)
+      }).catch( err => { 
+        console.error("Error from server:"  + err ) 
+        reject( err )
       })
     })
   })
@@ -74,10 +85,10 @@ export const getTokenData = ( i ) => {
 export const getTokenRounds = ( i, startAt = 0 ) => {
   return new Promise((resolve,reject) => {
     RatingAgency().then( (ratingAgency) => {
-      ratingAgency.roundsForToken( i, startAt ).then( raToken => { // idx, addr
-        //console.log('raToken',raToken)
-        let num_rounds = raToken[0].toNumber()
-        let raRounds = raToken[1]
+      ratingAgency.roundsForToken( i, startAt ).then( r => { // idx, addr
+        //console.log('r',r)
+        let num_rounds = r[0].toNumber()
+        let raRounds = r[1]
         let rounds = []
         for (var j = 0; j < num_rounds; j++ )
           rounds.push(raRounds[j].toNumber())
@@ -89,59 +100,30 @@ export const getTokenRounds = ( i, startAt = 0 ) => {
     })
   })
 }
-/*
-export const getTokensData = () => { // not used any more
 
-  return new Promise((resolve,reject) => {
-    console.log(' beginning tokens fetch')
-
-    RatingAgency()
-    .then((ratingAgency) => {
-      ratingAgency.num_tokens()
-      .then(result => {
-        var numTokens = result.toNumber();
-        console.log("result was:",numTokens);
-        var numFetch = 0
-        var tokensData = []
-        for (var i = 0; i < numTokens; i++) {
-          ratingAgency.coveredTokenInfo(i).then( raToken => { // idx, addr
-            var res = {id:raToken[0].toNumber(),addr:raToken[1]}
-            console.log('got address',res)
-            TokenERC20(res.addr).then( tokenERC20 => {
-              tokenERC20.name().then( name => {
-                res.name = name
-                tokensData.push(res)
-                console.log('got token with name',name)
-                if (++numFetch === numTokens) {
-                  tokensData.sort( (a,b) => a.id - b.id)  
-                  //dispatch(tokensFetched( ))
-                  resolve(tokensData) // {numTokens: numTokens, data: tokensData });
-                }
-              })
-            })
-          })
-        }
-      })
-      .catch(result => { 
-        console.error("Error from server:"  + result) 
-        reject(result)
-      })
-    })
-
+export const getTokensData = ( full = true ) => new Promise( (resolve,reject) => {
+  console.log(' beginning tokens fetch')
+  RatingAgency().then( ratingAgency => {
+    ratingAgency.num_tokens().then( result => {
+      let numTokens = result.toNumber()
+      console.log("result was:",numTokens)
+      let numFetch = 0
+      let tokens = []
+      for (let i = 0; i < numTokens; i++) {
+        ( itoken =>  getTokenData( itoken, full ).then( token => {
+            tokens[ itoken ] = token
+            console.log('got token with name',token.name,token.id)
+            if (++numFetch === numTokens) {  
+              resolve( tokens )
+            }
+          }).catch( error )
+        )( i )
+      }
+    }).catch( error )
   })
+  const error = result => { 
+    console.error("Error from server:"  + result) 
+    reject( result )
+  }
+})
 
-
-}
-
-
-.error("Error from server:"  + result) 
-        reject(result)
-      })
-    })
-
-  })
-
-
-}
-
-*/

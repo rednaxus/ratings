@@ -157,27 +157,7 @@ user.rounds.finished = [8, 9, 0, 7]
 
 
 	/***** Recent Payments *****/
-	/*
-	    uint8 constant REWARD_REFERRAL = 1;
 
-    uint8 constant REWARD_ROUND_TOKENS_WINNER = 2;
-    uint8 constant REWARD_ROUND_TOKENS_LOSER = 3;
-    uint8 constant REWARD_ROUND_TOKENS_JURY_TOP = 4;
-    uint8 constant REWARD_ROUND_TOKENS_JURY_MIDDLE = 5;
-    uint8 constant REWARD_ROUND_TOKENS_JURY_BOTTOM = 6;
-    uint8 constant REWARD_REFERRAL_TOKENS = 7;
-
-    uint8 constant REWARD_ROUND_POINTS_WINNER = 8;
-    uint8 constant REWARD_ROUND_POINTS_LOSER = 9;
-    uint8 constant REWARD_ROUND_POINTS_JURY_TOP = 10;
-    uint8 constant REWARD_ROUND_POINTS_JURY_MIDDLE = 11;
-    uint8 constant REWARD_ROUND_POINTS_JURY_BOTTOM = 12;
-    uint8 constant REWARD_ROUND_POINTS_NEGATIVE = 13;
-
-    uint8 constant REWARD_BONUS = 19;
-    uint8 constant REWARD_PROMOTION = 20;
-    uint8 constant REFERRAL_POINTS = 21;
-    */
   console.log('reward events',user.reward_events)
 
 	user.reward_events.forEach( ( reward, idx ) => { 
@@ -189,7 +169,6 @@ user.rounds.finished = [8, 9, 0, 7]
 			balance: user.token_balance
 		})
 	})
-
 
 	/***** Reputation Score *****/
 	/* 
@@ -211,7 +190,7 @@ user.rounds.finished = [8, 9, 0, 7]
 	    Show additonal referrals for level change
 	*/
 	user.reward_events.forEach( ( reward, idx ) => { 
-		console.log(reward,config.reward_is_promotion(reward),is_recent_period(reward))
+		//console.log(reward,config.reward_is_promotion(reward),is_recent_period(reward))
 		if ( !config.reward_is_promotion( reward ) || !is_recent_period( reward ) ) return	
 		messages.push({
 			type: 'new_level',
@@ -232,141 +211,31 @@ user.rounds.finished = [8, 9, 0, 7]
 	return messages
 
 
+	/*
+	    uint8 constant REWARD_REFERRAL = 1;
 
+    uint8 constant REWARD_ROUND_TOKENS_WINNER = 2;
+    uint8 constant REWARD_ROUND_TOKENS_LOSER = 3;
+    uint8 constant REWARD_ROUND_TOKENS_JURY_TOP = 4;
+    uint8 constant REWARD_ROUND_TOKENS_JURY_MIDDLE = 5;
+    uint8 constant REWARD_ROUND_TOKENS_JURY_BOTTOM = 6;
+    uint8 constant REWARD_REFERRAL_TOKENS = 7;
+
+    uint8 constant REWARD_ROUND_POINTS_WINNER = 8;
+    uint8 constant REWARD_ROUND_POINTS_LOSER = 9;
+    uint8 constant REWARD_ROUND_POINTS_JURY_TOP = 10;
+    uint8 constant REWARD_ROUND_POINTS_JURY_MIDDLE = 11;
+    uint8 constant REWARD_ROUND_POINTS_JURY_BOTTOM = 12;
+    uint8 constant REWARD_ROUND_POINTS_NEGATIVE = 13;
+
+    uint8 constant REWARD_BONUS = 19;
+    uint8 constant REWARD_PROMOTION = 20;
+    uint8 constant REFERRAL_POINTS = 21;
+    */
 
 	/* toDo:  timestamp restrictions?  maybe.  Otherwise, ready for testing
 	*/
 
-
-
-/***** Round Finished *****/
-/*tells user when a round has finished */
-/*take most recently finshed rounds and display them*/
-
-	/* toDo: Ready for Testing */
-
-	var getFinishRoundId
-	var finishedRound
-	var finishedCoveredToken
-	var getFinishedTokenName
-	var roundTokenF
-	var finishedCardCycle
-	var finishedCycleId
-	var finishedCycleStart
-	var finishedCycleEnd
-	var finishedTimeBool
-
-	for (var i=1; i<16; i++) {
-
-		getFinishRoundId = user.rounds.finished[user.rounds.finished.length-i]  /* get round ID */
-
-		//console.log()
-		let finishedCellLog = [user.rounds.finished.length-i]
-		console.log ("Round Finished Test -- Finished Round Array Member #", i, "(", finishedCellLog, "): ", getFinishRoundId)  //if nothing in array, comes back Undefined
-
-		finishedRound = _.find(rounds, ['id', getFinishRoundId])  /* find round ID in rounds data */
-
-		if (finishedRound) {
-
-			finishedCoveredToken = finishedRound.covered_token				/* get covered Token iD */
-			getFinishedTokenName = _.find(tokens, ['id', finishedCoveredToken])  /* find covered Token in token Array*/
-			roundTokenF = getFinishedTokenName.name   /* set string name to variable */
-
-		//for Testing
-		/*
-		if (roundTokenF) {
-		finishedRound.timestamp = now+i;
-		console.log (now)
-		console.log ("xxxxxxxxxxxxxxxxxxxxxxxxxxXXXXXXXXXXXxxxxxxxxxxxxxxxxxxxxxx=:>")
-		console.log (finishedRound.timestamp)
-		}
-		*/
-
-			finishedCardCycle = finishedRound.cycle
-			finishedCycleStart=appConfig.cycleTime(finishedCardCycle)
-			//finishedCycleId = _.find(cycles, ['id', activeRound.cycle])
-			finishedCycleEnd = finishedCycleStart + (appConfig.ACTIVE_TIME)
-
-			if (finishedCycleEnd > now - (5*oneDay)) {
-				finishedTimeBool = true
-			}
-
-			if (roundTokenF && finishedTimeBool) {
-				messages.push({
-					type: 'round_finished',
-					priority: 'info',
-					roundToken: roundTokenF,
-					/*roundValue: finishedRound.value*/
-				})
-			}
-		}
-	}
-
-	//OLD CODE, was used for first build.  DO NOT remove until system has been tested AND verified stable with LIVE ROUNDS
-
-	//let getFinishRoundId = user.rounds.finished[user.rounds.finished.length-1]  /* get round ID */
-	//let finishedRound = _.find(rounds, ['id', getFinishRoundId])  /* find round ID in rounds data */
-	//let finishedCoveredToken = finishedRound.covered_token				/* get covered Token iD */
-	//let getFinishedTokenName = _.find(tokens, ['id', finishedCoveredToken])  /* find covered Token in token Array*/
-	//let roundTokenF = getFinishedTokenName.name   /* set string name to variable */
-	/*
-		if (roundTokenF) {
-					messages.push({
-						type: 'round_finished',
-						priority: 'info',
-						roundToken: roundTokenF,
-						roundValue: finishedRound.value
-					})
-				}
-
-	*/
-
-
-/***** Scheduled in round *****/
-/* lets user know when they are scheduled for a round */
-/* if user has any rounds in "rounds.scheduled", display */
-
-	/* toDo: ready for testing
-	*/
-
-	//for Testing
-	rounds[0].timestamp = now
-
-	var getScheduledRoundId
-	var scheduledRound
-	var scheduledCoveredToken
-	var getScheduledTokenName
-	var roundTokenS
-
-
-	for (var i=1; i<16; i++) {
-		getScheduledRoundId = user.rounds.scheduled[user.rounds.scheduled.length-i]  /* get round ID */
-
-		//console.log()
-		let scheduledCellLog = [user.rounds.scheduled.length-i]
-		console.log ("Round Scheduled Test -- Scheduled Round Array Member #", i, "(", scheduledCellLog, "): ", getScheduledRoundId)  //if nothing in array, comes back Undefined
-
-		scheduledRound = _.find(rounds, ['id', getScheduledRoundId])  /*find round ID in rounds data */
-
-		if (scheduledRound) {
-
-			scheduledCoveredToken = scheduledRound.covered_token					/*get covered token Id */
-
-			getScheduledTokenName = _.find(tokens, ['id', scheduledCoveredToken])  /*find covered Token */
-			roundTokenS = getScheduledTokenName.name											/* set to variable */
-
-			if (roundTokenS) {
-
-				messages.push({
-					type: 'round_scheduled',
-					priority: 'action-small',
-					due: scheduledRound.timestamp,
-					roundToken: roundTokenS,
-					roundValue: scheduledRound.value
-				})
-			}
-		}
-	}
 
 
 /* New Tokens added */

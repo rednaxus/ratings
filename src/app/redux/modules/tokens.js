@@ -94,26 +94,20 @@ export function fetchTokensDataIfNeeded() {
   };
 }
 
-function requestTokensData(time = moment().format()) {
-  return { type: REQUEST_TOKENS_DATA, isFetching: true, time }
-}
-function receivedTokensData(data, time = moment().format()) {
-  return { type: RECEIVED_TOKENS_DATA, isFetching: false, data, time }
-}
-function errorTokensData(time = moment().format()) {
-  return { type: ERROR_TOKENS_DATA, isFetching: false, time }
-}
 
-function fetchTokensData() {
+
+const fetchTokensData = () => {
+  const request = ( time = moment().format() ) => ({ type: REQUEST_TOKENS_DATA, isFetching: true, time })
+  const received = ( data, time = moment().format() ) => ( { type: RECEIVED_TOKENS_DATA, isFetching: false, data, time } )
+  const error = ( time = moment().format() ) => ( { type: ERROR_TOKENS_DATA, isFetching: false, time } )
   console.log('fetch tokens data')
   return dispatch => {
-    dispatch( requestTokensData() )
+    console.log('dispatching tokens request')
+    dispatch( request() )
     console.log('getting tokens data from api')
-    getTokensData().then(
-      data => dispatch( receivedTokensData(data) )
-    ).catch(
-      error => dispatch( errorTokensData(error) )
-    )
+    getTokensData( false ).then(
+      data => dispatch( received( data ) )
+    ).catch( err => dispatch( error( err ) ) )
   }
 }
 

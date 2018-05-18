@@ -21,7 +21,6 @@ contract AnalystRegistry {
 
     uint8 constant REWARD_BONUS = 19;
     uint8 constant REWARD_PROMOTION = 20;
-    uint8 constant REFERRAL_POINTS = 21;
 
     uint8 constant REFERRALS_DEFAULT = 5;
     
@@ -37,6 +36,8 @@ contract AnalystRegistry {
     int8 constant TOP_JURISTS_POINTS = 10;
     int8 constant MIDDLE_JURISTS_POINTS = 4;
     int8 constant BOTTOM_JURISTS_POINTS = 0;
+
+    uint8 constant REFERRAL_POINTS = 0; 
     
     uint32 constant LEAD_LEVEL = 2;
     uint16[2][] public levels;

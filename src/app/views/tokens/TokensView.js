@@ -4,11 +4,14 @@
 import React, { Component } from 'react'
 import PropTypes      from 'prop-types'
 
-import { AnimatedView } from '../../components'
+import { 
+  AnimatedView, 
+  Breadcrumb,
+  Tokens,
+  TokenCloud
+} from '../../components'
 
 import { store } from '../../Root'
-
-import { Tokens, TokenCloud } from '../../components/tokens'
 
 
 class TokensView extends Component {
@@ -46,9 +49,13 @@ class TokensView extends Component {
   }
 
   render() {
-    const { tokens } = this.props
+    const { tokens, userAuth } = this.props
+
+    console.log('auth',userAuth)
+
     return (
       <AnimatedView>
+        { userAuth.id ? <Breadcrumb path={["dashboard","tokens"]}></Breadcrumb> : '' }
         <div className="simpleContainer">
           <h2 className="gridH2">Covered Tokens</h2>
           <TokenCloud tokens={ tokens }/>

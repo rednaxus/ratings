@@ -3,6 +3,7 @@
 /* eslint consistent-return: 0 */
 import React      from 'react';
 import PropTypes  from 'prop-types';
+import { Link }   from 'react-router-dom'
 
 const Breadcrumb = ({
   path
@@ -19,27 +20,26 @@ const Breadcrumb = ({
         if (viewIndex === 0) {
           return (
             <li key={viewIndex}>
-              <a href="#">
+              <Link to="">
                 <i className="fa fa-home"></i>
                   &nbsp;
                   {view}
-              </a>
+              </Link>
             </li>
           );
         }
         if (viewIndex < path.length - 1) {
           return (
-            <li
-              key={viewIndex}
-              className="active">
-              {view}
+            <li key={viewIndex} className="active">
+              <Link to={ `/${ path[ viewIndex ] }` } >
+                {view}
+              </Link>
             </li>
           );
         }
         if (viewIndex === path.length - 1) {
           return (
-            <li key={viewIndex}
-              className="active">
+            <li key={viewIndex} className="active">
               {view}
             </li>
           );

@@ -76,12 +76,17 @@ export { default as Button }          from './button/Button';
 export { default as Label }           from './label/Label';
 export { default as AnimatedView }    from './animatedView/AnimatedView';
 export { default as ScrollTop }       from './scrollToTop/ScrollToTop';
+
 export {
   TokenList,
   TokenListItem
 }                                     from './tokenList';
 
-export { default as TokenSummary }               from './tokens/TokenSummary'
+export { 
+  TokenSummary,
+  Tokens,
+  TokenCloud 
+}                                     from './tokens'
 
 export { default as UserStatus }                 from './userStatus/UserStatus'
 

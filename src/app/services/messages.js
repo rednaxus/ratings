@@ -85,8 +85,8 @@ export const generateMessages = ( { user, cycles, rounds, tokens, timestamp } ) 
     finishedCycles
   } = getCyclesByStatus( { cycles, rounds, tokens, timestamp } )
 
-  const is_recent = reward => config.is_recent( reward.timestamp, now )
-  const is_recent_period = reward => config.is_recent_period( reward.timestamp, now )
+  const is_recent = item => config.is_recent( item.timestamp, now )
+  const is_recent_period = item => config.is_recent_period( item.timestamp, now )
 
 /********for testing -- 'if' statement to hold and make NOT appear ********/
 /*let testVariable = 0
@@ -207,9 +207,6 @@ user.rounds.finished = [8, 9, 0, 7]
 		})
 	})
 
-	console.log('generated messages', messages )
-	return messages
-
 
 	/*
 	    uint8 constant REWARD_REFERRAL = 1;
@@ -238,139 +235,23 @@ user.rounds.finished = [8, 9, 0, 7]
 
 
 
-/* New Tokens added */
-/* alerts user to new tokens being added to the system within the last week*/
-/* if token timestamp is within the last week, display */
-
-	/* toDo: Ready for Testing
+	/***** New Tokens added *****/
+	/* 
+			new tokens being added to the system within CYCLE_RECENT (e.g. 1 week)
 	*/
+	tokens.forEach( ( token, idx ) => {	
+		if ( is_recent( token) ) messages.push({
+			type:'token_added',
+			priority: 0,
+			name: token.name,
+			id: token.id,
+			timestamp: token.timestamp
+		})
+	})
 
-	//for testing. will be removed
-	tokens[1] =
-	{
-		address: "0xb5a5f22694352c15b00323844ad545abb2b11028",
-		countOps: 201290,
-		decimals: 18,
-		description: "Neo is the new smart economy.",
-		holdersCount: 44826,
-		id: 1,
-		issuancesCount: 0,
-		lastUpdated: 1524839258,
-		name: "Neo",
-		owner: "0xe16fd9b95758fe8f3a478ef9b750a64513bf2e80",
+	console.log('generated messages', messages )
+	return messages
 
-		price: {
-		availableSupply: "387231348.0",
-		currency: "USD",
-		diff: 0.36,
-		diff7d: 22.81,
-		diff30d: 93.507901216658,
-		marketCapUsd: "1755896677.0",
-		rate: "4.53449",
-		ts: "1525090459",
-		volume24h: "94487400.0"
-	},
-		rounds: {},
-		symbol: "NEO",
-		totalSupply: "400228740000000000000000000",
-		transfersCount: 201290
-	}
-
-	tokens[2] =
-	{
-		address: "0xb5a5f22694352c15b00323844ad545abb2b11028",
-		countOps: 201290,
-		decimals: 18,
-		description: "Neo is the new smart economy.",
-		holdersCount: 44826,
-		id: 3,
-		issuancesCount: 0,
-		lastUpdated: 1524839258,
-		name: "Tron",
-		owner: "0xe16fd9b95758fe8f3a478ef9b750a64513bf2e80",
-
-		price: {
-		availableSupply: "387231348.0",
-		currency: "USD",
-		diff: 0.36,
-		diff7d: 22.81,
-		diff30d: 93.507901216658,
-		marketCapUsd: "1755896677.0",
-		rate: "4.53449",
-		ts: "1525090459",
-		volume24h: "94487400.0"
-	},
-		rounds: {},
-		symbol: "TRX",
-		totalSupply: "400228740000000000000000000",
-		transfersCount: 201290
-	}
-
-	tokens[3] =
-	{
-		address: "0xb5a5f22694352c15b00323844ad545abb2b11028",
-		countOps: 201290,
-		decimals: 18,
-		description: "Neo is the new smart economy.",
-		holdersCount: 44826,
-		id: 5,
-		issuancesCount: 0,
-		lastUpdated: 1524839258,
-		name: "Monero",
-		owner: "0xe16fd9b95758fe8f3a478ef9b750a64513bf2e80",
-
-		price: {
-		availableSupply: "387231348.0",
-		currency: "USD",
-		diff: 0.36,
-		diff7d: 22.81,
-		diff30d: 93.507901216658,
-		marketCapUsd: "1755896677.0",
-		rate: "4.53449",
-		ts: "1525090459",
-		volume24h: "94487400.0"
-	},
-		rounds: {},
-		symbol: "XMR",
-		totalSupply: "400228740000000000000000000",
-		transfersCount: 201290
-	}
-
-
-	//for testing, will be removed
-	tokens[1].timestamp = (now - 9*oneDay)
-	tokens[2].timestamp = (now - 8*oneDay)
-	tokens[3].timestamp = (now - 1)
-
-	var lastTokenAdded = tokens[tokens.length-1]  //captures last token added for now
-	var lastTokenAddedArray = tokens.length-1			//sets array cell number
- 	var lastTokenName = lastTokenAdded.name 			//pulls the name
-	var newTokenCounter = 0												//counts times through array
-
-
-	for (var i=0; i<1; i++) {
-
-		lastTokenAdded = tokens[lastTokenAddedArray-newTokenCounter]  //captures last token added for now
-
-		lastTokenName = lastTokenAdded.name       //pulls the name
-
-		if (now < lastTokenAdded.timestamp+(7*oneDay)) {
-
-			//console.log ()
-			console.log ('New Tokens Added: ', lastTokenName, "; Time Added: ", lastTokenAdded.timestamp, "; Current Time: ", now)
-
-			i--
-
-			messages.push({
-				type:'tokens_added',
-				tokens:lastTokenName
-			})
-		}
-
-		newTokenCounter++
-		//lastTokenAddedArray = lastTokenAdded
-
-	}
 
 
 /***** Rounds in progress *****/

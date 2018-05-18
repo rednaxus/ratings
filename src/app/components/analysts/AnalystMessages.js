@@ -194,19 +194,18 @@ const message_templates = {
   },
 
 
-  tokens_added: {
-    link: data => 'tokens',
-    heading: data => <div>New Tokens Added!</div>,
-    body: data => <div>We have added {data.tokens} tokens to our system! Check out the tokens page for more information or to browse.</div>
-    ,
-    footer: data => <div>Tokens Page</div>,
+  token_added: {
+    link: data => `token/${data.id}`,
+    heading: data => <div>New Token Added!</div>,
+    body: data => <div>{ data.name } was added to system! Check the token page for more information.</div>,
+    footer: data => <div>Token Page</div>,
     glyph: data => <div><Glyphicon glyph="plus"></Glyphicon></div>
   },
 
   rounds_in_progress:{
     link: data => 'scheduling',
     heading: data => <div>Round In Progress</div>,
-    body: data => <div> A round for {data.roundToken} (began <Moment fromNow>{data.start}</Moment>) is in progress.  You are a {data.analyst}, and it's worth {data.roundValue}. </div>
+    body: data => <div>A round for {data.roundToken} (began <Moment fromNow>{data.start}</Moment>) is in progress.  You are a {data.analyst}, and it's worth {data.roundValue}. </div>
     ,
     footer: data => <div>View Round Info</div>,
     glyph: data => <div><Glyphicon glyph="star-empty"></Glyphicon></div>

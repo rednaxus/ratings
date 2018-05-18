@@ -94,50 +94,37 @@ export function fetchTokensDataIfNeeded() {
   };
 }
 
-
-
 const fetchTokensData = () => {
   const request = ( time = moment().format() ) => ({ type: REQUEST_TOKENS_DATA, isFetching: true, time })
   const received = ( data, time = moment().format() ) => ( { type: RECEIVED_TOKENS_DATA, isFetching: false, data, time } )
   const error = ( time = moment().format() ) => ( { type: ERROR_TOKENS_DATA, isFetching: false, time } )
-  console.log('fetch tokens data')
-  return dispatch => {
-    console.log('dispatching tokens request')
+  //console.log('fetch tokens data')
+  return ( dispatch, getState ) => {
+    //console.log('dispatching tokens request')
     dispatch( request() )
-    console.log('getting tokens data from api')
-    getTokensData( false ).then(
-      data => dispatch( received( data ) )
+    //console.log('getting tokens data from api')
+    return getTokensData( false ).then(
+      data => {
+        dispatch( received( data ) )
+        return data
+      }
     ).catch( err => dispatch( error( err ) ) )
   }
 }
 
-function shouldFetchTokensData(state) {
-  const tokensStore = state.tokens;
-  console.log('should fetch',tokensStore)
+function shouldFetchTokensData( state ) {
+  const tokensStore = state.tokens
+  //console.log('should fetch',tokensStore)
   // just check wether fetching (assuming data could be refreshed and should not persist in store)
-  if (tokensStore.isFetching) {
-    return false;
-  } else {
-    return true;
-  }
+  return !tokensStore.isFetching
 }
 
-
-
-
-
-
 export const fetchTokenData = ( id, full=true ) => { // if full is set get all rounds as well
-  const request = ( id, time = moment().format() ) => {
-    return { type: REQUEST_TOKEN_DATA, id, time }
-  }
-  const receive = ( info, time = moment().format() ) => {
-    return { type: RECEIVED_TOKEN_DATA, info, time }
-  }
-  const error = ( time = moment().format() ) => {
-    return { type: ERROR_TOKEN_DATA, time }
-  }
-  console.log('fetch token data',id)
+  const request = ( id, time = moment().format() ) => ( { type: REQUEST_TOKEN_DATA, id, time } )
+  const receive = ( info, time = moment().format() ) => ( { type: RECEIVED_TOKEN_DATA, info, time } )
+  const error = ( time = moment().format() ) => ( { type: ERROR_TOKEN_DATA, time } )
+
+  //console.log('fetch token data',id)
   return ( dispatch, getState ) => {
     dispatch( request( id ) )
     if (full) dispatch( fetchTokenRounds( id ) )
@@ -146,30 +133,24 @@ export const fetchTokenData = ( id, full=true ) => { // if full is set get all r
       dispatch( receive( info ) )
       return info
     })
-    .catch(
-      err => dispatch( error( err ) )
-    )
+    .catch( err => dispatch( error( err ) ) )
   }
 }
 
 export const fetchTokenRounds = ( id ) => {
-  const request = ( id, time = moment().format() ) => {
-    return { type: REQUEST_TOKEN_ROUNDS, id, time }
-  }
-  const receive = ( info, time = moment().format() ) => {
-    return { type: RECEIVED_TOKEN_ROUNDS, info, time }
-  }
-  const error = ( time = moment().format() ) => {
-    return { type: ERROR_TOKEN_ROUNDS, time }
-  }
-  console.log('fetch token data',id)
-  return dispatch => {
+  const request = ( id, time = moment().format() ) => ( { type: REQUEST_TOKEN_ROUNDS, id, time } )
+  const receive = ( info, time = moment().format() ) => ( { type: RECEIVED_TOKEN_ROUNDS, info, time } )
+  const error = ( time = moment().format() ) => ( { type: ERROR_TOKEN_ROUNDS, time } )
+  //console.log('fetch token data',id)
+
+  return ( dispatch, getState ) => {
     dispatch( request( id ) )
     //console.log('getting token info from ethplorer')
-    getTokenRounds( id ).then(
-      info => dispatch( receive( info ) )
-    ).catch(
-      err => dispatch( error( err ) )
-    )
+    return getTokenRounds( id ).then(
+      info => {
+        dispatch( receive( info ) )
+        return info
+      }
+    ).catch( err => dispatch( error( err ) ) )
   }
 }

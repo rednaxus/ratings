@@ -7,7 +7,8 @@ import * as _ from 'lodash'
 import { 
   AnimatedView, 
   TokenSummary, 
-  Graph 
+  Graph,
+  Breadcrumb 
 } from '../../components'
 
 class Token extends Component {
@@ -85,6 +86,7 @@ class Token extends Component {
     const tokenLink = (address) => "https://etherscan.io/address/"+token.address
     return(
       <AnimatedView>
+        <Breadcrumb path={["dashboard","tokens",token.name]}></Breadcrumb>
         <div className="simpleContainer">
           <TokenSummary token={token} />
           { roundItems.length && 

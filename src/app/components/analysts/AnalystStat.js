@@ -13,6 +13,7 @@ class AnalystStat extends PureComponent {
 
     const { analyst } = this.props
     const levelInfo = appConfig.level_info( analyst.reputation )
+    console.log('reputation',analyst.reputation,'levelInfo',levelInfo)
     return(
       <div>
         <div className="row">

@@ -14,6 +14,7 @@ import { Glyphicon } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
 import { generateMessages, generateMockMessages } from '../../services/messages'
+import { appConfig as config } from '../../config'
 
 /*
 var glyphStyle = {
@@ -175,7 +176,10 @@ const message_templates = {
   new_level: {
     link: data => 'status',
     heading: data => <div>New Level!</div>,
-    body: data => <div>All right! You have earned sufficient reputation points to move from a {data.previous_level} to a {data.new_level}!</div>
+    body: data => <div>All right! You have earned sufficient reputation points to move from&nbsp;
+        <span className={`${config.LEVELS[data.previous_level].styles}`}>{config.LEVELS[data.previous_level].name}</span> to&nbsp;
+        <span className={`${config.LEVELS[data.new_level].styles}`}>{config.LEVELS[data.new_level].name}!</span>
+      </div>
     ,
     footer: data => <div>See in Profile</div>,
     glyph: data => <div><Glyphicon glyph="knight"></Glyphicon></div>
@@ -332,7 +336,7 @@ export const AnalystMessages = ( props ) => {
   console.log('tokens',props.tokens)
   console.log('tokens really',...props.tokens)
 
-  let generatedMessages = generateMessages( props )
+  let generatedMessages = generateMessages( props ).sort( ( msg1, msg2 ) => msg2.priority > msg1.priority )
   console.log('generated messages',generatedMessages)
 
   return generatedMessages.map( (message,idx) => {
@@ -340,7 +344,7 @@ export const AnalystMessages = ( props ) => {
     return (
       <div className="row" key={idx} >
         <div className="col-md-10">
-          <div className={`panel panel-${message.priority} card card-style`}>
+          <div className={`panel panel-${config.priority[message.priority].name} card card-style`}>
 
             <div className="panel-heading">
               <h4 className="card-title mt-3">{ msg.heading( message )}</h4>
@@ -351,7 +355,7 @@ export const AnalystMessages = ( props ) => {
               <div className="card-text glyphStyle">
                 { msg.glyph( message ) }
               </div>
-              <div className="card-text infoRow">
+              <div className="card-text large infoRow">
                 { msg.body( message ) }
               </div>
             </div>

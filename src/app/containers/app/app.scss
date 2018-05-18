@@ -406,6 +406,9 @@ h5 {
     clear: both;
     margin-top: .5em;
     color: rgba(0, 0, 0, .68);
+    &.large {
+      font-size:1.4em;
+    }
 }
 
 .card-footer {
@@ -463,7 +466,7 @@ h5 {
 }
 
 .profile-rank {
-  border-radius:20px;
+  /*border-radius:20px;*/
   font-style:italic;
 }
 

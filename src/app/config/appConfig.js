@@ -86,6 +86,7 @@ export const appConfig = {
   CYCLE_SCHEDULE: 7,
   CYCLE_BRIEF_DUE: 4,
   CYCLE_SURVEY_DUE: 4,
+  CYCLE_RECENT: 4,  // definition of 'recent' in fraction of cycle
 
   ACTIVE_TIME: 86400 * 28,  //die
 
@@ -103,8 +104,6 @@ export const appConfig = {
       : this.CYCLE_FRACTIONS * ( _time - this.ZERO_BASE_TIME ) / this.CYCLE_PERIOD )
   },
 
-  REPUTATION_LEAD: 12,
-
   JURY_SIZE: 6,
 
   JURISTS_MIN: 2,
@@ -113,52 +112,100 @@ export const appConfig = {
 
   isRoundLead: function( in_round_id ) { return in_round_id < 2 },
 
-  REWARD_REFERRAL: 1,
+  // from analystRegistry contract =>
+  REWARD_REFERRAL:                    1,
+
+  REWARD_ROUND_TOKENS_WINNER:         2,
+  REWARD_ROUND_TOKENS_LOSER:          3,
+  REWARD_ROUND_TOKENS_JURY_TOP:       4,
+  REWARD_ROUND_TOKENS_JURY_MIDDLE:    5,
+  REWARD_ROUND_TOKENS_JURY_BOTTOM:    6,
+  REWARD_REFERRAL_TOKENS:             7,
+
+  REWARD_ROUND_POINTS_WINNER:         8,
+  REWARD_ROUND_POINTS_LOSER:          9,
+  REWARD_ROUND_POINTS_JURY_TOP:      10,
+  REWARD_ROUND_POINTS_JURY_MIDDLE:   11,
+  REWARD_ROUND_POINTS_JURY_BOTTOM:   12,
+  REWARD_ROUND_POINTS_NEGATIVE:      13,
+
+  REWARD_BONUS:                      19,
+  REWARD_PROMOTION:                  20,
+
+  //REFERRALS_DEFAULT:                 5,
     
-  REWARD_ROUND_TOKENS_WINNER: 2,
-  REWARD_ROUND_TOKENS_LOSER: 3,
-  REWARD_ROUND_TOKENS_JURY_TOP: 4,
-  REWARD_ROUND_TOKENS_JURY_MIDDLE: 5,
-  REWARD_ROUND_TOKENS_JURY_BOTTOM: 6,
+    // payoffs
+  WINNER_PCT:                       40,
+  LOSER_PCT:                        10,
+  TOP_JURISTS_X10:                  34,   // percentages * 10   ... level:0
+  MIDDLE_JURISTS_X10:               17,   // level:1
+  BOTTOM_JURISTS_X10:                0,    // level:2
+  WINNER_POINTS:                    50,
+  LOSER_POINTS:                     10,
+  NEGATIVE_RATING:                -100,
+  TOP_JURISTS_POINTS:               10,
+  MIDDLE_JURISTS_POINTS:             4,
+  BOTTOM_JURISTS_POINTS:             0,
+
+  REFERRAL_POINTS:                   0, 
     
-  REWARD_PROMOTION_TO_LEAD: 7,
-  reward_is_tokens: function (reward_type) { 
-    return _.includes([
+  LEAD_LEVEL:                        2,
+  // <== end from contract
+
+  reward_is_tokens: function ( reward ) { 
+    return [
       this.REWARD_ROUND_TOKENS_WINNER,
       this.REWARD_ROUND_TOKENS_LOSER,      
       this.REWARD_ROUND_TOKENS_JURY_TOP,
       this.REWARD_ROUND_TOKENS_JURY_MIDDLE,
-      this.REWARD_ROUND_TOKENS_BOTTOM
-    ],reward_type)
+      this.REWARD_ROUND_TOKENS_JURY_BOTTOM
+    ].includes( reward.reward_type )
+  },
+  reward_is_reputation: function ( reward ) { 
+    return [
+      this.REWARD_ROUND_POINTS_WINNER,
+      this.REWARD_ROUND_POINTS_LOSER,
+      this.REWARD_ROUND_POINTS_JURY_TOP,
+      this.REWARD_ROUND_POINTS_JURY_MIDDLE,
+      this.REWARD_ROUND_POINTS_JURY_BOTTOM,
+      this.REWARD_ROUND_POINTS_NEGATIVE,
+      this.REWARD_BONUS
+    ].includes( reward.reward_type )
+  },
+  reward_is_promotion: function( reward ){
+    return reward.reward_type === this.REWARD_PROMOTION
   },
 
-  REFERRAL_POINTS: 8,
-  ROUNDS_PER_CYCLE_LEAD: 2, // max rounds per cycle
-  ROUNDS_PER_CYCLE_JURIST: 5,
-  WINNER_PCT: 40,
-  LOSER_PCT: 10,
-  TOP_JURISTS_X10: 34,   // percentages * 10   ... level:0
-  MIDDLE_JURISTS_X10: 17,   // level:1
-  BOTTOM_JURISTS_X10: 0,    // level:2
+
+  is_recent: function ( timestamp, now ) {
+    return now - ( timestamp || this.ZERO_BASE_TIME ) <= this.CYCLE_PERIOD / this.CYCLE_RECENT
+  },
+  is_recent_period: function ( timestamp, now ) { // within one cycle period
+    return now - ( timestamp || this.ZERO_BASE_TIME ) <= this.CYCLE_PERIOD
+  },
 
   LEVELS: [
-    { name:  'white belt', points:   0, referrals:  2, styles: 'text-white bg-black' },
-    { name: 'yellow belt', points:  10, referrals:  4, styles: 'text-yellow bg-black' },
-    { name: 'orange belt', points:  50, referrals:  6, styles: 'text-orange bg-black' },
-    { name:   'blue belt', points: 100, referrals: 10, styles: 'text-blue bg-black' },
-    { name:    'red belt', points: 200, referrals: 20, styles: 'text-red bg-black' },
-    { name:  'black belt', points: 500, referrals: 30, styles: 'text-black bg-white' }
+    { name:  'white belt', points:   0, referrals:  2, styles: 'text-white'   },
+    { name: 'yellow belt', points:  10, referrals:  4, styles: 'text-yellow'  },
+    { name: 'orange belt', points:  50, referrals:  6, styles: 'text-orange'  },
+    { name:   'blue belt', points: 100, referrals: 10, styles: 'text-blue'    },
+    { name:    'red belt', points: 200, referrals: 20, styles: 'text-red'     },
+    { name:  'black belt', points: 500, referrals: 30, styles: 'text-black'   }
   ],
-  level_info: function( reputation ){
-    return this.LEVELS[ this.level( reputation ) ]
+  level_info: function( reputation ) { 
+    return this.LEVELS[ this.level( reputation ) ] 
   },
-  level: function ( reputation ){
-    let self=this
-    return _.findIndex(this.LEVELS,function(val,idx){
-      return idx === self.LEVELS.length-1 ? true : val < self.LEVELS[idx+1]
-    })
+  level: function( reputation ) { 
+    return this.LEVELS.findIndex( ( _, idx, arr ) => idx === arr.length - 1 ? true : reputation < arr[ idx+1 ].points ) 
   },
+
   role_name: [ "Lead","Jurist" ],
+
+  priority: [
+    { name: "info",         value: 1 }, // values used for relativized random sort
+    { name: "active_small", value: 1 },
+    { name: "active_large", value: 1 }
+  ],
   
   ...customConfig
 

@@ -65,8 +65,8 @@ export const generateMessages = ( { user, cycles, rounds, tokens, timestamp } ) 
 	//const user = s.user.info
 
 	let now = timestamp   //delete this later so everything will still compile with old code.
-	let oneHour = 3600 /*seconds*/
-	let oneDay = 86400 /*seconds*/   //delete all of this later
+	//let oneHour = 3600 /*seconds*/
+	//let oneDay = 86400 /*seconds*/   //delete all of this later
 
 
   //let comingSignupCycles = cycles.filter( cycle => !cycle.analyst_status && cycle.timestart > now )
@@ -85,7 +85,8 @@ export const generateMessages = ( { user, cycles, rounds, tokens, timestamp } ) 
     finishedCycles
   } = getCyclesByStatus( { cycles, rounds, tokens, timestamp } )
 
-
+  const is_recent = reward => config.is_recent( reward.timestamp, now )
+  const is_recent_period = reward => config.is_recent_period( reward.timestamp, now )
 
 /********for testing -- 'if' statement to hold and make NOT appear ********/
 /*let testVariable = 0
@@ -103,7 +104,7 @@ user.rounds.finished = [8, 9, 0, 7]
 	if (comingSignupCycles.length) {
 		messages.push({
 			type: 'new_round_scheduling',
-			priority: 'info',
+			priority: 0,
 			signupCycles:comingSignupCycles.length
 		})
 	}
@@ -112,7 +113,7 @@ user.rounds.finished = [8, 9, 0, 7]
 	comingConfirmedCycles.map( cycle =>
 		messages.push({
 			type: 'round_scheduled',
-			priority: 'action-small',
+			priority: 1, //'action-small',
 			role: cycle.role,
 			due: config.cycleTime( cycle.id + 1, true ),
 			now: ms( timestamp ),
@@ -125,7 +126,7 @@ user.rounds.finished = [8, 9, 0, 7]
 		let token  = _.find( tokens,['id',cycle.token]	)
 		messages.push({
 			type: 'round_activated',
-			priority: 'info',
+			priority: 0,
 			role: cycle.role,
 			start: ms( config.cycleTime( cycle.id ) ),
 			due: ms( config.cycleTime( cycle.id ) + config.CYCLE_PERIOD / config.CYCLE_SURVEY_DUE ),
@@ -142,7 +143,7 @@ user.rounds.finished = [8, 9, 0, 7]
 		let token  = _.find(tokens,['id',cycle.token])
 		messages.push({
 			type: 'round_finished',
-			priority: 'info',
+			priority: 0,
 			role: cycle.role,
 			start: ms( config.cycleTime( cycle.id ) ),
 			now: ms( timestamp ),
@@ -154,168 +155,88 @@ user.rounds.finished = [8, 9, 0, 7]
 		})
 	})
 
-	return messages
-	/***** Payment *****/
 
-	//toDo: ready for testing
+	/***** Recent Payments *****/
+	/*
+	    uint8 constant REWARD_REFERRAL = 1;
 
-	for (let i=1; i<2; i++) {
+    uint8 constant REWARD_ROUND_TOKENS_WINNER = 2;
+    uint8 constant REWARD_ROUND_TOKENS_LOSER = 3;
+    uint8 constant REWARD_ROUND_TOKENS_JURY_TOP = 4;
+    uint8 constant REWARD_ROUND_TOKENS_JURY_MIDDLE = 5;
+    uint8 constant REWARD_ROUND_TOKENS_JURY_BOTTOM = 6;
+    uint8 constant REWARD_REFERRAL_TOKENS = 7;
 
-		if (user.reward_events.length) {
+    uint8 constant REWARD_ROUND_POINTS_WINNER = 8;
+    uint8 constant REWARD_ROUND_POINTS_LOSER = 9;
+    uint8 constant REWARD_ROUND_POINTS_JURY_TOP = 10;
+    uint8 constant REWARD_ROUND_POINTS_JURY_MIDDLE = 11;
+    uint8 constant REWARD_ROUND_POINTS_JURY_BOTTOM = 12;
+    uint8 constant REWARD_ROUND_POINTS_NEGATIVE = 13;
 
-	  	let lastRewardEventP = user.reward_events //pulls reward_events array
+    uint8 constant REWARD_BONUS = 19;
+    uint8 constant REWARD_PROMOTION = 20;
+    uint8 constant REFERRAL_POINTS = 21;
+    */
+  console.log('reward events',user.reward_events)
 
-			//for testing
-			let rewardCellP = lastRewardEventP[lastRewardEventP.length-i]  //runs through reward array
-
-			if (rewardCellP.timestamp > now-(7*oneDay)) {
-
-				i--
-
-				if (rewardCellP.reward_type>=2 && rewardCellP.reward_type <=7) {
-
-					console.log ("New Payment!")
-
-					messages.push({
-						type: 'payment',
-						priority: 'info',
-						tokens: rewardCellP.value,
-						balance: user.token_balance
-					})
-				}
-			}
-		}
-	}
-
-
-	messages.push({
-		type: 'payment',
-		priority: 'info',
-		tokens: 34,
-		balance: 99
+	user.reward_events.forEach( ( reward, idx ) => { 
+		if ( !config.reward_is_tokens( reward ) || !is_recent( reward ) ) return
+		messages.push({
+			type: 'payment',
+			priority: 0,
+			tokens: reward.value,
+			balance: user.token_balance
+		})
 	})
 
 
-/***** Reputation Score *****/
-/* Alerts user to any updates in reputation score, hopeully up */
-/*if Last Reward was a reputation score and it's been less than a week, display card*/
-
-	/* toDo: ready for testing
+	/***** Reputation Score *****/
+	/* 
+		Recent updates in reputation points
 	*/
+	user.reward_events.forEach( ( reward, idx ) => { 
+		if ( !config.reward_is_reputation( reward ) || !is_recent( reward ) ) return
+		messages.push({
+			type: 'reputation_score',
+			priority: 0,
+			reputation:user.reputation,
+			new_points: reward.value
+		})
+	})
 
-
-	for (let i=1; i<2; i++) {
-
-		if (user.reward_events.length) {
-
-  		let lastRewardEventR = user.reward_events //pulls reward_events array
-
-			//for testing
-			let rewardCellR = lastRewardEventR[lastRewardEventR.length-i]  //runs through reward array
-
-			if (rewardCellR.timestamp > now-(7*oneDay)) {
-
-				i--
-
-				/*change rewardCell.reward_type when done testing */
-				if (rewardCellR.reward_type >= 8 || rewardCellR.reward_type <= 13) {
-
-					console.log ("New Rep Score!")
-
-					messages.push({
-						type: 'reputation_score',
-						priority: 'info',
-						reputation:user.reputation,
-						new_points: rewardCellR.value
-					})
-				}
-			}
-		}
-	}
-
-
-/***** New Level *****/
-/* alerts user when they've reached a new level */
-/* if user got a new level, display */
-
-	/* toDo:  ready for testing
+	/***** Level Change (i.e. promotion) *****/
+	/*
+	    Show any level changes for a cycle period
+	    Show additonal referrals for level change
 	*/
-
-	//for Testing
-	user.newLevel=1
-	user.level=["pawn", "knight"]
-
-	//gets current level, and last level before that
-	let lastUserLevel = user.level[user.level.length-2]
-	let currentUserLevel = user.level[user.level.length-1]
-
-
-	for (let i=1; i<2; i++) {
-
-		if (user.reward_events.length) {
-
-	  	let lastRewardEventL = user.reward_events //pulls reward_events array
-
-				//for testing
-			let rewardCellL = lastRewardEventL[lastRewardEventL.length-i]  //runs through reward array
-
-			if (rewardCellL.timestamp > now-(30*oneDay)) {
-
-				i--
-
-				if (rewardCellL.reward_type == 20 ) {
-
-					messages.push({
-						type: 'new_level',
-						priority: 'info',
-						previous_level:lastUserLevel,
-						new_level: currentUserLevel
-					})
-				}
-			}
-		}
-	}
+	user.reward_events.forEach( ( reward, idx ) => { 
+		console.log(reward,config.reward_is_promotion(reward),is_recent_period(reward))
+		if ( !config.reward_is_promotion( reward ) || !is_recent_period( reward ) ) return	
+		messages.push({
+			type: 'new_level',
+			priority: 0,
+			previous_level: reward.ref - 1,
+			new_level: reward.ref 
+		})
+		messages.push({
+			type: 'additional_referrals',
+			priority: 1,
+			newRefsAvail: config.LEVELS[ reward.ref ].referrals,
+			referrals: user.referral_balance,
+			referrals_made: user.num_referrals
+		})
+	})
 
 	console.log('generated messages', messages )
 	return messages
 
 
-/***** Additional Referrals *****/
-/* user gets additonal referrals if they get 100 reputation points */
-/* check and see if user has num_referrals, and if new referrals were recently issued */
+
 
 	/* toDo:  timestamp restrictions?  maybe.  Otherwise, ready for testing
 	*/
 
-		//for testing
-	user.num_referrals=2
-
-
-	for (let i=1; i<2; i++) {
-
-		if (user.reward_events.length) {
-
-			let lastRewardEventRef = user.reward_events //pulls reward_events array
-
-				//for testing
-			let rewardCellRef = lastRewardEventRef[lastRewardEventRef.length-i]  //runs through reward array
-
-			if (rewardCellRef.timestamp > now-(30*oneDay)) {
-
-				i--
-
-				if (rewardCellL.reward_type == 1) {
-
-					messages.push({
-						type: 'additional_referrals',
-						priority: 'info',
-						newRefsAvail: user.num_referrals,
-						referrals: user.referrals.length
-					})
-				}
-			}
-		}
-	}
 
 
 /***** Round Finished *****/

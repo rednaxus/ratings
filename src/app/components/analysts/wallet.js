@@ -1,4 +1,4 @@
-  import React, { PureComponent } from 'react'
+  import React, { PureComponent, Component } from 'react'
   import { AnimatedView } from '../../components'
   import { store } from '../../Root'
   import { appConfig } from '../../config'
@@ -21,6 +21,7 @@
   var vevaBalance;
   var fromWeiOne;
   var fromWeiTwo;
+  var balanceDisplay;
 
   web3.eth.getAccounts(
 
@@ -46,7 +47,6 @@
           console.log ('dkssagjsjfdsgdsfkjghskdlfjghsfdkljghskldfgjhslfdg');
 
           vevaBalance = web3.fromWei(toStringNum, 'ether');
-
         }
 
         else{
@@ -60,16 +60,116 @@
   );
 
 
-  export class Wallet extends PureComponent {
+
+
+  class ViewWallet extends Component {
+
+    constructor(props) {
+    super(props);
+    this.state = {balanceDisplay: vevaBalance};
+
+    }
+
+
+    onItemClick = () => {
+
+      var toAddress = $("#address").val();
+      var amount = $("#amount").val();
+
+      if ((toAddress.length == 42) && (toAddress[0] == '0') && (toAddress[1] == 'x' || toAddress[1] == "X") && Number(amount)>0) {
+
+        console.log ("valid address and amount!");
+
+        if (amount) {
+
+          var amountWei = web3.toWei(amount);
+
+          if (Number(amount) <= Number(vevaBalance)) {
+
+            contractInstance.transfer(toAddress, amountWei, {from: web3.eth.defaultAccount});
+
+            alert ("You have successfully transferred " + amount + " VEVA to " + toAddress + " !")
+            console.log (toAddress, amount);
+            console.log ("hurray!  You sent " + amount + " VEVA tokens to " + toAddress);
+
+            if (!contractInstance.balanceOf(web3.eth.defaultAccount).c[1]){
+
+              var toStringNum = contractInstance.balanceOf(web3.eth.defaultAccount).toString();
+
+              vevaBalance = web3.fromWei(toStringNum, 'ether');
+            }
+
+            else{
+              fromWeiOne = contractInstance.balanceOf(web3.eth.defaultAccount).c[0].toString();
+              fromWeiTwo = contractInstance.balanceOf(web3.eth.defaultAccount).c[1].toString();
+
+              vevaBalance = web3.fromWei(fromWeiOne+fromWeiTwo, 'ether');
+            }
+
+            this.setState({balanceDisplay: vevaBalance})
+
+            //window.location.reload();
+
+            /**********/
+
+            console.log  (web3.eth.getBalance(web3.eth.defaultAccount));
+            console.log (contractInstance.balanceOf(web3.eth.defaultAccount).toString());
+
+            if (!contractInstance.balanceOf(web3.eth.defaultAccount).c[1]){
+
+              var toStringNum = contractInstance.balanceOf(web3.eth.defaultAccount).toString();
+              vevaBalance = web3.fromWei(toStringNum, 'ether');
+            }
+
+            else{
+              fromWeiOne = contractInstance.balanceOf(web3.eth.defaultAccount).c[0].toString();
+              fromWeiTwo = contractInstance.balanceOf(web3.eth.defaultAccount).c[1].toString();
+
+              vevaBalance = web3.fromWei(fromWeiOne+fromWeiTwo, 'ether');
+            }
+
+            /**********/
+
+          }
+
+          else {
+
+          alert("So sorry! You don't have enough VEVA tokens to send! Please try transferring  a different amount.");
+          console.log ("Insufficient Balance");
+          }
+        }
+      }
+
+      else {
+
+        if ((toAddress.length == 42) && (toAddress[0] == '0') && (toAddress[1] == 'x' || toAddress[1] == "X") && (Number(amount)<=0)){
+
+          alert("Please enter a valid amount of VEVA tokens!");
+          console.log ("invalid amount")
+        }
+
+        else if (!((toAddress.length == 42) && (toAddress[0] == '0') && (toAddress[1] == 'x' || toAddress[1] == "X")) && (Number(amount)>0)){
+
+            alert("Please enter a valid address!");
+            console.log ("invalid address")
+          }
+
+        else {
+
+          alert("Please enter a valid address AND a valid amount!");
+          console.log ("invalid address && amount")
+        }
+      };
+    };
 
     render() {
-      return(
+      return (
         <AnimatedView>
           <main>
 
                 <h1>Wallet</h1>
                 <p><strong>View Balance and Send Tokens Here</strong></p>
-                <p>You have <strong> {vevaBalance} </strong> VEVA in your wallet.</p>
+                <p>You have <strong> {this.state.balanceDisplay} </strong> VEVA in your wallet.</p>
 
             <div>
 
@@ -83,7 +183,7 @@
 
                 <br/>
 
-                <button id="button" onClick={onItemClick}>SEND</button>
+                <button id="button" onClick={this.onItemClick}>SEND</button>
 
             </div>
 
@@ -104,62 +204,19 @@
 
           </main>
         </AnimatedView>
-      )
+      );
     }
   }
 
 
-  function onItemClick() {
+  export class Wallet extends PureComponent {
 
-    var toAddress = $("#address").val();
-    var amount = $("#amount").val();
+    render() {
 
-    if ((toAddress.length == 42) && (toAddress[0] == '0') && (toAddress[1] == 'x' || toAddress[1] == "X") && Number(amount)>0) {
-
-      console.log ("valid address and amount!");
-
-      if (amount) {
-
-        var amountWei = web3.toWei(amount);
-
-        if (Number(amount) <= Number(vevaBalance)) {
-
-          contractInstance.transfer(toAddress, amountWei, {from: web3.eth.defaultAccount});
-
-          alert ("You have successfully transferred " + amount + " VEVA to " + toAddress + " !")
-          console.log (toAddress, amount);
-          console.log ("hurray!  You sent" + amount + " VEVA tokens to " + toAddress);
-        }
-
-        else {
-
-        alert("So sorry! You don't have enough VEVA tokens to send! Please try transferring  a different amount.");
-        console.log ("Insufficient Balance");
-        }
-      }
+      return(
+        <ViewWallet />
+      )
     }
-
-    else {
-
-      if ((toAddress.length == 42) && (toAddress[0] == '0') && (toAddress[1] == 'x' || toAddress[1] == "X") && (Number(amount)<=0)){
-
-        alert("Please enter a valid amount of VEVA tokens!");
-        console.log ("invalid amount")
-      }
-
-      else if (!((toAddress.length == 42) && (toAddress[0] == '0') && (toAddress[1] == 'x' || toAddress[1] == "X")) && (Number(amount)>0)){
-
-          alert("Please enter a valid address!");
-          console.log ("invalid address")
-        }
-
-      else {
-
-        alert("Please enter a valid address AND a valid amount!");
-        console.log ("invalid address && amount")
-      }
-    };
-  };
-
+  }
 
   export default Wallet

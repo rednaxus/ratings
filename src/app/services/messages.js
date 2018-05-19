@@ -123,8 +123,9 @@ user.rounds.finished = [8, 9, 0, 7]
 
 	/***** Round Activated *****/
 	activeCycles.map( cycle => {
-		let token  = _.find( tokens,['id',cycle.token]	)
-		messages.push({
+		let token  = tokens.find( token => token.id === cycle.token	)
+		let round = rounds.find( round => round.id === cycle.round )
+		if ( is_recent( { timestamp: config.cycleTime( cycle.id ) } ) ) messages.push({
 			type: 'round_activated',
 			priority: 0,
 			role: cycle.role,
@@ -133,7 +134,18 @@ user.rounds.finished = [8, 9, 0, 7]
 			now: ms( timestamp ),
 			cycle: cycle.id,
 			round: cycle.round,
+			tokenId: token.id,
 			tokenName: token.name
+		})
+		messages.push({
+			type: 'rounds_in_progress',
+			priority: 0,
+			start: ms( config.cycleTime( cycle.id ) ),
+			now: ms( timestamp ),
+			role: cycle.role,
+			tokenId: token.id,
+			tokenName: token.name,
+			roundValue: round.value
 		})
 	})
 
@@ -147,8 +159,8 @@ user.rounds.finished = [8, 9, 0, 7]
 			role: cycle.role,
 			start: ms( config.cycleTime( cycle.id ) ),
 			now: ms( timestamp ),
+			tokenId: token.id,
 			tokenName: token.name,
-			tokenSymbol: token.symbol,
 			tokenAddress: token.address,
 			round: cycle.round,
 			roundValue: round.value

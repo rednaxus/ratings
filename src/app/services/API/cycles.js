@@ -88,13 +88,11 @@ export const getCycleInfo = ( cycle, analyst = 0) => new Promise( (resolve, reje
         timefinish: timestart+rCycle[2].toNumber(),
         status: rCycle[3].toNumber(),
         num_availables_lead: rCycle[4].toNumber(),
-        num_availables_jury: rCycle[5].toNumber(),
-        //num_leads_available: rCycle[6].toNumber(),
-        //num_leads_assigned: rCycle[7].toNumber(),
-        //analyst_status: rCycle[8].toNumber()
+        num_availables_jury: rCycle[5].toNumber()
       }
       //console.log('got cycle info',res)
       ratingAgency.cycleAnalystInfo( cycle, analyst ).then ( rCycleAnalyst => {
+        //console.log('cycle',cycle,analyst, rCycleAnalyst)
         res.incycle_ref = rCycleAnalyst[ 0 ].toNumber()
         res.role = []
         for ( let i=0; i<2; i++ ){
@@ -105,10 +103,11 @@ export const getCycleInfo = ( cycle, analyst = 0) => new Promise( (resolve, reje
             num_volunteers: num_volunteers,
             num_confirms: num_confirms,
             num_rounds: num_rounds,
-            rounds: parseB32StringtoUintArray( rCycleAnalyst[ 4 + i*4 ], num_rounds ) 
+            rounds: num_rounds ? parseB32StringtoUintArray( rCycleAnalyst[ 4 + i*4 ], num_rounds ) : []
           } )
+          //console.log(i, ' round info ',rCycleAnalyst[ 4 + i*4 ], 'num rounds',num_rounds)
         }
-        //console.log( 'got cycle info all ',res)     
+        console.log( 'got cycle info all ',res)     
         resolve( res )
       }).catch( error )
     }).catch( error )

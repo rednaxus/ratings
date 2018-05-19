@@ -38,7 +38,7 @@ export const getCyclesByStatus = ( { cycles, rounds, timestamp, tokens } ) => {
     } )
   } )
 
-  let comingConfirmedCycles = [] // signed up, need to confirm
+  let comingConfirmedCycles = [] // signed up, confirmed
   cycles.forEach ( cycle => {
     if ( !isConfirmed( cycle ) ) return
     cycle.role.forEach( ( role,idx ) => {

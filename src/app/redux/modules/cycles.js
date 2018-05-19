@@ -81,25 +81,19 @@ export const fetchCyclesDataIfNeeded = () => {
 }
 
 const fetchCyclesData = () => {
-  const request = (time = moment().format()) => {
-    return { type: REQUEST_CYCLES_DATA, isFetching: true, time }
-  }
-  const success = (data, time = moment().format()) => {
-    return { type: RECEIVED_CYCLES_DATA, isFetching: false, data, time }
-  }
-  const failure = (time = moment().format()) => { 
-    return { type: ERROR_CYCLES_DATA, isFetching: false, time }
-  }
+  const request = (time = moment().format()) => ( { type: REQUEST_CYCLES_DATA, isFetching: true, time } )
+  const success = (data, time = moment().format()) => ( { type: RECEIVED_CYCLES_DATA, isFetching: false, data, time } )
+  const failure = (time = moment().format()) => ( { type: ERROR_CYCLES_DATA, isFetching: false, time } )
 
   console.log('fetch cycles data')
   return ( dispatch, getState ) => {
     dispatch(request())
-      console.log('getting cycles data from api')
-      let user = getState().user
-      let analyst = user.info ? user.info.id : 0
-      getCyclesData( analyst )
-      .then( data => dispatch( success( data ) ) )
-      .catch( err => dispatch( failure( err ) ) )    
+    let user = getState().user
+    let analyst = user.info ? user.info.id : 0
+    console.log('getting cycles data from api',' for analyst',analyst)
+    getCyclesData( analyst ).then( 
+      data => dispatch( success( data ) ) 
+    ).catch( err => dispatch( failure( err ) ) )    
   }
 }
 

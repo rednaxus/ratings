@@ -5,7 +5,8 @@ import auth            from '../../services/auth'
 import { 
   alertActions, 
   fetchRoundInfo, 
-  fetchRoundAnalystInfo 
+  fetchRoundAnalystInfo,
+  fetchCyclesDataIfNeeded
 } from './actions'
 //import Root from '../../Root'
 import { store } from '../../Root'
@@ -121,6 +122,7 @@ const login = ( email, password, reload = true ) => {
         }
         else refreshInfo()(dispatch,getState).then( userInfo => { 
           console.log('got user info',userInfo) 
+          dispatch( fetchCyclesDataIfNeeded() )
         })
       },
       error => {

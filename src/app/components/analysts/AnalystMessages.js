@@ -107,7 +107,7 @@ const message_templates = {
     link: data => 'scheduling',
     heading: data => <div>Upcoming rounds available</div>,
     body: data =>
-      <div>We have scheduled {data.signupCycles} new rounds! Please make sure your availability is updated in your profile.</div>
+      <div>We have scheduled {data.signupCycles} new round periods! Please make sure your availability is updated in your profile.</div>
     ,
     footer: data => <div>Scheduling</div>,
     glyph: data => <div><Glyphicon glyph="calendar"></Glyphicon></div>
@@ -116,20 +116,13 @@ const message_templates = {
   round_activated: {
     link: data => `round/${data.round}`,
     heading: data => <div>Active Round</div>,
-    body: data => {
-      return data.role ?
-        <div>You are jurist for {data.tokenName} round that began <Moment from={data.now}>{data.start}</Moment>.
-          <div>Survey is due for this round <Moment from={data.now}>{data.due}</Moment></div>
-        </div> :
-        <div>You are Lead for {data.tokenName} round that began <Moment from={data.now}>{data.start}</Moment>.
-          <div>Brief is due for this round <Moment from={data.now}>{data.due}</Moment></div>
-        </div>
-    },
-    footer: data => {
-      return data.role ?
-        <div>Survey is due <Moment from={data.now}>{data.due}</Moment>.</div>
-        : <div>Brief is due <Moment from={data.now}>{data.due}</Moment>.</div>
-    },
+    body: data => 
+      <div>
+        <div>You are <span className="text-purple">{config.role_name[data.role]}</span> for <Link to={`/token/${data.tokenId}`}>{data.tokenName}</Link> round that began <Moment from={data.now}>{data.start}</Moment>.</div>
+        <div>{ data.role ? "Survey" : "Brief" } is due for this round <Moment from={data.now}>{data.due}</Moment></div>
+      </div>
+    ,
+    footer: data => <div>{ data.role ? "Survey" : "Brief" } is due <Moment from={data.now}>{data.due}</Moment>.</div>,
     glyph: data => <div><Glyphicon glyph="ok-circle"></Glyphicon></div>
 
   },
@@ -137,9 +130,7 @@ const message_templates = {
   round_finished: {
     link: data => '',
     heading: data => <div>Round Finished</div>,
-    body: data =>
-      <div>Analysis round  for {data.roundToken} (ended <Moment from={data.now}>{data.start}</Moment>) has finished. Thank you for partcipating!</div>
-    ,
+    body: data => <div>Analysis round for <Link to={`/token/${data.tokenId}`}>{data.tokenName}</Link> (ended <Moment from={data.now}>{data.start}</Moment>) has finished. Thank you for partcipating!</div>,
     footer: data => <div>Round Info</div>,
     glyph: data => <div><Glyphicon glyph="education"></Glyphicon></div>
   },
@@ -148,7 +139,7 @@ const message_templates = {
     link: data => 'scheduling',
     heading: data => <div>Round Scheduled</div>,
     body: data =>
-      <div>A new round has been scheduled to begin <Moment fromNow>{data.due}</Moment>. It's worth {data.roundValue}--interested?</div>
+      <div>A new round has been scheduled to begin <Moment from={data.now}>{data.due}</Moment>. It's worth {data.roundValue} Veva token--interested?</div>
     ,
     footer: data => <div>Round Details</div>,
     glyph: data => <div><Glyphicon glyph="time"></Glyphicon></div>
@@ -197,16 +188,15 @@ const message_templates = {
   token_added: {
     link: data => `token/${data.id}`,
     heading: data => <div>New Token Added!</div>,
-    body: data => <div>{ data.name } was added to system! Check the token page for more information.</div>,
-    footer: data => <div>Token Page</div>,
+    body: data => <div>{ data.name } was added to system! Check the token details for more information.</div>,
+    footer: data => <div>Token Details</div>,
     glyph: data => <div><Glyphicon glyph="plus"></Glyphicon></div>
   },
 
   rounds_in_progress:{
     link: data => 'scheduling',
     heading: data => <div>Round In Progress</div>,
-    body: data => <div>A round for {data.roundToken} (began <Moment fromNow>{data.start}</Moment>) is in progress.  You are a {data.analyst}, and it's worth {data.roundValue}. </div>
-    ,
+    body: data => <div>A round for <Link to={`/token/${data.tokenId}`}>{data.tokenName}</Link> (began <Moment from={data.now}>{data.start}</Moment>) is in progress.  You are a <span className="text-purple">{config.role_name[data.role]}</span>, and it's worth {data.roundValue} Veva token. </div>,
     footer: data => <div>View Round Info</div>,
     glyph: data => <div><Glyphicon glyph="star-empty"></Glyphicon></div>
   },

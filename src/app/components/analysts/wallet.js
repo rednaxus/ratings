@@ -30,7 +30,10 @@
       accounts = web3.eth.accounts;
 
       if (accounts) {
-        web3.eth.defaultAccount = accounts[0];
+        //web3.eth.defaultAccount = accounts[0];
+        web3.eth.defaultAccount = window.web3.eth.defaultAccount;
+
+
 
         console.log("Default account: " + web3.eth.defaultAccount);
         console.log("Using web3 version: " + web3.version.api);
@@ -61,6 +64,49 @@
 
 
 
+/*
+  let account
+  setTimeout(() => {
+    web3.eth.getAccounts((err, accounts) => {
+      if (err) return
+      console.log("nope!")
+      accounts = web3.eth.accounts;
+      if (accounts){
+      web3.eth.defaultAccount = accounts[0]
+      console.log("nope!")
+      }
+
+    })
+  }, 1000)
+  */
+
+
+
+      setInterval(function() {
+
+        web3.eth.getAccounts(
+
+          function () {
+
+            accounts = web3.eth.accounts;
+
+            if (accounts) {
+
+                if (window.web3.eth.defaultAccount !== web3.eth.defaultAccount) {
+                  web3.eth.defaultAccount = window.web3.eth.defaultAccount;
+                  //window.location.reload();
+
+                }
+              }
+            });
+
+
+
+                      console.log ("default: " + web3.eth.defaultAccount)
+
+                    }, 1000);
+
+
 
   class ViewWallet extends Component {
 
@@ -71,7 +117,11 @@
     }
 
 
+
+
     onItemClick = () => {
+
+      web3.eth.defaultAccount = window.web3.eth.defaultAccount;
 
       var toAddress = $("#address").val();
       var amount = $("#amount").val();
@@ -87,6 +137,8 @@
           if (Number(amount) <= Number(vevaBalance)) {
 
             contractInstance.transfer(toAddress, amountWei, {from: web3.eth.defaultAccount});
+
+            //, {from: web3.eth.defaultAccount}
 
             alert ("You have successfully transferred " + amount + " VEVA to " + toAddress + " !")
             console.log (toAddress, amount);
@@ -160,7 +212,8 @@
           console.log ("invalid address && amount")
         }
       };
-    };
+
+  };
 
     render() {
       return (

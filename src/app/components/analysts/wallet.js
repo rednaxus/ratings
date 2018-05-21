@@ -102,7 +102,7 @@
 
 
 
-                      console.log ("default: " + web3.eth.defaultAccount)
+                      /*console.log ("default: " + web3.eth.defaultAccount)*/
 
                     }, 1000);
 

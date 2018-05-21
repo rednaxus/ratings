@@ -75,6 +75,9 @@ The cron app is Nodejs based with Web3 1.0. Its jobs are to pulse the Ratings Ag
 
 ## Preview
 ![preview](preview/preview.png)
+![preview](preview/tokens.png)
+![preview](preview/dash.png)
+
 
 ## Warning
 This is a work very much in progress...use with caution

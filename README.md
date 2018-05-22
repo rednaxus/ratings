@@ -74,8 +74,14 @@ The cron app is Nodejs based with Web3 1.0. Its jobs are to pulse the Ratings Ag
 [Veva-One](https://www.veva.one)
 
 ## Preview
+
+### status page
 ![preview](preview/preview.png)
+
+### tokens page
 ![preview](preview/tokens.png)
+
+### user dashboard
 ![preview](preview/dash.png)
 
 

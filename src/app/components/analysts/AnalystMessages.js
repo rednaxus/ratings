@@ -107,8 +107,7 @@ const message_templates = {
     link: data => 'scheduling',
     heading: data => <div>Upcoming rounds available</div>,
     body: data =>
-      <div>We have scheduled {data.signupCycles} new round periods! Please make sure your availability is updated in your profile.</div>
-    ,
+      <div>We have scheduled {data.signupCycles} new round periods! Please make sure your availability is updated in your profile.</div>,
     footer: data => <div>Scheduling</div>,
     glyph: data => <div><Glyphicon glyph="calendar"></Glyphicon></div>
   },
@@ -120,15 +119,13 @@ const message_templates = {
       <div>
         <div>You are <span className="text-purple">{config.role_name[data.role]}</span> for <Link to={`/token/${data.tokenId}`}>{data.tokenName}</Link> round that began <Moment from={data.now}>{data.start}</Moment>.</div>
         <div>{ data.role ? "Survey" : "Brief" } is due for this round <Moment from={data.now}>{data.due}</Moment></div>
-      </div>
-    ,
+      </div>,
     footer: data => <div>{ data.role ? "Survey" : "Brief" } is due <Moment from={data.now}>{data.due}</Moment>.</div>,
     glyph: data => <div><Glyphicon glyph="ok-circle"></Glyphicon></div>
-
   },
 
   round_finished: {
-    link: data => '',
+    link: data => `round/${data.round}`,
     heading: data => <div>Round Finished</div>,
     body: data => <div>Analysis round for <Link to={`/token/${data.tokenId}`}>{data.tokenName}</Link> (ended <Moment from={data.now}>{data.start}</Moment>) has finished. Thank you for partcipating!</div>,
     footer: data => <div>Round Info</div>,
@@ -138,10 +135,8 @@ const message_templates = {
   round_scheduled: {
     link: data => 'scheduling',
     heading: data => <div>Round Scheduled</div>,
-    body: data =>
-      <div>A new round has been scheduled to begin <Moment from={data.now}>{data.due}</Moment>. It's worth {data.roundValue} Veva token--interested?</div>
-    ,
-    footer: data => <div>Round Details</div>,
+    body: data => <div>A new round has been scheduled to begin <Moment from={data.now}>{data.due}</Moment>. It's worth {data.roundValue} Veva token--interested?</div>,
+    footer: data => <div>Round Schedule</div>,
     glyph: data => <div><Glyphicon glyph="time"></Glyphicon></div>
   },
 
@@ -149,8 +144,7 @@ const message_templates = {
   payment: {
     link: data => 'status',
     heading: data => <div>New Payment Available!</div>,
-    body: data => <div>Nice work! You have earned a new payment of {data.tokens} VEVA! Your new balance is {data.balance} VEVA.</div>
-    ,
+    body: data => <div>Nice work! You have earned a new payment of {data.tokens} VEVA! Your new balance is {data.balance} VEVA.</div>,
     footer: data => <div>View Balance</div>,
     glyph: data => <div><Glyphicon glyph="usd"></Glyphicon></div>
   },
@@ -158,8 +152,7 @@ const message_templates = {
   reputation_score: {
     link: data => 'status',
     heading: data => <div>New Rep Points!</div>,
-    body: data => <div>Well done! You have earned {data.new_points} new reputation points! You now have {data.reputation} points.</div>
-    ,
+    body: data => <div>Well done! You have earned {data.new_points} new reputation points! You now have {data.reputation} points.</div>,
     footer: data => <div>See in Profile</div>,
     glyph: data => <div><Glyphicon glyph="thumbs-up"></Glyphicon></div>
   },
@@ -170,8 +163,7 @@ const message_templates = {
     body: data => <div>All right! You have earned sufficient reputation points to move from&nbsp;
         <span className={`${config.LEVELS[data.previous_level].styles}`}>{config.LEVELS[data.previous_level].name}</span> to&nbsp;
         <span className={`${config.LEVELS[data.new_level].styles}`}>{config.LEVELS[data.new_level].name}!</span>
-      </div>
-    ,
+      </div>,
     footer: data => <div>See in Profile</div>,
     glyph: data => <div><Glyphicon glyph="knight"></Glyphicon></div>
   },
@@ -194,7 +186,7 @@ const message_templates = {
   },
 
   rounds_in_progress:{
-    link: data => 'scheduling',
+    link: data => `round/${data.round}`,
     heading: data => <div>Round In Progress</div>,
     body: data => <div>A round for <Link to={`/token/${data.tokenId}`}>{data.tokenName}</Link> (began <Moment from={data.now}>{data.start}</Moment>) is in progress.  You are a <span className="text-purple">{config.role_name[data.role]}</span>, and it's worth {data.roundValue} Veva token. </div>,
     footer: data => <div>View Round Info</div>,
@@ -204,8 +196,7 @@ const message_templates = {
   sponsored_analyst_joins: {
     link: data => 'status',
     heading: data => <div>New Sponsored Analyst!</div>,
-    body: data => <div>Hurray! One of your referrals (Analyst #{data.analyst}) has joined. Thank you for participating in the Veva ecosystem! You have earned an additional {data.reputation_points} rep points.</div>
-    ,
+    body: data => <div>Hurray! One of your referrals (Analyst #{data.analyst}) has joined. Thank you for participating in the Veva ecosystem! You have earned an additional {data.reputation_points} rep points.</div>,
     footer: data => <div>See on Status Page</div>,
     glyph: data => <div><Glyphicon glyph="heart"></Glyphicon></div>
   },
@@ -213,8 +204,7 @@ const message_templates = {
   new_ratings: {
     link: data => 'tokens',
     heading: data => <div>New Ratings!</div>,
-    body: data => <div>New token rating data has been added for rounds {data.rounds}! Check out the tokens page for more information or to browse.</div>
-    ,
+    body: data => <div>New token rating data has been added for rounds {data.rounds}! Check out the tokens page for more information or to browse.</div>,
     footer: data => <div>See Latest Ratings</div>,
     glyph: data => <div><Glyphicon glyph="th-list"></Glyphicon></div>
   },
@@ -222,8 +212,7 @@ const message_templates = {
   make_referral: {
     link: data => 'status',
     heading: data => <div>Reminder: You have unused referrals!</div>,
-    body: data => <div>You have {data.unused_refs} unused referrals. Your referrals help keep the Veva system healthy and secure—and you get a cut of their winnings! </div>
-    ,
+    body: data => <div>You have {data.unused_refs} unused referrals. Your referrals help keep the Veva system healthy and secure—and you get a cut of their winnings! </div>,
     footer: data => <div>Go to Status Page</div>,
     glyph: data => <div><Glyphicon glyph="user"></Glyphicon></div>
   },
@@ -231,8 +220,7 @@ const message_templates = {
   jurist_round_starting: {
     link: data => 'scheduling',
     heading: data => <div>Round Starting!</div>,
-    body: data => <div>You are a confirmed JURIST for the {data.token} round, which is starting now!</div>
-    ,
+    body: data => <div>You are a confirmed JURIST for the {data.token} round, which is starting now!</div>,
     footer: data => <div>Round Info</div>,
     glyph: data => <div><Glyphicon glyph="bullhorn"></Glyphicon></div>
   },
@@ -240,8 +228,7 @@ const message_templates = {
   brief_posted: {
     link: data => 'admin/cycles',
     heading: data => <div>New Brief Posted!</div>,
-    body: data => <div>A lead analyst in the {data.token} round has posted a new brief. You can access it until it closes <Moment fromNow>{data.due}</Moment>.</div>
-    ,
+    body: data => <div>A lead analyst in the {data.token} round has posted a new brief. You can access it until it closes <Moment fromNow>{data.due}</Moment>.</div>,
     footer: data => <div>View Now</div>,
     glyph: data => <div><Glyphicon glyph="edit"></Glyphicon></div>
   },
@@ -249,8 +236,7 @@ const message_templates = {
   pre_survey_due: {
     link: data => 'admin/cycles',
     heading: data => <div>Pre-Survey Due</div>,
-    body: data => <div>Reminder: Please take the pre-survey for the {data.round} round--it's due <Moment fromNow>{data.due}</Moment>.</div>
-    ,
+    body: data => <div>Reminder: Please take the pre-survey for the {data.round} round--it's due <Moment fromNow>{data.due}</Moment>.</div>,
     footer: data => <div>Take it Now</div>,
     glyph: data => <div><Glyphicon glyph="list-alt"></Glyphicon></div>
   },
@@ -258,8 +244,7 @@ const message_templates = {
   post_survey_due:{
     link: data => 'admin/cycles',
     heading: data => <div>Post-Survey Due!</div>,
-    body: data => <div>Reminder: Please take the post-survey for round #{data.round}--it is due <Moment fromNow>{data.due}</Moment>.</div>
-    ,
+    body: data => <div>Reminder: Please take the post-survey for round #{data.round}--it is due <Moment fromNow>{data.due}</Moment>.</div>,
     footer: data => <div>Take it Now</div>,
     glyph: data => <div><Glyphicon glyph="list-alt"></Glyphicon></div>
   },
@@ -268,8 +253,7 @@ const message_templates = {
   lead_confirmation: {
     link: data => 'admin/cycles',
     heading: data => <div>You are confirmed as a lead!</div>,
-    body: data => <div>You are a LEAD for an upcoming round, which is confirmed and will be starting soon!</div>
-    ,
+    body: data => <div>You are a LEAD for an upcoming round, which is confirmed and will be starting soon!</div>,
     footer: data => <div>See Rounds</div>,
     glyph: data => <div><Glyphicon glyph="check"></Glyphicon></div>
   },
@@ -277,8 +261,7 @@ const message_templates = {
   round_starting: {
     link: data => 'admin/cycles',
     heading: data => <div>Round Starting!</div>,
-    body: data => <div>Reminder! You are slated to participate in a round starting <Moment fromNow>{data.starting}</Moment>!</div>
-    ,
+    body: data => <div>Reminder! You are slated to participate in a round starting <Moment fromNow>{data.starting}</Moment>!</div>,
     footer: data => <div>Round Information</div>,
     glyph: data => <div><Glyphicon glyph="bell"></Glyphicon></div>
   },
@@ -295,8 +278,7 @@ const message_templates = {
   rebuttal_due: {
     link: data => 'admin/cycles',
     heading: data => <div>Rebuttal Due!</div>,
-    body: data => <div>Your LEAD rebuttal for the {data.round} round is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>
-    ,
+    body: data => <div>Your LEAD rebuttal for the {data.round} round is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>,
     footer: data => <div>View Opposing Brief</div>,
     glyph: data => <div><Glyphicon glyph="paperclip"></Glyphicon></div>
   },
@@ -304,26 +286,14 @@ const message_templates = {
   round_confirmed: {
     link: data => 'admin/cycles',
     heading: data => <div>Round confirmed!</div>,
-    body: data => <div>One of your requested rounds has been confirmed and will be starting <Moment fromNow>{data.start}</Moment>!</div>
-    ,
-    footer: data => <div>View Rounds</div>,
+    body: data => <div>One of your requested rounds has been confirmed and will be starting <Moment fromNow>{data.start}</Moment>!</div>,
+    footer: data => <div>View Round Schedule</div>,
     glyph: data => <div><Glyphicon glyph="ok-sign"></Glyphicon></div>
   }
 
 }
 
-
-const data = [
-    {text: '4 new rounds available!', type: 'roundsUpcoming', glyph: <Glyphicon glyph="calendar"></Glyphicon>, body: "Please set your availability via your profile", due: "1h:12m"},
-    {text: 'Currently active: Round 3!', type: 'type2', glyph: <Glyphicon glyph="star-empty"></Glyphicon>, body: "token XXOH, first survey due by ....", due: "1d:3h:49m"},
-    {text: 'Round scheduled!', type: 'round_confirmation', glyph: <Glyphicon glyph="check"></Glyphicon>, body: "Status: awaiting confirmation", due: "0h:31m"},
-    {text: 'Brief Due', type: 'brief_upload', glyph: <Glyphicon glyph="paperclip"></Glyphicon>, body: "You have a brief due by xxx for round 4, please upload", due: "4h:55m"}
-]
-
 export const AnalystMessages = ( props ) => {
-  console.log('analyst messages',props)
-  console.log('tokens',props.tokens)
-  console.log('tokens really',...props.tokens)
 
   let generatedMessages = generateMessages( props ).sort( ( msg1, msg2 ) => msg2.priority > msg1.priority )
   console.log('generated messages',generatedMessages)

@@ -7,6 +7,9 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { clearData, setData, setComplete } from '../../redux/modules/survey'
 import { submitSurvey } from '../../redux/modules/rounds'
+import survey from '../../services/survey'
+
+/*
 import json from '../../../../survey.json'
 
 let indexer = {}
@@ -24,7 +27,7 @@ const encodeData = data => {
   console.log('got result',data, result)
   return result
 }
-
+*/
 
 
 

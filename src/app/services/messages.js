@@ -145,6 +145,7 @@ user.rounds.finished = [8, 9, 0, 7]
 			role: cycle.role,
 			tokenId: token.id,
 			tokenName: token.name,
+			round: round.id,
 			roundValue: round.value
 		})
 	})

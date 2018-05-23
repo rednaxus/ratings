@@ -1,6 +1,6 @@
 // @flow weak
 
-import { appConfig }    from '../../config';
+import config    from '../../config/appConfig';
 import {
   earningGraphMockData,
   userInfosMockData,
@@ -10,7 +10,7 @@ import {
 }                       from '../../models';
 
 export const fetchMockEarningGraphData = (
-  timeToWait: number = appConfig.FAKE_ASYNC_DELAY
+  timeToWait: number = config.FAKE_ASYNC_DELAY
 ): Promise<any> => {
   return new Promise(
     resolve => {
@@ -26,7 +26,7 @@ export const fetchMockEarningGraphData = (
 };
 
 export const fetchMockUserInfosData = async (
-  timeToWait: number = appConfig.FAKE_ASYNC_DELAY
+  timeToWait: number = config.FAKE_ASYNC_DELAY
 ): Promise<any> => {
   return new Promise(
     resolve => {
@@ -39,7 +39,7 @@ export const fetchMockUserInfosData = async (
 };
 
 export const fetchMockTeamMatesData = (
-  timeToWait: number = appConfig.FAKE_ASYNC_DELAY
+  timeToWait: number = config.FAKE_ASYNC_DELAY
 ): Promise<any> => {
   return new Promise(
     resolve => {
@@ -52,7 +52,7 @@ export const fetchMockTeamMatesData = (
 };
 
 export const fetchMockTokensData = (
-  timeToWait: number = appConfig.FAKE_ASYNC_DELAY
+  timeToWait: number = config.FAKE_ASYNC_DELAY
 ): Promise<any> => {
   return new Promise(
     resolve => {
@@ -65,7 +65,7 @@ export const fetchMockTokensData = (
 };
 
 export const fetchMockUsersData = (
-  timeToWait: number = appConfig.FAKE_ASYNC_DELAY
+  timeToWait: number = config.FAKE_ASYNC_DELAY
 ): Promise<any> => {
   return new Promise(
     resolve => {

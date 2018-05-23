@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { appConfig } from '../../config'
+import config from '../../config/appConfig'
 
 import { 
   AnimatedView, 
@@ -37,7 +37,7 @@ class Status extends Component {
     console.log('user rounds',user_rounds)
 
     let payouts = !user.reward_events ? [] : _.filter( user.reward_events, reward => 
-      appConfig.reward_is_tokens(reward.reward_type) 
+      config.reward_is_tokens(reward.reward_type) 
     )
     console.log('payouts',payouts)
     /*[

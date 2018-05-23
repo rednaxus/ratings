@@ -5,8 +5,6 @@ import {
   getAnalystRegistry as AnalystRegistry
 } from '../contracts'
 
-import { appConfig }        from '../../config'
-
 import { store } from '../../Root'
 
 export const getRoundInfo = ( round, analyst=0 ) => new Promise( (resolve,reject) => {

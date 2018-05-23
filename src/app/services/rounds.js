@@ -1,7 +1,7 @@
 
 import * as _ from 'lodash'
 
-import { appConfig as config } from '../config'
+const config = require('../config/appConfig')
 
 
 export const getCyclesByStatus = ( { cycles, rounds, timestamp, tokens } ) => {

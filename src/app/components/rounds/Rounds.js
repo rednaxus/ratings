@@ -9,7 +9,7 @@ import Pager from './Pager'
 import api from '../../services/API/rounds'
 
 import Moment from 'react-moment'
-import { appConfig } from '../../config'
+import config from '../../config/appConfig'
 
 import events from './events'
 /*
@@ -49,7 +49,7 @@ const columns = [
     dataIndex: 'cycle',
     className: 'additional-class',
     renderer: ({column,value,row}) => {
-      return <span><Moment format="YYYY-MM-DD HH:mm" date={new Date(appConfig.cycleTime(value)*1000)} /></span>
+      return <span><Moment format="YYYY-MM-DD HH:mm" date={new Date(config.cycleTime(value)*1000)} /></span>
     }
   },
   {
@@ -70,7 +70,7 @@ const columns = [
     width: '20%',
     className: 'additional-class',
     renderer: ( { column, value, row } ) => {
-      return <span>{appConfig.STATUSES[value]}</span>
+      return <span>{config.STATUSES[value]}</span>
     }
   
   },

@@ -1,7 +1,7 @@
   import React, { PureComponent } from 'react'
   import { AnimatedView } from '../../components'
   import { store } from '../../Root'
-  import { appConfig } from '../../config'
+  import config from '../../config/appConfig'
   import TestTokenERC20Contract from '../../../../build/contracts/vevaTest.json'
 
   var address = TestTokenERC20Contract.networks["7"].address;

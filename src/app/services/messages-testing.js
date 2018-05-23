@@ -38,7 +38,7 @@ toAskAlan: Minor Bugs and Questions
 */
 
 
-import { appConfig }  from '../config'
+import config  from '../config/appConfig'
 
 import { store } from '../Root'
 
@@ -297,9 +297,9 @@ user.rounds.finished = [8, 9, 0, 7]
 		*/
 
 			finishedCardCycle = finishedRound.cycle
-			finishedCycleStart=appConfig.cycleTime(finishedCardCycle)
+			finishedCycleStart=config.cycleTime(finishedCardCycle)
 			//finishedCycleId = _.find(cycles, ['id', activeRound.cycle])
-			finishedCycleEnd = finishedCycleStart + (appConfig.ACTIVE_TIME)
+			finishedCycleEnd = finishedCycleStart + (config.ACTIVE_TIME)
 
 			if (finishedCycleEnd > now - (5*oneDay)) {
 				finishedTimeBool = true
@@ -668,7 +668,7 @@ user.rounds.finished = [8, 9, 0, 7]
 			let rsTimestamp = startingRound.timestamp
 
 			//test to see if jurist or lead:  to test with just leads: remove !
-			if (!(appConfig.isRoundLead(startingRound.in_round_id) == 0 || appConfig.isRoundLead(startingRound.in_round_id) == 1)) {
+			if (!(config.isRoundLead(startingRound.in_round_id) == 0 || config.isRoundLead(startingRound.in_round_id) == 1)) {
 				displayRSjurist = true;
 			}
 
@@ -730,7 +730,7 @@ user.rounds.finished = [8, 9, 0, 7]
 				messages.push({
 					type: 'brief_posted',
 					priority: 'info',
-					due: brRound.timestamp+(appConfig.ACTIVE_TIME),
+					due: brRound.timestamp+(config.ACTIVE_TIME),
 					token: roundTokenBR
 				})
 			}
@@ -752,7 +752,7 @@ user.rounds.finished = [8, 9, 0, 7]
 	//REMOVE ONCE TESTED
 	//to test with just leads, remove !
 	/*
-	if (!(appConfig.isRoundLead(rounds.in_round_id) == 0 || appConfig.isRoundLead(rounds.in_round_id) == 1)) {
+	if (!(config.isRoundLead(rounds.in_round_id) == 0 || config.isRoundLead(rounds.in_round_id) == 1)) {
 		preJurist = true;
 	}
 
@@ -794,7 +794,7 @@ user.rounds.finished = [8, 9, 0, 7]
 			roundTokenPre = getActiveTokenNamePre.name  //name of token set to var
 
 			//to test with just leads, remove !
-			if (!(appConfig.isRoundLead(activeRoundPre.in_round_id) == 0 || appConfig.isRoundLead(activeRoundPre.in_round_id) == 1)) {
+			if (!(config.isRoundLead(activeRoundPre.in_round_id) == 0 || config.isRoundLead(activeRoundPre.in_round_id) == 1)) {
 				preJurist = true
 			}
 			else {preJurist = false}
@@ -809,7 +809,7 @@ user.rounds.finished = [8, 9, 0, 7]
 				messages.push({
 					type: 'pre_survey_due',
 					priority: 'info',
-					due:activeRoundPre.timestamp+(appConfig.ACTIVE_TIME),
+					due:activeRoundPre.timestamp+(config.ACTIVE_TIME),
 					round: rountTokenPre
 				})
 			}
@@ -831,7 +831,7 @@ user.rounds.finished = [8, 9, 0, 7]
 	//REMOVE ONCE TESTED
 	//to test with just leads, remove !
 	/*
-	if (!(appConfig.isRoundLead(rounds.in_round_id) == 0 || appConfig.isRoundLead(rounds.in_round_id) == 1)) {
+	if (!(config.isRoundLead(rounds.in_round_id) == 0 || config.isRoundLead(rounds.in_round_id) == 1)) {
 		postJurist = true;
 	}
 
@@ -873,7 +873,7 @@ user.rounds.finished = [8, 9, 0, 7]
 			roundTokenPost = getActiveTokenNamePost.name  //name of token set to var
 
 			//to test with just leads, remove !
-			if (!(appConfig.isRoundLead(activeRoundPost.in_round_id) == 0 || appConfig.isRoundLead(activeRoundPost.in_round_id) == 1)) {
+			if (!(config.isRoundLead(activeRoundPost.in_round_id) == 0 || config.isRoundLead(activeRoundPost.in_round_id) == 1)) {
 				postJurist = true
 			}
 			else {postJurist = false}
@@ -888,7 +888,7 @@ user.rounds.finished = [8, 9, 0, 7]
 				messages.push({
 					type: 'post_survey_due',
 					priority: 'info',
-					due:activeRoundPost.timestamp+(appConfig.ACTIVE_TIME),
+					due:activeRoundPost.timestamp+(config.ACTIVE_TIME),
 					round:roundTokenPost
 				})
 			}
@@ -929,13 +929,13 @@ for (var i=1; i<16; i++) {
 		roundTokenC = getConfirmTokenName.name										//name string set to var
 
 		//checks to see if user is a lead
-		if ((appConfig.isRoundLead(confirmRound.in_round_id) == 0 || appConfig.isRoundLead(confirmRound.in_round_id) == 1)) {
+		if ((config.isRoundLead(confirmRound.in_round_id) == 0 || config.isRoundLead(confirmRound.in_round_id) == 1)) {
 			isLeadConfirm = true
 		}
 		else {isLeadConfirm = false}
 
 		//change to make sure there are two leads
-		if ((appConfig.isRoundLead(confirmRound.in_round_id) == 0 || appConfig.isRoundLead(confirmRound.in_round_id) == 1)) {
+		if ((config.isRoundLead(confirmRound.in_round_id) == 0 || config.isRoundLead(confirmRound.in_round_id) == 1)) {
 			twoLeads = true
 		}
 		else {twoLeads = false}
@@ -1057,7 +1057,7 @@ for (var i=1; i<16; i++) {
 			getActiveTokenNameBD = _.find(tokens, ['id', activeCoveredTokenBD])  //find covered Token
 			roundTokenBD = getActiveTokenNameBD.name  //name of token
 
-			if ((appConfig.isRoundLead(activeRoundBD.in_round_id) == 0 || appConfig.isRoundLead(activeRoundBD.in_round_id) == 1)) {
+			if ((config.isRoundLead(activeRoundBD.in_round_id) == 0 || config.isRoundLead(activeRoundBD.in_round_id) == 1)) {
 				isLeadBD = true
 			}
 			else {isLeadBD = false}
@@ -1123,7 +1123,7 @@ for (var i=1; i<16; i++) {
 			roundTokenRD = getActiveTokenNameRD.name  //name of token
 
 			//is user a lead?
-			if ((appConfig.isRoundLead(activeRoundRD.in_round_id) == 0 || appConfig.isRoundLead(activeRoundRD.in_round_id) == 1)) {
+			if ((config.isRoundLead(activeRoundRD.in_round_id) == 0 || config.isRoundLead(activeRoundRD.in_round_id) == 1)) {
 				isLeadRD = true
 			}
 			else {isLeadRD = false}
@@ -1170,7 +1170,7 @@ for (var i=1; i<16; i++) {
 			roundTokenCj = getConfirmTokenNameJ.name										//token name set to var
 
 			//to test with leads: remove !
-			if (!(appConfig.isRoundLead(confirmRoundJ.in_round_id) == 0 || appConfig.isRoundLead(confirmRoundJin_round_id) == 1)) {
+			if (!(config.isRoundLead(confirmRoundJ.in_round_id) == 0 || config.isRoundLead(confirmRoundJin_round_id) == 1)) {
 				isJuristConfirm = true
 			}
 			else {isJuristConfirm = false}

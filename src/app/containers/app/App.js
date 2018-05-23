@@ -10,7 +10,7 @@ import {
   AsideRight
 }                             from '../../components'
 import { Modals }             from '../../views'
-import { appConfig }          from '../../config'
+import config              from '../../config/appConfig'
 import { navigation }         from '../../models'
 import MainRoutes             from '../../routes/MainRoutes'
 import auth                   from '../../services/auth'
@@ -53,9 +53,9 @@ class App extends Component {
   };
 
   state = {
-    appName:          appConfig.APP_NAME,
-    connectionStatus: appConfig.CONNECTION_STATUS,
-    helloWord:        appConfig.HELLO_WORD
+    appName:          config.APP_NAME,
+    connectionStatus: config.CONNECTION_STATUS,
+    helloWord:        config.HELLO_WORD
   };
 
 

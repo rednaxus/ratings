@@ -1,5 +1,5 @@
 import { store } from '../Root'
-import { appConfig } from '../config'
+//import config from '../config/appConfig'
 import TokenERC20Contract from '../../../build/contracts/TokenERC20.json'
 import TestTokenERC20Contract from '../../../build/contracts/vevaTest.json'
 import RatingAgencyContract from '../../../build/contracts/RatingAgency.json'

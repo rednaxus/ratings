@@ -3,7 +3,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { Panel } from 'react-bootstrap'
-import { appConfig } from '../../config'
+import config from '../../config/appConfig'
 import { Stat }                         from '../'
 
 class AnalystStat extends PureComponent {
@@ -12,7 +12,7 @@ class AnalystStat extends PureComponent {
   render() {
 
     const { analyst } = this.props
-    const levelInfo = appConfig.level_info( analyst.reputation )
+    const levelInfo = config.level_info( analyst.reputation )
     console.log('reputation',analyst.reputation,'levelInfo',levelInfo)
     return(
       <div>

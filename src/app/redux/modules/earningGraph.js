@@ -7,7 +7,7 @@
   imports
  */
 import moment               from 'moment';
-import { appConfig }        from '../../config';
+import config               from '../../config/appConfig';
 import {
   getEarningGraphData
 }                           from '../../services/API';
@@ -120,7 +120,7 @@ function errorEarningGraphData(error, time = moment().format()) {
 function fetchEarningGraphData() {
   return dispatch => {
     dispatch(requestEarningGraphData());
-    if (appConfig.DEV_MODE) {
+    if (config.DEV_MODE) {
       // DEV ONLY
       fetchMockEarningGraphData()
         .then(

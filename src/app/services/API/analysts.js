@@ -1,6 +1,6 @@
 // @flow weak
 
-import { appConfig }  from '../../config';
+
 
 import { 
   getRatingAgency as RatingAgency,

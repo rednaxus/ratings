@@ -5,7 +5,6 @@
 import moment from 'moment'
 import * as _ from 'lodash'
 
-import { appConfig }        from '../../config'
 //import {  fetchMockTokensData } from '../../services'
 import { 
   getTokensData,

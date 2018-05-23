@@ -3,7 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Grid } from 'react-redux-grid'
 
-import { appConfig as config } from '../../config'
+import config from '../../config/appConfig'
 import Pager from './Pager'
 import api from '../../services/API/analysts'
 

@@ -1,8 +1,8 @@
 // @flow weak
 
-import customConfig from './customConfig'
+const customConfig  = require('./customConfig')
 
-export const appConfig = {
+const appConfig = {
 
   // dev mode to mock async data for instance
   DEV_MODE: true,
@@ -213,5 +213,8 @@ export const appConfig = {
   ...customConfig
 
 }
+
+module.exports = appConfig
+
 
 

@@ -1,6 +1,5 @@
 // @flow weak
 
-//import { appConfig }  from '../../config';
 
 import auth                   from '../auth'
 import { getAnalystRegistry as AnalystRegistry } from '../contracts'

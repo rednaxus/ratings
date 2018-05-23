@@ -1,7 +1,7 @@
 // @flow weak
 
 import { getRatingAgency as RatingAgency } from '../contracts'
-import { appConfig }        from '../../config'
+import config        from '../../config/appConfig'
 import { parseB32StringtoUintArray } from '../utils'
 import { store } from '../../Root'
 
@@ -29,8 +29,8 @@ export const pulseCron = () => {
     RatingAgency().then((ratingAgency) => {
       ratingAgency.lasttime().then( result => {
         let lasttime = result.toNumber()
-        console.log('pulsing cron from ' + lasttime + ' to '+ (lasttime+appConfig.CRON_INTERVAL))
-        lasttime += appConfig.CRON_INTERVAL
+        console.log('pulsing cron from ' + lasttime + ' to '+ (lasttime+config.CRON_INTERVAL))
+        lasttime += config.CRON_INTERVAL
         ratingAgency.cron( lasttime ).then( cronResult => {
           //console.log('cron result',cronResult)
           resolve( 1000*result.toNumber() )

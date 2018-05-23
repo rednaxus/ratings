@@ -12,7 +12,9 @@ var app = express()
 var bodyParser = require('body-parser')
 
 var parseRange = require('parse-numeric-range').parse;
+const appConfig = require('../src/app/config/appConfig')
 
+console.log('config',appConfig)
 
 const SurveyService = require('../src/app/services/survey')
 const survey = new SurveyService()
@@ -195,7 +197,53 @@ ctlRouter.route( '/roundActivate/:cycle/:token' ).get( ( req, res ) => {
   }).catch( sendError )
 })
 
-ctlRouter.route( '/testWholeRound:/cycle' ).get( ( req, res) => {
+ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
+  // Volunteer test users to the cycle
+
+  // Confirm test users
+
+  // Activate a round
+
+  // Submit first surveys for the jurists
+
+  // Submit dummy briefs by the leads
+
+  // Submit second surveys for the jurists
+
+  // Finish the round
+
+  // Get the round tallies
+
+
+})
+
+ctlRouter.route( '/testNextCycle/:cycle' ).get( ( req, res ) => {
+  // get the current time/cycle
+
+  // Volunteer users to next cycle
+
+  // Confirm users for cycle, one group for each token
+
+  // Move cron to start of next cycle
+
+    // Call roundCanActivate (should return next token id) -- do until false
+  
+    // Activate round for next token
+
+  
+  // Move cron halfway to first survey due
+
+  // for each round:
+    // Generate first surveys for all jurists and submit them
+
+    // Submit dummy lead briefs
+
+    // Move cron to brief/survey due time
+
+    // Generate second surveys for all jurists and submit them
+
+  // 
+
 
 })
 

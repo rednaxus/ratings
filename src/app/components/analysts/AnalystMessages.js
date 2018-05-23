@@ -14,7 +14,8 @@ import { Glyphicon } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
 import { generateMessages, generateMockMessages } from '../../services/messages'
-import { appConfig as config } from '../../config'
+
+import config from '../../config/appConfig'
 
 /*
 var glyphStyle = {

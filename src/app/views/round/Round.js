@@ -17,7 +17,7 @@ import {
 //import JuristSurvey from '../../components/juristSurvey'
 import { JuristSurvey } from '../../components'
 
-import { appConfig } from '../../config'
+import config from '../../config/appConfig'
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 async function showResults(values) {
@@ -88,7 +88,7 @@ class Round extends PureComponent {
     }
     i = _.findIndex(tokens,['id',round.covered_token])
     token = i == -1 ? {} : tokens[ i ]
-    let analyst_status = appConfig.STATUSES[round.analyst_status]
+    let analyst_status = config.STATUSES[round.analyst_status]
     let leadPosition = round.inround_id == 0 ? 'bull' : (round.inround_id == 1 ? 'bear' : '' )
     console.log('analyst status is',round.analyst_status, analyst_status)
     //analyst_status = 'brief due' // testing
@@ -127,7 +127,7 @@ class Round extends PureComponent {
       }
     }
     
-    console.log('appconfig',appConfig)
+    console.log('appconfig',config)
     
     return(
       <AnimatedView>
@@ -136,11 +136,11 @@ class Round extends PureComponent {
           <Panel.Heading><Panel.Title>Evaluation Round</Panel.Title></Panel.Heading>
           <Panel.Body>
             <div>
-              Round { this.idx } for token <Link to={"/token/"+token.id}><span className="text-success">{ token.name }</span></Link> with status <span className="text-danger">{ appConfig.STATUSES[round.status] }</span>
+              Round { this.idx } for token <Link to={"/token/"+token.id}><span className="text-success">{ token.name }</span></Link> with status <span className="text-danger">{ config.STATUSES[round.status] }</span>
             </div>
             <div className="row">
-              <div className="col-md-4">Start: <Moment className="bg-green" format="YYYY-MM-DD HH:mm" date={ new Date(appConfig.cycleTime(round.cycle,true)) } /></div>
-              <div className="col-md-4"> Finish: <Moment className="bg-red" format="YYYY-MM-DD HH:mm" date={ new Date(appConfig.cycleTime(round.cycle+4,true)) } /></div>
+              <div className="col-md-4">Start: <Moment className="bg-green" format="YYYY-MM-DD HH:mm" date={ new Date(config.cycleTime(round.cycle,true)) } /></div>
+              <div className="col-md-4"> Finish: <Moment className="bg-red" format="YYYY-MM-DD HH:mm" date={ new Date(config.cycleTime(round.cycle+4,true)) } /></div>
               <div className="col-md-4">Number of analysts: {round.num_analysts}</div>
             </div>
             <div className="row">
@@ -154,7 +154,7 @@ class Round extends PureComponent {
                 <span>{ 
                   round.briefs[0].timestamp ? 
                     <a 
-                      href={ appConfig.ipfsRepoDownload+round.briefs[0].filehash }
+                      href={ config.ipfsRepoDownload+round.briefs[0].filehash }
                       target="_blank"
                     >Bull brief--
                       <Moment format="YYYY/MM/DD" date={ round.briefs[0].timestamp*1000 } />
@@ -164,7 +164,7 @@ class Round extends PureComponent {
                 <span className="pull-right">{ 
                   round.briefs[1].timestamp ? 
                     <a 
-                      href={ appConfig.ipfsRepoDownload+round.briefs[1].filehash }
+                      href={ config.ipfsRepoDownload+round.briefs[1].filehash }
                       target="_blank"
                     >Bear brief--
                       <Moment format="YYYY/MM/DD" date={ round.briefs[1].timestamp*1000 } />

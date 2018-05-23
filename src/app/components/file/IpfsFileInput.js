@@ -6,7 +6,7 @@ import IPFS from 'ipfs'
 
 import toBuffer from 'blob-to-buffer'
 
-import { appConfig } from '../../config'
+import config from '../../config/appConfig'
 
 
 class IpfsFileInput extends React.Component {
@@ -15,7 +15,7 @@ class IpfsFileInput extends React.Component {
     console.log('ipfs file input, props',props)
     this.onChange = this.onChange.bind(this)
 
-    this.url = appConfig.ipfsRepoUpload // https://ipfs.io/' // just to bypass the check.
+    this.url = config.ipfsRepoUpload // https://ipfs.io/' // just to bypass the check.
 
     this.node = null
     this.ipfsRepoName = props.ipfsRepoName || 'ipfs-dropzone'

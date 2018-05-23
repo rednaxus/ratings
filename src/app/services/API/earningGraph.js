@@ -1,6 +1,6 @@
 // @flow weak
 
-import { appConfig }  from '../../config';
+import config  from '../../config/appConfig';
 import {
   defaultOptions,
   checkStatus,
@@ -9,7 +9,7 @@ import {
 }                     from '../fetchTools';
 
 export const getEarningGraphData = () => {
-  const url = `${getLocationOrigin()}/${appConfig.earningGraph.data.API}`;
+  const url = `${getLocationOrigin()}/${config.earningGraph.data.API}`;
   const options = {...defaultOptions};
 
   return fetch(url, options)

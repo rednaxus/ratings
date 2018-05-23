@@ -11,7 +11,7 @@ import {
 } from '../../components'
 import * as _ from 'lodash'
 
-import { appConfig as config } from '../../config'
+import config from '../../config/appConfig'
 
 import { getCyclesByStatus } from '../../services/rounds'
 

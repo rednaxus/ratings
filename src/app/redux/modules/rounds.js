@@ -4,7 +4,6 @@
 /* eslint consistent-return:0 */
 import moment               from 'moment'
 import * as _ from 'lodash'
-import { appConfig }        from '../../config'
 import { getRoundInfo, getRoundAnalystInfo, submitRoundSurvey } from '../../services/API'
 import { fetchTokenData }  from './tokens'
 

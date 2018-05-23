@@ -1,7 +1,7 @@
 // @flow weak
 
 import moment                 from 'moment';
-import { appConfig }          from '../../config';
+import config                 from '../../config/appConfig';
 import userInfosMockData      from '../../models/userInfosMock';  // from '../../models/userInfosMocks';
 import { getLocationOrigin }  from '../../services/fetchTools'; // '../../services/utils';
 import auth                   from '../../services/auth';
@@ -195,7 +195,7 @@ function logUser(
   password: string
 ) {
   return async (dispatch) => {
-    //const FETCH_TYPE  = appConfig.DEV_MODE ? 'FETCH_MOCK' : 'FETCH';
+    //const FETCH_TYPE  = config.DEV_MODE ? 'FETCH_MOCK' : 'FETCH';
     const FETCH_TYPE = 'FETCH_ETHER'
     const __SOME_LOGIN_API__ = 'login';
     const mockResult  = { token: userInfosMockData.token, data: {...userInfosMockData}}; // will be fetch_mock data returned (in case FETCH_TYPE = 'FETCH_MOCK', otherwise cata come from server)
@@ -275,7 +275,7 @@ function registerUser(
 ) {
   console.log('register user',user,email,password)
   return async (dispatch) => {
-    //const FETCH_TYPE  = appConfig.DEV_MODE ? 'FETCH_MOCK' : 'FETCH';
+    //const FETCH_TYPE  = config.DEV_MODE ? 'FETCH_MOCK' : 'FETCH';
     const FETCH_TYPE = 'FETCH_ETHER'
     const __SOME_REGISTER_API__ = 'register';
     const mockResult  = { token: userInfosMockData.token, data: {...userInfosMockData}}; // will be fetch_mock data returned (in case FETCH_TYPE = 'FETCH_MOCK', otherwise cata come from server)
@@ -352,11 +352,11 @@ function shouldRegisterUser(
 function fetchUserInfosData(id = '') {
   return dispatch => {
     const token = auth.getToken();
-    //const FETCH_TYPE  = appConfig.DEV_MODE ? 'FETCH_MOCK' : 'FETCH';
-    const FETCH_TYPE  = appConfig.DEV_MODE ? 'FETCH_ETHER' : 'FETCH';
+    //const FETCH_TYPE  = config.DEV_MODE ? 'FETCH_MOCK' : 'FETCH';
+    const FETCH_TYPE  = config.DEV_MODE ? 'FETCH_ETHER' : 'FETCH';
 
     const mockResult  = { token: userInfosMockData.token, data: {...userInfosMockData}}; // will be fetch_mock data returned (in case FETCH_TYPE = 'FETCH_MOCK', otherwise cata come from server)
-    const url         = `${getLocationOrigin()}/${appConfig.API.users}/${id}`;
+    const url         = `${getLocationOrigin()}/${config.API.users}/${id}`;
     const method      = 'get';
     const headers     = { authorization: `Bearer ${token}` };
     const options     = { credentials: 'same-origin' }; // put options here (see axios options)

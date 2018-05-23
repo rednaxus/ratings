@@ -1,6 +1,6 @@
 // @flow weak
 
-import { appConfig }  from '../../config';
+import config  from '../../config/appConfig';
 import {
   defaultOptions,
   checkStatus,
@@ -9,7 +9,7 @@ import {
 }                     from '../fetchTools';
 
 export const getTeamMatesData = () => {
-  const url = `${getLocationOrigin()}/${appConfig.teamMates.data.API}`;
+  const url = `${getLocationOrigin()}/${config.teamMates.data.API}`;
   const options = {...defaultOptions};
 
   fetch(url, options)

@@ -3,8 +3,7 @@
 /* eslint no-console:0 */
 /* eslint consistent-return:0 */
 import moment               from 'moment'
-import { appConfig }        from '../../config'
-// import {  fetchMockCyclesData } from '../../services'
+
 import { 
   getCyclesData, 
   getCronInfo, 

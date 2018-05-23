@@ -3,7 +3,7 @@
 /* eslint no-console:0 */
 /* eslint consistent-return:0 */
 import moment               from 'moment';
-import { appConfig }        from '../../config';
+import config        from '../../config/appConfig';
 import {
   fetchMockTeamMatesData
 }                           from '../../services';
@@ -86,7 +86,7 @@ function errorTeamMatesData(time = moment().format()) {
 function fetchTeamMatesData() {
   return dispatch => {
     dispatch(requestTeamMatesData());
-    if (appConfig.DEV_MODE) {
+    if (config.DEV_MODE) {
       fetchMockTeamMatesData()
         .then(
           data => dispatch(receivedTeamMatesData(data))

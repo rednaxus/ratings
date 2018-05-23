@@ -6,7 +6,9 @@ import PropTypes      from 'prop-types'
 
 import { Panel } from 'react-bootstrap'
 
-import survey from '../../services/survey'
+import Survey from '../../services/survey'
+
+const survey = new Survey()
 
 import { 
   AnimatedView, 

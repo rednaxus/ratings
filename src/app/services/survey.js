@@ -1,14 +1,13 @@
 
 
-import json from '../../../survey.json'
-
+const json = require('../../../survey.json') // services are interoperable server or client so use require
 
 class Survey {
 
-	indexer = {}
-	elements = []
-	sections = []
 	constructor(){
+		this.indexer = {}
+		this.elements = []
+		this.sections = []
 		let index = 0
 		json.pages.forEach( page => {
 			page.elements.forEach( element => {
@@ -40,7 +39,5 @@ class Survey {
 }
 
  
-const survey = new Survey()
-export default survey
 
-console.log("survey service",Survey)
+module.exports = Survey

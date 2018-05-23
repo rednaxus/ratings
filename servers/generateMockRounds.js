@@ -3,73 +3,99 @@ const Web3 = require('web3')
 const fs = require('fs')
 const util = require('util')
 const debug = require('debug')
+
 //const cronlog = debug('cron')
 const eventlog = debug('event')
 
-// Contract descriptions from truffle
-const RatingAgencyObj = require("../build/contracts/RatingAgency.json");
-const AnalystRegistryObj = require("../build/contracts/AnalystRegistry.json");
+var express = require('express')
+var app = express()
+var bodyParser = require('body-parser')
 
+var parseRange = require('parse-numeric-range').parse;
+
+
+const SurveyService = require('../src/app/services/survey')
+const survey = new SurveyService()
+//console.log('survey',survey)
+console.log(survey.getElements())
+
+
+var port = process.env.PORT || 9030;        
+
+var apiRouter = express.Router()
+var ctlRouter = express.Router()
+
+// Contract descriptions from truffle
+const RatingAgencyObj = require("../build/contracts/RatingAgency.json")
+const AnalystRegistryObj = require("../build/contracts/AnalystRegistry.json")
+
+const gwei = 1000000000
 
 const config = {
-	gas:4700000,
-	gasPrice: '100',
-	ws: 'ws://localhost:8545',
-	provider: 'http://localhost:8545',
-	network: 7
+  gas:4700000,
+  gasPrice: 20*gwei,
+  ws: 'ws://localhost:8545',
+  provider: 'http://localhost:8545',
+  network: 7
 }
+
+app.use(bodyParser.urlencoded({ extended: true })); // configure app to use bodyParser()
+app.use(bodyParser.json());                         // this will let us get the data from a POST
+
 
 let web3 = new Web3(config.ws)
 //web3.setProvider(new web3.providers.HttpProvider('http://localhost:8545'));
-console.log("Talking with a geth server", web3)
+console.log("Talking with a geth server")
 
 //setTimeout( () => { // needed because of a bug in web3 1.0
+let account
+let ra
+let ar
+let tr
 
-	
+let testAnalysts = new Array(14).fill().map( ( item,idx ) =>  {
+  let id = (idx<10?'0':'') + idx
+  return ({
+    id:idx,
+    email:`veva${id}@veva.one`
+  })
+})
+console.log( 'test analysts',testAnalysts )
+
+const sendError = ( err ) => {
+  console.log( 'send error', err )
+}
+const callError = ( err ) => {
+  console.log( 'call error', err )
+}
+
 //console.log('web3',web3.eth.personal);
-web3.eth.getCoinbase().then( coinbase => { 
+web3.eth.getCoinbase().then( coinbase => { // setup on launch
 
-	let account = coinbase
-	console.log('got coinbase, unlocking ',account)
-	let tr = { from: account, gas: config.gas, gasPrice: config.gasPrice }
+  account = coinbase
+  //console.log('got coinbase, unlocking ',account)
+  tr = { from: account, gas: config.gas, gasPrice: config.gasPrice }
 
-	//web3.eth.personal.unlockAccount(account, 'alman').then(() => { 
-  //	console.log('Account unlocked.'); 
-  	//const contractName = 'RatingAgency.sol:RatingAgency';
-  	//var iface = JSON.parse(output.contracts[contractName].interface)
-  	//console.log('inteface:',iface)
+  //web3.eth.personal.unlockAccount(account, 'alman').then(() => { 
+  //  console.log('Account unlocked.'); 
+    //const contractName = 'RatingAgency.sol:RatingAgency';
+    //var iface = JSON.parse(output.contracts[contractName].interface)
+    //console.log('inteface:',iface)
 
-	let ratingAgencyAddress = RatingAgencyObj.networks[config.network].address //"0x58A9f90944cd2fd2fBAa0B8ed6c27631F442B60f"
-	let analystRegistryAddress = AnalystRegistryObj.networks[config.network].address
+  let ratingAgencyAddress = RatingAgencyObj.networks[config.network].address //"0x58A9f90944cd2fd2fBAa0B8ed6c27631F442B60f"
+  let analystRegistryAddress = AnalystRegistryObj.networks[config.network].address
 
-	console.log('rating agency address',ratingAgencyAddress)
-	console.log('analyst registry address',analystRegistryAddress)
+  console.log('rating agency address',ratingAgencyAddress)
+  console.log('analyst registry address',analystRegistryAddress)
 
-	let RatingAgency = new web3.eth.Contract( RatingAgencyObj.abi, ratingAgencyAddress, tr )
-	let AnalystRegistry = new web3.eth.Contract( AnalystRegistryObj.abi, analystRegistryAddress, tr )
-	let ra = RatingAgency.methods
-	let ar = AnalystRegistry.methods
+  let RatingAgency = new web3.eth.Contract( RatingAgencyObj.abi, ratingAgencyAddress, tr )
+  let AnalystRegistry = new web3.eth.Contract( AnalystRegistryObj.abi, analystRegistryAddress, tr )
+  ra = RatingAgency.methods
+  ar = AnalystRegistry.methods
 
-	const sendError = ( err ) => {
-		console.log( 'send error', err )
-	}
-	const callError = ( err ) => {
-		console.log( 'call error', err )
-	}
+}).catch( error => console.log(error,'error getting coinbase') )
 
-	ra.lasttime().call( tr ).then( result => {
-		console.log( result )
-	}).catch( callError )
 
-	ra.cycleGenerateAvailabilities(0).send( tr ).then( result => {
-		console.log( util.inspect( result, { depth:6 } ) )
-	}).catch( sendError )
-})
-.catch( error => {	
-		console.log(error,'error getting coinbase')
-})
-
-//},0) 	
 /*
 Running migration: 2_deploy_contracts.js
   Deploying AnalystRegistry...
@@ -88,4 +114,110 @@ Saving successful migration to network...
   ... 0x9402eec7e1e809e1c36aee75272ac018c098cb9c90bddb3b4615783592a89c6f
 Saving artifacts...
 */
+
+
+var getAccountBalance = (account,cb) => {
+  console.log('getting eth balance');
+  web3.eth.getBalance(account,(err,result)=> {
+    console.log('got eth balance:',web3.fromWei(result,'ether'));
+    if (cb) cb(val);
+  });
+}
+
+var getBlock = () => { // delete me
+  var block = 2000000;
+  var getEthBlock = Promise.promisify(web3.eth.getBlock);
+  getEthBlock(block).then((result)=> {
+    console.log('got block '+block+':',result);
+  });
+}
+
+
+var getBlocks = (blockrange) => {
+  return new Promise((resolve,reject)=>{
+    var rangeArr = parseRange(blockrange);
+    var getBlock;
+    var blocks = [];
+    var blockResults = [];
+    if (!rangeArr.length) {
+      console.log('no blocks requested');
+      reject('no blocks requested');
+    }
+    getBlock = Promise.promisify(web3.eth.getBlock);
+
+    rangeArr.forEach((blocknum)=> {
+      blocks.push(getBlock(blocknum).then((result)=>{
+        blockResults.push(result);
+      }));
+    });
+    
+    Promise.all(blocks).then(()=> {
+      blockResults.sort((b1,b2)=> { return(b1.number - b2.number) } );
+      //console.log('got blocks',rangeArr);
+      //console.log('block results',blockResults)
+      resolve(blockResults);
+    });
+
+  });
+
+}
+
+
+apiRouter.get('/', function(req, res) {
+    res.json({ message: 'hooray! welcome to api!' });   
+})
+
+var ctlRouter = express.Router();              // get an instance of the express Router
+ctlRouter.get('/', function(req, res) {
+    res.json({ message: 'hooray! welcome to ctl!' });   
+})
+
+ctlRouter.route('/rounds').get( ( req, res ) => {
+  ra.lasttime().call( tr ).then( result => {
+    res.json({lasttime: result})    
+    console.log( result )
+  }).catch( callError )
+})
+
+ctlRouter.route('/cycleGenerateAvailabilities/:cycleId').get( ( req, res ) => {
+  ra.cycleGenerateAvailabilities(req.params.cycleId).send( tr ).then( result => {
+    //let str = util.inspect( result, { depth:6 } ) 
+    //console.log( str )
+    res.json( result )
+  }).catch( sendError )
+})
+
+ctlRouter.route('/roundActivate/:cycle/:token').get( ( req, res ) => {
+  ra.roundActivate( req.params.cycle, req.params.token ).send( tr ).then( result => {
+    //let str = util.inspect( result, { depth:6 } ) 
+    //console.log( str )
+    res.json( result )
+  }).catch( sendError )
+})
+
+/*
+curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0x7E5BCE8eE498F6C29e4DdAd10CB816D6E2f139f7", "latest"],"id":1}' http://localhost:8545
+*/
+apiRouter.route('/eth').get(function(req,res){
+    console.log('got get');
+}).post(function(req,res) {
+  console.log('got post, making proxy request',req.body);
+  ethProxy.web(req, res, { target: 'http://localhost:8545' }, function(e) { 
+    console.log('got proxy response',e);
+    res.json({message:"got it"});
+  })
+})
+
+
+
+app.use('/api', apiRouter)
+
+app.use('/ctl', ctlRouter)
+
+app.listen(port, function () {
+  console.log('listening on port '+port);
+})
+
+
+
 

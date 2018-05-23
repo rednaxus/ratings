@@ -7,7 +7,8 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { clearData, setData, setComplete } from '../../redux/modules/survey'
 import { submitSurvey } from '../../redux/modules/rounds'
-import survey from '../../services/survey'
+import Survey from '../../services/survey'
+
 
 /*
 import json from '../../../../survey.json'
@@ -34,6 +35,7 @@ const encodeData = data => {
 class JuristSurvey extends Component {
   constructor(props) {
     super(props);
+    this.survey = new Survey()
     this.nextPage = this.nextPage.bind(this);
     this.previousPage = this.previousPage.bind(this);
     this.state = {
@@ -55,7 +57,7 @@ class JuristSurvey extends Component {
   render() {
     const { onSubmit } = this.props
     const { page } = this.state
-    let element = elements[page]
+    let elements = this.survey.getElements()
     return (
       <div>
         <Panel>

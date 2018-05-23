@@ -179,7 +179,7 @@ ctlRouter.route('/rounds').get( ( req, res ) => {
   }).catch( callError )
 })
 
-ctlRouter.route('/cycleGenerateAvailabilities/:cycleId').get( ( req, res ) => {
+ctlRouter.route( '/cycleGenerateAvailabilities/:cycleId' ).get( ( req, res ) => {
   ra.cycleGenerateAvailabilities(req.params.cycleId).send( tr ).then( result => {
     //let str = util.inspect( result, { depth:6 } ) 
     //console.log( str )
@@ -187,12 +187,16 @@ ctlRouter.route('/cycleGenerateAvailabilities/:cycleId').get( ( req, res ) => {
   }).catch( sendError )
 })
 
-ctlRouter.route('/roundActivate/:cycle/:token').get( ( req, res ) => {
+ctlRouter.route( '/roundActivate/:cycle/:token' ).get( ( req, res ) => {
   ra.roundActivate( req.params.cycle, req.params.token ).send( tr ).then( result => {
     //let str = util.inspect( result, { depth:6 } ) 
     //console.log( str )
     res.json( result )
   }).catch( sendError )
+})
+
+ctlRouter.route( '/testWholeRound:/cycle' ).get( ( req, res) => {
+
 })
 
 /*

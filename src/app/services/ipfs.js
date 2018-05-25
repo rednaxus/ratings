@@ -1,4 +1,4 @@
-import bs58 from 'bs58'
+const bs58 = require('bs58')
 // https://ethereum.stackexchange.com/questions/17094/how-to-store-ipfs-hash-using-bytes?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 
 // Return bytes32 hex string from base58 encoded ipfs hash,
@@ -7,7 +7,7 @@ import bs58 from 'bs58'
 // E.g. "QmNSUYVKDSvPUnRLKmuxk9diJ6yS96r1TrAXzjTiBcCLAL" -->
 // "0x017dfd85d4f6cb4dcd715a88101f7b1f06cd1e009b2327a0809d01eb9c91f231"
 
-export const bytes32FromIpfsHash = (ipfsListing) => (
+const bytes32FromIpfsHash = ipfsListing => (
   "0x"+bs58.decode(ipfsListing).slice(2).toString('hex')
 )
 
@@ -15,7 +15,7 @@ export const bytes32FromIpfsHash = (ipfsListing) => (
 // E.g. "0x017dfd85d4f6cb4dcd715a88101f7b1f06cd1e009b2327a0809d01eb9c91f231"
 // --> "QmNSUYVKDSvPUnRLKmuxk9diJ6yS96r1TrAXzjTiBcCLAL"
 
-export const ipfsHashFromBytes32 = (bytes32Hex) => {
+const ipfsHashFromBytes32 = bytes32Hex => {
   // Add our default ipfs values for first 2 bytes:
   // function:0x12=sha2, size:0x20=256 bits
   // and cut off leading "0x"
@@ -25,3 +25,8 @@ export const ipfsHashFromBytes32 = (bytes32Hex) => {
   return hashStr
 }
 
+
+module.exports = {
+	bytes32FromIpfsHash,
+	ipfsHashFromBytes32
+}

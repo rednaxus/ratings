@@ -209,6 +209,17 @@ const appConfig = {
     { name: "active_small", value: 1 },
     { name: "active_large", value: 1 }
   ],
+
+  ETHEREUM: {
+    provider: 'http://localhost:8545', // 'http://52.41.77.72:8302', 
+    ws: 'ws://localhost:8545',
+    gas:4700000,
+    gasPrice: 20*1000000000, // 20 gwei
+    network: 7
+  },
+
+  ipfsRepoUpload: 'https://ipfs.io',  //'http://localhost:5001',
+  ipfsRepoDownload: 'https://ipfs.io/ipfs/', //http://localhost:8080/ipfs/'
   
   ...customConfig
 

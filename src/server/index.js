@@ -20,7 +20,7 @@ app.listen(
   IP_ADRESS,
   () => console.log(`
     =====================================================
-    -> Aleph Server (${chalk.bgBlue('SPA')}) 🏃 (running) on ${chalk.green(IP_ADRESS)}:${chalk.green(PORT)}
+    -> Veva (${chalk.bgBlue('SPA')}) 🏃 (running) on ${chalk.green(IP_ADRESS)}:${chalk.green(PORT)}
     =====================================================
   `)
 );

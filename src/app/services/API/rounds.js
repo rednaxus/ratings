@@ -1,14 +1,9 @@
 // @flow weak
-import { bytes32FromIpfsHash, ipfsHashFromBytes32 } from '../ipfs'
-import {
-  getRatingAgency as RatingAgency,
-  getAnalystRegistry as AnalystRegistry
-} from '../contracts'
+const { bytes32FromIpfsHash, ipfsHashFromBytes32 } = require('../ipfs')
+const { getRatingAgency, getAnalystRegistry } = require('../contracts')
 
-import { store } from '../../Root'
-
-export const getRoundInfo = ( round, analyst=0 ) => new Promise( (resolve,reject) => {
-  RatingAgency().then( ratingAgency  => {
+const getRoundInfo = ( round, analyst=0 ) => new Promise( (resolve,reject) => {
+  getRatingAgency().then( ratingAgency  => {
     ratingAgency.roundInfo( round ).then( rRound => { 
       var res = {
         id:             rRound[0].toNumber(), 
@@ -36,9 +31,8 @@ export const getRoundInfo = ( round, analyst=0 ) => new Promise( (resolve,reject
   })
 })
 
-
-export const getRoundAnalystInfo = ( round, analyst=0 ) => new Promise( (resolve,reject) => {
-  RatingAgency().then((ratingAgency) => {
+const getRoundAnalystInfo = ( round, analyst=0 ) => new Promise( (resolve,reject) => {
+  getRatingAgency().then((ratingAgency) => {
     ratingAgency.roundAnalyst( round, analyst ).then( rRound => { 
       var res = {
         id:             round,
@@ -57,8 +51,8 @@ export const getRoundAnalystInfo = ( round, analyst=0 ) => new Promise( (resolve
 })
 
 // function submitBrief( uint16 _round, uint8 _analyst, address _file )
-export const submitBrief = ( round, analyst, filehash ) => new Promise( (resolve,reject) => {
-  RatingAgency().then( ratingAgency => {
+const submitBrief = ( round, analyst, filehash ) => new Promise( (resolve,reject) => {
+  getRatingAgency().then( ratingAgency => {
     console.log('submitting brief',round,analyst,filehash)
     ratingAgency.roundBriefSubmit( round, analyst, bytes32FromIpfsHash(filehash) ).then( result => {
       console.log('submit brief result',result)
@@ -82,7 +76,7 @@ export const submitBrief = ( round, analyst, filehash ) => new Promise( (resolve
     )
 */
 
-export const submitRoundSurvey = ( 
+const submitRoundSurvey = ( 
   round, 
   roundAnalyst, 
   answers, 
@@ -92,7 +86,7 @@ export const submitRoundSurvey = (
   preOrPost = 0 
 ) => {
   return new Promise( (resolve,reject) => {
-    RatingAgency().then( ratingAgency => {
+    getRatingAgency().then( ratingAgency => {
       ratingAgency.roundSurveySubmit(
         round, 
         roundAnalyst,
@@ -116,12 +110,12 @@ export const submitRoundSurvey = (
 
 
 
-export const dataSource = function getData({
+const dataSource = function getData({
     pageIndex, pageSize
 }) {
   return new Promise( (resolve,reject) => {
     console.log(' beginning rounds fetch')
-    RatingAgency().then((ratingAgency) => {
+    getRatingAgency().then((ratingAgency) => {
       ratingAgency.num_rounds().then( result => {
         var numRounds = result.toNumber()
         console.log("number of rounds:",numRounds)
@@ -153,7 +147,15 @@ export const dataSource = function getData({
   })
 
 }
-export default dataSource
+//export default dataSource
+
+module.exports = {
+  getRoundInfo,
+  getRoundAnalystInfo,
+  submitBrief,
+  submitRoundSurvey,
+  dataSource
+}
 /*
 export const getCyclesData = () => {
   return new Promise((resolve,reject) => {

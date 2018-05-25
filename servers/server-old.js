@@ -1,4 +1,4 @@
-const Web3 = require('web3')
+
 //const solc = require('solc');
 const fs = require('fs')
 const util = require('util')
@@ -12,9 +12,13 @@ var app = express()
 var bodyParser = require('body-parser')
 
 var parseRange = require('parse-numeric-range').parse;
-const appConfig = require('../src/app/config/appConfig')
+const config = require('../src/app/config/appConfig')
+const roundsService = require('../src/app/services/API/rounds')
 
-console.log('config',appConfig)
+
+const { getRatingAgency, getAnalystRegistry } = require('../src/app/services/contracts')
+
+console.log('config',config)
 
 const SurveyService = require('../src/app/services/survey')
 const survey = new SurveyService()
@@ -31,23 +35,13 @@ var ctlRouter = express.Router()
 const RatingAgencyObj = require("../build/contracts/RatingAgency.json")
 const AnalystRegistryObj = require("../build/contracts/AnalystRegistry.json")
 
-const gwei = 1000000000
-
-const config = {
-  gas:4700000,
-  gasPrice: 20*gwei,
-  ws: 'ws://localhost:8545',
-  provider: 'http://localhost:8545',
-  network: 7
-}
-
 app.use(bodyParser.urlencoded({ extended: true })); // configure app to use bodyParser()
 app.use(bodyParser.json());                         // this will let us get the data from a POST
 
-
-let web3 = new Web3(config.ws)
+//const Web3 = require('web3')
+let web3 =  require('../src/app/services/web3') // require('./web3') //new Web3(config.ETHEREUM.ws)
 //web3.setProvider(new web3.providers.HttpProvider('http://localhost:8545'));
-console.log("Talking with a geth server")
+console.log("Talking with a geth server",web3.version)
 
 //setTimeout( () => { // needed because of a bug in web3 1.0
 let account
@@ -64,19 +58,22 @@ let testAnalysts = new Array(14).fill().map( ( item,idx ) =>  {
 })
 console.log( 'test analysts',testAnalysts )
 
-const sendError = ( err ) => {
+const sendError = err => {
   console.log( 'send error', err )
 }
-const callError = ( err ) => {
+const callError = err => {
   console.log( 'call error', err )
+}
+const apiError = err  => {
+  console.log( 'api error', err )
 }
 
 //console.log('web3',web3.eth.personal);
-web3.eth.getCoinbase().then( coinbase => { // setup on launch
+web3.eth.getCoinbase( ( err, coinbase ) => { // setup on launch
 
   account = coinbase
-  //console.log('got coinbase, unlocking ',account)
-  tr = { from: account, gas: config.gas, gasPrice: config.gasPrice }
+  console.log('got coinbase ',account)
+  tr = { from: account, gas: config.ETHEREUM.gas, gasPrice: config.ETHEREUM.gasPrice }
 
   //web3.eth.personal.unlockAccount(account, 'alman').then(() => { 
   //  console.log('Account unlocked.'); 
@@ -84,8 +81,8 @@ web3.eth.getCoinbase().then( coinbase => { // setup on launch
     //var iface = JSON.parse(output.contracts[contractName].interface)
     //console.log('inteface:',iface)
 
-  let ratingAgencyAddress = RatingAgencyObj.networks[config.network].address //"0x58A9f90944cd2fd2fBAa0B8ed6c27631F442B60f"
-  let analystRegistryAddress = AnalystRegistryObj.networks[config.network].address
+  let ratingAgencyAddress = RatingAgencyObj.networks[config.ETHEREUM.network].address //"0x58A9f90944cd2fd2fBAa0B8ed6c27631F442B60f"
+  let analystRegistryAddress = AnalystRegistryObj.networks[config.ETHEREUM.network].address
 
   console.log('rating agency address',ratingAgencyAddress)
   console.log('analyst registry address',analystRegistryAddress)
@@ -95,7 +92,7 @@ web3.eth.getCoinbase().then( coinbase => { // setup on launch
   ra = RatingAgency.methods
   ar = AnalystRegistry.methods
 
-}).catch( error => console.log(error,'error getting coinbase') )
+})//.catch( error => console.log(error,'error getting coinbase') )
 
 
 /*
@@ -165,13 +162,21 @@ var getBlocks = (blockrange) => {
 }
 
 
-apiRouter.get('/', function(req, res) {
+apiRouter.get('/', ( req, res ) => {
     res.json({ message: 'hooray! welcome to api!' });   
+})
+
+apiRouter.get('/round/:round/:analyst', ( req, res ) => {
+  roundsService.getRoundInfo( req.params.round, req.params.analyst ).then( roundInfo => {
+
+    console.log('round info',roundInfo)
+    res.json( roundInfo )
+  }).catch( apiError )
 })
 
 var ctlRouter = express.Router();              // get an instance of the express Router
 ctlRouter.get('/', function(req, res) {
-    res.json({ message: 'hooray! welcome to ctl!' });   
+  res.json({ message: 'hooray! welcome to ctl!' });   
 })
 
 ctlRouter.route('/rounds').get( ( req, res ) => {

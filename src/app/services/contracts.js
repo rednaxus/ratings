@@ -6,11 +6,11 @@ const RatingAgencyContract = require('../../../build/contracts/RatingAgency.json
 const AnalystRegistryContract = require('../../../build/contracts/AnalystRegistry.json')
 
 let web3 = null
-const setWeb3 = (w3) => web3 = w3 // used on server side
+const setWeb3 = w3 => web3 = w3 // used on server side
 
 const getContractInstance = (contractDesc, addr = null) => new Promise((resolve, reject) => {
   if (!web3) web3 = window.web3 
-  console.log('web3 version',web3.version)
+  //console.log('web3 version',web3.version)
 
   const instanceContract = contract(contractDesc)
   instanceContract.setProvider(web3.currentProvider)

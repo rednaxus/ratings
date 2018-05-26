@@ -2,29 +2,34 @@
 //const solc = require('solc');
 const fs = require('fs')
 const util = require('util')
-const debug = require('debug')
+//const debug = require('debug')
 
 //const cronlog = debug('cron')
-const eventlog = debug('event')
+//const eventlog = debug('event')
+const moment = require('moment')
 
-var express = require('express')
-var app = express()
-var bodyParser = require('body-parser')
+const express = require('express')
+const app = express()
+const bodyParser = require('body-parser')
 
-var parseRange = require('parse-numeric-range').parse;
+const parseRange = require('parse-numeric-range').parse
 const config = require('../src/app/config/appConfig')
 const roundsService = require('../src/app/services/API/rounds')
 
 
 const { setWeb3, getRatingAgency, getAnalystRegistry } = require('../src/app/services/contracts')
 
-console.log('config',config)
+//console.log('config',config)
 
 const SurveyService = require('../src/app/services/survey')
 const survey = new SurveyService()
-//console.log('survey',survey)
-console.log(survey.getElements())
+let pre = 0
+let post = 1
 
+//console.log('survey',survey)
+//console.log(survey.getElements())
+console.log('survey answers',survey.generateAnswers())
+console.log('survey answers',survey.generateAnswers('down'))
 
 var port = process.env.PORT || 9030;        
 
@@ -32,8 +37,8 @@ var apiRouter = express.Router()
 var ctlRouter = express.Router()
 
 // Contract descriptions from truffle
-const RatingAgencyObj = require("../build/contracts/RatingAgency.json")
-const AnalystRegistryObj = require("../build/contracts/AnalystRegistry.json")
+//const RatingAgencyObj = require("../build/contracts/RatingAgency.json")
+//const AnalystRegistryObj = require("../build/contracts/AnalystRegistry.json")
 
 app.use(bodyParser.urlencoded({ extended: true })); // configure app to use bodyParser()
 app.use(bodyParser.json());                         // this will let us get the data from a POST
@@ -41,22 +46,15 @@ app.use(bodyParser.json());                         // this will let us get the 
 let web3 =  require('./web3') // require('./web3') //new Web3(config.ETHEREUM.ws)
 setWeb3( web3 )
 
-//web3.setProvider(new web3.providers.HttpProvider('http://localhost:8545'));
-console.log("Talking with a geth server",web3.version)
 
-//setTimeout( () => { // needed because of a bug in web3 1.0
 let account
 let ra
 let ar
 let tr
 
-let testAnalysts = new Array(14).fill().map( ( item,idx ) =>  {
-  let id = (idx<10?'0':'') + idx
-  return ({
-    id:idx,
-    email:`veva${id}@veva.one`
-  })
-})
+let testAnalysts = new Array(14).fill().map( ( item,idx ) => 
+  ({ id: idx, email: `veva${ (idx<10?'0':'') + idx }@veva.one` }) 
+)
 console.log( 'test analysts',testAnalysts )
 
 const sendError = err => {
@@ -68,6 +66,7 @@ const callError = err => {
 const apiError = err  => {
   console.log( 'api error', err )
 }
+const ctlError = err => console.log( 'ctl error', err )
 
 //console.log('web3',web3.eth.personal);
 web3.eth.getCoinbase( ( err, coinbase ) => { // setup on launch
@@ -78,58 +77,21 @@ web3.eth.getCoinbase( ( err, coinbase ) => { // setup on launch
 
   getRatingAgency().then( ratingAgency  => {
     ra = ratingAgency
-    ra.lasttime(tr).then( result => {
-      console.log('got last time',result.toNumber())
+    ra.lasttime().then( result => {
+      console.log(`current rating agency time: ${ result.toNumber() }`)
     })
   })
-  
   getAnalystRegistry().then( analystRegistry  => {
     ar = analystRegistry
-    ar.num_analysts(tr).then( result => {
-      console.log('got analysts',result.toNumber())
+    ar.num_analysts().then( result => {
+      console.log(`analysts: ${ result.toNumber() }`)
     })
   })
-  //web3.eth.personal.unlockAccount(account, 'alman').then(() => { 
-  //  console.log('Account unlocked.'); 
-    //const contractName = 'RatingAgency.sol:RatingAgency';
-    //var iface = JSON.parse(output.contracts[contractName].interface)
-    //console.log('inteface:',iface)
-
-  //let ratingAgencyAddress = RatingAgencyObj.networks[config.ETHEREUM.network].address //"0x58A9f90944cd2fd2fBAa0B8ed6c27631F442B60f"
-  //let analystRegistryAddress = AnalystRegistryObj.networks[config.ETHEREUM.network].address
-
-  //console.log('rating agency address',ratingAgencyAddress)
-  //console.log('analyst registry address',analystRegistryAddress)
-
-  //let RatingAgency = new web3.eth.Contract( RatingAgencyObj.abi, ratingAgencyAddress, tr )
-  //let AnalystRegistry = new web3.eth.Contract( AnalystRegistryObj.abi, analystRegistryAddress, tr )
-  //ra = RatingAgency.methods
-  //ar = AnalystRegistry.methods
-
-})//.catch( error => console.log(error,'error getting coinbase') )
+})
 
 
-/*
-Running migration: 2_deploy_contracts.js
-  Deploying AnalystRegistry...
-  ... 0xb5f25cb1603fadc0ea7d62082b14f3f423c3e79a4be1848985a7364cfd2cd065
-  AnalystRegistry: 0x5fcc303fc970394afadff52a1c5224ad0a677c4d
-  Deploying RatingAgency...
-  ... 0x26d0b7cb9710e789311eb8418b7a84edff0d031e436a6f668d1828a292988d62
-  RatingAgency: 0x594274b7619fd1b9ce9b83b771bcf6ec4a4efa95
-  Deploying test2...
-  ... 0x3a4b1f06e517b4f74c03a9a41b56b0e037e4d2c4dc0eed0381538a22b32167c6
-  test2: 0x3ae851d5780725853de7118c73d0bd2a303c7fff
-  Deploying vevaTest...
-  ... 0x0c8301e0865d5b1d0f545678f65a75c4d408880f0fe5b208523a96a73529093e
-  vevaTest: 0xaa9bceb2d84ded2147e971de3c579ffee2a677ce
-Saving successful migration to network...
-  ... 0x9402eec7e1e809e1c36aee75272ac018c098cb9c90bddb3b4615783592a89c6f
-Saving artifacts...
-*/
 
-
-var getAccountBalance = (account,cb) => {
+const getAccountBalance = (account,cb) => {
   console.log('getting eth balance');
   web3.eth.getBalance(account,(err,result)=> {
     console.log('got eth balance:',web3.fromWei(result,'ether'));
@@ -137,7 +99,7 @@ var getAccountBalance = (account,cb) => {
   });
 }
 
-var getBlock = () => { // delete me
+const getBlock = () => { // delete me
   var block = 2000000;
   var getEthBlock = Promise.promisify(web3.eth.getBlock);
   getEthBlock(block).then((result)=> {
@@ -146,7 +108,7 @@ var getBlock = () => { // delete me
 }
 
 
-var getBlocks = (blockrange) => {
+const getBlocks = blockrange => {
   return new Promise((resolve,reject)=>{
     var rangeArr = parseRange(blockrange);
     var getBlock;
@@ -176,6 +138,10 @@ var getBlocks = (blockrange) => {
 }
 
 
+/*
+ *      api routes
+*/
+
 apiRouter.get('/', ( req, res ) => {
     res.json({ message: 'hooray! welcome to api!' });   
 })
@@ -188,7 +154,11 @@ apiRouter.get('/round/:round/:analyst', ( req, res ) => {
   }).catch( apiError )
 })
 
-var ctlRouter = express.Router();              // get an instance of the express Router
+
+/*
+ *     control routes
+*/
+
 ctlRouter.get('/', function(req, res) {
   res.json({ message: 'hooray! welcome to ctl!' });   
 })
@@ -207,7 +177,7 @@ ctlRouter.route('/rounds').get( ( req, res ) => {
 })
 
 ctlRouter.route( '/cycleGenerateAvailabilities/:cycleId' ).get( ( req, res ) => {
-  ra.cycleGenerateAvailabilities(req.params.cycleId).send( tr ).then( result => {
+  ra.cycleGenerateAvailabilities(req.params.cycleId).then( result => {
     //let str = util.inspect( result, { depth:6 } ) 
     //console.log( str )
     res.json( result )
@@ -215,21 +185,88 @@ ctlRouter.route( '/cycleGenerateAvailabilities/:cycleId' ).get( ( req, res ) => 
 })
 
 ctlRouter.route( '/roundActivate/:cycle/:token' ).get( ( req, res ) => {
-  ra.roundActivate( req.params.cycle, req.params.token ).send( tr ).then( result => {
+  ra.roundActivate( req.params.cycle, req.params.token ).then( result => {
     //let str = util.inspect( result, { depth:6 } ) 
     //console.log( str )
     res.json( result )
   }).catch( sendError )
 })
 
+/* full fledged tests */
 ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
-  // Volunteer test users to the cycle
+  let cycle = +req.params.cycle
+  let token = +req.params.token
+  
+  console.log( `Volunteer test users to cycle ${cycle} for token ${token}` )
+  let promises = []  
+  testAnalysts.forEach( analyst => {
+    let role = analyst.id < 4 ? 0 : 1  // first four in test analysts are leads
+    promises.push( 
+      ra.cycleVolunteer( cycle, analyst.id, role ).then( result => {
+        console.log( 'got result',result )
+        return result
+      }).catch( ctlError )
+    )
+  })
+  Promise.all( promises ).then( results_volunteer => {
+    console.log( 'got volunteer results',results_volunteer )
+    //res.json( results_volunteer )
+    
+    console.log( `Confirm test analysts to cycle ${cycle} for token ${token}` )
+    promises = []
+    testAnalysts.forEach( analyst => {
+      let role = analyst.id < 4 ? 0 : 1       
+      promises.push( 
+        ra.cycleConfirm( cycle, analyst.id, role ).then( result => {
+          console.log( 'got result',result )
+          return result
+        }).catch( ctlError )
+      )
+    })
+    Promise.all( promises ).then( results_confirm => {
+      console.log( 'got confirm results', results_confirm )
+      //res.json( results_confirm )
+      promises = []
+      
+      ra.num_rounds().then( results_round => {
+        let round = results_round.toNumber()
+        console.log( `Activating round ${round} for cycle ${cycle} with token ${token}` )
+        ra.roundActivate( cycle, token ).then( results_round => {
+          console.log( `activated round ${round}`, results_round )
+          //res.json( results_round )
 
-  // Confirm test users
+          console.log( `Submit pre-surveys for round ${round}` )
+          promises = []
+          testAnalysts.forEach( analyst => {
+            let role = analyst.id < 4 ? 0 : 1       
 
-  // Activate a round
+            let answers = survey.toHexString( survey.generateAnswers() )
+            let qualitatives = ''
+            let recommendation = 0
+            let comment = `hello from analyst ${analyst.id}`
+            promises.push( 
+              ratingAgency.roundSurveySubmit( round, analyst.id, pre, answers, qualitatives, recommendation, comment ) 
+              .then( result => {
+                console.log( 'got result',result )
+                return result
+              }).catch( ctlError )
+            )
+          })
+          Promise.all( promises ).then( results_survey_submit => {
+            console.log( 'survey submit results', results_survey_submit )
+            res.json( results_survey_submit )
+          })
+        })
+      })
+    })
 
-  // Submit first surveys for the jurists
+  }).catch( ctlError )
+ 
+  
+
+  
+
+  
 
   // Submit dummy briefs by the leads
 

@@ -18,13 +18,25 @@ class Survey {
 		})  	
 	}
 
+	toHexString( byteArray ){
+  	return Array.from( byteArray, byte => {
+    	return ('0' + (byte & 0xFF).toString(16)).slice(-2)
+  	}).join('')
+	}
 
-	encodeData(data) {
+	encodeData( data ) {
 	  let result = new Array(32)
 	  for (var name in data) 
 	    result[ this.indexer[name] ] = data[ name ]
 	  console.log('got result',data, result)
 	  return result
+	}
+
+	generateAnswers( curve = 'up' ) { // up, down
+		let div = 3
+		return new Array(32).fill().map( (_,idx) =>
+			div * ( curve == 'up' ? idx : 32-idx )
+		)
 	}
 
 	getElements(){

@@ -4,7 +4,7 @@
 import auth                   from '../auth'
 import { getAnalystRegistry as AnalystRegistry } from '../contracts'
 import { getRatingAgency as RatingAgency } from '../contracts'
-import { parseB32StringtoUintArray } from '../utils'
+import { parseB32StringToUintArray } from '../utils'
 
 // cycle statuses :
 /*
@@ -88,7 +88,7 @@ const info = userId => new Promise((resolve,reject) => {
                   }
                   for (let irole = 0; irole < 2; irole++ ) {
                     let roleObj = userInfo.cycleInfo[ iCycle ].role[irole]
-                    roleObj.rounds = parseB32StringtoUintArray(roleObj.rounds, roleObj.num_rounds)
+                    roleObj.rounds = parseB32StringToUintArray(roleObj.rounds, roleObj.num_rounds)
                   }
                 }
                 if ( !--numCyclesFetch ) {

@@ -18,6 +18,7 @@ const roundsService = require('../src/app/services/API/rounds')
 
 
 const { setWeb3, getRatingAgency, getAnalystRegistry } = require('../src/app/services/contracts')
+const utils = require('../src/app/services/utils') // parseB32StringtoUintArray, toHexString, bytesToHex, hexToBytes
 
 //console.log('config',config)
 
@@ -26,10 +27,6 @@ const survey = new SurveyService()
 let pre = 0
 let post = 1
 
-//console.log('survey',survey)
-//console.log(survey.getElements())
-console.log('survey answers',survey.generateAnswers())
-console.log('survey answers',survey.generateAnswers('down'))
 
 var port = process.env.PORT || 9030;        
 
@@ -46,6 +43,20 @@ app.use(bodyParser.json());                         // this will let us get the 
 let web3 =  require('./web3') // require('./web3') //new Web3(config.ETHEREUM.ws)
 setWeb3( web3 )
 
+
+//console.log('survey',survey)
+//console.log(survey.getElements())
+console.log('survey answers',survey.generateAnswers().toString())
+let sarr = survey.generateAnswers('down')
+console.log('survey answers',sarr.toString())
+let sb32 = utils.toHexString(sarr)
+console.log('survey hex:', sb32)
+console.log('survey convert to arr', utils.hexToBytes(sb32).toString())
+
+let briefs = [  // dummy briefs for testing 
+  'QmZsWca6dJJUC7CRX1imJnGzw1ZHMT8oEiJXF2AtrfXCpG',
+  'QmZRDDRpYyjgWGQKWo736KKmhsr1So4HtMXKxvpKbr7E3Z'
+]
 
 let account
 let ra
@@ -196,68 +207,76 @@ ctlRouter.route( '/roundActivate/:cycle/:token' ).get( ( req, res ) => {
 ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
   let cycle = +req.params.cycle
   let token = +req.params.token
-  
-  console.log( `Volunteer test users to cycle ${cycle} for token ${token}` )
+  let s = '****'
+  console.log( `${s}Volunteer test users to cycle ${cycle} for token ${token}` )
   let promises = []  
   testAnalysts.forEach( analyst => {
     let role = analyst.id < 4 ? 0 : 1  // first four in test analysts are leads
     promises.push( 
       ra.cycleVolunteer( cycle, analyst.id, role ).then( result => {
-        console.log( 'got result',result )
+        console.log( `${s}got result`,result )
         return result
       }).catch( ctlError )
     )
   })
   Promise.all( promises ).then( results_volunteer => {
-    console.log( 'got volunteer results',results_volunteer )
+    console.log( `${s}got volunteer results`,results_volunteer )
     //res.json( results_volunteer )
     
-    console.log( `Confirm test analysts to cycle ${cycle} for token ${token}` )
+    console.log( `${s}Confirm test analysts to cycle ${cycle} for token ${token}` )
     promises = []
     testAnalysts.forEach( analyst => {
       let role = analyst.id < 4 ? 0 : 1       
       promises.push( 
         ra.cycleConfirm( cycle, analyst.id, role ).then( result => {
-          console.log( 'got result',result )
+          console.log( `${s}got result`,result )
           return result
         }).catch( ctlError )
       )
     })
     Promise.all( promises ).then( results_confirm => {
-      console.log( 'got confirm results', results_confirm )
+      console.log( `${s}got confirm results`, results_confirm )
       //res.json( results_confirm )
       promises = []
-      
-      ra.num_rounds().then( results_round => {
-        let round = results_round.toNumber()
-        console.log( `Activating round ${round} for cycle ${cycle} with token ${token}` )
-        ra.roundActivate( cycle, token ).then( results_round => {
-          console.log( `activated round ${round}`, results_round )
-          //res.json( results_round )
+      ra.cycleRoundCanCreate(cycle).then( results_cancreate => {
+        console.log( `${s}can create round: ${results_cancreate}`) // should be true, we just confirmed everybody
+        ra.num_rounds().then( results_round => {
+          let round = results_round.toNumber()
+          console.log( `${s}Activating round ${round} for cycle ${cycle} with token ${token}` )
+          ra.roundActivate( cycle, token ).then( results_round => {
+            console.log( `${s}activated round ${round}`, results_round )
+            //res.json( results_round )
 
-          console.log( `Submit pre-surveys for round ${round}` )
-          promises = []
-          testAnalysts.forEach( analyst => {
-            let role = analyst.id < 4 ? 0 : 1       
+            console.log( `${s}Submit pre-surveys for round ${round}` )
+            promises = []
+            testAnalysts.forEach( analyst => {
+              let role = analyst.id < 4 ? 0 : 1       
 
-            let answers = survey.toHexString( survey.generateAnswers() )
-            let qualitatives = ''
-            let recommendation = 0
-            let comment = `hello from analyst ${analyst.id}`
-            promises.push( 
-              ratingAgency.roundSurveySubmit( round, analyst.id, pre, answers, qualitatives, recommendation, comment ) 
-              .then( result => {
-                console.log( 'got result',result )
-                return result
-              }).catch( ctlError )
-            )
-          })
-          Promise.all( promises ).then( results_survey_submit => {
-            console.log( 'survey submit results', results_survey_submit )
-            res.json( results_survey_submit )
-          })
-        })
-      })
+              let answers = '0x'+utils.toHexString( survey.generateAnswers() )
+              let qualitatives = '0x2a' // encoded byte, i.e. true/false
+              let recommendation = 50
+              let comment = `hello from analyst on pre-survey ${analyst.id}`
+              promises.push( 
+                ra.roundSurveySubmit( round, analyst.id, pre, answers, qualitatives, recommendation, comment ) 
+                .then( result => {
+                  console.log( `${s}got result`,result )
+                  return result
+                }).catch( ctlError )
+              )
+            })
+            Promise.all( promises ).then( results_survey_submit => {
+              console.log( `${s}survey submit results`, results_survey_submit )
+              //res.json( results_survey_submit )
+
+              console.log( `${s}submit briefs`)
+
+
+
+
+            })
+          }).catch( ctlError )
+        }).catch( ctlError )
+      }).catch( ctlError )
     })
 
   }).catch( ctlError )

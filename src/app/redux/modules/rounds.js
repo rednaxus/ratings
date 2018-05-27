@@ -5,6 +5,7 @@
 import moment               from 'moment'
 import * as _ from 'lodash'
 import { getRoundInfo, getRoundAnalystInfo, submitRoundSurvey } from '../../services/API'
+import { toHexString } from '../../services/utils'
 import { fetchTokenData }  from './tokens'
 
 //import { store } from '../../Root'
@@ -176,11 +177,8 @@ export const fetchRoundAnalystInfo = ( round, analyst = -1 ) => {
 }
 
 
-const toHexString = (byteArray) => {
-  return Array.from(byteArray, function(byte) {
-    return ('0' + (byte & 0xFF).toString(16)).slice(-2);
-  }).join('')
-}
+
+
 /*        uint8 _analyst, // analyst by round index
         uint8 _idx,              // pre (0), or post (1)
         bytes32 _answers,

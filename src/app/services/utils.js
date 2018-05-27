@@ -26,8 +26,8 @@ module.exports = {
     return hex.join("");
 	},
 
-	toHexString: byteArray  => {
-  	return Array.from( byteArray, byte => {
+	toHexString: ( byteArray, prefix = true )  => {
+  	return (prefix ? '0x' : '' ) + Array.from( byteArray, byte => {
     	return ('0' + (byte & 0xFF).toString(16)).slice(-2)
   	}).join('')
 	}

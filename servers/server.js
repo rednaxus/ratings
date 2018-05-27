@@ -19,6 +19,7 @@ const roundsService = require('../src/app/services/API/rounds')
 
 const { setWeb3, getRatingAgency, getAnalystRegistry } = require('../src/app/services/contracts')
 const utils = require('../src/app/services/utils') // parseB32StringtoUintArray, toHexString, bytesToHex, hexToBytes
+const { bytes32FromIpfsHash, ipfsHashFromBytes32 } = require('../src/app/services/ipfs')
 
 //console.log('config',config)
 
@@ -62,6 +63,7 @@ let account
 let ra
 let ar
 let tr
+let round_analysts = []
 
 let testAnalysts = new Array(14).fill().map( ( item,idx ) => 
   ({ id: idx, email: `veva${ (idx<10?'0':'') + idx }@veva.one` }) 
@@ -213,10 +215,12 @@ ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
   testAnalysts.forEach( analyst => {
     let role = analyst.id < 4 ? 0 : 1  // first four in test analysts are leads
     promises.push( 
-      ra.cycleVolunteer( cycle, analyst.id, role ).then( result => {
+      ra.cycleVolunteer( cycle, analyst.id, role )
+      /*.then( result => {
         console.log( `${s}got result`,result )
         return result
       }).catch( ctlError )
+      */
     )
   })
   Promise.all( promises ).then( results_volunteer => {
@@ -228,10 +232,11 @@ ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
     testAnalysts.forEach( analyst => {
       let role = analyst.id < 4 ? 0 : 1       
       promises.push( 
-        ra.cycleConfirm( cycle, analyst.id, role ).then( result => {
+        ra.cycleConfirm( cycle, analyst.id, role )
+        /*.then( result => {
           console.log( `${s}got result`,result )
           return result
-        }).catch( ctlError )
+        }).catch( ctlError )*/
       )
     })
     Promise.all( promises ).then( results_confirm => {
@@ -247,33 +252,69 @@ ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
             console.log( `${s}activated round ${round}`, results_round )
             //res.json( results_round )
 
-            console.log( `${s}Submit pre-surveys for round ${round}` )
-            promises = []
-            testAnalysts.forEach( analyst => {
-              let role = analyst.id < 4 ? 0 : 1       
+            roundsService.getRoundInfo( round ).then( roundInfo => { // need num_analysts
+              console.log(`${s}info for round ${round}`,roundInfo )
+              promises = []
+              for (let a = 0; a < roundInfo.num_analysts; a++){
+                promises.push( ra.roundAnalystId( round, a ) )
+              }
+              Promise.all( promises ).then( results => {
+                promises.forEach( (_,idx) => round_analysts.push( results[idx].toNumber() ) )
+                console.log(`${s}round analysts: ${round_analysts.toString()}`)
 
-              let answers = '0x'+utils.toHexString( survey.generateAnswers() )
-              let qualitatives = '0x2a' // encoded byte, i.e. true/false
-              let recommendation = 50
-              let comment = `hello from analyst on pre-survey ${analyst.id}`
-              promises.push( 
-                ra.roundSurveySubmit( round, analyst.id, pre, answers, qualitatives, recommendation, comment ) 
-                .then( result => {
-                  console.log( `${s}got result`,result )
-                  return result
+                console.log( `${s}Submit pre-surveys for round ${round}` )
+                promises = []
+                round_analysts.forEach( ( round_analyst, idx ) => {
+                  if ( idx < 2 ) return // no survey for leads
+                  
+                  let answers = utils.toHexString( survey.generateAnswers() )
+                  let qualitatives = utils.toHexString([42]) // encoded byte, i.e. true/false
+                  let recommendation = 50
+                  let comment = `hello from analyst on pre-survey ${round_analyst}`
+                  promises.push( 
+                    ra.roundSurveySubmit( round, round_analyst, pre, answers, qualitatives, recommendation, comment ) 
+                    /*.then( result => {
+                      console.log( `${s}got result`,result )
+                      return result
+                    }).catch( ctlError )
+                    */
+                  )
+                })
+                Promise.all( promises ).then( results_survey_submit => {
+                  console.log( `${s}survey submit results`, results_survey_submit )
+                  //res.json( results_survey_submit )
+
+                  console.log( `${s}submit briefs`)
+
+                  promises = [
+                    ra.roundBriefSubmit( round, round_analysts[0], bytes32FromIpfsHash(briefs[0]) ),
+                    ra.roundBriefSubmit( round, round_analysts[1], bytes32FromIpfsHash(briefs[1]) )
+                  ]
+                  Promise.all( promises ).then( results_briefs => {
+                    console.log( `${s}Briefs submitted`,results_briefs )
+                    // res.json( results_briefs )
+                    
+                    console.log( `${s}Submit post-surveys for round ${round}` )
+                    promises = []
+                    round_analysts.forEach( ( round_analyst, idx ) => {
+                      if ( idx < 2 ) return // no survey for leads
+
+                      let answers = utils.toHexString( survey.generateAnswers('down') )
+                      let qualitatives = utils.toHexString([24]) // encoded byte, i.e. true/false
+                      let recommendation = 20
+                      let comment = `hello from analyst on post-survey ${round_analyst}`
+                      promises.push( 
+                        ra.roundSurveySubmit( round, round_analyst, post, answers, qualitatives, recommendation, comment ) 
+                      )
+                    })
+                    Promise.all( promises ).then( results_survey_submit => {
+                      console.log( `${s}survey submit results`, results_survey_submit )
+                      res.json( results_survey_submit )
+                    })
+                  }).catch( ctlError )
                 }).catch( ctlError )
-              )
-            })
-            Promise.all( promises ).then( results_survey_submit => {
-              console.log( `${s}survey submit results`, results_survey_submit )
-              //res.json( results_survey_submit )
-
-              console.log( `${s}submit briefs`)
-
-
-
-
-            })
+              }).catch( ctlError )
+            }).catch( ctlError )
           }).catch( ctlError )
         }).catch( ctlError )
       }).catch( ctlError )

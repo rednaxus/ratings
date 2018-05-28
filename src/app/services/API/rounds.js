@@ -1,6 +1,8 @@
 // @flow weak
+const config = require('../../config/appConfig')
 const { bytes32FromIpfsHash, ipfsHashFromBytes32 } = require('../ipfs')
 const { getRatingAgency, getAnalystRegistry } = require('../contracts')
+const { hexToBytes, hexToBytesSigned } = require('../utils')
 
 const getRoundInfo = ( round, analyst=0 ) => new Promise( (resolve,reject) => {
   getRatingAgency().then( ratingAgency  => {
@@ -14,19 +16,46 @@ const getRoundInfo = ( round, analyst=0 ) => new Promise( (resolve,reject) => {
         num_analysts:   rRound[5].toNumber()
       }
       console.log('got round',res)
+      let numFetch = 1
       ratingAgency.roundBriefs( round ).then( rBriefs => {
         console.log('got briefs',round, rBriefs)
-       
+        
         res.briefs = [ // timestamp 0 if no brief submitted
           { timestamp: rBriefs[0].toNumber(), filehash: ipfsHashFromBytes32( rBriefs[1] ) },
           { timestamp: rBriefs[2].toNumber(), filehash: ipfsHashFromBytes32( rBriefs[3] ) }
         ]
-        resolve( res )
+        if ( !--numFetch ) resolve( res )
       })
+      if ( config.STATUSES[ res.status ] == 'finished' ){
+        numFetch++
+        getRoundSummary( round ).then( rSummary => {
+          res = { ...res, ...rSummary }
+          if ( !--numFetch ) resolve( res )
+        })
+      }
     })
     .catch( result => { 
       console.error("Error from server on getRoundInfo:"  + result) 
       reject( result )
+    })
+  })
+})
+
+const getRoundSummary = ( round ) => new Promise( (resolve,reject) => {
+  getRatingAgency().then( ratingAgency  => {
+    ratingAgency.roundSummary( round ).then( rRound => { 
+      let i = 0
+      let res = {
+        id:             round, 
+        averages:       [ hexToBytes( rRound[i++] ), hexToBytes( rRound[i++] ) ],
+        sways:          hexToBytesSigned( rRound[i++] ),
+        winner:         rRound[i++].toNumber()
+      }
+      console.log('got round summary',res)
+      resolve( res )
+    }).catch( err => { 
+      console.error("Error from server on getRoundSummary:"  + err) 
+      reject( err )
     })
   })
 })
@@ -148,6 +177,7 @@ const dataSource = function getData({
 module.exports = {
   getRoundInfo,
   getRoundAnalystInfo,
+  getRoundSummary,
   submitBrief,
   submitRoundSurvey,
   dataSource

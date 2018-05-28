@@ -309,8 +309,16 @@ ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
                     })
                     Promise.all( promises ).then( results_survey_submit => {
                       console.log( `${s}survey submit results`, results_survey_submit )
-                      res.json( results_survey_submit )
-                    })
+                      //res.json( results_survey_submit )
+                      ra.roundFinish( round ).then( results_round_finish => {
+                        console.log( `${s}round ${round} finished`, results_round_finish )
+                        //res.json( results_round_finish )
+                        roundsService.getRoundInfo( round ).then( round_info => {
+                          console.log( `${s}round info+summary for ${round}`, round_info )
+                          res.json( round_info )
+                        }).catch( ctlError )
+                      }).catch( ctlError )
+                    }).catch( ctlError )
                   }).catch( ctlError )
                 }).catch( ctlError )
               }).catch( ctlError )

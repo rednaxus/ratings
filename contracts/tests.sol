@@ -54,6 +54,34 @@ contract test3 {
     function getBytes(bytes32 b32) public pure returns (bytes32) {
         return b32;
     }
+    function getAByte( bytes32 b32, uint8 num ) public pure returns (byte) {
+        return b32[num];
+    }
+    function getABytes( uint8 num ) public pure returns (byte, byte) {
+        bytes32[2] memory a;
+        a[0] = 0xdeadbeef;
+        a[1] = 0xbeefdead;
+        return ( a[0][31-num], a[1][31-num] );
+    }
+    function avgBytes( bytes32 b32, uint8 num ) public pure returns (bytes32) {
+        uint sum = 0;
+        for (uint8 i = 0; i < num; i++){
+            sum += uint(b32[ i ]);
+        }
+        return bytes32( sum / num );
+    }
+    function convertTo8( uint a, uint div) public pure returns (byte) {
+        return( byte(a / div));
+    }
+    function checkAvg( bytes32 _averages, uint8 ibyte ) public pure returns (bytes32 averages) {
+        averages = _averages;
+        int sum = 5000;
+        int n = 50;
+        averages |= bytes32( uint8(sum / n) ) << (31 - ibyte) * 8;
+    }
+    function checkuSubmitBit( ) public pure returns (bytes32){
+        return 0x1 << 247;
+    }
     function stringToBytes32(string memory source) public pure returns (bytes32 result) {
         bytes memory tempEmptyStringTest = bytes(source);
         if (tempEmptyStringTest.length == 0) return 0x0;
@@ -203,9 +231,9 @@ contract test2 {
             byte qualitatives = 6;
             uint8 recommendation = 1;
             bytes32 comment = "wow";
-            ratingAgency.roundSurveySubmit( _round, a, 0, answers, qualitatives, recommendation, comment );
+            ratingAgency.roundSurveySubmit( _round, a, 0, answers, comment );
             recommendation = 4;
-            ratingAgency.roundSurveySubmit( _round, a, 1, answers, qualitatives, recommendation, comment );
+            ratingAgency.roundSurveySubmit( _round, a, 1, answers, comment );
         }
         ratingAgency.roundTally( _round );
     }

@@ -103,9 +103,9 @@ contract RatingAgency {
         uint8 stat;
     }
     struct RoundSurvey {
-        bytes32 answers;  // 1-5, qualitatives at 24,25, qualitatives at
-        byte qualitatives; // yes / no
-        uint8 recommendation; // 1-10
+        bytes32 answers;  // rating at 0...qualitatives at 1
+        //byte qualitatives; // yes / no...left most bit reserved
+        //uint8 recommendation; // 1-10 moved to field 0
         bytes32 comment;
     }
 
@@ -117,10 +117,9 @@ contract RatingAgency {
         address representative;
         uint8 num_analysts;
 
-        bytes32 avg_answer;
-        uint8 r1_avg;  // scaled 0->100
-        uint8 r2_avg;
-        uint8 sways;
+        bytes32[2] averages;
+        //uint8[2] r_avg;  // scaled 0->100
+        bytes32 sways;
         uint8 winner;
 
         mapping ( uint8 => RoundBrief ) briefs; // submitted briefs... 0 is bull, 1 is bear
@@ -201,7 +200,7 @@ contract RatingAgency {
         registry.update( time );
 
         cycleExtend( time, 0 ); // bootstrap cycles
-        bootstrapTokens( 6 );
+        bootstrapTokens( 4 );
     }
 
 
@@ -536,13 +535,12 @@ contract RatingAgency {
     }
 
     function roundSummary ( uint16 _round ) public view returns (
-        bytes32, uint8, uint8, uint8, uint8
+        bytes32, bytes32, bytes32, uint8
     ) {
         Round storage round = rounds[ _round ];
         return (
-            round.avg_answer,
-            round.r1_avg,  // scaled 0->100
-            round.r2_avg,
+            round.averages[ 0 ],
+            round.averages[ 1 ],
             round.sways,
             round.winner
         );
@@ -562,15 +560,21 @@ contract RatingAgency {
         }
         _numFound = _numFound % 16;
     }
+    
+    // debug
+    function roundSurveyAnswers( uint16 _round, uint8 _aref ) public view returns ( bytes32, bytes32 ){
+        Round storage round = rounds[ _round ];
+        return ( round.surveys[ _aref ][ 0 ].answers, round.surveys[ _aref ][ 1 ].answers );
+    }
 
-    event SurveySubmitted( uint16 _round, uint32 _analyst, uint8 _idx, bytes32 _answers, byte _qualitatives, uint8 _recommendation );
+    event SurveySubmitted( uint16 _round, uint32 _analyst, uint8 _idx, bytes32 _answers, byte _qualitatives, byte _recommendation );
     function roundSurveySubmit(
         uint16 _round,
         uint8 _analyst, // analyst by round index
         uint8 _idx,              // pre (0), or post (1)
         bytes32 _answers,
-        byte _qualitatives,
-        uint8 _recommendation,
+        //byte _qualitatives,
+        //uint8 _recommendation,
         bytes32 _comment
     ) public {
         Round storage round = rounds[ _round ];
@@ -578,52 +582,61 @@ contract RatingAgency {
         RoundAnalyst storage analyst = round.analysts[ _analyst ];
 
         //require( _idx==0 && analyst.stat == FIRST_SURVEY_DUE || _idx==1 && analyst.stat == SECOND_SURVEY_DUE );
-        round.surveys[_analyst][_idx] = RoundSurvey( _answers, _qualitatives, _recommendation, _comment );
+        _answers |= 0x1 << 247; // submit bit
+        round.surveys[_analyst][_idx] = RoundSurvey( _answers, _comment );
         analyst.stat = _idx == 0 ? FIRST_SURVEY_SUBMITTED : SECOND_SURVEY_SUBMITTED;
-        emit SurveySubmitted( _round, _analyst, _idx, _answers, _qualitatives, _recommendation );
+        emit SurveySubmitted( _round, _analyst, _idx, _answers, _answers[ 1 ], _answers[ 0 ]  );
     }
 
-    event TallyLog( uint16 round, uint8 analyst, uint8 recommendation);
+    event TallyLog( uint16 round, uint8 analyst, bytes32 avg0, bytes32 avg1, bytes32 sway);
     event TallyWin( uint16 round, uint8 winner );
+    event TempLog( uint ibyte, uint n, uint a, uint b, int c);
     function roundTally( uint16 _round ) public {
         Round storage round = rounds[ _round ];
-        /* sway of answers , not used right now
-        int[] memory sway = new int[](32);
-        for (uint i; i < 32; i++) {
-            for (uint8 a; a < round.num_analysts; a++) {
-                sway[i] = ( sway[i] * int(i) + int(round.surveys[1][a].answers[i]) - int(round.surveys[0][a].answers[i]) ) / ( i+1 ) ;
-            }
-            round.avg_sway[ i ] = byte( sway[ i ] );
-        }
-        */
+        uint8 i;
         uint8 n = 0;
-        for ( uint8 aref = 2; aref < round.num_analysts; aref++ ) {
-            emit TallyLog( _round, aref, round.surveys[aref][0].recommendation );
-            emit TallyLog( _round, aref, round.surveys[aref][1].recommendation );
+        uint8 aref;
+        uint[2] memory sum;
+        int sway_sum;
+        //RoundSurvey[] storage rs;
+        for ( uint8 ibyte = 0; ibyte < 32; ibyte++ ){
+            sum[0] = 0;
+            sum[1] = 0;
+            sway_sum = 0;
 
-            //if (round.surveys[a][0] && round.surveys[a][1] ) {
-                round.r1_avg = (round.r1_avg*n + 10*round.surveys[aref][0].recommendation) / (n+1);
-                round.r2_avg = (round.r2_avg*n + 10*round.surveys[aref][1].recommendation) / (n+1);
+            n = 0;
+            for ( aref = 2; aref < round.num_analysts; aref++ ) { // jurists
+                if ( round.surveys[ aref ][ 0 ].answers[ 1 ] & round.surveys[ aref ][ 1 ].answers[ 1 ] & 0x80 == 0) continue;// submitted bit
+                
+                for( i = 0; i < 2; i++ ) // pre/post
+                    sum[ i ] += uint( round.surveys[ aref ][ i ].answers[ ibyte ] );
+                sway_sum += int(round.surveys[ aref ][ 1 ].answers[ ibyte ]) - int(round.surveys[ aref ][ 0 ].answers[ ibyte ]);
                 n++;
+            }
+            emit TempLog( ibyte, n, sum[ 0 ], sum[ 1 ], sway_sum );
+            require( n != 0 );
 
-            //}
+            for( i = 0; i < 2; i++ ) 
+                round.averages[ i ] |= bytes32( uint8(sum[ i ] / n) ) << ( 31 - ibyte ) * 8;
+            round.sways |= bytes32( uint8(sway_sum / n) ) << ( 31 - ibyte) * 8;
         }
-        emit TallyLog( _round, 100, round.r1_avg );
-        emit TallyLog( _round, 101, round.r2_avg );
+        emit TallyLog( _round, aref, round.averages[ 0 ], round.averages[ 1 ], round.sways  );
+        //emit TallyLog( _round, 100, round.r_avg[0], round.r_avg[1] );
 
-        if ( round.r2_avg > round.r1_avg + 20) round.winner = 0;
-        else if ( round.r2_avg < round.r1_avg - 20) round.winner = 1;
-        else if ( round.r2_avg > 50 ) round.winner = 0;
+        // get winner
+        uint8 r0 = uint8(round.averages[ 0 ][ 0 ]);
+        uint8 r1 = uint8(round.averages[ 1 ][ 0 ]);
+        if ( r1 > r0 + 20) round.winner = 0;
+        else if ( r1 < r0 - 20) round.winner = 1;
+        else if ( r1 > 50 ) round.winner = 0;
         else round.winner = 1;
 
         // payoff in token and reputation, just leads for nowREWARD_ROUND_TOKENS_LOSER
-        for ( uint8 i = 0; i < 2; i++ )
-            registry.rewardLead( round.analysts[i].analyst, _round, round.value, int8(round.winner == i ? 1 : 0) );
+        for ( i = 0; i < 2; i++ )
+            registry.rewardLead( round.analysts[ i ].analyst, _round, round.value, int8(round.winner == i ? 1 : 0) );
         for ( i = 2; i < round.num_analysts; i++ )
             registry.rewardJurist( round.analysts[ i ].analyst, _round, round.value, 0 ); // for now, every jurist is a winner, pending tally above
-
         emit TallyWin( _round, round.winner );
-
     }
 
     // cron

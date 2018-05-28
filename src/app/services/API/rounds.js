@@ -79,9 +79,7 @@ const submitBrief = ( round, analyst, filehash ) => new Promise( (resolve,reject
 const submitRoundSurvey = ( 
   round, 
   roundAnalyst, 
-  answers, 
-  qualitatives, 
-  recommendation, 
+  answers,
   comment, 
   preOrPost = 0 
 ) => {
@@ -92,8 +90,6 @@ const submitRoundSurvey = (
         roundAnalyst,
         preOrPost, 
         answers, 
-        qualitatives, 
-        recommendation, 
         comment
       ).then( result => {
         console.log('submit survey result',result)

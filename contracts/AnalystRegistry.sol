@@ -256,6 +256,7 @@ contract AnalystRegistry {
         emit Register( num_analysts++, _email, _regcode, a.identity );
     }
 
+    // move these two to agency contract
     function rewardJurist( uint32 _analyst, uint16 _round, uint32 _roundValue, uint8 _level ) public {
         if (_level == 0) {
             rewardToken( _analyst, REWARD_ROUND_TOKENS_JURY_TOP, _roundValue * TOP_JURISTS_X10 / 1000, _round );

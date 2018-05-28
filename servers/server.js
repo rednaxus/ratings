@@ -268,11 +268,11 @@ ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
                   if ( idx < 2 ) return // no survey for leads
                   
                   let answers = utils.toHexString( survey.generateAnswers() )
-                  let qualitatives = utils.toHexString([42]) // encoded byte, i.e. true/false
-                  let recommendation = 50
-                  let comment = `hello from analyst on pre-survey ${round_analyst}`
+                  //let qualitatives = utils.toHexString([42]) // encoded byte, i.e. true/false
+                  //let recommendation = 50
+                  let comment = `hello from analyst on pre-survey ${idx}:${round_analyst}`
                   promises.push( 
-                    ra.roundSurveySubmit( round, round_analyst, pre, answers, qualitatives, recommendation, comment ) 
+                    ra.roundSurveySubmit( round, idx, pre, answers, comment ) 
                     /*.then( result => {
                       console.log( `${s}got result`,result )
                       return result
@@ -287,8 +287,8 @@ ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
                   console.log( `${s}submit briefs`)
 
                   promises = [
-                    ra.roundBriefSubmit( round, round_analysts[0], bytes32FromIpfsHash(briefs[0]) ),
-                    ra.roundBriefSubmit( round, round_analysts[1], bytes32FromIpfsHash(briefs[1]) )
+                    ra.roundBriefSubmit( round, 0, bytes32FromIpfsHash(briefs[0]) ),
+                    ra.roundBriefSubmit( round, 1, bytes32FromIpfsHash(briefs[1]) )
                   ]
                   Promise.all( promises ).then( results_briefs => {
                     console.log( `${s}Briefs submitted`,results_briefs )
@@ -300,11 +300,11 @@ ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
                       if ( idx < 2 ) return // no survey for leads
 
                       let answers = utils.toHexString( survey.generateAnswers('down') )
-                      let qualitatives = utils.toHexString([24]) // encoded byte, i.e. true/false
-                      let recommendation = 20
-                      let comment = `hello from analyst on post-survey ${round_analyst}`
+                      //let qualitatives = utils.toHexString([24]) // encoded byte, i.e. true/false
+                      //let recommendation = 20
+                      let comment = `hello from analyst on post-survey ${idx}:${round_analyst}`
                       promises.push( 
-                        ra.roundSurveySubmit( round, round_analyst, post, answers, qualitatives, recommendation, comment ) 
+                        ra.roundSurveySubmit( round, idx, post, answers, comment ) 
                       )
                     })
                     Promise.all( promises ).then( results_survey_submit => {

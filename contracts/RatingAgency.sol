@@ -534,17 +534,6 @@ contract RatingAgency {
         emit RoundPopulated( _cycle, _round, round.num_analysts, 2 );
     }
 
-    function roundSummary ( uint16 _round ) public view returns (
-        bytes32, bytes32, bytes32, uint8
-    ) {
-        Round storage round = rounds[ _round ];
-        return (
-            round.averages[ 0 ],
-            round.averages[ 1 ],
-            round.sways,
-            round.winner
-        );
-    }
 
     /* get next 16 rounds */
     function roundsForToken ( uint16 _token, uint16 startAt ) public view returns (uint16 _numFound, uint16[16] _rounds){
@@ -561,6 +550,18 @@ contract RatingAgency {
         _numFound = _numFound % 16;
     }
     
+    function roundSummary ( uint16 _round ) public view returns (
+        bytes32, bytes32, bytes32, uint8
+    ) {
+        Round storage round = rounds[ _round ];
+        return (
+            round.averages[ 0 ],
+            round.averages[ 1 ],
+            round.sways,
+            round.winner
+        );
+    }
+
     // debug
     function roundSurveyAnswers( uint16 _round, uint8 _aref ) public view returns ( bytes32, bytes32 ){
         Round storage round = rounds[ _round ];

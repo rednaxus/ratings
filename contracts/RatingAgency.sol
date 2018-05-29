@@ -200,7 +200,7 @@ contract RatingAgency {
         registry.update( time );
 
         cycleExtend( time, 0 ); // bootstrap cycles
-        bootstrapTokens( 4 );
+        bootstrapTokens( 3 );
     }
 
 
@@ -235,7 +235,7 @@ contract RatingAgency {
         for ( uint16 i = 0; i < num_tokens; i++ ) {
             if ( !cycleRoundCanCreate( _cycle ) ) break; // stop cycle when out of availables
             if ( i % CYCLE_FRACTIONS == cyc4 ) // e.g. every 4th token at this particular timeperiod
-                roundActivate( _cycle, i );
+                roundActivate( _cycle, i ); // fix this when redo schedule tokens...can only do ~1 activate per cron
         }
         emit CycleActivated( _cycle, time, i );
         return true;
@@ -337,8 +337,10 @@ contract RatingAgency {
         for ( uint16 i = 0; i < num_rounds_active; i++ ) {
             uint16 round = rounds_active[ i ];
             Cycle storage c = cycles[ rounds[ round ].cycle ];
-            if ( c.timestart + c.period <= time )
+            if ( c.timestart + c.period <= time ) {
                 roundFinish( round );
+                return;  // ! because of gas purposes only finish one round...can adjust this if finish is less costly
+            }
         }
         for ( i = 0; i < _cycle; i++ ){ // deactivate any past cycles
             if (cycles[ i ].stat == ACTIVE) cycles[ i ].stat = FINISHED;
@@ -383,6 +385,11 @@ contract RatingAgency {
         return cycle_period * _idx / 4 + ZERO_BASE_TIME;    // cycles offset
     }
 
+    function cycleUpdate( uint16 _cycle ) public { // update to see if rounds need cancelling 
+        Cycle storage cycle = cycles[ _cycle ]; 
+        
+    }
+
     event CycleVolunteer( uint16 cycle, uint32 analyst, uint8 role, uint8 num_volunteers );
     function cycleVolunteer( uint16 _cycle, uint32 _analyst, uint8 _role ) public {
         Cycle storage cycle = cycles[ _cycle ];
@@ -400,6 +407,9 @@ contract RatingAgency {
      ***** Round ****
     */
 
+    function roundActive( uint _activeRef ) public view returns ( uint16 ) {
+        
+    }
     event RoundActivated( uint16 _cycle, uint16 _round, uint16 num_rounds_active, uint8 num_analysts );
     function roundActivate( uint16 _cycle, uint32 _token ) public returns ( uint16 ){
         uint16 round = num_rounds++;
@@ -642,7 +652,10 @@ contract RatingAgency {
 
     // cron
     event Cron( uint lasttime, uint timestamp, uint16 cycle );
-    function cron( uint _time ) public {
+    function cron( uint delta ) public {
+        cronTo( lasttime + delta);
+    }
+    function cronTo( uint _time ) public {
         time = _time == 0 ? ZERO_BASE_TIME : _time; // e.g. block.timestamp
         uint16 cycle = cycleIdx( time );
 
@@ -653,6 +666,8 @@ contract RatingAgency {
 
         cycleExtend( time, 0 ); // start new cycles if needed
 
+        cycleUpdate( cycle );
+        
         cycleFinish( cycle );
 
         cycleActivate( cycle );

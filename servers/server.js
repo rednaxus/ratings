@@ -342,82 +342,52 @@ ctlRouter.route( '/testNextCycle' ).get( ( req, res ) => {
     let cycle = config.cycleIdx( timestamp ) + 1 // next cycle is of interest
     
     console.log( `${s}Volunteer test users to cycle ${cycle} for token ${token}` )
-    let promises = []  
-    testAnalysts.forEach( analyst => {
-      let role = analyst.id < 4 ? 0 : 1  // first four in test analysts are leads
-      promises.push( 
-        ra.cycleVolunteer( cycle, analyst.id, role )
-      )
-    })
+    let promises = testAnalysts.map( analyst => ra.cycleVolunteer( cycle, analyst.id, analyst.id < 4 ? 0 : 1 ) )  // first four in test analysts are leads      
     Promise.all( promises ).then( results_volunteer => {
       console.log( `${s}got volunteer results`,results_volunteer )
       //res.json( results_volunteer )
       
       console.log( `${s}Confirm test analysts to cycle ${cycle} for token ${token}` )
-      promises = []
-      testAnalysts.forEach( analyst => {
-        let role = analyst.id < 4 ? 0 : 1       
-        promises.push( 
-          ra.cycleConfirm( cycle, analyst.id, role )
-        )
-      })
+      let promises = testAnalysts.map( analyst => ra.cycleConfirm( cycle, analyst.id, analyst.id < 4 ? 0 : 1 ) )
       Promise.all( promises ).then( results_confirm => {
         console.log( `${s}got confirm results`, results_confirm )
         //res.json( results_confirm )
 
+        console.log( `${s}cron forward to target cycle ${cycle}` )
         ra.cronTo( config.cycleTime ( cycle ) ).then( result_cron => { 
-          console.log( `${s}cron forward to target (next) cycle`, result_cron )
-
+          console.log(`${s}cycle ${cycle - 1} finished`,result_cron)
           console.log(`${s}get rounds active`)
-          roundsService.getRoundsActive( active_rounds => {
-            console.log( `${s}active rounds`,active_rounds.toString() )
-            promises = active_rounds.map( round => new Promise( ( resolve, reject ) => {
+          roundsService.getRoundsActive().then( active_rounds => {
+            console.log( `${s}got active rounds [${active_rounds.toString()}]` )
+            let promises = active_rounds.map( round => new Promise( ( resolve, reject ) => {
               roundsService.getRoundInfo( round ).then( roundInfo => { // need num_analysts
-                console.log(`${s}info for round ${round}`,roundInfo )
-                promises = []
-                for (let a = 0; a < roundInfo.num_analysts; a++){
-                  promises.push( ra.roundAnalystId( round, a ) )
-                }
-                Promise.all( promises ).then( results => {
-                  promises.forEach( (_,idx) => round_analysts.push( results[idx].toNumber() ) )
-                  console.log(`${s}round analysts: ${round_analysts.toString()}`)
+                console.log( `${s}got info for round ${round}`, roundInfo )
+                console.log( `${s}analysts: [${roundInfo.analysts.toString()}]` )
+                console.log( `${s}submit pre-surveys for round ${round}` )
+                let promises = []
+                roundInfo.analysts.forEach( ( analyst, aref ) => {
+                  if ( aref < 2 ) return // no survey for leads
+                  
+                  let answers = utils.toHexString( survey.generateAnswers() )
+                  let comment = `hello from analyst on pre-survey ${aref}:${analyst}`
+                  promises.push( roundsService.submitRoundSurvey( round, aref, answers, comment, pre ) )
+                })
+                Promise.all( promises ).then( results_survey_submit => {
+                  console.log( `${s}submitted survey results for round ${round}`, results_survey_submit )
+                  //res.json( results_survey_submit )
 
-                  console.log( `${s}Submit pre-surveys for round ${round}` )
-                  promises = []
-                  round_analysts.forEach( ( round_analyst, idx ) => {
-                    if ( idx < 2 ) return // no survey for leads
-                    
-                    let answers = utils.toHexString( survey.generateAnswers() )
-                    //let qualitatives = utils.toHexString([42]) // encoded byte, i.e. true/false
-                    //let recommendation = 50
-                    let comment = `hello from analyst on pre-survey ${idx}:${round_analyst}`
-                    promises.push( 
-                      ra.roundSurveySubmit( round, idx, pre, answers, comment ) 
-                    )
-                  })
-                  Promise.all( promises ).then( results_survey_submit => {
-                    console.log( `${s}submitted survey results for round ${round}`, results_survey_submit )
-                    //res.json( results_survey_submit )
+                  console.log( `${s}submit briefs for round ${round}`)
 
-                    console.log( `${s}submit briefs`)
-
-                    promises = [
-                      ra.roundBriefSubmit( round, 0, bytes32FromIpfsHash(briefs[0]) ),
-                      ra.roundBriefSubmit( round, 1, bytes32FromIpfsHash(briefs[1]) )
-                    ]
-                    Promise.all( promises ).then( results_briefs => {
-                      console.log( `${s}Briefs submitted for round ${round}`,results_briefs )
-                      // res.json( results_briefs )
-                      resolve( `briefs and pre surveys submitted for round ${round}`)                      
-                    }).catch( reject )
-                  }).catch( ctlError )
+                  let promises = new Array(2).fill().map( (_,aref) => roundsService.submitRoundBrief( round, aref, briefs[aref] ) )
+                  Promise.all( promises ).then( results_briefs => {
+                    console.log( `${s}Briefs submitted for round ${round}`,results_briefs )
+                    // res.json( results_briefs )
+                    resolve( `briefs submitted for round ${round}`)                      
+                  }).catch( reject )
                 }).catch( ctlError )
               }).catch( ctlError )
             }))
-
           }).catch( ctlError )          
-          console.log( `${s}first phase for cycle ${cycle}...submit pre-surveys and briefs`)
-
         }).catch( ctlError )
         
 

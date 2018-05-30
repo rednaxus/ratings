@@ -407,8 +407,8 @@ contract RatingAgency {
      ***** Round ****
     */
 
-    function roundActive( uint _activeRef ) public view returns ( uint16 ) {
-        
+    function roundActive( uint16 _activeRef ) public view returns ( uint16 round ) {
+        round = rounds_active[ _activeRef ];
     }
     event RoundActivated( uint16 _cycle, uint16 _round, uint16 num_rounds_active, uint8 num_analysts );
     function roundActivate( uint16 _cycle, uint32 _token ) public returns ( uint16 ){

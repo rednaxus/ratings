@@ -6,46 +6,52 @@ const { hexToBytes, hexToBytesSigned } = require('../utils')
 
 
 module.exports = {
-  getRoundInfo: ( round, analyst=0 ) => new Promise( (resolve,reject) => {
-    getRatingAgency().then( ratingAgency  => {
-      ratingAgency.roundInfo( round ).then( rRound => { 
-        var res = {
-          id:             rRound[0].toNumber(), 
-          cycle:          rRound[1].toNumber(),
-          covered_token:  rRound[2].toNumber(),
-          value:          rRound[3].toNumber(),
-          status:         rRound[4].toNumber(),
-          num_analysts:   rRound[5].toNumber()
-        }
-        console.log('got round',res)
-        let numFetch = 1
-        ratingAgency.roundBriefs( round ).then( rBriefs => {
-          console.log('got briefs',round, rBriefs)
-          
-          res.briefs = [ // timestamp 0 if no brief submitted
-            { timestamp: rBriefs[0].toNumber(), filehash: ipfsHashFromBytes32( rBriefs[1] ) },
-            { timestamp: rBriefs[2].toNumber(), filehash: ipfsHashFromBytes32( rBriefs[3] ) }
-          ]
+  getRoundInfo: ( round, analyst, deep = true ) => new Promise( (resolve,reject) => getRatingAgency().then( ra  => {
+    const err = err => {
+      console.error(`Error from server on getRoundInfo: ${err}` ) 
+      reject( err )
+    }
+    ra.roundInfo( round ).then( rRound => { 
+      var res = {
+        id:             rRound[0].toNumber(), 
+        cycle:          rRound[1].toNumber(),
+        covered_token:  rRound[2].toNumber(),
+        value:          rRound[3].toNumber(),
+        status:         rRound[4].toNumber(),
+        num_analysts:   rRound[5].toNumber()
+      }
+      console.log('got round',res)
+      let numFetch = 1
+      ra.roundBriefs( round ).then( rBriefs => {
+        console.log('got briefs',round, rBriefs)
+        res.briefs = [ // timestamp 0 if no brief submitted
+          { timestamp: rBriefs[0].toNumber(), filehash: ipfsHashFromBytes32( rBriefs[1] ) },
+          { timestamp: rBriefs[2].toNumber(), filehash: ipfsHashFromBytes32( rBriefs[3] ) }
+        ]
+        if ( !--numFetch ) resolve( res )
+      }).catch ( err )
+      if ( deep && res.num_analysts ) { // round analysts
+        numFetch++
+        let promises = new Array(res.num_analysts).fill().map( (_,a) => ra.roundAnalystId( round, a ) )
+        Promise.all( promises ).then( analysts => {
+          res.analysts = analysts.map( analyst => analyst.toNumber() )
+          //console.log(`${s}round analysts: ${round_analysts.toString()}`)
           if ( !--numFetch ) resolve( res )
-        })
-        if ( config.STATUSES[ res.status ] == 'finished' ){
-          numFetch++
-          module.exports.getRoundSummary( round ).then( rSummary => {
-            res = { ...res, ...rSummary }
-            if ( !--numFetch ) resolve( res )
-          })
-        }
-      })
-      .catch( result => { 
-        console.error("Error from server on getRoundInfo:"  + result) 
-        reject( result )
-      })
-    })
-  }),
+        }).catch( err )
+      }
+      if ( config.STATUSES[ res.status ] == 'finished' ){
+        numFetch++
+        module.exports.getRoundSummary( round ).then( rSummary => {
+          res = { ...res, ...rSummary }
+          if ( !--numFetch ) resolve( res )
+        }).catch( err )
+      }
+    }).catch( err )
+  })),
 
   getRoundSummary: ( round ) => new Promise( (resolve,reject) => {
-    getRatingAgency().then( ratingAgency  => {
-      ratingAgency.roundSummary( round ).then( rRound => { 
+    getRatingAgency().then( ra  => {
+      ra.roundSummary( round ).then( rRound => { 
         let i = 0
         let res = {
           id:             round, 
@@ -62,9 +68,25 @@ module.exports = {
     })
   }),
 
+/*
+  getRoundAnalysts: ( round ) => new Promise( (resolve, reject ) = getRatingAgency().then( ra ) => {
+    roundsService.getRoundInfo( round ).then( roundInfo => { // need num_analysts
+      //console.log(`${s}info for round ${round}`,roundInfo )
+      let promises = []
+      for (let a = 0; a < roundInfo.num_analysts; a++){
+        promises.push( ra.roundAnalystId( round, a ) )
+      }
+      Promise.all( promises ).then( results => {
+        let round_analysts = results.map
+        results.forEach( (_,idx) => round_analysts.push( results[idx].toNumber() ) )
+        console.log(`${s}round analysts: ${round_analysts.toString()}`)
+
+  })
+*/
+
   getRoundAnalystInfo: ( round, analyst=0 ) => new Promise( (resolve,reject) => {
-    getRatingAgency().then((ratingAgency) => {
-      ratingAgency.roundAnalyst( round, analyst ).then( rRound => { 
+    getRatingAgency().then( ra => {
+      ra.roundAnalyst( round, analyst ).then( rRound => { 
         var res = {
           id:             round,
           analyst:        analyst,
@@ -84,10 +106,11 @@ module.exports = {
   getRoundsActive: () => new Promise( ( resolve, reject ) => {
     getRatingAgency().then( ra => {
       ra.num_rounds_active().then( num_rounds_active => {
-        let promises = new Array( num_rounds_active ).fill().map( ( _, roundRef ) => 
-          ra.roundsActive( roundRef )
-        )
+        console.log(`got ${num_rounds_active} rounds active`)
+        if ( !num_rounds_active ) resolve([])
+        let promises = new Array( num_rounds_active ).fill().map( ( _, roundRef ) => ra.roundActive( roundRef ) )
         Promise.all( promises ).then( rounds => {
+          console.log(`got active rounds ${rounds.toString()}`)
           resolve( rounds )
         }).catch( reject )
       }).catch( reject )
@@ -95,48 +118,36 @@ module.exports = {
   }),
 
   // function submitBrief( uint16 _round, uint8 _analyst, address _file )
-  submitBrief: ( round, analyst, filehash ) => new Promise( (resolve,reject) => {
-    getRatingAgency().then( ratingAgency => {
-      console.log('submitting brief',round,analyst,filehash)
-      ratingAgency.roundBriefSubmit( round, analyst, bytes32FromIpfsHash(filehash) ).then( result => {
-        console.log('submit brief result',result)
-        resolve( 'done' )
-      })
-      .catch( err => { 
-        console.error("Error submitting brief:"  + err ) 
-        reject( err )
-      })
+  submitRoundBrief: ( round, aref, filehash ) => new Promise( (resolve,reject) => getRatingAgency().then( ra => {
+    console.log('submitting brief',round,aref,filehash)
+    ra.roundBriefSubmit( round, aref, bytes32FromIpfsHash(filehash) ).then( result => {
+      console.log('submit brief result',result)
+      resolve( 'done' )
     })
-  }),
+    .catch( err => { 
+      console.error("Error submitting brief:"  + err ) 
+      reject( err )
+    })
+  })),
 
-
-  /*    function submitSurvey(uint16 _round,
-          uint8 _analyst, // analyst by round index
-          uint8 _idx,              // pre (0), or post (1)
-          bytes32 _answers,
-          byte _qualitatives,
-          uint8 _recommendation,
-          bytes32 _comment
-      )
-  */
 
   submitRoundSurvey : ( 
     round, 
-    roundAnalyst, 
+    analystRef, // analyst ref in the round
     answers,
     comment, 
     preOrPost = 0 
   ) => {
     return new Promise( (resolve,reject) => {
-      getRatingAgency().then( ratingAgency => {
-        ratingAgency.roundSurveySubmit(
+      getRatingAgency().then( ra => {
+        ra.roundSurveySubmit(
           round, 
-          roundAnalyst,
+          analystRef,
           preOrPost, 
           answers, 
           comment
         ).then( result => {
-          console.log('submit survey result',result)
+          console.log('submitted survey result',result)
           resolve( 'done' )
         })
         .catch( result => { 
@@ -155,8 +166,8 @@ module.exports = {
   }) {
     return new Promise( (resolve,reject) => {
       console.log(' beginning rounds fetch')
-      getRatingAgency().then((ratingAgency) => {
-        ratingAgency.num_rounds().then( result => {
+      getRatingAgency().then( ra => {
+        ra.num_rounds().then( result => {
           var numRounds = result.toNumber()
           console.log("number of rounds:",numRounds)
           var numFetch = 0

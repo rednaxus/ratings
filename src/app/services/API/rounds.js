@@ -4,7 +4,6 @@ const { bytes32FromIpfsHash, ipfsHashFromBytes32 } = require('../ipfs')
 const { getRatingAgency, getAnalystRegistry } = require('../contracts')
 const { hexToBytes, hexToBytesSigned } = require('../utils')
 
-
 module.exports = {
   getRoundInfo: ( round, analyst, deep = true ) => new Promise( (resolve,reject) => getRatingAgency().then( ra  => {
     const err = err => {
@@ -123,8 +122,7 @@ module.exports = {
     ra.roundBriefSubmit( round, aref, bytes32FromIpfsHash(filehash) ).then( result => {
       console.log('submit brief result',result)
       resolve( 'done' )
-    })
-    .catch( err => { 
+    }).catch( err => { 
       console.error("Error submitting brief:"  + err ) 
       reject( err )
     })
@@ -161,10 +159,9 @@ module.exports = {
 
 
 
-  dataSource: function getData({
-      pageIndex, pageSize
-  }) {
+  dataSource: function getData({pageIndex, pageSize}) {
     return new Promise( (resolve,reject) => {
+      const { store } = require('../../Root')
       console.log(' beginning rounds fetch')
       getRatingAgency().then( ra => {
         ra.num_rounds().then( result => {
@@ -200,65 +197,5 @@ module.exports = {
   }
 }
 
-//export default dataSource
 
-/*module.exports = {
-  getRoundInfo,
-  getRoundAnalystInfo,
-  getRoundSummary,
-  submitBrief,
-  submitRoundSurvey,
-  dataSource
-}
-*.
-/*
-export const getCyclesData = () => {
-  return new Promise((resolve,reject) => {
-    //console.log(' beginning cycles fetch')
-
-    RatingAgency()
-    .then((ratingAgency) => {
-      ratingAgency.num_cycles()
-      .then(result => {
-        var numCycles = result.toNumber();
-        //console.log("result was:",numCycles);
-        var numFetch = 0
-        var cyclesData = []
-        for (var i = 0; i < numCycles; i++) {
-          ratingAgency.cycleInfo(i).then( rCycle => { // idx, addr
-            var res = {
-              id:rCycle[0].toNumber(),   
-              timestart: rCycle[1].toNumber(),
-              period: rCycle[2].toNumber(),
-              status: rCycle[3].toNumber(),
-              num_jurists_available: rCycle[4].toNumber(),
-              num_jurists_assigned: rCycle[5].toNumber(),
-              num_leads_available: rCycle[6].toNumber(),
-              num_leads_assigned: rCycle[7].toNumber()
-            }
-            //console.log('got cycle',res)
-            cyclesData.push(res)
-            //console.log('got cycle starting',res.timestart)
-            if (++numFetch === numCycles) {
-              cyclesData.sort( (a,b) => a.id - b.id)  
-              resolve(cyclesData)
-            }
-          })
-          .catch(result => { 
-            console.error("Error from server:"  + result) 
-            reject(result)
-          })        
-        }
-      })
-      .catch(result => { 
-        console.error("Error from server:"  + result) 
-        reject(result)
-      })
-    })
-
-  })
-
-
-}
-*/
 

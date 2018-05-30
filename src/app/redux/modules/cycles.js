@@ -5,7 +5,7 @@
 import moment               from 'moment'
 
 import { 
-  getCyclesData, 
+  getCyclesInfo, 
   getCronInfo, 
   pulseCron as pulse, 
   cycleSignup as signup,
@@ -90,7 +90,7 @@ const fetchCyclesData = () => {
     let user = getState().user
     let analyst = user.info ? user.info.id : 0
     console.log('getting cycles data from api',' for analyst',analyst)
-    getCyclesData( analyst ).then( 
+    getCyclesInfo( analyst ).then( 
       data => dispatch( success( data ) ) 
     ).catch( err => dispatch( failure( err ) ) )    
   }

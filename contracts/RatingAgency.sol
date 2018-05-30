@@ -343,7 +343,8 @@ contract RatingAgency {
             }
         }
         for ( i = 0; i < _cycle; i++ ){ // deactivate any past cycles
-            if (cycles[ i ].stat == ACTIVE) cycles[ i ].stat = FINISHED;
+            c = cycles[ i ];
+            if (c.stat == ACTIVE && c.timestart + c.period <= time ) c.stat = FINISHED;
             emit CycleFinished( _cycle, i, time );
         }
     }

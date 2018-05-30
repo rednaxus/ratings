@@ -15,6 +15,7 @@ const bodyParser = require('body-parser')
 const parseRange = require('parse-numeric-range').parse
 const config = require('../src/app/config/appConfig')
 const roundsService = require('../src/app/services/API/rounds')
+const cyclesService = require('../src/app/services/API/cycles')
 
 
 const { setWeb3, getRatingAgency, getAnalystRegistry } = require('../src/app/services/contracts')
@@ -461,12 +462,16 @@ ctlRouter.route( '/testCron/:totalTime/:interval' ).get( ( req, res ) => { // in
       console.log(`${s}${idx}-cron ran at ${cronTime}:${toDate(cronTime)}...cycle start:${cycleStart}`)
       idx++
       // do stuff
+      cyclesService.getCyclesInfo().then( cycles => {
+        console.log( `got cycles`,cycles )
+
+        let nextTime = cronTime + intervalTime
+        if ( nextTime <= finishTime ) doCron( nextTime )
+        else resolve( cronTime )
+      })
 
 
 
-      let nextTime = cronTime + intervalTime
-      if ( nextTime <= finishTime ) doCron( nextTime )
-      else resolve( cronTime )
     }).catch( reject )
     doCron( timestamp )
   })

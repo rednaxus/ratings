@@ -15,11 +15,13 @@ export { getTokenInfo } from './ethplorer'
 export { getUsersData } from './users'
 
 export { 
-	getCyclesData, 
+	getCyclesInfo, 
+	getCycleInfo,
 	getCronInfo, 
 	pulseCron, 
 	cycleSignup,
-	cycleConfirm
+	cycleConfirm,
+	dataSource
 } from './cycles'
 
 export { 

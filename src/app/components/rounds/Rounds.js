@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { Grid } from 'react-redux-grid'
 
 import Pager from './Pager'
-import api from '../../services/API/rounds'
+import { dataSource as api } from '../../services/API/rounds'
 
 import Moment from 'react-moment'
 import config from '../../config/appConfig'

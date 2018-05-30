@@ -65,6 +65,8 @@ let ar
 let tr
 let round_analysts = []
 
+let s = '****'
+
 let testAnalysts = new Array(14).fill().map( ( item,idx ) => 
   ({ id: idx, email: `veva${ (idx<10?'0':'') + idx }@veva.one` }) 
 )
@@ -80,6 +82,8 @@ const apiError = err  => {
   console.log( 'api error', err )
 }
 const ctlError = err => console.log( 'ctl error', err )
+
+const toDate = timestamp => moment(timestamp*1000).format('MMMM Do YYYY, h:mm:ss a')
 
 //console.log('web3',web3.eth.personal);
 web3.eth.getCoinbase( ( err, coinbase ) => { // setup on launch
@@ -209,7 +213,6 @@ ctlRouter.route( '/roundActivate/:cycle/:token' ).get( ( req, res ) => {
 ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
   let cycle = +req.params.cycle
   let token = +req.params.token
-  let s = '****'
   console.log( `${s}Volunteer test users to cycle ${cycle} for token ${token}` )
   let promises = []  
   testAnalysts.forEach( analyst => {
@@ -336,7 +339,7 @@ ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
 ctlRouter.route( '/testNextCycle' ).get( ( req, res ) => {
   //let cycle = +req.params.cycle
   let token = 2 // for now...want to do for all tokens
-  let s = '****'
+
 
   ra.lasttime().then( timestamp => {
     let cycle = config.cycleIdx( timestamp ) + 1 // next cycle is of interest
@@ -364,14 +367,13 @@ ctlRouter.route( '/testNextCycle' ).get( ( req, res ) => {
                 console.log( `${s}got info for round ${round}`, roundInfo )
                 console.log( `${s}analysts: [${roundInfo.analysts.toString()}]` )
                 console.log( `${s}submit pre-surveys for round ${round}` )
-                let promises = []
-                roundInfo.analysts.forEach( ( analyst, aref ) => {
-                  if ( aref < 2 ) return // no survey for leads
+                let promises = roundInfo.analysts.map( ( analyst, aref ) => {
+                  if ( aref < 2 ) return null// no survey for leads
                   
                   let answers = utils.toHexString( survey.generateAnswers() )
                   let comment = `hello from analyst on pre-survey ${aref}:${analyst}`
-                  promises.push( roundsService.submitRoundSurvey( round, aref, answers, comment, pre ) )
-                })
+                  return roundsService.submitRoundSurvey( round, aref, answers, comment, pre )
+                }).filter( item => item )
                 Promise.all( promises ).then( results_survey_submit => {
                   console.log( `${s}submitted survey results for round ${round}`, results_survey_submit )
                   //res.json( results_survey_submit )
@@ -382,15 +384,27 @@ ctlRouter.route( '/testNextCycle' ).get( ( req, res ) => {
                   Promise.all( promises ).then( results_briefs => {
                     console.log( `${s}Briefs submitted for round ${round}`,results_briefs )
                     // res.json( results_briefs )
-                    resolve( `briefs submitted for round ${round}`)                      
-                  }).catch( reject )
+                    console.log( `briefs submitted for round ${round}`)   
+
+                    console.log(`${s}advancing cron to cycle+frac`)
+                    ra.cronTo( config.cycleTime ( cycle ) + config.cycleFracTime( config.CYCLE_FRACTION ) ).then( result_cron => { 
+                      ra.lasttime().then( timestamp => {
+                        console.log(`${s}cron advanced to ${timestamp}:${toDate(timestamp)}`)
+                        console.log(`${s}....submitting post brief surveys`)
+
+                        resolve( timestamp )              
+                      }).catch( reject )
+                    }).catch( ctlError )
+
+                  }).catch( ctlError )
                 }).catch( ctlError )
               }).catch( ctlError )
             }))
           }).catch( ctlError )          
         }).catch( ctlError )
-        
+        /*
 
+        */
         // cron phase1, submit pre jury surveys
         // cron to phase 2, do leads submissions
         // cron to phase 3, post jury surveys
@@ -432,6 +446,38 @@ ctlRouter.route( '/testNextCycle' ).get( ( req, res ) => {
   // 
 
 
+})
+
+// e.g. totalTime: 2419200 for 28 days (1 standard cycle)
+ctlRouter.route( '/testCron/:totalTime/:interval' ).get( ( req, res ) => { // interval as fraction of period
+  let totalTime = +req.params.totalTime
+  let intervalTime = config.cycleFracTime( +req.params.interval )
+  let finishTime
+  let idx = 0
+
+  const runCrons = timestamp => new Promise( ( resolve, reject ) => {
+    const doCron = cronTime => ra.cronTo( cronTime ).then( res => {
+      let cycleStart = config.cycleIdx( cronTime )
+      console.log(`${s}${idx}-cron ran at ${cronTime}:${toDate(cronTime)}...cycle start:${cycleStart}`)
+      idx++
+      // do stuff
+
+
+
+      let nextTime = cronTime + intervalTime
+      if ( nextTime <= finishTime ) doCron( nextTime )
+      else resolve( cronTime )
+    }).catch( reject )
+    doCron( timestamp )
+  })
+
+  ra.lasttime().then( res => {
+    let timestamp = res.toNumber()
+    finishTime = timestamp + totalTime
+    console.log(`${s}cron procedure...${totalTime} cycles ${timestamp}:${toDate(timestamp)} => ${finishTime}:${toDate(finishTime)}`)
+    console.log(`${s}interval time ${intervalTime}`)
+    runCrons( timestamp + intervalTime ).then( lastTime => console.log(`finished ${lastTime}:${toDate(lastTime)}`))
+  })
 })
 
 /*

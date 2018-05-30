@@ -5,22 +5,21 @@ import config        from '../../config/appConfig'
 import { parseB32StringToUintArray } from '../utils'
 import { store } from '../../Root'
 
-export const getCronInfo = () => {
-  return new Promise( ( resolve,reject ) => {
-    //console.log(' beginning cycles fetch')
+export const getCronInfo = ( ms = true ) => new Promise( ( resolve, reject ) => {
+  //console.log(' beginning cycles fetch')
 
-    RatingAgency().then( ratingAgency => {
-      ratingAgency.lasttime().then( result => {
-        resolve( 1000*result.toNumber() )
-      })
-      .catch( result => { 
-        console.error( "Error from server on cron:"  + result ) 
-        reject( result )
-      })
+  RatingAgency().then( ra => {
+    ra.lasttime().then( result => {
+      resolve( ( ms ? 1000 : 1 ) * result.toNumber() )
     })
-    
+    .catch( result => { 
+      console.error( "Error from server on cron:"  + result ) 
+      reject( result )
+    })
   })
-}
+  
+})
+
 
 export const pulseCron = () => {
   return new Promise( (resolve,reject) => {

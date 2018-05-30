@@ -100,9 +100,11 @@ const appConfig = {
 
   cycleIdx: function ( _time, ms = false ) {
     if (ms) _time /= 1000
-    return( _time <= this.ZERO_BASE_TIME ? 0 
+    return Math.floor( _time <= this.ZERO_BASE_TIME ? 0 
       : this.CYCLE_FRACTIONS * ( _time - this.ZERO_BASE_TIME ) / this.CYCLE_PERIOD )
   },
+
+  cycleFracTime: function ( frac ){ return this.CYCLE_PERIOD / frac },
 
   JURY_SIZE: 6,
 

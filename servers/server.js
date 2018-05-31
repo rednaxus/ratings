@@ -16,9 +16,9 @@ const parseRange = require('parse-numeric-range').parse
 const config = require('../src/app/config/appConfig')
 const roundsService = require('../src/app/services/API/rounds')
 const cyclesService = require('../src/app/services/API/cycles')
+const tokensService = require('../src/app/services/API/tokens')
 
-
-const { setWeb3, getRatingAgency, getAnalystRegistry } = require('../src/app/services/contracts')
+const { getRatingAgency: RatingAgency, getAnalystRegistry: AnalystRegistry } = require('../src/app/services/contracts')
 const utils = require('../src/app/services/utils') // parseB32StringtoUintArray, toHexString, bytesToHex, hexToBytes
 const { bytes32FromIpfsHash, ipfsHashFromBytes32 } = require('../src/app/services/ipfs')
 
@@ -43,8 +43,15 @@ app.use(bodyParser.urlencoded({ extended: true })); // configure app to use body
 app.use(bodyParser.json());                         // this will let us get the data from a POST
 
 let web3 =  require('./web3') // require('./web3') //new Web3(config.ETHEREUM.ws)
-setWeb3( web3 )
+utils.setWeb3( web3 )
 
+let state = {
+  timestamp: 0,
+  cycles: [],
+  rounds: [],
+  analysts: [],
+  tokens: []
+}
 
 //console.log('survey',survey)
 //console.log(survey.getElements())
@@ -93,14 +100,20 @@ web3.eth.getCoinbase( ( err, coinbase ) => { // setup on launch
   console.log('got coinbase ',account)
   tr = { from: account, gas: config.ETHEREUM.gas, gasPrice: config.ETHEREUM.gasPrice }
 
-  getRatingAgency().then( ratingAgency  => {
-    ra = ratingAgency
-    ra.lasttime().then( result => {
-      console.log(`current rating agency time: ${ result.toNumber() }`)
-    })
+  RatingAgency().then( _ra  => {
+    ra = _ra
+    cyclesService.getCronInfo( false ).then( timestamp => {
+      console.log(`${s}current rating agency time: ${ timestamp }:${ toDate(timestamp) }`)
+      state.timestamp = timestamp
+    }).catch( ctlError )
+    tokensService.getTokensInfo(false).then( tokens => {
+      console.log(`${s}tokens:`,tokens)
+      state.tokens = tokens
+      console.log(`${s}waiting...`)
+    }).catch( ctlError )
   })
-  getAnalystRegistry().then( analystRegistry  => {
-    ar = analystRegistry
+  AnalystRegistry().then( _ar  => {
+    ar = _ar
     ar.num_analysts().then( result => {
       console.log(`analysts: ${ result.toNumber() }`)
     })
@@ -454,24 +467,44 @@ ctlRouter.route( '/testCron/:totalTime/:interval' ).get( ( req, res ) => { // in
   let totalTime = +req.params.totalTime
   let intervalTime = config.cycleFracTime( +req.params.interval )
   let finishTime
-  let idx = 0
+  let cronRunIdx = 0
 
   const runCrons = timestamp => new Promise( ( resolve, reject ) => {
     const doCron = cronTime => ra.cronTo( cronTime ).then( res => {
       let cycleStart = config.cycleIdx( cronTime )
-      console.log(`${s}${idx}-cron ran at ${cronTime}:${toDate(cronTime)}...cycle start:${cycleStart}`)
-      idx++
-      // do stuff
-      cyclesService.getCyclesInfo().then( cycles => {
-        console.log( `got cycles`,cycles )
+      console.log(`${s+s}${cronRunIdx}-cron ran at ${cronTime}:${toDate(cronTime)}...cycle start:${cycleStart}`)
+      cronRunIdx++
+      
+      console.log(`${s}get rounds active`)
+      Promise.all( [ roundsService.getRoundsActive(), roundsService.getRounds() ] ).then( nums => {
+        let [ num_active_rounds, num_rounds ] = nums
+        console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` )
+        //Promise.all( active_rounds.map( round => roundsService.getRoundInfo( round ) )).then( rounds => { // need num_analysts
+        
+        roundsService.getRoundsInfo( num_rounds - num_active_rounds, num_active_rounds ).then( rounds => {
+          console.log(`${s}got active rounds`,rounds)
+          state.rounds = rounds
+          // for each test user, get cycles info, and decide what to do
+ 
+          let nextTime = cronTime + intervalTime
+          if ( nextTime <= finishTime ) doCron( nextTime )
+          else resolve( cronTime )
 
-        let nextTime = cronTime + intervalTime
-        if ( nextTime <= finishTime ) doCron( nextTime )
-        else resolve( cronTime )
-      })
+          /*
+          testAnalysts.forEach( analystInfo => {
+            let analyst = analystInfo.id
+            let role = analyst < 4 ? 0 : 1   
 
+            cyclesService.getCyclesInfo( analyst ).then( cycles => {
+              console.log( `${s}got cycles for analyst ${ analyst }`,cycles )
 
+ 
+            }).catch( reject )
+          })
+          */
+        }).catch( reject )
 
+      }).catch( reject )
     }).catch( reject )
     doCron( timestamp )
   })

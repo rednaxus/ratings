@@ -91,6 +91,34 @@ module.exports = {
     }).catch( err )
   })),
 
+  getCyclesInfo: ( analyst = -1 ) => new Promise((resolve,reject) => RatingAgency().then( ra => {
+    ra.num_cycles().then(result => {
+      let numCycles = result.toNumber();
+      //console.log("result was:",numCycles);
+      let numFetch = 0
+      let cyclesData = []
+      for (var i = 0; i < numCycles; i++) {
+        module.exports.getCycleInfo( i, analyst ).then( res => {
+          //console.log('got cycle',res)
+          cyclesData.push(res)
+          //console.log('got cycle starting',res.timestart)
+          if (++numFetch === numCycles) {
+            cyclesData.sort( (a,b) => a.id - b.id)  
+            resolve(cyclesData)
+          }
+        })
+        .catch(result => { 
+          console.error("Error from server:"  + result) 
+          reject(result)
+        })        
+      }
+    })
+    .catch(result => { 
+      console.error("Error from server:"  + result) 
+      reject(result)
+    })
+  })),
+
   /* client side only */
   dataSource: function getData({ pageIndex, pageSize }) { 
     return new Promise( ( resolve, reject ) => RatingAgency().then( ra => {
@@ -123,34 +151,6 @@ module.exports = {
         reject(err)
       })
     }))
-  },
-
-  getCyclesInfo: ( analyst = -1 ) => new Promise((resolve,reject) => RatingAgency().then( ra => {
-    ra.num_cycles().then(result => {
-      let numCycles = result.toNumber();
-      //console.log("result was:",numCycles);
-      let numFetch = 0
-      let cyclesData = []
-      for (var i = 0; i < numCycles; i++) {
-        module.exports.getCycleInfo( i, analyst ).then( res => {
-          //console.log('got cycle',res)
-          cyclesData.push(res)
-          //console.log('got cycle starting',res.timestart)
-          if (++numFetch === numCycles) {
-            cyclesData.sort( (a,b) => a.id - b.id)  
-            resolve(cyclesData)
-          }
-        })
-        .catch(result => { 
-          console.error("Error from server:"  + result) 
-          reject(result)
-        })        
-      }
-    })
-    .catch(result => { 
-      console.error("Error from server:"  + result) 
-      reject(result)
-    })
-  }))
+  }
 
 }

@@ -1,15 +1,15 @@
 const config = require('../config/appConfig')
 const contract = require('truffle-contract')
+const utils = require('./utils')
+
 const TokenERC20Contract = require('../../../build/contracts/TokenERC20.json')
 const TestTokenERC20Contract = require('../../../build/contracts/vevaTest.json')
 const RatingAgencyContract = require('../../../build/contracts/RatingAgency.json')
 const AnalystRegistryContract = require('../../../build/contracts/AnalystRegistry.json')
 
-let web3 = null
-const setWeb3 = w3 => web3 = w3 // used on server side
 
 const getContractInstance = (contractDesc, addr = null) => new Promise((resolve, reject) => {
-  if (!web3) web3 = window.web3 
+  let web3 = utils.getWeb3() 
   //console.log('web3 version',web3.version)
 
   const instanceContract = contract(contractDesc)
@@ -35,7 +35,6 @@ const getRatingAgency = () => getContractInstance( RatingAgencyContract ) //, ap
 const getAnalystRegistry = () => getContractInstance( AnalystRegistryContract ) //, appConfig.ANALYST_REGISTRY )
 
 module.exports = {
-  setWeb3,
   getContractInstance,
   getTokenERC20,
   getTestTokenERC20,

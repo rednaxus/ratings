@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { Grid } from 'react-redux-grid'
 
 import Pager from './Pager'
-import api from '../../services/API/tokens'
+import { dataSource as api } from '../../services/API/tokens'
 
 import events from './events'
 /*

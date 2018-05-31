@@ -5,7 +5,7 @@ const { getRatingAgency, getAnalystRegistry } = require('../contracts')
 const { hexToBytes, hexToBytesSigned } = require('../utils')
 
 module.exports = {
-  getRoundInfo: ( round, analyst, deep = true ) => new Promise( (resolve,reject) => getRatingAgency().then( ra  => {
+  getRoundInfo: ( round, deep = true ) => new Promise( (resolve,reject) => getRatingAgency().then( ra  => {
     const err = err => {
       console.error(`Error from server on getRoundInfo: ${err}` ) 
       reject( err )
@@ -102,19 +102,28 @@ module.exports = {
     })
   }),
 
-  getRoundsActive: () => new Promise( ( resolve, reject ) => {
-    getRatingAgency().then( ra => {
-      ra.num_rounds_active().then( num_rounds_active => {
-        console.log(`got ${num_rounds_active} rounds active`)
-        if ( !num_rounds_active ) resolve([])
-        let promises = new Array( num_rounds_active ).fill().map( ( _, roundRef ) => ra.roundActive( roundRef ) )
-        Promise.all( promises ).then( rounds => {
-          console.log(`got active rounds ${rounds.toString()}`)
-          resolve( rounds )
-        }).catch( reject )
+  // get the index to the start of the active rounds (goes to the end)
+  getRoundsActive: () => new Promise( ( resolve, reject ) => getRatingAgency().then( ra => ra.num_rounds_active().then( num_rounds_active => {
+    //console.log(`${num_rounds_active} rounds active`)
+    resolve( num_rounds_active.toNumber() )
+  }).catch( reject ))),
+      /*
+      if ( !num_rounds_active ) resolve([])
+      let promises = new Array( num_rounds_active ).fill().map( ( _, roundRef ) => ra.roundActive( roundRef ) )
+      Promise.all( promises ).then( rounds => {
+        console.log(`got active rounds ${rounds.toString()}`)
+        resolve( rounds )
       }).catch( reject )
-    })
-  }),
+      */
+
+  // get current number of rounds    
+  getRounds: () => new Promise( ( resolve, reject ) => getRatingAgency().then( ra => ra.num_rounds().then( num_rounds => {
+    //console.log(`${num_rounds} rounds`)
+    resolve( num_rounds.toNumber() )
+  }).catch( reject ))),
+
+  getRoundsInfo: ( fromRound, num, deep=true ) => 
+    Promise.all( new Array( num ).fill().map( (_,idx) => module.exports.getRoundInfo( fromRound + idx, deep ) ) ),
 
   // function submitBrief( uint16 _round, uint8 _analyst, address _file )
   submitRoundBrief: ( round, aref, filehash ) => new Promise( (resolve,reject) => getRatingAgency().then( ra => {

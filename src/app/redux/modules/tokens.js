@@ -7,8 +7,8 @@ import * as _ from 'lodash'
 
 //import {  fetchMockTokensData } from '../../services'
 import { 
-  getTokensData,
-  getTokenData,
+  getTokensInfo,
+  getTokenInfo,
   getTokenRounds
 } from '../../services/API'
 
@@ -128,7 +128,7 @@ export const fetchTokenData = ( id, full=true ) => { // if full is set get all r
     dispatch( request( id ) )
     if (full) dispatch( fetchTokenRounds( id ) )
     //console.log('getting token info from ethplorer')
-    return getTokenData( id ).then( info => {
+    return getTokenInfo( id ).then( info => {
       dispatch( receive( info ) )
       return info
     })

@@ -2,7 +2,7 @@
    ethplorer api
   
 */
-import axios  from 'axios'
+const axios = require('axios')
 
 const baseUrl = 'https://api.ethplorer.io/'
 const params = { apiKey: 'freekey' }
@@ -69,11 +69,14 @@ https://api.ethplorer.io/getTokenInfo/0xff71cb760666ab06aa73f34995b42dd4b85ea07b
   countOps: 1908343
 }
 */
-export const getTokenInfo = ( tokenAddr ) => {
-  return fetchInstance.request({
-     	method:'get',
-      url:'getTokenInfo/'+tokenAddr
-  })
+module.exports = {
+  getTokenInfoExt: tokenAddr => {
+    return fetchInstance.request({
+        method:'get',
+        url:'getTokenInfo/'+tokenAddr
+    })
+  }
 }
+  
 
 

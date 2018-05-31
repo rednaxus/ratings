@@ -129,10 +129,7 @@ contract RatingAgency {
     mapping ( uint16 => Round ) rounds;
     uint16 public num_rounds = 0;
 
-    mapping ( uint16 => uint16 ) rounds_scheduled; // scheduled rounds by id
-    mapping ( uint16 => uint16 ) rounds_active;
-    //uint16 public num_rounds_scheduled = 0;
-    uint16 public num_rounds_active = 0;
+    uint16 public num_rounds_active = 0; // index to first active round, keeps moving down = num_rounds - num_rounds_active
 
     address public registryAddress;
 
@@ -334,18 +331,20 @@ contract RatingAgency {
 
     event CycleFinished( uint16 cycle, uint16 cycle_finished, uint time );
     function cycleFinish( uint16 _cycle ) public { // finish any previous cycles
-        for ( uint16 i = 0; i < num_rounds_active; i++ ) {
-            uint16 round = rounds_active[ i ];
+        for ( uint16 round = num_rounds - num_rounds_active; round < num_rounds; round++ ) {
             Cycle storage c = cycles[ rounds[ round ].cycle ];
             if ( c.timestart + c.period <= time ) {
                 roundFinish( round );
                 return;  // ! because of gas purposes only finish one round...can adjust this if finish is less costly
             }
         }
-        for ( i = 0; i < _cycle; i++ ){ // deactivate any past cycles
-            c = cycles[ i ];
-            if (c.stat == ACTIVE && c.timestart + c.period <= time ) c.stat = FINISHED;
-            emit CycleFinished( _cycle, i, time );
+        for ( uint16 cycle = 0; cycle < _cycle; cycle++ ){ // deactivate any past cycles
+            c = cycles[ cycle ];
+            if (c.stat == ACTIVE && c.timestart + c.period <= time ){
+                c.stat = FINISHED;  
+                emit CycleFinished( _cycle, cycle, time );
+            } 
+
         }
     }
 
@@ -407,10 +406,11 @@ contract RatingAgency {
     /*
      ***** Round ****
     */
-
+    /*
     function roundActive( uint16 _activeRef ) public view returns ( uint16 round ) {
         round = rounds_active[ _activeRef ];
     }
+    */
     event RoundActivated( uint16 _cycle, uint16 _round, uint16 num_rounds_active, uint8 num_analysts );
     function roundActivate( uint16 _cycle, uint32 _token ) public returns ( uint16 ){
         uint16 round = num_rounds++;
@@ -420,7 +420,7 @@ contract RatingAgency {
         r.value             = ROUND_VALUE_DEFAULT;
         r.stat              = ACTIVE;
         r.representative    = msg.sender;
-        rounds_active[ num_rounds_active++ ] = round;
+        num_rounds_active++;
         roundPopulate( _cycle, round );
         for (uint8 a = 0; a < r.num_analysts; a++ ) {
             RoundAnalyst storage ra = r.analysts[ a ];
@@ -461,7 +461,8 @@ contract RatingAgency {
     function roundFinish( uint16 _round ) public {
         rounds[ _round ].stat = FINISHED;
         roundTally( _round );
-        for (uint16 i = 0; i < num_rounds_active; i++){ // remove from active rounds
+        num_rounds_active--;
+        /*for (uint16 i = 0; i < num_rounds_active; i++){ // remove from active rounds
             if ( rounds_active[i] == _round ) {
                 num_rounds_active--;
                 for (uint16 j = i; j < num_rounds_active; j++)
@@ -469,6 +470,7 @@ contract RatingAgency {
                 break;
             }
         }
+        */
         emit RoundFinished( rounds[ _round ].cycle, _round, num_rounds_active );
     }
 

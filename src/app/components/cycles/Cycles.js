@@ -47,7 +47,7 @@ const columns = [
   },*/
   {
     name: 'Jurists Avail',
-    dataIndex: 'num_jurists_available',
+    dataIndex: 'num_availables_jury',
     width: '15%',
     className: 'additional-class'
   },
@@ -59,7 +59,7 @@ const columns = [
   },
   {
     name: 'Leads Avail',
-    dataIndex: 'num_leads_available',
+    dataIndex: 'num_availables_lead',
     width: '15%',
     className: 'additional-class'
   },

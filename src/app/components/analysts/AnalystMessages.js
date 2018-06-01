@@ -110,19 +110,19 @@ const message_templates = {
     body: data =>
       <div>We have scheduled {data.signupCycles} new round periods! Please make sure your availability is updated in your profile.</div>,
     footer: data => <div>Scheduling</div>,
-    glyph: data => <div><Glyphicon glyph="calendar"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="calendar"></Glyphicon></div>
   },
 
   round_activated: {
     link: data => `round/${data.round}`,
     heading: data => <div>Active Round</div>,
-    body: data => 
+    body: data =>
       <div>
         <div>You are <span className="text-purple">{config.role_name[data.role]}</span> for <Link to={`/token/${data.tokenId}`}>{data.tokenName}</Link> round that began <Moment from={data.now}>{data.start}</Moment>.</div>
         <div>{ data.role ? "Survey" : "Brief" } is due for this round <Moment from={data.now}>{data.due}</Moment></div>
       </div>,
     footer: data => <div>{ data.role ? "Survey" : "Brief" } is due <Moment from={data.now}>{data.due}</Moment>.</div>,
-    glyph: data => <div><Glyphicon glyph="ok-circle"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="ok-circle"></Glyphicon></div>
   },
 
   round_finished: {
@@ -130,7 +130,7 @@ const message_templates = {
     heading: data => <div>Round Finished</div>,
     body: data => <div>Analysis round for <Link to={`/token/${data.tokenId}`}>{data.tokenName}</Link> (ended <Moment from={data.now}>{data.start}</Moment>) has finished. Thank you for partcipating!</div>,
     footer: data => <div>Round Info</div>,
-    glyph: data => <div><Glyphicon glyph="education"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="education"></Glyphicon></div>
   },
 
   round_scheduled: {
@@ -138,7 +138,7 @@ const message_templates = {
     heading: data => <div>Round Scheduled</div>,
     body: data => <div>A new round has been scheduled to begin <Moment from={data.now}>{data.due}</Moment>. It's worth {data.roundValue} Veva token--interested?</div>,
     footer: data => <div>Round Schedule</div>,
-    glyph: data => <div><Glyphicon glyph="time"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="time"></Glyphicon></div>
   },
 
 
@@ -147,7 +147,7 @@ const message_templates = {
     heading: data => <div>New Payment Available!</div>,
     body: data => <div>Nice work! You have earned a new payment of {data.tokens} VEVA! Your new balance is {data.balance} VEVA.</div>,
     footer: data => <div>View Balance</div>,
-    glyph: data => <div><Glyphicon glyph="usd"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="usd"></Glyphicon></div>
   },
 
   reputation_score: {
@@ -155,7 +155,7 @@ const message_templates = {
     heading: data => <div>New Rep Points!</div>,
     body: data => <div>Well done! You have earned {data.new_points} new reputation points! You now have {data.reputation} points.</div>,
     footer: data => <div>See in Profile</div>,
-    glyph: data => <div><Glyphicon glyph="thumbs-up"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="thumbs-up"></Glyphicon></div>
   },
 
   new_level: {
@@ -166,7 +166,7 @@ const message_templates = {
         <span className={`${config.LEVELS[data.new_level].styles}`}>{config.LEVELS[data.new_level].name}!</span>
       </div>,
     footer: data => <div>See in Profile</div>,
-    glyph: data => <div><Glyphicon glyph="knight"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="knight"></Glyphicon></div>
   },
 
   additional_referrals: {
@@ -174,7 +174,7 @@ const message_templates = {
     heading: data => <div>New Referrals!</div>,
     body: data => <div>You have earned enough rep points to get {data.newRefsAvail} additional referrals, giving you a total of {data.referrals}.</div>,
     footer: data => <div>View in Profile</div>,
-    glyph: data => <div><Glyphicon glyph="plus-sign"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="plus-sign"></Glyphicon></div>
   },
 
 
@@ -183,7 +183,7 @@ const message_templates = {
     heading: data => <div>New Token Added!</div>,
     body: data => <div>{ data.name } was added to system! Check the token details for more information.</div>,
     footer: data => <div>Token Details</div>,
-    glyph: data => <div><Glyphicon glyph="plus"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="plus"></Glyphicon></div>
   },
 
   rounds_in_progress:{
@@ -191,7 +191,7 @@ const message_templates = {
     heading: data => <div>Round In Progress</div>,
     body: data => <div>A round for <Link to={`/token/${data.tokenId}`}>{data.tokenName}</Link> (began <Moment from={data.now}>{data.start}</Moment>) is in progress.  You are a <span className="text-purple">{config.role_name[data.role]}</span>, and it's worth {data.roundValue} Veva token. </div>,
     footer: data => <div>View Round Info</div>,
-    glyph: data => <div><Glyphicon glyph="star-empty"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="star-empty"></Glyphicon></div>
   },
 
   sponsored_analyst_joins: {
@@ -199,7 +199,7 @@ const message_templates = {
     heading: data => <div>New Sponsored Analyst!</div>,
     body: data => <div>Hurray! One of your referrals (Analyst #{data.analyst}) has joined. Thank you for participating in the Veva ecosystem! You have earned an additional {data.reputation_points} rep points.</div>,
     footer: data => <div>See on Status Page</div>,
-    glyph: data => <div><Glyphicon glyph="heart"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="heart"></Glyphicon></div>
   },
 
   new_ratings: {
@@ -207,7 +207,7 @@ const message_templates = {
     heading: data => <div>New Ratings!</div>,
     body: data => <div>New token rating data has been added for rounds {data.rounds}! Check out the tokens page for more information or to browse.</div>,
     footer: data => <div>See Latest Ratings</div>,
-    glyph: data => <div><Glyphicon glyph="th-list"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="th-list"></Glyphicon></div>
   },
 
   make_referral: {
@@ -215,7 +215,7 @@ const message_templates = {
     heading: data => <div>Reminder: You have unused referrals!</div>,
     body: data => <div>You have {data.unused_refs} unused referrals. Your referrals help keep the Veva system healthy and secure—and you get a cut of their winnings! </div>,
     footer: data => <div>Go to Status Page</div>,
-    glyph: data => <div><Glyphicon glyph="user"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="user"></Glyphicon></div>
   },
 
   jurist_round_starting: {
@@ -223,7 +223,7 @@ const message_templates = {
     heading: data => <div>Round Starting!</div>,
     body: data => <div>You are a confirmed JURIST for the {data.token} round, which is starting now!</div>,
     footer: data => <div>Round Info</div>,
-    glyph: data => <div><Glyphicon glyph="bullhorn"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="bullhorn"></Glyphicon></div>
   },
 
   brief_posted: {
@@ -231,7 +231,7 @@ const message_templates = {
     heading: data => <div>New Brief Posted!</div>,
     body: data => <div>A lead analyst in the {data.token} round has posted a new brief. You can access it until it closes <Moment fromNow>{data.due}</Moment>.</div>,
     footer: data => <div>View Now</div>,
-    glyph: data => <div><Glyphicon glyph="edit"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="edit"></Glyphicon></div>
   },
 
   pre_survey_due: {
@@ -239,7 +239,7 @@ const message_templates = {
     heading: data => <div>Pre-Survey Due</div>,
     body: data => <div>Reminder: Please take the pre-survey for the {data.round} round--it's due <Moment fromNow>{data.due}</Moment>.</div>,
     footer: data => <div>Take it Now</div>,
-    glyph: data => <div><Glyphicon glyph="list-alt"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="list-alt"></Glyphicon></div>
   },
 
   post_survey_due:{
@@ -247,7 +247,7 @@ const message_templates = {
     heading: data => <div>Post-Survey Due!</div>,
     body: data => <div>Reminder: Please take the post-survey for round #{data.round}--it is due <Moment fromNow>{data.due}</Moment>.</div>,
     footer: data => <div>Take it Now</div>,
-    glyph: data => <div><Glyphicon glyph="list-alt"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="list-alt"></Glyphicon></div>
   },
 
   /* Round Confirmation */
@@ -256,7 +256,7 @@ const message_templates = {
     heading: data => <div>You are confirmed as a lead!</div>,
     body: data => <div>You are a LEAD for an upcoming round, which is confirmed and will be starting soon!</div>,
     footer: data => <div>See Rounds</div>,
-    glyph: data => <div><Glyphicon glyph="check"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="check"></Glyphicon></div>
   },
 
   round_starting: {
@@ -264,7 +264,7 @@ const message_templates = {
     heading: data => <div>Round Starting!</div>,
     body: data => <div>Reminder! You are slated to participate in a round starting <Moment fromNow>{data.starting}</Moment>!</div>,
     footer: data => <div>Round Information</div>,
-    glyph: data => <div><Glyphicon glyph="bell"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="bell"></Glyphicon></div>
   },
 
   briefs_due: {
@@ -273,7 +273,7 @@ const message_templates = {
     body: data => <div>Your LEAD brief for the {data.round} round is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>
     ,
     footer: data => <div>Upload Now</div>,
-    glyph: data => <div><Glyphicon glyph="paperclip"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="paperclip"></Glyphicon></div>
   },
 
   rebuttal_due: {
@@ -281,7 +281,7 @@ const message_templates = {
     heading: data => <div>Rebuttal Due!</div>,
     body: data => <div>Your LEAD rebuttal for the {data.round} round is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>,
     footer: data => <div>View Opposing Brief</div>,
-    glyph: data => <div><Glyphicon glyph="paperclip"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="paperclip"></Glyphicon></div>
   },
 
   round_confirmed: {
@@ -289,7 +289,7 @@ const message_templates = {
     heading: data => <div>Round confirmed!</div>,
     body: data => <div>One of your requested rounds has been confirmed and will be starting <Moment fromNow>{data.start}</Moment>!</div>,
     footer: data => <div>View Round Schedule</div>,
-    glyph: data => <div><Glyphicon glyph="ok-sign"></Glyphicon></div>
+    glyph: data => <div className="messageGlyph"><Glyphicon glyph="ok-sign"></Glyphicon></div>
   }
 
 }

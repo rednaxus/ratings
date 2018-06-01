@@ -4,7 +4,30 @@ const { bytes32FromIpfsHash, ipfsHashFromBytes32 } = require('../ipfs')
 const { getRatingAgency, getAnalystRegistry } = require('../contracts')
 const { hexToBytes, hexToBytesSigned } = require('../utils')
 
+const s = '***'
+
 module.exports = {
+  getActiveRounds: ( analyst = -1 ) => new Promise( ( resolve, reject ) => {
+    console.log(`${s}get rounds active`)
+    Promise.all( [ module.exports.getRoundsActive(), module.exports.getRounds() ] ).then( nums => {
+      let [ num_active_rounds, num_rounds ] = nums
+      console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` ) 
+           
+      module.exports.getRoundsInfo( num_rounds - num_active_rounds, num_active_rounds ).then( rounds => {
+        console.log(`${s}got active rounds`,rounds)
+        if (analyst == -1) {
+          resolve( rounds )
+          return
+        }
+        Promise.all(
+          rounds.map( (round,idx) => module.exports.getRoundAnalystInfo( round, analyst ).then( roundAnalystInfo => 
+            rounds[idx] = { ...rounds[idx], ...roundAnalystInfo } 
+          ))
+        ).then( resolve( rounds ) )
+      })
+    })  
+  }),
+
   getRoundInfo: ( round, deep = true ) => new Promise( (resolve,reject) => getRatingAgency().then( ra  => {
     const err = err => {
       console.error(`Error from server on getRoundInfo: ${err}` ) 
@@ -141,30 +164,21 @@ module.exports = {
   submitRoundSurvey : ( 
     round, 
     analystRef, // analyst ref in the round
-    answers,
+    answers,  // can be either array or encoded with toHexString
     comment, 
     preOrPost = 0 
-  ) => {
-    return new Promise( (resolve,reject) => {
-      getRatingAgency().then( ra => {
-        ra.roundSurveySubmit(
-          round, 
-          analystRef,
-          preOrPost, 
-          answers, 
-          comment
-        ).then( result => {
-          console.log('submitted survey result',result)
-          resolve( 'done' )
-        })
-        .catch( result => { 
-          console.error("Error submitting survey:"  + result) 
-          reject( result )
-        })
+  ) => new Promise( (resolve,reject) => getRatingAgency().then( ra => {
+      let _answers = answers instanceof Array ? utils.toHexString( answers ): answers
+      ra.roundSurveySubmit( round, analystRef, preOrPost, answers, comment ).then( result => {
+        console.log('submitted survey result',result)
+        resolve( 'done' )
       })
-
+      .catch( result => { 
+        console.error("Error submitting survey:"  + result) 
+        reject( result )
+      })
     })
-  },
+  ),
 
 
 

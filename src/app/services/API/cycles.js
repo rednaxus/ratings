@@ -14,19 +14,19 @@ module.exports = {
   })),
 
   pulseCron: ( interval = config.CRON_INTERVAL ) => new Promise( (resolve,reject) => RatingAgency().then( ra => {
-    ra.lasttime().then( result => {
-      let lasttime = result.toNumber()
-      console.log('pulsing cron from ' + lasttime + ' to '+ (lasttime+interval))
-      lasttime += interval
-      ra.cron( lasttime ).then( cronResult => {
-        //console.log('cron result',cronResult)
-        resolve( 'done' ) //1000*result.toNumber() )
-      }).catch( err )
-    }).catch( err )
     const err = err => {
       console.error(`Error on cron: ${err}`) 
       reject( result )     
     }
+    ra.lasttime().then( result => {
+      let lasttime = result.toNumber()
+      console.log('pulsing cron from ' + lasttime + ' to '+ (lasttime+interval))
+      lasttime += interval
+      ra.cron( interval ).then( cronResult => {
+        //console.log('cron result',cronResult)
+        resolve( cronResult ) 
+      }).catch( err )
+    }).catch( err )
   })),
 
   cycleSignup: ( cycle, analyst, role ) => new Promise( (resolve,reject) => RatingAgency().then( ra => {

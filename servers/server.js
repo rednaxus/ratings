@@ -53,13 +53,15 @@ let state = {
   tokens: []
 }
 
-/*()
+
 let t1 = config.cycleTime( 0 )
-let t2 = config.cycleTime( 0 ) + config.cyclePhaseTime(1)
+let t2 = config.cycleTime( 0 ) + config.cyclePhaseTime(4)
 console.log(t1,t2)
-console.log(`test cycle frac`,config.cycleFraction(0,t1))
-console.log(`test cycle frac`,config.cycleFraction(0,t2))
-*/
+console.log(`cycle index ${t1} is ${config.cycleIdx(t1)}`)
+console.log(`cycle index ${t2} is ${config.cycleIdx(t2)}`)
+console.log(`test cycle phase`,config.cyclePhase(0,t1))
+console.log(`test cycle phase`,config.cyclePhase(0,t2))
+
 
 //console.log('survey',survey)
 //console.log(survey.getElements())
@@ -176,6 +178,71 @@ const getBlocks = blockrange => {
 
 }
 
+const getAnalystCycles = analyst => new Promise ( ( resolve, reject ) => cyclesService.getCyclesInfo( analyst ).then( cycles => {
+    //console.log( `${s}got cycles for analyst ${ analyst }`,cycles )
+  let cyclesInfo = statusService.cyclesByStatus( { cycles, rounds:state.rounds, timestamp:state.timestamp, tokens:state.tokens })
+  //console.log(`cycles by status for ${analyst}`,cyclesByStatus)
+  resolve( { cycles, cyclesByStatus: cyclesInfo } )
+}).catch( reject ))
+
+
+
+const analystUpdate = analyst => new Promise( (resolve, reject ) => {
+  let s = `***${analyst}***`
+  let role = analyst < 4 ? 0 : 1
+  roundsService.getActiveRounds( analyst ).then( rounds => {
+    console.log( `${s}active rounds`,rounds )
+    cyclesService.getCronInfo().then( timestamp => {
+      let currentCycle = config.cycleIdx( timestamp )
+      let cyclePhase = config.cyclePhase( currentCycle, timestamp )
+      console.log(`${s}cycle ${currentCycle} with timestamp ${timestamp} at phase ${cyclePhase}`)
+      cyclesService.getCyclesInfo( analyst ).then( cycles => {
+        console.log( `${s}got cycles`,cycles )
+        let byStatus = statusService.cyclesByStatus( { cycles, rounds:state.rounds, timestamp:state.timestamp, tokens:state.tokens } )
+        let promises = []
+        byStatus.comingSignupCycles.forEach( cycle => { // volunteer for any future cycles some number of times
+          let status = cycle.role[ role ]
+          if ( status.num_volunteers + status.num_confirms >= numVolunteerRepeats ) {
+            console.log(`${s}already volunteered to cycle ${cycle.id}, dont add`)
+          } else { // volunteer to this cycle
+            promises.push( cyclesService.cycleSignup( cycle.id, analyst, role ) )
+            console.log(`${s}volunteering to cycle ${cycle.id}`)
+          }
+          if ( status.num_volunteers & statusService.isConfirmDue( cycle ) ) {
+            promises.push( cyclesService.cycleConfirm( cycle.id, analyst, role ) )
+            console.log(`${s}confirming to cycle ${cycle.id}`)
+          }
+        })
+        byStatus.activeCycles.forEach( cycle => {
+          console.log(`${s}active cycle ${cycle}`)
+        })
+        rounds.forEach( round => { // active rounds
+          let aref = round.inround_id
+          console.log(`${s}round ${round.id} analyst status ${round.analyst_status} in-round ref ${aref}`)
+          if (config.statuses[ round.analyst_status ] == 'first survey due') {
+            let answers = survey.generateAnswers()
+            let comment = `hello from analyst on pre-survey ${aref}:${analyst}`
+            promises.push( roundsService.submitRoundSurvey( round, aref, answers, comment, pre ) )
+          } else if (config.status[ round.analyst_status] == 'second survey due') {
+            let answers = survey.generateAnswers('down')
+            let comment = `hello from analyst on post-survey ${aref}:${analyst}`
+            promises.push( roundsService.submitRoundSurvey( round, aref, answers, comment, post ) )
+          } else if (config.status[ rai.analyst_status] == 'brief due') {
+            promises.push( roundsService.submitRoundBrief( round, aref, briefs[aref] ) )
+          }
+        })
+        console.log(`${s}${promises.length} promises`)
+        Promise.all( promises ).then( () => {
+          cyclesService.getCyclesInfo( analyst ).then( cycles => {
+          let byStatus = statusService.cyclesByStatus( { cycles, rounds:state.rounds, timestamp:state.timestamp, tokens:state.tokens } )
+            console.log(`${s}cycles by status`,byStatus)
+            resolve(byStatus)
+          }).catch( reject )       
+        }).catch( reject )
+      }).catch( ctlError )
+    }).catch( ctlError )
+  }).catch( ctlError )
+})
 
 /*
  *      api routes
@@ -183,6 +250,13 @@ const getBlocks = blockrange => {
 
 apiRouter.get('/', ( req, res ) => {
     res.json({ message: 'hooray! welcome to api!' });   
+})
+
+apiRouter.route( '/cronInfo' ).get( (req, res ) => {
+  cyclesService.getCronInfo().then( timestamp => {
+    console.log(`${s}cron`, timestamp )
+    res.json( { timestamp:timestamp, date:toDate( timestamp ), cycle: config.cycleIdx( timestamp ) } )
+  }).catch( apiError )
 })
 
 apiRouter.get('/round/:round/:analyst', ( req, res ) => {
@@ -194,19 +268,107 @@ apiRouter.get('/round/:round/:analyst', ( req, res ) => {
 })
 
 
+apiRouter.get('/roundSummaries/:fromDate').get( ( req, res ) => {
+  res.json({ message: 'yay, rounds'})
+})
+
+
+apiRouter.route('/getAnalystCyclesStatus/:analyst').get( ( req, res ) => {
+  cyclesService.getCronInfo().then( timestamp => {
+    console.log(`${s}cron`, timestamp )
+    let timeInfo = { timestamp:timestamp, date:toDate( timestamp ), cycle: config.cycleIdx( timestamp ) } 
+    getAnalystCycles( +req.params.analyst ).then( ( { cycles, cyclesByStatus } ) => {
+      console.log(`${s}`,cycles,cyclesByStatus)
+      res.json( {...timeInfo, ...cyclesByStatus } )
+    })
+  })
+})
+
 /*
- *     control routes
+curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0x7E5BCE8eE498F6C29e4DdAd10CB816D6E2f139f7", "latest"],"id":1}' http://localhost:8545
+*/
+apiRouter.route('/eth').get(function(req,res){
+    console.log('got get');
+}).post(function(req,res) {
+  console.log('got post, making proxy request',req.body);
+  ethProxy.web(req, res, { target: 'http://localhost:8545' }, function(e) { 
+    console.log('got proxy response',e);
+    res.json({message:"got it"});
+  })
+})
+
+
+
+/*
+ *     control routes for testing, maintenance, etc.
 */
 
 ctlRouter.get('/', function(req, res) {
   res.json({ message: 'hooray! welcome to ctl!' });   
 })
 
-ctlRouter.route('/cron/:time').get( ( req, res ) => {
-    ra.cron( +req.params.time ).then( result => {
-      res.json( result )
-    })
+ctlRouter.route( '/cron/:interval' ).get( ( req, res ) => { // interval as fraction of period
+  let intervalTime = config.cycleFracTime( +req.params.interval )
+  console.log(`${s}interval time ${intervalTime}`)
+  cyclesService.pulseCron( intervalTime ).then( result => {
+    console.log(`${s}cron`, result )
+    res.json( result )
+  }).catch( apiError )
 })
+
+
+
+
+ctlRouter.route('/testDoAnalyst/:analyst').get( ( req, res ) => {
+  analystUpdate( +req.params.analyst ).then( result => {
+    console.log(`${s}`,result)
+    res.json( result )
+  }).catch( ctlError )
+})
+
+
+// e.g. totalTime: 2419200 for 28 days (1 standard cycle)
+ctlRouter.route( '/testSimRun/:totalTime/:interval' ).get( ( req, res ) => { // interval as fraction of period
+  let totalTime = +req.params.totalTime
+  let intervalTime = config.cycleFracTime( +req.params.interval )
+  let finishTime
+  let cronRunIdx = 0
+
+  const runCrons = timestamp => new Promise( ( resolve, reject ) => {
+    const doCron = cronTime => ra.cronTo( cronTime ).then( res => {
+      let cycleStart = config.cycleIdx( cronTime )
+      console.log(`${s+s}${cronRunIdx}-cron ran at ${cronTime}:${toDate(cronTime)}...cycle start:${cycleStart}`)
+      cronRunIdx++
+      
+      console.log(`${s}get rounds active`)
+      Promise.all( [ roundsService.getRoundsActive(), roundsService.getRounds() ] ).then( nums => {
+        let [ num_active_rounds, num_rounds ] = nums
+        console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` )
+        //Promise.all( active_rounds.map( round => roundsService.getRoundInfo( round ) )).then( rounds => { // need num_analysts
+        
+        roundsService.getRoundsInfo( num_rounds - num_active_rounds, num_active_rounds ).then( rounds => {
+          console.log(`${s}got active rounds`,rounds)
+          state.rounds = rounds
+          let promises = testAnalysts.map( analystInfo => doAnalyst( analystInfo.id ) )
+          utils.runPromisesInSequence( promises ).then( () => {
+            let nextTime = cronTime + intervalTime
+            if ( nextTime <= finishTime ) doCron( nextTime ) // repeat
+            else resolve( cronTime )
+          }).catch( reject )
+        }).catch( reject )
+      }).catch( reject )
+    }).catch( reject )
+    doCron( timestamp )
+  })
+
+  cyclesService.getCronInfo().then( timestamp => {
+    finishTime = timestamp + totalTime
+    console.log(`${s}cron procedure...${totalTime} cycles ${timestamp}:${toDate(timestamp)} => ${finishTime}:${toDate(finishTime)}`)
+    console.log(`${s}interval time ${intervalTime}`)
+    runCrons( timestamp + intervalTime ).then( lastTime => console.log(`finished ${lastTime}:${toDate(lastTime)}`))
+  })
+})
+
 
 ctlRouter.route('/rounds').get( ( req, res ) => {
   ra.lasttime().call( tr ).then( result => {
@@ -240,7 +402,7 @@ ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
   testAnalysts.forEach( analyst => {
     let role = analyst.id < 4 ? 0 : 1  // first four in test analysts are leads
     promises.push( 
-      ra.cycleVolunteer( cycle, analyst.id, role )
+      cyclesService.cycleSignup( cycle, analyst.id, role )
       /*.then( result => {
         console.log( `${s}got result`,result )
         return result
@@ -257,7 +419,7 @@ ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
     testAnalysts.forEach( analyst => {
       let role = analyst.id < 4 ? 0 : 1       
       promises.push( 
-        ra.cycleConfirm( cycle, analyst.id, role )
+        cyclesService.cycleConfirm( cycle, analyst.id, role )
         /*.then( result => {
           console.log( `${s}got result`,result )
           return result
@@ -358,6 +520,25 @@ ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
 
 })
 
+
+
+
+
+
+
+
+app.use('/api', apiRouter)
+app.use('/ctl', ctlRouter)
+
+app.listen(port, function () {
+  console.log('listening on port '+port);
+})
+
+
+
+
+
+/*
 ctlRouter.route( '/testNextCycle' ).get( ( req, res ) => {
   //let cycle = +req.params.cycle
   let token = 2 // for now...want to do for all tokens
@@ -424,9 +605,9 @@ ctlRouter.route( '/testNextCycle' ).get( ( req, res ) => {
             }))
           }).catch( ctlError )          
         }).catch( ctlError )
-        /*
+        
 
-        */
+        
         // cron phase1, submit pre jury surveys
         // cron to phase 2, do leads submissions
         // cron to phase 3, post jury surveys
@@ -469,125 +650,5 @@ ctlRouter.route( '/testNextCycle' ).get( ( req, res ) => {
 
 
 })
-
-
-const getAnalystCycles = analyst => new Promise ( ( resolve, reject ) => cyclesService.getCyclesInfo( analyst ).then( cycles => {
-    //console.log( `${s}got cycles for analyst ${ analyst }`,cycles )
-  let cyclesInfo = statusService.cyclesByStatus( { cycles, rounds:state.rounds, timestamp:state.timestamp, tokens:state.tokens })
-  //console.log(`cycles by status for ${analyst}`,cyclesByStatus)
-  resolve( { cycles, cyclesByStatus: cyclesInfo } )
-}).catch( reject ))
-
-const doAnalystUpdate = analyst => new Promise( (resolve, reject ) => {
-  let s = `***${analyst}***`
-  let role = analyst < 4 ? 0 : 1
-  cyclesService.getCronInfo().then( timestamp => {
-    //console.log(`resolving analyst ${analyst}`)
-    //resolve(`analyst ${analyst} done`)
-    let currentCycle = config.cycleIdx( timestamp )
-    let cyclePhase = config.cyclePhase( currentCycle, timestamp )
-    console.log(`${s}cycle ${currentCycle} with timestamp ${timestamp} at phase ${cyclePhase}`)
-    cyclesService.getCyclesInfo( analyst ).then( cycles => {
-      //console.log( `${s}got cycles for analyst ${ analyst }`,cycles )
-      let byStatus = statusService.cyclesByStatus( { cycles, rounds:state.rounds, timestamp:state.timestamp, tokens:state.tokens } )
-      byStatus.comingSignupCycles.forEach( cycle => { // volunteer for any future cycles some number of times
-        let status = cycle.role[ role ]
-        if ( status.num_volunteers + status.num_confirms >= numVolunteerRepeats ) {
-          console.log('already volunteered, dont add')
-        } else { // volunteer to this cycle
-          console.log(`${s}volunteer me`)
-        }
-        if ( status.num_volunteers & statusService.isConfirmDue( cycle ) ) {
-          //confirm
-          console.log(`${s}confirm me`)
-        }
-
-      })
-      console.log(`${s}cycles by status`,byStatus)
-      resolve(byStatus)
-    })
-  })
-})
-
-ctlRouter.route('/testDoAnalyst/:analyst').get( ( req, res ) => {
-  doAnalystUpdate( +req.params.analyst ).then( result => {
-    console.log(`${s}`,result)
-    res.json( result )
-  })
-})
-
-apiRouter.route('/getAnalystCyclesStatus/:analyst').get( ( req, res ) => {
-  getAnalystCycles( +req.params.analyst ).then( ( { cycles, cyclesByStatus } ) => {
-    console.log(`${s}`,cycles,cyclesByStatus)
-    res.json( cyclesByStatus )
-  })
-})
-
-// e.g. totalTime: 2419200 for 28 days (1 standard cycle)
-ctlRouter.route( '/testCron/:totalTime/:interval' ).get( ( req, res ) => { // interval as fraction of period
-  let totalTime = +req.params.totalTime
-  let intervalTime = config.cycleFracTime( +req.params.interval )
-  let finishTime
-  let cronRunIdx = 0
-
-  const runCrons = timestamp => new Promise( ( resolve, reject ) => {
-    const doCron = cronTime => ra.cronTo( cronTime ).then( res => {
-      let cycleStart = config.cycleIdx( cronTime )
-      console.log(`${s+s}${cronRunIdx}-cron ran at ${cronTime}:${toDate(cronTime)}...cycle start:${cycleStart}`)
-      cronRunIdx++
-      
-      console.log(`${s}get rounds active`)
-      Promise.all( [ roundsService.getRoundsActive(), roundsService.getRounds() ] ).then( nums => {
-        let [ num_active_rounds, num_rounds ] = nums
-        console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` )
-        //Promise.all( active_rounds.map( round => roundsService.getRoundInfo( round ) )).then( rounds => { // need num_analysts
-        
-        roundsService.getRoundsInfo( num_rounds - num_active_rounds, num_active_rounds ).then( rounds => {
-          console.log(`${s}got active rounds`,rounds)
-          state.rounds = rounds
-          let promises = testAnalysts.map( analystInfo => doAnalyst( analystInfo.id ) )
-          utils.runPromisesInSequence( promises ).then( () => {
-            let nextTime = cronTime + intervalTime
-            if ( nextTime <= finishTime ) doCron( nextTime ) // repeat
-            else resolve( cronTime )
-          }).catch( reject )
-        }).catch( reject )
-      }).catch( reject )
-    }).catch( reject )
-    doCron( timestamp )
-  })
-
-  cyclesService.getCronInfo().then( timestamp => {
-    finishTime = timestamp + totalTime
-    console.log(`${s}cron procedure...${totalTime} cycles ${timestamp}:${toDate(timestamp)} => ${finishTime}:${toDate(finishTime)}`)
-    console.log(`${s}interval time ${intervalTime}`)
-    runCrons( timestamp + intervalTime ).then( lastTime => console.log(`finished ${lastTime}:${toDate(lastTime)}`))
-  })
-})
-
-/*
-curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0x7E5BCE8eE498F6C29e4DdAd10CB816D6E2f139f7", "latest"],"id":1}' http://localhost:8545
 */
-apiRouter.route('/eth').get(function(req,res){
-    console.log('got get');
-}).post(function(req,res) {
-  console.log('got post, making proxy request',req.body);
-  ethProxy.web(req, res, { target: 'http://localhost:8545' }, function(e) { 
-    console.log('got proxy response',e);
-    res.json({message:"got it"});
-  })
-})
-
-
-
-app.use('/api', apiRouter)
-
-app.use('/ctl', ctlRouter)
-
-app.listen(port, function () {
-  console.log('listening on port '+port);
-})
-
-
-
 

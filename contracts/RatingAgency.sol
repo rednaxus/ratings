@@ -350,7 +350,7 @@ contract RatingAgency {
 
     function cycleIdx( uint _time ) public view returns ( uint16 ) {
         return( _time <= ZERO_BASE_TIME ?
-            0 : uint16( 4 * ( _time - ZERO_BASE_TIME ) / cycle_period ) );
+            0 : uint16( ( _time - ZERO_BASE_TIME ) / cycle_period ) );
     }
 
     function cycleInfo ( uint16 _cycle ) public view returns (

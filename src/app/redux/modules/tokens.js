@@ -102,7 +102,7 @@ const fetchTokensData = () => {
     //console.log('dispatching tokens request')
     dispatch( request() )
     //console.log('getting tokens data from api')
-    return getTokensData( false ).then(
+    return getTokensInfo( false ).then(
       data => {
         dispatch( received( data ) )
         return data

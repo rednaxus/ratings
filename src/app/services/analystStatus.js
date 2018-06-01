@@ -78,7 +78,7 @@ const AnalystStatus = {
       if ( !isActive( cycle ) || !hasRounds( cycle ) ) return
       cycle.role.forEach( (role,idx) => {
         for ( let i = 0; i < role.num_rounds; i++ ){
-          console.log('rounds for role',role,i,role.rounds)
+          //console.log('rounds for role',role,i,role.rounds)
           let round = getRound( role.rounds[ i ] )
           activeCycles.push(
             { ...cycle, role: idx, token: round.covered_token, round: role.rounds[ i ] }
@@ -100,11 +100,11 @@ const AnalystStatus = {
       } )
     } )
 
-    console.log('signup cycles',comingSignupCycles)
-    console.log('volunteer cycles',comingVolunteerCycles)
-    console.log('confirmed cycles',comingConfirmedCycles)
-    console.log('active cycles',activeCycles)
-    console.log('finished cycles',finishedCycles)
+    //console.log('signup cycles',comingSignupCycles)
+    //console.log('volunteer cycles',comingVolunteerCycles)
+    //console.log('confirmed cycles',comingConfirmedCycles)
+    //console.log('active cycles',activeCycles)
+    //console.log('finished cycles',finishedCycles)
     return ( {
       comingSignupCycles, 
       comingVolunteerCycles, 

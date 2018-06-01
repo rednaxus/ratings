@@ -328,7 +328,12 @@ ctlRouter.route('/testDoAnalyst/:analyst').get( ( req, res ) => {
 })
 
 
-// e.g. totalTime: 2419200 for 28 days (1 standard cycle) 604800 for 7 days...interval is in proportion of 28
+/* 
+  * simulate a series of cycles, 
+  * for the test analysts, each cycle volunteer early and confirm at the right phase, submit surveys or briefs depending on role
+  * totalTime is time from last cron...interval is in proportion of 28
+  *  e.g. totalTime: 2419200 for 28 more days (1 standard cycle) 604800 for 7 days...
+*/
 ctlRouter.route( '/testSimRun/:totalTime/:interval' ).get( ( req, res ) => { // interval as fraction of period
   let totalTime = +req.params.totalTime
   let intervalTime = config.cycleFracTime( +req.params.interval )

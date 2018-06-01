@@ -3,9 +3,6 @@
 
 const config = require('../config/appConfig')
 
-let now
-let nextTime
-let activeNow
 
 const isVolunteer = cycle => cycle.role[ 0 ].num_volunteers || cycle.role[ 1 ].num_volunteers
 const isConfirmed = cycle => cycle.role[ 0 ].num_confirms || cycle.role[ 1 ].num_confirms
@@ -16,13 +13,35 @@ const isActive = cycle => cycle.timestart >= now && cycle.timestart < nextTime
 const isFinished = cycle => activeNow != cycle.id && cycle.timestart < now
 const isConfirmDue = cycle => config.cyclePhase( cycle - 1, now ) == config.CYCLE_FRACTIONS - 1 // due at last fraction (e.g. 3)
 
-const AnalystStatus = {
-  ...{ isConfirmDue, isFinished, isVolunteer },
+let now
+let nextTime
+let activeNow
 
+const setTime = timestamp => {
+  now = timestamp // cronInfo 
+  nextTime = config.cycleTime( config.cycleIdx( now ) + 1 )
+  activeNow = config.cycleIdx( now )
+}
+
+const AnalystStatus = {
+  isConfirmDue: ( cycle, timestamp ) => { 
+    setTime( timestamp )
+    return isConfirmDue( cycle )
+  }, 
+  isFinished: ( cycle, timestamp ) => {
+    setTime( timestamp )
+    return isFinished( cycle ) 
+  },
+  isVolunteer: ( cycle, timestamp ) => {
+    setTime( timestamp )
+    return isVolunteer( cycle )
+  },
+  isFuture: ( cycle, timestamp ) => {
+    setTime( timestamp )
+    return isFuture( cycle )
+  },
   cyclesByStatus: ( { cycles, rounds, timestamp, tokens } ) => {
-    now = timestamp // cronInfo 
-    nextTime = config.cycleTime( config.cycleIdx( now ) + 1 )
-    activeNow = config.cycleIdx( now )
+
     //console.log('cycles',cycles,now,nextTime)
 
 

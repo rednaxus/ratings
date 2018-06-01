@@ -61,8 +61,9 @@ console.log(`cycle index ${t1} is ${config.cycleIdx(t1)}`)
 console.log(`cycle index ${t2} is ${config.cycleIdx(t2)}`)
 console.log(`test cycle phase`,config.cyclePhase(0,t1))
 console.log(`test cycle phase`,config.cyclePhase(0,t2))
-
-
+const cycletest = { id: 1 }
+console.log(`is future`,statusService.isFuture(cycletest,config.cycleTime(0)))
+console.log(`is confirm due`,statusService.isConfirmDue(cycletest,config.cycleTime(0)))
 //console.log('survey',survey)
 //console.log(survey.getElements())
 console.log('survey answers',survey.generateAnswers().toString())
@@ -208,7 +209,7 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
             promises.push( cyclesService.cycleSignup( cycle.id, analyst, role ) )
             console.log(`${s}volunteering to cycle ${cycle.id}`)
           }
-          if ( status.num_volunteers & statusService.isConfirmDue( cycle ) ) {
+          if ( status.num_volunteers & statusService.isConfirmDue( cycle, timestamp ) ) {
             promises.push( cyclesService.cycleConfirm( cycle.id, analyst, role ) )
             console.log(`${s}confirming to cycle ${cycle.id}`)
           }
@@ -327,7 +328,7 @@ ctlRouter.route('/testDoAnalyst/:analyst').get( ( req, res ) => {
 })
 
 
-// e.g. totalTime: 2419200 for 28 days (1 standard cycle)
+// e.g. totalTime: 2419200 for 28 days (1 standard cycle) 604800 for 7 days...interval is in proportion of 28
 ctlRouter.route( '/testSimRun/:totalTime/:interval' ).get( ( req, res ) => { // interval as fraction of period
   let totalTime = +req.params.totalTime
   let intervalTime = config.cycleFracTime( +req.params.interval )
@@ -340,7 +341,7 @@ ctlRouter.route( '/testSimRun/:totalTime/:interval' ).get( ( req, res ) => { // 
       console.log(`${s+s}${cronRunIdx}-cron ran at ${cronTime}:${toDate(cronTime)}...cycle start:${cycleStart}`)
       cronRunIdx++
       
-      console.log(`${s}get rounds active`)
+      //console.log(`${s}get rounds active`)
       Promise.all( [ roundsService.getRoundsActive(), roundsService.getRounds() ] ).then( nums => {
         let [ num_active_rounds, num_rounds ] = nums
         console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` )
@@ -349,7 +350,7 @@ ctlRouter.route( '/testSimRun/:totalTime/:interval' ).get( ( req, res ) => { // 
         roundsService.getRoundsInfo( num_rounds - num_active_rounds, num_active_rounds ).then( rounds => {
           console.log(`${s}got active rounds`,rounds)
           state.rounds = rounds
-          let promises = testAnalysts.map( analystInfo => doAnalyst( analystInfo.id ) )
+          let promises = testAnalysts.map( analystInfo => analystUpdate( analystInfo.id ) )
           utils.runPromisesInSequence( promises ).then( () => {
             let nextTime = cronTime + intervalTime
             if ( nextTime <= finishTime ) doCron( nextTime ) // repeat

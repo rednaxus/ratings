@@ -8,11 +8,11 @@ const s = '***'
 
 module.exports = {
   getActiveRounds: ( analyst = -1 ) => new Promise( ( resolve, reject ) => {
-    console.log(`${s}get rounds active`)
+    //console.log(`${s}get rounds active`)
     Promise.all( [ module.exports.getRoundsActive(), module.exports.getRounds() ] ).then( nums => {
       let [ num_active_rounds, num_rounds ] = nums
       console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` ) 
-           
+
       module.exports.getRoundsInfo( num_rounds - num_active_rounds, num_active_rounds ).then( rounds => {
         console.log(`${s}got active rounds`,rounds)
         if (analyst == -1) {

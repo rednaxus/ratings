@@ -40,7 +40,7 @@ toAskAlan: Minor Bugs and Questions
 
 import config from '../config/appConfig'
 
-import { getCyclesByStatus } from './rounds'
+import { cyclesByStatus } from './analystStatus'
 
 //import { store } from '../Root'
 
@@ -82,7 +82,7 @@ export const generateMessages = ( { user, cycles, rounds, tokens, timestamp } ) 
     comingConfirmedCycles,
     activeCycles,
     finishedCycles
-  } = getCyclesByStatus( { cycles, rounds, tokens, timestamp } )
+  } = cyclesByStatus( { cycles, rounds, tokens, timestamp } )
 
   const is_recent = item => config.is_recent( item.timestamp, now )
   const is_recent_period = item => config.is_recent_period( item.timestamp, now )

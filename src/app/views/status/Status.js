@@ -67,7 +67,7 @@ class Status extends Component {
           </div>
           <div className="row">
             <div className="col-md-6">
-              <AnalystReferrals timestamp={ cronInfo / 1000 } analyst={ user } />
+              <AnalystReferrals timestamp={ cronInfo } analyst={ user } />
             </div>
           </div>
         </main>

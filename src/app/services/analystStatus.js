@@ -3,20 +3,29 @@
 
 const config = require('../config/appConfig')
 
-module.exports = {
-  getCyclesByStatus: ( { cycles, rounds, timestamp, tokens } ) => {
-    let now = timestamp // cronInfo / 1000
-    let nextTime = config.cycleTime( config.cycleIdx( now ) + 1 )
-    let activeNow = config.cycleIdx( now )
+let now
+let nextTime
+let activeNow
+
+const isVolunteer = cycle => cycle.role[ 0 ].num_volunteers || cycle.role[ 1 ].num_volunteers
+const isConfirmed = cycle => cycle.role[ 0 ].num_confirms || cycle.role[ 1 ].num_confirms
+const hasRounds = cycle => cycle.role.length && (cycle.role[ 0 ].num_rounds || cycle.role[ 1 ].num_rounds)
+const hasSignups = cycle => !isVolunteer( cycle ) && !isConfirmed( cycle ) && !hasRounds( cycle ) 
+const isFuture = cycle => cycle.id > activeNow
+const isActive = cycle => cycle.timestart >= now && cycle.timestart < nextTime 
+const isFinished = cycle => activeNow != cycle.id && cycle.timestart < now
+const isConfirmDue = cycle => config.cyclePhase( cycle - 1, now ) == config.CYCLE_FRACTIONS - 1 // due at last fraction (e.g. 3)
+
+const AnalystStatus = {
+  ...{ isConfirmDue, isFinished, isVolunteer },
+
+  cyclesByStatus: ( { cycles, rounds, timestamp, tokens } ) => {
+    now = timestamp // cronInfo 
+    nextTime = config.cycleTime( config.cycleIdx( now ) + 1 )
+    activeNow = config.cycleIdx( now )
     //console.log('cycles',cycles,now,nextTime)
 
-    const isVolunteer = cycle => cycle.role[ 0 ].num_volunteers || cycle.role[ 1 ].num_volunteers
-    const isConfirmed = cycle => cycle.role[ 0 ].num_confirms || cycle.role[ 1 ].num_confirms
-    const hasRounds = cycle => cycle.role.length && (cycle.role[ 0 ].num_rounds || cycle.role[ 1 ].num_rounds)
-    const hasSignups = cycle => !isVolunteer( cycle ) && !isConfirmed( cycle ) && !hasRounds( cycle ) 
-    const isFuture = cycle => cycle.id > activeNow
-    const isActive = cycle => cycle.timestart >= now && cycle.timestart < nextTime 
-    const isFinished = cycle => activeNow != cycle.id && cycle.timestart < now
+
 
     const getRound = round_id => {
       let round = rounds.find( round => round.id == round_id )
@@ -84,7 +93,8 @@ module.exports = {
       activeCycles,
       finishedCycles
     } )
-
-  }
-
+  }  
 }
+
+module.exports = AnalystStatus
+

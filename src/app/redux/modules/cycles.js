@@ -102,15 +102,9 @@ const shouldFetchCyclesData = (state) => {
 
 
 export const fetchCronInfo = () => {
-  const request = (time = moment().format()) => {
-    return { type: REQUEST_CRON_INFO, time }
-  }
-  const success = (cronInfo, time = moment().format()) => {
-    return { type: RECEIVED_CRON_INFO, cronInfo, time }
-  }
-  const failure = (time = moment().format()) => {
-    return { type: ERROR_CRON_INFO, time }
-  }
+  const request = (time = moment().format()) => ( { type: REQUEST_CRON_INFO, time } )
+  const success = (cronInfo, time = moment().format()) => ( { type: RECEIVED_CRON_INFO, cronInfo, time } )
+  const failure = (time = moment().format()) => ( { type: ERROR_CRON_INFO, time } )
   return dispatch => {
     dispatch(request())
     getCronInfo().then( cronInfo => dispatch(success(cronInfo)) )

@@ -57,7 +57,7 @@ class Dashboard extends Component {
             cycles={ cycles } 
             tokens={ tokens } 
             rounds={ rounds } 
-            timestamp={ cronInfo / 1000 }/>
+            timestamp={ cronInfo }/>
           {/*<hr/>
           <div className="row">
             <div className="col-md-6">

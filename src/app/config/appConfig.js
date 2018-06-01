@@ -105,6 +105,11 @@ const appConfig = {
   },
 
   cycleFracTime: function ( frac ){ return this.CYCLE_PERIOD / frac },
+  cyclePhaseTime: function( phase ){ return this.CYCLE_PERIOD * phase / this.CYCLE_FRACTIONS },
+
+  cyclePhase: function( cycle, timestamp ) { // used for triggering certain events
+    return Math.floor( this.CYCLE_FRACTIONS * ( timestamp - this.cycleTime( cycle )) / this.CYCLE_PERIOD )
+  },
 
   JURY_SIZE: 6,
 

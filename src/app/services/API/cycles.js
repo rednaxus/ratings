@@ -5,10 +5,9 @@ const config = require('../../config/appConfig')
 const { parseB32StringToUintArray } = require('../utils')
 
 module.exports = {
-  getCronInfo: ( ms = true ) => new Promise( ( resolve, reject ) => RatingAgency().then( ra => {
-    ra.lasttime().then( result => {
-      resolve( ( ms ? 1000 : 1 ) * result.toNumber() )
-    }).catch( err => { 
+  getCronInfo: ( ms = false ) => new Promise( ( resolve, reject ) => RatingAgency().then( ra => {
+    ra.lasttime().then( result => resolve( ( ms ? 1000 : 1 ) * result.toNumber() ) )
+    .catch( err => { 
       console.error( `Error from server on cron: ${err}` ) 
       reject( err )
     })
@@ -65,7 +64,7 @@ module.exports = {
       }
       //console.log('got cycle info',res)
       if ( analyst == -1 ) {
-        console.log( `got cycle info all for cycle ${cycle}`,res)    
+        //console.log( `got cycle info all for cycle ${cycle}`,res)    
         resolve( res )
         return
       }
@@ -85,7 +84,7 @@ module.exports = {
           } )
           //console.log(i, ' round info ',rCycleAnalyst[ 4 + i*4 ], 'num rounds',num_rounds)
         }
-        console.log( `got cycle info all for cycle ${cycle} with analyst ${analyst}`,res)     
+        //console.log( `got cycle info all for cycle ${cycle} with analyst ${analyst}`,res)     
         resolve( res )
       }).catch( err )
     }).catch( err )

@@ -13,7 +13,7 @@ import * as _ from 'lodash'
 
 import config from '../../config/appConfig'
 
-import { getCyclesByStatus } from '../../services/rounds'
+import { cyclesByStatus } from '../../services/analystStatus'
 
 const dateView = ({value,convert=true}) =>
   <Moment className="text-purple" format="dddd YYYY-MM-DD" date={ new Date(convert?value*1000:value) } />
@@ -190,12 +190,12 @@ class Availability extends PureComponent {
       comingConfirmedCycles,
       activeCycles,
       finishedCycles
-    } = getCyclesByStatus( { cycles, rounds, timestamp: cronInfo / 1000, tokens } )
+    } = cyclesByStatus( { cycles, rounds, timestamp: cronInfo, tokens } )
 
     return(
       <AnimatedView>
         <Breadcrumb path={["dashboard","availability"]}></Breadcrumb>
-        <small className="pull-right">time last checked: { dateView( { value:cronInfo,convert:false} ) }</small> 
+        <small className="pull-right">time last checked: { dateView( { value:cronInfo,convert:true} ) }</small> 
         { !comingVolunteerCycles.length ? "" :
         <div>
           <h2 className="text-red">Awaiting confirmations</h2>

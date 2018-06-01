@@ -40,8 +40,22 @@ module.exports = {
 	},
 
   getWeb3: () => web3 || window.web3,
-  setWeb3: w3 => web3 = w3 // used on server side
+  setWeb3: w3 => web3 = w3, // used on server side
 
+
+
+  /**
+    * Run promises from array of functions that can return promises
+    * in chained manner
+    *
+    * @param {array} pfn_arr - promise (function) array
+    * @return {Object} promise object
+  */
+  runPromisesInSequence: ( pfn_arr, input ) =>  
+    pfn_arr.reduce(
+      ( promiseChain, currentFunction ) => promiseChain.then(currentFunction),
+      Promise.resolve( input )
+    )
 }
 
 

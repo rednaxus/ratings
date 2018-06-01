@@ -1,7 +1,7 @@
 
 //const solc = require('solc');
 const fs = require('fs')
-const util = require('util')
+//const util = require('util')
 //const debug = require('debug')
 
 //const cronlog = debug('cron')
@@ -18,6 +18,8 @@ const roundsService = require('../src/app/services/API/rounds')
 const cyclesService = require('../src/app/services/API/cycles')
 const tokensService = require('../src/app/services/API/tokens')
 
+const statusService = require('../src/app/services/analystStatus')
+
 const { getRatingAgency: RatingAgency, getAnalystRegistry: AnalystRegistry } = require('../src/app/services/contracts')
 const utils = require('../src/app/services/utils') // parseB32StringtoUintArray, toHexString, bytesToHex, hexToBytes
 const { bytes32FromIpfsHash, ipfsHashFromBytes32 } = require('../src/app/services/ipfs')
@@ -29,15 +31,13 @@ const survey = new SurveyService()
 let pre = 0
 let post = 1
 
+let numVolunteerRepeats = 1 // controls how many total rounds get run, i.e. how hard we stress the system
 
-var port = process.env.PORT || 9030;        
+var port = process.env.PORT || 9030        
 
 var apiRouter = express.Router()
 var ctlRouter = express.Router()
 
-// Contract descriptions from truffle
-//const RatingAgencyObj = require("../build/contracts/RatingAgency.json")
-//const AnalystRegistryObj = require("../build/contracts/AnalystRegistry.json")
 
 app.use(bodyParser.urlencoded({ extended: true })); // configure app to use bodyParser()
 app.use(bodyParser.json());                         // this will let us get the data from a POST
@@ -52,6 +52,14 @@ let state = {
   analysts: [],
   tokens: []
 }
+
+/*()
+let t1 = config.cycleTime( 0 )
+let t2 = config.cycleTime( 0 ) + config.cyclePhaseTime(1)
+console.log(t1,t2)
+console.log(`test cycle frac`,config.cycleFraction(0,t1))
+console.log(`test cycle frac`,config.cycleFraction(0,t2))
+*/
 
 //console.log('survey',survey)
 //console.log(survey.getElements())
@@ -462,6 +470,59 @@ ctlRouter.route( '/testNextCycle' ).get( ( req, res ) => {
 
 })
 
+
+const getAnalystCycles = analyst => new Promise ( ( resolve, reject ) => cyclesService.getCyclesInfo( analyst ).then( cycles => {
+    //console.log( `${s}got cycles for analyst ${ analyst }`,cycles )
+  let cyclesInfo = statusService.cyclesByStatus( { cycles, rounds:state.rounds, timestamp:state.timestamp, tokens:state.tokens })
+  //console.log(`cycles by status for ${analyst}`,cyclesByStatus)
+  resolve( { cycles, cyclesByStatus: cyclesInfo } )
+}).catch( reject ))
+
+const doAnalystUpdate = analyst => new Promise( (resolve, reject ) => {
+  let s = `***${analyst}***`
+  let role = analyst < 4 ? 0 : 1
+  cyclesService.getCronInfo().then( timestamp => {
+    //console.log(`resolving analyst ${analyst}`)
+    //resolve(`analyst ${analyst} done`)
+    let currentCycle = config.cycleIdx( timestamp )
+    let cyclePhase = config.cyclePhase( currentCycle, timestamp )
+    console.log(`${s}cycle ${currentCycle} with timestamp ${timestamp} at phase ${cyclePhase}`)
+    cyclesService.getCyclesInfo( analyst ).then( cycles => {
+      //console.log( `${s}got cycles for analyst ${ analyst }`,cycles )
+      let byStatus = statusService.cyclesByStatus( { cycles, rounds:state.rounds, timestamp:state.timestamp, tokens:state.tokens } )
+      byStatus.comingSignupCycles.forEach( cycle => { // volunteer for any future cycles some number of times
+        let status = cycle.role[ role ]
+        if ( status.num_volunteers + status.num_confirms >= numVolunteerRepeats ) {
+          console.log('already volunteered, dont add')
+        } else { // volunteer to this cycle
+          console.log(`${s}volunteer me`)
+        }
+        if ( status.num_volunteers & statusService.isConfirmDue( cycle ) ) {
+          //confirm
+          console.log(`${s}confirm me`)
+        }
+
+      })
+      console.log(`${s}cycles by status`,byStatus)
+      resolve(byStatus)
+    })
+  })
+})
+
+ctlRouter.route('/testDoAnalyst/:analyst').get( ( req, res ) => {
+  doAnalystUpdate( +req.params.analyst ).then( result => {
+    console.log(`${s}`,result)
+    res.json( result )
+  })
+})
+
+apiRouter.route('/getAnalystCyclesStatus/:analyst').get( ( req, res ) => {
+  getAnalystCycles( +req.params.analyst ).then( ( { cycles, cyclesByStatus } ) => {
+    console.log(`${s}`,cycles,cyclesByStatus)
+    res.json( cyclesByStatus )
+  })
+})
+
 // e.g. totalTime: 2419200 for 28 days (1 standard cycle)
 ctlRouter.route( '/testCron/:totalTime/:interval' ).get( ( req, res ) => { // interval as fraction of period
   let totalTime = +req.params.totalTime
@@ -484,33 +545,19 @@ ctlRouter.route( '/testCron/:totalTime/:interval' ).get( ( req, res ) => { // in
         roundsService.getRoundsInfo( num_rounds - num_active_rounds, num_active_rounds ).then( rounds => {
           console.log(`${s}got active rounds`,rounds)
           state.rounds = rounds
-          // for each test user, get cycles info, and decide what to do
- 
-          let nextTime = cronTime + intervalTime
-          if ( nextTime <= finishTime ) doCron( nextTime )
-          else resolve( cronTime )
-
-          /*
-          testAnalysts.forEach( analystInfo => {
-            let analyst = analystInfo.id
-            let role = analyst < 4 ? 0 : 1   
-
-            cyclesService.getCyclesInfo( analyst ).then( cycles => {
-              console.log( `${s}got cycles for analyst ${ analyst }`,cycles )
-
- 
-            }).catch( reject )
-          })
-          */
+          let promises = testAnalysts.map( analystInfo => doAnalyst( analystInfo.id ) )
+          utils.runPromisesInSequence( promises ).then( () => {
+            let nextTime = cronTime + intervalTime
+            if ( nextTime <= finishTime ) doCron( nextTime ) // repeat
+            else resolve( cronTime )
+          }).catch( reject )
         }).catch( reject )
-
       }).catch( reject )
     }).catch( reject )
     doCron( timestamp )
   })
 
-  ra.lasttime().then( res => {
-    let timestamp = res.toNumber()
+  cyclesService.getCronInfo().then( timestamp => {
     finishTime = timestamp + totalTime
     console.log(`${s}cron procedure...${totalTime} cycles ${timestamp}:${toDate(timestamp)} => ${finishTime}:${toDate(finishTime)}`)
     console.log(`${s}interval time ${intervalTime}`)

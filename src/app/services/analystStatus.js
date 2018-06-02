@@ -11,8 +11,11 @@ const hasSignups = cycle => !isVolunteer( cycle ) && !isConfirmed( cycle ) && !h
 const isFuture = cycle => cycle.id > activeNow
 const isActive = cycle => cycle.timestart >= now && cycle.timestart < nextTime 
 const isFinished = cycle => activeNow != cycle.id && cycle.timestart < now
-const isConfirmDue = cycle => config.cyclePhase( cycle.id - 1, now ) == config.CYCLE_FRACTIONS - 1 // due at last fraction (e.g. 3)
-
+const isConfirmDue = cycle => {
+  //let phase = config.cyclePhase( cycle.id , now )
+  //console.log(`confirm due check phase: ${phase} cycle ${cycle.id}, timestamp:${now}`)
+  return config.cyclePhase( cycle.id - 1, now ) == 1 //config.CYCLE_FRACTIONS // due during first phase of previous because of way cycles overlap
+}
 let now
 let nextTime
 let activeNow

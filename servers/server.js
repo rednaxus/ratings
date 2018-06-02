@@ -26,10 +26,14 @@ const { bytes32FromIpfsHash, ipfsHashFromBytes32 } = require('../src/app/service
 
 //console.log('config',config)
 
+let s = '****'
+
 const SurveyService = require('../src/app/services/survey')
 const survey = new SurveyService()
 let pre = 0
 let post = 1
+
+
 
 let numVolunteerRepeats = 1 // controls how many total rounds get run, i.e. how hard we stress the system
 
@@ -54,16 +58,36 @@ let state = {
 }
 
 
-let t1 = config.cycleTime( 0 )
-let t2 = config.cycleTime( 0 ) + config.cyclePhaseTime(4)
-console.log(t1,t2)
-console.log(`cycle index ${t1} is ${config.cycleIdx(t1)}`)
-console.log(`cycle index ${t2} is ${config.cycleIdx(t2)}`)
-console.log(`test cycle phase`,config.cyclePhase(0,t1))
-console.log(`test cycle phase`,config.cyclePhase(0,t2))
+let t = [
+  config.cycleTime( 0 ),
+  config.cycleTime( 0 ) + config.cyclePhaseTime(2),
+  config.cycleTime( 5 ) + config.cyclePhaseTime(2)
+]
+
+t.forEach( t => {
+  console.log(`cycle index ${t} is ${config.cycleIdx(t)}`)
+  console.log(`test cycle phase for cycle 0`,config.cyclePhase(0,t))
+  console.log(`test cycle phase for cycle 1`,config.cyclePhase(1,t))
+})
+
+
 const cycletest = { id: 1 }
-console.log(`is future`,statusService.isFuture(cycletest,config.cycleTime(0)))
-console.log(`is confirm due`,statusService.isConfirmDue(cycletest,config.cycleTime(0)))
+
+
+let a = [ 1, 2, 3, 4, 5, 6, 7, 8 ]
+a.forEach( phase => {
+  let timestamp = config.cycleTime(cycletest.id)+config.cyclePhaseTime( phase )
+  let data = {
+    timestamp,
+    fracTime: config.cycleFracTime( phase ),
+    phase: config.cyclePhase(cycletest.id, timestamp ),    
+    period: config.CYCLE_PERIOD
+  }
+  console.log(`${s}`,data)
+  console.log(`is confirm due ${statusService.isConfirmDue(cycletest,timestamp)}`)
+  console.log(`is future ${statusService.isFuture(cycletest,timestamp)}`)
+})
+
 //console.log('survey',survey)
 //console.log(survey.getElements())
 console.log('survey answers',survey.generateAnswers().toString())
@@ -84,7 +108,6 @@ let ar
 let tr
 let round_analysts = []
 
-let s = '****'
 
 let testAnalysts = new Array(14).fill().map( ( item,idx ) => 
   ({ id: idx, email: `veva${ (idx<10?'0':'') + idx }@veva.one` }) 
@@ -196,21 +219,19 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
     cyclesService.getCronInfo().then( timestamp => {
       let currentCycle = config.cycleIdx( timestamp )
       //let cyclePhase = config.cyclePhase( currentCycle, timestamp )
-      console.log(`${s}cycle ${currentCycle} with timestamp ${timestamp} at phase ${cyclePhase}`)
+      console.log(`${s}cycle ${currentCycle} with timestamp ${timestamp}`)
       cyclesService.getCyclesInfo( analyst ).then( cycles => {
-        console.log( `${s}got cycles`)//,cycles )
+        //console.log( `${s}got cycles info`)//,cycles )
         let byStatus = statusService.cyclesByStatus( { cycles, rounds:state.rounds, timestamp:state.timestamp, tokens:state.tokens } )
         let promises = []
         byStatus.comingSignupCycles.forEach( cycle => { // volunteer for any future cycles some number of times
           let status = cycle.role[ role ]
-          if ( status.num_volunteers + status.num_confirms >= numVolunteerRepeats ) {
-            console.log(`${s}already volunteered to cycle ${cycle.id}, dont add`)
-          } else { // volunteer to this cycle
+          if ( status.num_volunteers + status.num_confirms < numVolunteerRepeats ) { // volunteer to this cycle
             promises.push( cyclesService.cycleSignup( cycle.id, analyst, role ) )
             console.log(`${s}volunteering to cycle ${cycle.id}`)
           }
-          console.log(`${s}zorg on cycle ${currentCycle}....volunteers for cycle ${cycle.id} ${status.num_volunteers}, timestamp ${timestamp}, phase ${config.cyclePhase(cycle.id-1,timestamp)}, confirm due ${statusService.isConfirmDue(cycle,timestamp)}`)
-          if ( status.num_volunteers & statusService.isConfirmDue( cycle, timestamp ) ) {
+          console.log(`${s}on cycle ${currentCycle}....volunteers for cycle ${cycle.id} ${status.num_volunteers}, timestamp ${timestamp}, phase ${config.cyclePhase(cycle.id-1,timestamp)}, confirm due ${statusService.isConfirmDue(cycle,timestamp)}`)
+          if ( status.num_volunteers && statusService.isConfirmDue( cycle, timestamp ) ) {
             promises.push( cyclesService.cycleConfirm( cycle.id, analyst, role ) )
             console.log(`${s}confirming to cycle ${cycle.id}`)
           }
@@ -342,25 +363,31 @@ ctlRouter.route( '/testSimRun/:totalTime/:interval' ).get( ( req, res ) => { // 
   let finishTime
   let cronRunIdx = 0
 
+  console.log(`${s}interval time: ${intervalTime}...period: ${config.CYCLE_PERIOD}`)
   const runCrons = timestamp => new Promise( ( resolve, reject ) => {
     const doCron = cronTime => ra.cronTo( cronTime ).then( res => {
       let cycleStart = config.cycleIdx( cronTime )
       console.log(`${s+s}${cronRunIdx}-cron ran at ${cronTime}:${toDate(cronTime)}...cycle start:${cycleStart}`)
+      console.log( res )
       cronRunIdx++
       
       //console.log(`${s}get rounds active`)
       Promise.all( [ roundsService.getRoundsActive(), roundsService.getRounds() ] ).then( nums => {
         let [ num_active_rounds, num_rounds ] = nums
         console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` )
-        //Promise.all( active_rounds.map( round => roundsService.getRoundInfo( round ) )).then( rounds => { // need num_analysts
-        
         roundsService.getRoundsInfo( num_rounds - num_active_rounds, num_active_rounds ).then( rounds => {
           console.log(`${s}got active rounds`,rounds)
           state.rounds = rounds
           let promises = testAnalysts.map( analystInfo => analystUpdate( analystInfo.id ) )
           utils.runPromisesInSequence( promises ).then( () => {
             let nextTime = cronTime + intervalTime
-            if ( nextTime <= finishTime ) doCron( nextTime ) // repeat
+            if ( nextTime <= finishTime ) {
+              ra.cycleRoundCanCreate( config.cycleIdx( nextTime ) )
+              .then( canCreate => {
+                console.log(`cron for ${nextTime} with cycle ${config.cycleIdx(nextTime)} ...can create round: ${canCreate}`)
+                doCron( nextTime ) // repeat
+              }).catch( reject )
+            }
             else resolve( cronTime )
           }).catch( reject )
         }).catch( reject )
@@ -372,7 +399,6 @@ ctlRouter.route( '/testSimRun/:totalTime/:interval' ).get( ( req, res ) => { // 
   cyclesService.getCronInfo().then( timestamp => {
     finishTime = timestamp + totalTime
     console.log(`${s}cron procedure...${totalTime} cycles ${timestamp}:${toDate(timestamp)} => ${finishTime}:${toDate(finishTime)}`)
-    console.log(`${s}interval time ${intervalTime}`)
     runCrons( timestamp + intervalTime ).then( lastTime => console.log(`finished ${lastTime}:${toDate(lastTime)}`))
   })
 })

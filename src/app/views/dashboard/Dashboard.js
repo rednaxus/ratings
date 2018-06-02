@@ -49,7 +49,7 @@ class Dashboard extends Component {
         <main className="container">
           <div className="row">
             <div className="col-md-10 text-right text-green small">
-              <Moment format="YYYY-MM-DD HH:MM" date={cronInfo}/>
+              <Moment format="YYYY-MM-DD HH:MM" date={cronInfo * 1000}/>
             </div>
           </div>
           <AnalystMessages 

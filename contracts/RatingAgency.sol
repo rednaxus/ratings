@@ -367,7 +367,12 @@ contract RatingAgency {
     }
 
     function cyclePhase( uint16 cycle, uint timestamp ) public view returns ( uint8 ) { // used for triggering certain events
-        return uint8( CYCLE_FRACTIONS * ( timestamp - cycleTime( cycle )) / cycles[ cycle ].period );
+        uint timephase = timestamp - this.cycleTime( cycle );
+        return ( 
+            timephase < 0 ? 0 : (timephase > cycle_period ? CYCLE_FRACTIONS + 1: 
+                uint8( CYCLE_FRACTIONS * timephase / cycle_period )
+            ) 
+        );
     }
     
     function cycleRoundCanCreate( uint16 _cycle ) public view returns( bool ){ // make internal, public for test
@@ -708,6 +713,10 @@ contract RatingAgency {
     /* Generate random number 0 to n-1 (based on last block hash) */
     function randomIdx( uint seed, uint n ) public constant returns ( uint rand ) {
         rand = n <= 1 ? 0 : uint(keccak256(block.blockhash( block.number-1 ), seed ) ) % ( n - 1 ) ;
+    }
+    
+    function ceil(uint a, uint m) public pure returns (uint r) {
+        return (a + m - 1) / m * m;
     }
 
     function lotteryNext( uint16 _last, uint16 _need, uint16 _total ) public view returns ( uint16 next ) {

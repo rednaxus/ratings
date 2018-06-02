@@ -23,7 +23,7 @@ module.exports = {
           let max = Math.min( pageIndex + pageSize, numTokens )
           let numFetch = max - pageIndex
           for (var i = pageIndex; i < max; i++) {
-            getTokenInfo( i ).then( token => { // idx, addr
+            module.exports.getTokenInfo( i ).then( token => { // idx, addr
               tokensData.push( token )
               console.log('got token with name',token.name)
               if (!--numFetch) {

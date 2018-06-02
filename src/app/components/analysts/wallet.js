@@ -3,14 +3,14 @@
   import { store } from '../../Root'
   import config from '../../config/appConfig'
   import TestTokenERC20Contract from '../../../../build/contracts/vevaTest.json'
-
+  import { getWeb3 } from '../../services/utils'
   var address = TestTokenERC20Contract.networks["7"].address;
 
   var abi = TestTokenERC20Contract.abi;
 
   const Web3 = require('web3');
 
-  var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+  var web3 = getWeb3() //new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
   var contract = web3.eth.contract(abi);
   var contractInstance = contract.at(address);

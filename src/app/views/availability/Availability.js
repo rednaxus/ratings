@@ -184,19 +184,21 @@ class Availability extends PureComponent {
     let confirmedColumns = this.confirmedColumns
     let volunteerColumns = this.volunteerColumns
 
-    let {     
+    let analystStatus = cyclesByStatus( { cycles, rounds, timestamp: cronInfo, tokens } )
+    /*{     
       comingSignupCycles, 
       comingVolunteerCycles, 
       comingConfirmedCycles,
       activeCycles,
       finishedCycles
-    } = cyclesByStatus( { cycles, rounds, timestamp: cronInfo, tokens } )
-
+    } 
+    */
+    console.log(`analyst status for cycles`,analystStatus)
     return(
       <AnimatedView>
         <Breadcrumb path={["dashboard","availability"]}></Breadcrumb>
         <small className="pull-right">time last checked: { dateView( { value:cronInfo,convert:true} ) }</small> 
-        { !comingVolunteerCycles.length ? "" :
+        { !analystStatus.comingVolunteerCycles.length ? "" :
         <div>
           <h2 className="text-red">Awaiting confirmations</h2>
           <Panel>
@@ -211,7 +213,7 @@ class Availability extends PureComponent {
                 )
               }
               </div>
-              { comingVolunteerCycles.map( ( cycle, rowIdx ) => {
+              { analystStatus.comingVolunteerCycles.map( ( cycle, rowIdx ) => {
                   let cols = volunteerColumns.map( ( col,colIdx ) => 
                     <div className={ col.className } key={ colIdx }>
                     { 
@@ -232,7 +234,7 @@ class Availability extends PureComponent {
           </Panel>
          </div>
         }
-        { !comingConfirmedCycles.length ? "" : 
+        { !analystStatus.comingConfirmedCycles.length ? "" : 
         <div>
           <Panel>
             <Panel.Heading>
@@ -246,7 +248,7 @@ class Availability extends PureComponent {
                 )
               }
               </div>
-              { comingConfirmedCycles.map( ( cycle, rowIdx ) => {
+              { analystStatus.comingConfirmedCycles.map( ( cycle, rowIdx ) => {
                   let cols = confirmedColumns.map( ( col,colIdx ) => 
                     <div className={ col.className } key={ colIdx }>
                     { 
@@ -267,7 +269,7 @@ class Availability extends PureComponent {
           </Panel>
          </div>
         }
-        { !activeCycles.length ? "" : 
+        { !analystStatus.activeCycles.length ? "" : 
         <div> 
           <Panel>
             <Panel.Heading>
@@ -280,7 +282,7 @@ class Availability extends PureComponent {
                   <div className={col.className} key={colIdx}>{col.name}</div> )
               }
               </div>
-              { activeCycles.map( ( cycle, rowIdx ) => { 
+              { analystStatus.activeCycles.map( ( cycle, rowIdx ) => { 
                   let cols = activeColumns.map( ( col, colIdx ) => 
                     <div className={col.className} key={colIdx}>
                     { 
@@ -301,7 +303,7 @@ class Availability extends PureComponent {
           </Panel>
         </div>
         }
-        { !comingSignupCycles.length ? <h2>All rounds signed up</h2> :
+        { !analystStatus.comingSignupCycles.length ? <h2>All rounds signed up</h2> :
         <div>
           <h2 className="text-red">Sign up for coming rounds</h2>
           <Panel>
@@ -314,7 +316,7 @@ class Availability extends PureComponent {
                 signupColumns.map( (col,colIdx) => <div key={colIdx} className={col.className}>{col.name}</div> )
               }
               </div>
-              { comingSignupCycles.map( ( cycle, rowIdx ) => { 
+              { analystStatus.comingSignupCycles.map( ( cycle, rowIdx ) => { 
                   let cols = signupColumns.map( ( col, colIdx ) => 
                     <div className={col.className} key={colIdx}>
                       { col.renderer 
@@ -335,7 +337,7 @@ class Availability extends PureComponent {
           </Panel>
          </div>
         }
-        { !finishedCycles.length ? "" : 
+        { !analystStatus.finishedCycles.length ? "" : 
         <div>
           <hr/>
           <Panel>
@@ -349,7 +351,7 @@ class Availability extends PureComponent {
                   <div className={col.className} key={colIdx}>{col.name}</div> )
               }
               </div>
-              { finishedCycles.map( (cycle,rowIdx) => { 
+              { analystStatus.finishedCycles.map( (cycle,rowIdx) => { 
                   let cols = finishedColumns.map( (col,colIdx) => 
                     <div className={col.className} key={colIdx}>
                       { col.renderer 

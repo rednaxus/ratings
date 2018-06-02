@@ -195,10 +195,10 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
     console.log( `${s}active rounds`,rounds )
     cyclesService.getCronInfo().then( timestamp => {
       let currentCycle = config.cycleIdx( timestamp )
-      let cyclePhase = config.cyclePhase( currentCycle, timestamp )
+      //let cyclePhase = config.cyclePhase( currentCycle, timestamp )
       console.log(`${s}cycle ${currentCycle} with timestamp ${timestamp} at phase ${cyclePhase}`)
       cyclesService.getCyclesInfo( analyst ).then( cycles => {
-        console.log( `${s}got cycles`,cycles )
+        console.log( `${s}got cycles`)//,cycles )
         let byStatus = statusService.cyclesByStatus( { cycles, rounds:state.rounds, timestamp:state.timestamp, tokens:state.tokens } )
         let promises = []
         byStatus.comingSignupCycles.forEach( cycle => { // volunteer for any future cycles some number of times
@@ -209,6 +209,7 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
             promises.push( cyclesService.cycleSignup( cycle.id, analyst, role ) )
             console.log(`${s}volunteering to cycle ${cycle.id}`)
           }
+          console.log(`${s}zorg on cycle ${currentCycle}....volunteers for cycle ${cycle.id} ${status.num_volunteers}, timestamp ${timestamp}, phase ${config.cyclePhase(cycle.id-1,timestamp)}, confirm due ${statusService.isConfirmDue(cycle,timestamp)}`)
           if ( status.num_volunteers & statusService.isConfirmDue( cycle, timestamp ) ) {
             promises.push( cyclesService.cycleConfirm( cycle.id, analyst, role ) )
             console.log(`${s}confirming to cycle ${cycle.id}`)
@@ -236,7 +237,8 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
         Promise.all( promises ).then( () => {
           cyclesService.getCyclesInfo( analyst ).then( cycles => {
           let byStatus = statusService.cyclesByStatus( { cycles, rounds:state.rounds, timestamp:state.timestamp, tokens:state.tokens } )
-            console.log(`${s}cycles by status`,byStatus)
+            console.log(`${s}resolving analystUpdate`)
+            //console.log(`${s}cycles by status`,byStatus)
             resolve(byStatus)
           }).catch( reject )       
         }).catch( reject )

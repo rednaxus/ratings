@@ -11,7 +11,7 @@ const hasSignups = cycle => !isVolunteer( cycle ) && !isConfirmed( cycle ) && !h
 const isFuture = cycle => cycle.id > activeNow
 const isActive = cycle => cycle.timestart >= now && cycle.timestart < nextTime 
 const isFinished = cycle => activeNow != cycle.id && cycle.timestart < now
-const isConfirmDue = cycle => config.cyclePhase( cycle - 1, now ) == config.CYCLE_FRACTIONS - 1 // due at last fraction (e.g. 3)
+const isConfirmDue = cycle => config.cyclePhase( cycle.id - 1, now ) == config.CYCLE_FRACTIONS - 1 // due at last fraction (e.g. 3)
 
 let now
 let nextTime
@@ -44,7 +44,7 @@ const AnalystStatus = {
 
     //console.log('cycles',cycles,now,nextTime)
 
-
+    setTime( timestamp )
 
     const getRound = round_id => {
       let round = rounds.find( round => round.id == round_id )

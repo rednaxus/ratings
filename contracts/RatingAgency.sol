@@ -348,9 +348,11 @@ contract RatingAgency {
         }
     }
 
+    //event LogIt( uint, uint, uint16 );
     function cycleIdx( uint _time ) public view returns ( uint16 ) {
+        //emit LogIt( cycle_period, _time - ZERO_BASE_TIME, uint16( CYCLE_FRACTIONS * ( _time - ZERO_BASE_TIME ) / cycle_period ) );
         return( _time <= ZERO_BASE_TIME ?
-            0 : uint16( ( _time - ZERO_BASE_TIME ) / cycle_period ) );
+            0 : uint16( CYCLE_FRACTIONS * ( _time - ZERO_BASE_TIME ) / cycle_period ) );
     }
 
     function cycleInfo ( uint16 _cycle ) public view returns (
@@ -364,6 +366,10 @@ contract RatingAgency {
         );
     }
 
+    function cyclePhase( uint16 cycle, uint timestamp ) public view returns ( uint8 ) { // used for triggering certain events
+        return uint8( CYCLE_FRACTIONS * ( timestamp - cycleTime( cycle )) / cycles[ cycle ].period );
+    }
+    
     function cycleRoundCanCreate( uint16 _cycle ) public view returns( bool ){ // make internal, public for test
         Cycle storage cycle = cycles[ _cycle ];
         return ( cycle.statuses[ 0 ].num_availables > 1 && cycle.statuses[ 1 ].num_availables >= JURISTS_MIN );
@@ -654,15 +660,16 @@ contract RatingAgency {
     }
 
     // cron
-    event Cron( uint lasttime, uint timestamp, uint16 cycle );
+    event Cron( uint lasttime, uint timestamp, uint16 cycle, uint8 phase );
     function cron( uint delta ) public {
         cronTo( lasttime + delta);
     }
     function cronTo( uint _time ) public {
         time = _time == 0 ? ZERO_BASE_TIME : _time; // e.g. block.timestamp
         uint16 cycle = cycleIdx( time );
-
-        emit Cron( lasttime, time, cycle );
+        uint8 phase = cyclePhase( cycle, time );
+        
+        emit Cron( lasttime, time, cycle, phase );
 
         if ( time < lasttime ) return; // don't repeat for times already run
         registry.update( time ); // keep time in sync

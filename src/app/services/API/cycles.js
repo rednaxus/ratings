@@ -59,8 +59,7 @@ module.exports = {
         timestart: timestart,
         timefinish: timestart+rCycle[2].toNumber(),
         status: rCycle[3].toNumber(),
-        num_availables_lead: rCycle[4].toNumber(),
-        num_availables_jury: rCycle[5].toNumber()
+        role: [{num_availables:rCycle[4].toNumber()},{num_availables: rCycle[5].toNumber()}]
       }
       //console.log('got cycle info',res)
       if ( analyst == -1 ) {
@@ -71,17 +70,17 @@ module.exports = {
       ra.cycleAnalystInfo( cycle, analyst ).then ( rCycleAnalyst => {
         //console.log('cycle',cycle,analyst, rCycleAnalyst)
         res.incycle_ref = rCycleAnalyst[ 0 ].toNumber()
-        res.role = []
         for ( let i=0; i<2; i++ ){
           let num_volunteers = rCycleAnalyst[ 1 + i*4 ].toNumber()
           let num_confirms = rCycleAnalyst[ 2 + i*4 ].toNumber()
           let num_rounds = rCycleAnalyst[ 3 + i*4 ].toNumber()
-          res.role.push( { 
+          res.role[i] = {
+            ...res.role[i], 
             num_volunteers: num_volunteers,
             num_confirms: num_confirms,
             num_rounds: num_rounds,
             rounds: num_rounds ? parseB32StringToUintArray( rCycleAnalyst[ 4 + i*4 ], num_rounds ) : []
-          } )
+          }
           //console.log(i, ' round info ',rCycleAnalyst[ 4 + i*4 ], 'num rounds',num_rounds)
         }
         //console.log( `got cycle info all for cycle ${cycle} with analyst ${analyst}`,res)     

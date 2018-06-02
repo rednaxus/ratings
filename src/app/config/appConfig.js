@@ -101,14 +101,16 @@ const appConfig = {
   cycleIdx: function ( _time, ms = false ) {
     if (ms) _time /= 1000
     return Math.floor( _time <= this.ZERO_BASE_TIME ? 0 
-      : ( _time - this.ZERO_BASE_TIME ) / this.CYCLE_PERIOD )
+      : this.CYCLE_FRACTIONS * ( _time - this.ZERO_BASE_TIME ) / this.CYCLE_PERIOD )
   },
 
   cycleFracTime: function ( frac ){ return this.CYCLE_PERIOD / frac },
   cyclePhaseTime: function( phase ){ return this.CYCLE_PERIOD * phase / this.CYCLE_FRACTIONS },
 
-  cyclePhase: function( cycle, timestamp ) { // used for triggering certain events
-    return Math.floor( this.CYCLE_FRACTIONS * ( timestamp - this.cycleTime( cycle )) / this.CYCLE_PERIOD )
+  cyclePhase: function( cycle, timestamp ) { // used for triggering certain events 0 before it begins, 4 after it ends
+    let timephase = timestamp - this.cycleTime( cycle )
+    timephase = timephase < 0 ? 0: ( timephase >= this.CYCLE_PERIOD ? this.CYCLE_PERIOD: timephase )
+    return Math.floor( this.CYCLE_FRACTIONS * timephase / this.CYCLE_PERIOD )
   },
 
   JURY_SIZE: 6,

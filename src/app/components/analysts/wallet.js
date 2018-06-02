@@ -37,7 +37,7 @@
 
         console.log("Default account: " + web3.eth.defaultAccount);
         console.log("Using web3 version: " + web3.version.api);
-        console.log  (web3.eth.getBalance(web3.eth.defaultAccount));
+        web3.eth.getBalance( web3.eth.defaultAccount, (err,balance) => console.log(`balance ${balance}`))
         console.log (contractInstance.balanceOf(web3.eth.defaultAccount).toString());
 
         if (!contractInstance.balanceOf(web3.eth.defaultAccount).c[1]){

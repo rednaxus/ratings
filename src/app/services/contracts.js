@@ -30,7 +30,7 @@ const getContractInstance = (contractDesc, addr = null) => new Promise((resolve,
 })
 
 const getTokenERC20 = addr => getContractInstance( TokenERC20Contract, addr )
-const getTestTokenERC20 = addr => getTestContractInstance( TestTokenERC20Contract, addr )
+const getTestTokenERC20 = addr => getContractInstance( TestTokenERC20Contract, addr )
 const getRatingAgency = () => getContractInstance( RatingAgencyContract ) //, appConfig.RATING_AGENCY )
 const getAnalystRegistry = () => getContractInstance( AnalystRegistryContract ) //, appConfig.ANALYST_REGISTRY )
 

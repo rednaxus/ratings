@@ -4,11 +4,13 @@
   import config from '../../config/appConfig'
   import TestTokenERC20Contract from '../../../../build/contracts/vevaTest.json'
   import { getWeb3 } from '../../services/utils'
+
+  import WalletService from '../../services/API/wallets'
+  import eth from '../../services/API/eth'
+
   var address = TestTokenERC20Contract.networks["7"].address;
 
   var abi = TestTokenERC20Contract.abi;
-
-  const Web3 = require('web3');
 
   var web3 = getWeb3() //new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
@@ -23,44 +25,47 @@
   var fromWeiTwo;
   var balanceDisplay;
 
-  web3.eth.getAccounts(
+const s = '**akseifz**'
 
-    function () {
+  eth.getAccounts().then( accounts => {
+    console.log(`${s}get accounts ${accounts}`)
+    accounts = web3.eth.accounts;
 
-      accounts = web3.eth.accounts;
-
-      if (accounts) {
-        //web3.eth.defaultAccount = accounts[0];
-        web3.eth.defaultAccount = window.web3.eth.defaultAccount;
+    if (accounts) {
+      //web3.eth.defaultAccount = accounts[0];
+      web3.eth.defaultAccount = window.web3.eth.defaultAccount;
 
 
 
-        console.log("Default account: " + web3.eth.defaultAccount);
-        console.log("Using web3 version: " + web3.version.api);
-        web3.eth.getBalance( web3.eth.defaultAccount, (err,balance) => console.log(`balance ${balance}`))
-        console.log (contractInstance.balanceOf(web3.eth.defaultAccount).toString());
+      console.log("Default account: " + web3.eth.defaultAccount);
+      console.log("Using web3 version: " + web3.version.api);
+      eth.getBalance( web3.eth.defaultAccount ).then( balance => console.log(`${s}balance ${balance}`) )
+      console.log (contractInstance.balanceOf(web3.eth.defaultAccount).toString());
 
-        if (!contractInstance.balanceOf(web3.eth.defaultAccount).c[1]){
+      WalletService.balanceOf( web3.eth.defaultAccount ).then( balance => console.log(`${s}default account balance is ${balance}`))
+      if (!contractInstance.balanceOf(web3.eth.defaultAccount).c[1]){
 
-          var toStringNum = contractInstance.balanceOf(web3.eth.defaultAccount).toString();
+        var toStringNum = contractInstance.balanceOf(web3.eth.defaultAccount).toString();
 
-          console.log ('dkhslghs;dfghsdf;lkghsdl;fkghsd;lfkghsd;fgsdfg');
-          console.log (toStringNum);
-          console.log (web3.fromWei(toStringNum, 'ether'));
-          console.log ('dkssagjsjfdsgdsfkjghskdlfjghsfdkljghskldfgjhslfdg');
+        console.log ('dkhslghs;dfghsdf;lkghsdl;fkghsd;lfkghsd;fgsdfg');
+        console.log (toStringNum);
+        console.log (web3.fromWei(toStringNum, 'ether'));
+        console.log ('dkssagjsjfdsgdsfkjghskdlfjghsfdkljghskldfgjhslfdg');
 
-          vevaBalance = web3.fromWei(toStringNum, 'ether');
-        }
+        vevaBalance = web3.fromWei(toStringNum, 'ether');
+      }
 
-        else{
-          fromWeiOne = contractInstance.balanceOf(web3.eth.defaultAccount).c[0].toString();
-          fromWeiTwo = contractInstance.balanceOf(web3.eth.defaultAccount).c[1].toString();
+      else{
+        fromWeiOne = contractInstance.balanceOf(web3.eth.defaultAccount).c[0].toString();
+        fromWeiTwo = contractInstance.balanceOf(web3.eth.defaultAccount).c[1].toString();
 
-          vevaBalance = web3.fromWei(fromWeiOne+fromWeiTwo, 'ether');
-        }
+        vevaBalance = web3.fromWei(fromWeiOne+fromWeiTwo, 'ether');
       }
     }
-  );
+  }).catch( err => {
+    console.log('error getting accounts')
+  })
+  
 
 
 
@@ -108,13 +113,18 @@
 
 
 
-  class ViewWallet extends Component {
+class ViewWallet extends Component {
 
-    constructor(props) {
-    super(props);
+  constructor(props) {
+    super(props)
     this.state = {balanceDisplay: vevaBalance};
 
-    }
+    // test
+    WalletService.balanceOf( web3.eth.defaultAccount ).then( balance => {
+      console.log(`${s}balance: ${balance}`)
+    })
+
+  }
 
 
 

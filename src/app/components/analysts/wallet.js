@@ -51,7 +51,7 @@
 
     onItemClick = () => {
       var toAddress = $("#address").val();
-      var amount = $("#amount").val();
+      var amount = +$("#amount").val();
 
       if ((toAddress.length == 42) && (toAddress[0] == '0') && (toAddress[1] == 'x' || toAddress[1] == "X") && Number(amount)>0) {
 
@@ -61,12 +61,13 @@
 
           var amountWei = web3.toWei(amount);
 
-          if (Number(amount) <= Number(vevaBalance)) {
+          if (amount <= vevaBalance) {
 
             WalletService.transfer(toAddress, amountWei).then( transactionResult => {
               console.log('transaction result',transactionResult)
               $("#address").val("")
               $("#amount").val("")
+              this.setState({balanceDisplay: vevaBalance - amount})
               setTimeout( () => {
                 WalletService.balanceOf( web3.eth.defaultAccount ).then( balance => { 
                   vevaBalance = balance.toNumber()

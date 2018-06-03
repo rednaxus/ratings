@@ -65,17 +65,20 @@
 
           if (Number(amount) <= Number(vevaBalance)) {
 
-            WalletService.transfer(toAddress, amountWei
-              ).then(resetAdd => $("#address").val("")
-              ).then(resetAm => $("#amount").val("")
-              ).then(WalletService.balanceOf( web3.eth.defaultAccount
-                ).then( balance => { vevaBalance = balance.toNumber()})
-              ).then(result => this.setState({balanceDisplay: vevaBalance})
-              ).then(log => console.log(vevaBalance));
+            WalletService.transfer(toAddress, amountWei)
+              .then(grabBalance => WalletService.balanceOf( web3.eth.defaultAccount)
+                .then(getBalance => { vevaBalance = getBalance.toNumber()}))
+              .then(result => this.setState({balanceDisplay: vevaBalance}))
+              .then(log => console.log(vevaBalance))
+              .then(resetAdd => $("#address").val(""))
+              .then(resetAm => $("#amount").val(""))
+              .catch( transferErr => {
+                console.log('error getting accounts')
+              });
           }
 
           else {
-          alert("So sorry! You don't have enough VEVA tokens to send! Please try transferring  a different amount.");
+          alert("So sorry! You don't have enough VEVA tokens to send! Please try transferring a different amount.");
           console.log ("Insufficient Balance");
           }
 

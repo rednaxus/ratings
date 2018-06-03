@@ -2,7 +2,7 @@
 const config = require('../../config/appConfig')
 const { bytes32FromIpfsHash, ipfsHashFromBytes32 } = require('../ipfs')
 const { getRatingAgency, getAnalystRegistry } = require('../contracts')
-const { hexToBytes, hexToBytesSigned } = require('../utils')
+const { hexToBytes, hexToBytesSigned, toHexString } = require('../utils')
 
 const s = '***'
 
@@ -14,14 +14,32 @@ module.exports = {
       console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` ) 
 
       module.exports.getRoundsInfo( num_rounds - num_active_rounds, num_active_rounds ).then( rounds => {
-        console.log(`${s}got active rounds`,rounds)
+        console.log(`${s}got active rounds for analyst ${analyst}`,rounds)
         if (analyst == -1) {
           resolve( rounds )
           return
         }
         Promise.all(
-          rounds.map( (round,idx) => module.exports.getRoundAnalystInfo( round, analyst ).then( roundAnalystInfo => 
-            rounds[idx] = { ...rounds[idx], ...roundAnalystInfo } 
+          rounds.map( (round, idx) => module.exports.getRoundAnalystInfo( round.id, analyst ).then( roundAnalystInfo => 
+            rounds[idx] = { ...round, ...roundAnalystInfo } 
+          ))
+        ).then( resolve( rounds ) )
+      })
+    })  
+  }),
+
+  getFinishedRounds: ( analyst = -1 ) => new Promise( ( resolve, reject ) => {
+    Promise.all( [ module.exports.getRoundsActive(), module.exports.getRounds() ] ).then( nums => {
+      let [ num_active_rounds, num_rounds ] = nums
+      console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` ) 
+
+      module.exports.getRoundsInfo( 0, num_rounds - num_active_rounds ).then( rounds => {
+        console.log(`${s}got finished rounds for analyst ${analyst}`,rounds)
+        if (analyst == -1) 
+          return resolve( rounds )
+        Promise.all(
+          rounds.map( (round, idx) => module.exports.getRoundAnalystInfo( round.id, analyst ).then( roundAnalystInfo => 
+            rounds[idx] = { ...round, ...roundAnalystInfo } 
           ))
         ).then( resolve( rounds ) )
       })
@@ -70,6 +88,14 @@ module.exports = {
       }
     }).catch( err )
   })),
+
+  getRoundsInfo: ( fromRound, num, deep=true ) => new Promise( ( resolve, reject ) => {
+    Promise.all( new Array( num ).fill().map( (_,idx) => module.exports.getRoundInfo( fromRound + idx, deep ) ) ).then( resolve )
+    .catch( err => {
+      console.error(`Error from server on getRoundsInfo: ${err}` ) 
+      reject( err )
+    })
+  }),
 
   getRoundSummary: ( round ) => new Promise( (resolve,reject) => {
     getRatingAgency().then( ra  => {
@@ -145,9 +171,6 @@ module.exports = {
     resolve( num_rounds.toNumber() )
   }).catch( reject ))),
 
-  getRoundsInfo: ( fromRound, num, deep=true ) => 
-    Promise.all( new Array( num ).fill().map( (_,idx) => module.exports.getRoundInfo( fromRound + idx, deep ) ) ),
-
   // function submitBrief( uint16 _round, uint8 _analyst, address _file )
   submitRoundBrief: ( round, aref, filehash ) => new Promise( (resolve,reject) => getRatingAgency().then( ra => {
     console.log('submitting brief',round,aref,filehash)
@@ -168,7 +191,7 @@ module.exports = {
     comment, 
     preOrPost = 0 
   ) => new Promise( (resolve,reject) => getRatingAgency().then( ra => {
-      let _answers = answers instanceof Array ? utils.toHexString( answers ): answers
+      let _answers = answers instanceof Array ? toHexString( answers ): answers
       ra.roundSurveySubmit( round, analystRef, preOrPost, answers, comment ).then( result => {
         console.log('submitted survey result',result)
         resolve( 'done' )

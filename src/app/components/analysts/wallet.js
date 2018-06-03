@@ -40,7 +40,7 @@
     constructor(props) {
       super(props)
       this.state = {balanceDisplay: vevaBalance};
-
+      //this.onItemClick = this.onItemClick.bind(this)
       // test
       WalletService.balanceOf( web3.eth.defaultAccount ).then( balance => {
         console.log(`${s}balance: ${balance}`)
@@ -50,10 +50,8 @@
 
 
     onItemClick = () => {
-
       var toAddress = $("#address").val();
       var amount = $("#amount").val();
-
 
       if ((toAddress.length == 42) && (toAddress[0] == '0') && (toAddress[1] == 'x' || toAddress[1] == "X") && Number(amount)>0) {
 
@@ -65,21 +63,21 @@
 
           if (Number(amount) <= Number(vevaBalance)) {
 
-            WalletService.transfer(toAddress, amountWei)
-              .then(grabBalance => WalletService.balanceOf( web3.eth.defaultAccount)
-                .then(getBalance => { vevaBalance = getBalance.toNumber()}))
-              .then(result => this.setState({balanceDisplay: vevaBalance}))
-              .then(log => console.log(vevaBalance))
-              .then(resetAdd => $("#address").val(""))
-              .then(resetAm => $("#amount").val(""))
-              .catch( transferErr => {
-                console.log('error getting accounts')
-              });
-          }
-
-          else {
-          alert("So sorry! You don't have enough VEVA tokens to send! Please try transferring a different amount.");
-          console.log ("Insufficient Balance");
+            WalletService.transfer(toAddress, amountWei).then( transactionResult => {
+              console.log('transaction result',transactionResult)
+              $("#address").val("")
+              $("#amount").val("")
+              setTimeout( () => {
+                WalletService.balanceOf( web3.eth.defaultAccount ).then( balance => { 
+                  vevaBalance = balance.toNumber()
+                  this.setState({balanceDisplay: vevaBalance})
+                  console.log(`new balance ${vevaBalance}`)
+                }).catch( balanceErr => console.log('error getting accounts') )
+              }, 20000 )
+            }).catch( transferErr => console.log('error transferring') )
+          } else {
+            alert("So sorry! You don't have enough VEVA tokens to send! Please try transferring a different amount.");
+            console.log ("Insufficient Balance");
           }
 
         }

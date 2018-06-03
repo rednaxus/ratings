@@ -46,6 +46,16 @@ module.exports = {
     })
   },
 
+  /* 
+  * add coverage for the token
+  */
+  coverToken: (name, address) => new Promise( ( resolve, reject ) => RatingAgency().then( ra => {
+    let web3 = utils.getWeb3()
+    ra.tokenCover( address, name, 0 ).then( result => { 
+      console.log(`coverage added for token ${name} with address ${address}`)
+    }).catch( reject )
+  })),
+
   getTokenInfo: (i, full=true ) => new Promise( ( resolve, reject ) => RatingAgency().then( ra => {
     let web3 = utils.getWeb3()
     ra.tokenInfo( i ).then( raToken => { // idx, addr

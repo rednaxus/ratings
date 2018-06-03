@@ -63,7 +63,7 @@ module.exports = {
       console.log('got round',res)
       let numFetch = 1
       ra.roundBriefs( round ).then( rBriefs => {
-        console.log('got briefs',round, rBriefs)
+        //console.log('got briefs',round, rBriefs)
         res.briefs = [ // timestamp 0 if no brief submitted
           { timestamp: rBriefs[0].toNumber(), filehash: ipfsHashFromBytes32( rBriefs[1] ) },
           { timestamp: rBriefs[2].toNumber(), filehash: ipfsHashFromBytes32( rBriefs[3] ) }

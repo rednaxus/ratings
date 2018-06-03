@@ -368,6 +368,34 @@ ctlRouter.get('/', function(req, res) {
   res.json({ message: 'hooray! welcome to ctl!' });   
 })
 
+
+/*
+  0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0, //EOS
+  0xf230b790e05390fc8295f4d3f60332c93bed42e2, // Tronix
+  0xd850942ef8811f2a866692a623011bde52a462c1, // VeChain
+  0xd26114cd6ee289accf82350c8d8487fedb8a0c07, // OMG
+  0xb5a5f22694352c15b00323844ad545abb2b11028, // Icon
+  0xb8c77482e45f1f44de1745f52c74426c631bdd52, // BnB
+  0xe0b7927c4af23765cb51314a0e0521a9645f0e2a, // Digix
+  0xd4fa1460f537bb9085d22c7bccb5dd450ef28e3a, // Populous
+  0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2, // Maker
+  0x744d70fdbe2ba4cf95131626614a1763df805b9e, // status
+  0x168296bb09e24a88805cb9c33356536b980d3fc5, // RHOC
+  0xe94327d07fc17907b4db788e5adf2ed424addff6,  // Reputation
+  0x5ca9a71b1d01849c0a95490cc00559717fcf0d1d, // Aeternity
+  0xcb97e65f07da24d46bcdd078ebebd7c6e6e3d750, // Byteom
+  0xb7cb1c96db6b22b0d3d9536e0108d062bd488f74, // Walton
+  0x4ceda7906a5ed2179785cd3a40a69ee8bc99c466 // Aeon
+*/
+ctlRouter.route('/token/:name/:address').get( ( req, res ) => {
+  let [ name, address ] = [ req.params.name, req.params.address ]
+  tokenService.coverToken( name, address ).then( result => {
+    //console.log( result )
+    res.json(result)
+  })
+})
+
+
 ctlRouter.route( '/cron/:interval' ).get( ( req, res ) => { // interval as fraction of period
   let intervalTime = config.cycleFracTime( +req.params.interval )
   console.log(`${s}interval time ${intervalTime}`)

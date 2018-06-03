@@ -4239,17 +4239,24 @@ padding: 6px 10px;
 /*custom CSS */
 
 
-/* panel heading color */
+/* panel heading for informational (no action required) cards */
 .panel-info > .panel-heading {
   color: #3C3744 !important;
   background-color: #B4C5E4 !important;
   border-color: #30343F !important;
 }
 
-/* panel heading for normal panels */
-.panel-heading {
-  border-bottom: 1px solid #30343F !important;
+/* panel heading for really important panels */
+.panel-active_large > .panel-heading {
+  color: #3C3744 !important;
   background-color: #F18F01 !important;
+  border-color: #30343F !important;
+}
+
+/* panel heading for less-critical-but-still-needing-action panels */
+.panel-active_small > .panel-heading {
+  border-bottom: 1px solid #30343F !important;
+  background-color: #EB5E55 !important;
 }
 
 /* glyphicon colors */

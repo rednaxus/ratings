@@ -79,9 +79,9 @@ const appConfig = {
     'jurist-requested',
     'jurist-assigned'
   ],
-  
+
   CYCLES_AHEAD: 4,
-  CYCLE_FRACTIONS: 4,  
+  CYCLE_FRACTIONS: 4,
   CYCLE_PERIOD: 86400 * 28,
   CYCLE_SCHEDULE: 7,
   CYCLE_BRIEF_DUE: 4,
@@ -93,14 +93,14 @@ const appConfig = {
   SCHEDULE_TIME: 86400 * 4,  //die
 
   ZERO_BASE_TIME: 1514764800,
-  
+
   cycleTime: function ( cycle, ms = false ) {
     return ( ms ? 1000 : 1 ) * ( this.CYCLE_PERIOD * cycle / 4 + this.ZERO_BASE_TIME )
   },
 
   cycleIdx: function ( _time, ms = false ) {
     if (ms) _time /= 1000
-    return Math.floor( _time <= this.ZERO_BASE_TIME ? 0 
+    return Math.floor( _time <= this.ZERO_BASE_TIME ? 0
       : this.CYCLE_FRACTIONS * ( _time - this.ZERO_BASE_TIME ) / this.CYCLE_PERIOD )
   },
 
@@ -143,7 +143,7 @@ const appConfig = {
   REWARD_PROMOTION:                  20,
 
   //REFERRALS_DEFAULT:                 5,
-    
+
     // payoffs
   WINNER_PCT:                       40,
   LOSER_PCT:                        10,
@@ -157,24 +157,24 @@ const appConfig = {
   MIDDLE_JURISTS_POINTS:             4,
   BOTTOM_JURISTS_POINTS:             0,
 
-  REFERRAL_POINTS:                   0, 
-    
+  REFERRAL_POINTS:                   0,
+
   LEAD_LEVEL:                        2,
   // <== end from contract
 
   ROUNDS_PER_CYCLE_LEAD:             2,
-  ROUNDS_PER_CYCLE_JURIST:           5, 
-  
-  reward_is_tokens: function ( reward ) { 
+  ROUNDS_PER_CYCLE_JURIST:           5,
+
+  reward_is_tokens: function ( reward ) {
     return [
       this.REWARD_ROUND_TOKENS_WINNER,
-      this.REWARD_ROUND_TOKENS_LOSER,      
+      this.REWARD_ROUND_TOKENS_LOSER,
       this.REWARD_ROUND_TOKENS_JURY_TOP,
       this.REWARD_ROUND_TOKENS_JURY_MIDDLE,
       this.REWARD_ROUND_TOKENS_JURY_BOTTOM
     ].includes( reward.reward_type )
   },
-  reward_is_reputation: function ( reward ) { 
+  reward_is_reputation: function ( reward ) {
     return [
       this.REWARD_ROUND_POINTS_WINNER,
       this.REWARD_ROUND_POINTS_LOSER,
@@ -205,23 +205,23 @@ const appConfig = {
     { name:    'red belt', points: 200, referrals: 20, styles: 'text-red'     },
     { name:  'black belt', points: 500, referrals: 30, styles: 'text-black'   }
   ],
-  level_info: function( reputation ) { 
-    return this.LEVELS[ this.level( reputation ) ] 
+  level_info: function( reputation ) {
+    return this.LEVELS[ this.level( reputation ) ]
   },
-  level: function( reputation ) { 
-    return this.LEVELS.findIndex( ( _, idx, arr ) => idx === arr.length - 1 ? true : reputation < arr[ idx+1 ].points ) 
+  level: function( reputation ) {
+    return this.LEVELS.findIndex( ( _, idx, arr ) => idx === arr.length - 1 ? true : reputation < arr[ idx+1 ].points )
   },
 
   role_name: [ "Lead","Jurist" ],
 
   priority: [
-    { name: "info",         value: 1 }, // values used for relativized random sort
+    { name: "info",         value: 0 }, // values used for relativized random sort
     { name: "active_small", value: 1 },
-    { name: "active_large", value: 1 }
+    { name: "active_large", value: 2 }
   ],
 
   ETHEREUM: {
-    provider: 'http://localhost:8545', // 'http://52.41.77.72:8302', 
+    provider: 'http://localhost:8545', // 'http://52.41.77.72:8302',
     ws: 'ws://localhost:8545',
     gas:4700000,
     gasPrice: 20*1000000000, // 20 gwei
@@ -230,12 +230,9 @@ const appConfig = {
 
   ipfsRepoUpload: 'https://ipfs.io',  //'http://localhost:5001',
   ipfsRepoDownload: 'https://ipfs.io/ipfs/', //http://localhost:8080/ipfs/'
-  
+
   ...customConfig
 
 }
 
 module.exports = appConfig
-
-
-

@@ -33,6 +33,24 @@ const survey = new SurveyService()
 let pre = 0
 let post = 1
 
+const standardTokens = [
+  { address: '0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0', name: 'EOS'         },
+  { address: '0xf230b790e05390fc8295f4d3f60332c93bed42e2', name: 'Tronix'      },
+  { address: '0xd850942ef8811f2a866692a623011bde52a462c1', name: 'VeChain'     },
+  { address: '0xd26114cd6ee289accf82350c8d8487fedb8a0c07', name: 'OMG'         },
+  { address: '0xb5a5f22694352c15b00323844ad545abb2b11028', name: 'Icon'        },
+  { address: '0xb8c77482e45f1f44de1745f52c74426c631bdd52', name: 'BnB'         },
+  { address: '0xe0b7927c4af23765cb51314a0e0521a9645f0e2a', name: 'Digix'       },
+  { address: '0xd4fa1460f537bb9085d22c7bccb5dd450ef28e3a', name: 'Populous'    },
+  { address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2', name: 'Maker'       },
+  { address: '0x744d70fdbe2ba4cf95131626614a1763df805b9e', name: 'status'      },
+  { address: '0x168296bb09e24a88805cb9c33356536b980d3fc5', name: 'RHOC'        },
+  { address: '0xe94327d07fc17907b4db788e5adf2ed424addff6', name: 'Reputation'  },
+  { address: '0x5ca9a71b1d01849c0a95490cc00559717fcf0d1d', name: 'Aeternity'   },
+  { address: '0xcb97e65f07da24d46bcdd078ebebd7c6e6e3d750', name: 'Byteom'      },
+  { address: '0xb7cb1c96db6b22b0d3d9536e0108d062bd488f74', name: 'Walton'      },
+  { address: '0x4ceda7906a5ed2179785cd3a40a69ee8bc99c466', name: 'Aeon'        }
+]
 
 
 let numVolunteerRepeats = 1 // controls how many total rounds get run, i.e. how hard we stress the system
@@ -143,7 +161,16 @@ web3.eth.getCoinbase( ( err, coinbase ) => { // setup on launch
     tokensService.getTokensInfo(false).then( tokens => {
       console.log(`${s}tokens:`,tokens)
       state.tokens = tokens
-      console.log(`${s}waiting...`)
+      // cover any missing tokens now
+      Promise.all( 
+        standardTokens.reduce( ( promises, token ) => {
+          if ( tokens.find( coveredToken => coveredToken.address == token.address) ) return promises
+          return [ ...promises, tokensService.coverToken( token.name, token.address ) ]
+        }, [] )
+      ).then( results => {
+        console.log(`added ${results.length} standard tokens`)
+        console.log(`${s}waiting...`)
+      }).catch( ctlError )
     }).catch( ctlError )
   })
   AnalystRegistry().then( _ar  => {

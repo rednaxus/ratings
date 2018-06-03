@@ -84,7 +84,7 @@
         }
       }
 
-      else if ( toAddress.length == 42 && toAddress[0] == '0' && (toAddress[1] == 'x' || toAddress[1] == "X") && amount<=0) ) {
+      else if ( toAddress.length == 42 && toAddress[0] == '0' && (toAddress[1] == 'x' || toAddress[1] == "X") && amount<=0) {
         alert("Please enter a valid amount of VEVA tokens!");
         console.log ("invalid amount")
       }

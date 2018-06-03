@@ -65,8 +65,13 @@
 
           if (Number(amount) <= Number(vevaBalance)) {
 
-            WalletService.transfer(toAddress, amountWei).then(resetAdd => $("#address").val("")).then(resetAm => $("#amount").val("")).then(WalletService.balanceOf( web3.eth.defaultAccount ).then( balance => { vevaBalance = balance.toNumber()})
-            ).then(result => this.setState({balanceDisplay: vevaBalance})).then(log => console.log(vevaBalance));
+            WalletService.transfer(toAddress, amountWei
+              ).then(resetAdd => $("#address").val("")
+              ).then(resetAm => $("#amount").val("")
+              ).then(WalletService.balanceOf( web3.eth.defaultAccount
+                ).then( balance => { vevaBalance = balance.toNumber()})
+              ).then(result => this.setState({balanceDisplay: vevaBalance})
+              ).then(log => console.log(vevaBalance));
           }
 
           else {

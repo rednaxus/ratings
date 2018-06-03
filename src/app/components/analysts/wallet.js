@@ -30,9 +30,10 @@
 
       WalletService.balanceOf( web3.eth.defaultAccount ).then( balance => { vevaBalance = balance.toNumber()})
 
-      }}).catch( err => {
-      console.log('error getting accounts')
-      })
+    }
+  }).catch( err => {
+    console.log('error getting accounts')
+  })
 
 
   class ViewWallet extends Component {
@@ -50,10 +51,10 @@
 
 
     onItemClick = () => {
-      var toAddress = $("#address").val();
-      var amount = +$("#amount").val();
+      var toAddress = $("#address").val()
+      var amount = +$("#amount").val()
 
-      if ((toAddress.length == 42) && (toAddress[0] == '0') && (toAddress[1] == 'x' || toAddress[1] == "X") && Number(amount)>0) {
+      if (toAddress.length == 42 && toAddress[0] == '0' && (toAddress[1] == 'x' || toAddress[1] == "X") && amount > 0) {
 
         console.log ("valid address and amount!");
 
@@ -80,25 +81,24 @@
             alert("So sorry! You don't have enough VEVA tokens to send! Please try transferring a different amount.");
             console.log ("Insufficient Balance");
           }
-
         }
       }
 
-      else if ((toAddress.length == 42) && (toAddress[0] == '0') && (toAddress[1] == 'x' || toAddress[1] == "X") && (Number(amount)<=0)) {
-          alert("Please enter a valid amount of VEVA tokens!");
-          console.log ("invalid amount")
-        }
+      else if ( toAddress.length == 42 && toAddress[0] == '0' && (toAddress[1] == 'x' || toAddress[1] == "X") && amount<=0) ) {
+        alert("Please enter a valid amount of VEVA tokens!");
+        console.log ("invalid amount")
+      }
 
-        else if (!((toAddress.length == 42) && (toAddress[0] == '0') && (toAddress[1] == 'x' || toAddress[1] == "X")) && (Number(amount)>0)) {
-            alert("Please enter a valid address!");
-            console.log ("invalid address")
-          }
+      else if (!((toAddress.length == 42) && (toAddress[0] == '0') && (toAddress[1] == 'x' || toAddress[1] == "X")) && (Number(amount)>0)) {
+        alert("Please enter a valid address!");
+        console.log ("invalid address")
+      }
 
-        else {
-          alert("Please enter a valid address AND a valid amount!");
-          console.log ("invalid address && amount")
-        }
-    };
+      else {
+        alert("Please enter a valid address AND a valid amount!");
+        console.log ("invalid address && amount")
+      }
+    }
 
 
     render() {

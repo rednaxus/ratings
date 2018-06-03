@@ -214,55 +214,66 @@ const getAnalystCycles = analyst => new Promise ( ( resolve, reject ) => cyclesS
 const analystUpdate = analyst => new Promise( (resolve, reject ) => {
   let s = `***${analyst}***`
   let role = analyst < 4 ? 0 : 1
-  roundsService.getActiveRounds( analyst ).then( rounds => {
-    console.log( `${s}active rounds`,rounds )
-    cyclesService.getCronInfo().then( timestamp => {
-      let currentCycle = config.cycleIdx( timestamp )
-      //let cyclePhase = config.cyclePhase( currentCycle, timestamp )
-      console.log(`${s}cycle ${currentCycle} with timestamp ${timestamp}`)
-      cyclesService.getCyclesInfo( analyst ).then( cycles => {
-        //console.log( `${s}got cycles info`)//,cycles )
-        let byStatus = statusService.cyclesByStatus( { cycles, rounds:state.rounds, timestamp:state.timestamp, tokens:state.tokens } )
-        let promises = []
-        byStatus.comingSignupCycles.forEach( cycle => { // volunteer for any future cycles some number of times
-          let status = cycle.role[ role ]
-          if ( status.num_volunteers + status.num_confirms < numVolunteerRepeats ) { // volunteer to this cycle
-            promises.push( cyclesService.cycleSignup( cycle.id, analyst, role ) )
-            console.log(`${s}volunteering to cycle ${cycle.id}`)
-          }
-          console.log(`${s}on cycle ${currentCycle}....volunteers for cycle ${cycle.id} ${status.num_volunteers}, timestamp ${timestamp}, phase ${config.cyclePhase(cycle.id-1,timestamp)}, confirm due ${statusService.isConfirmDue(cycle,timestamp)}`)
-          if ( status.num_volunteers && statusService.isConfirmDue( cycle, timestamp ) ) {
-            promises.push( cyclesService.cycleConfirm( cycle.id, analyst, role ) )
-            console.log(`${s}confirming to cycle ${cycle.id}`)
-          }
-        })
-        byStatus.activeCycles.forEach( cycle => {
-          console.log(`${s}active cycle ${cycle}`)
-        })
-        rounds.forEach( round => { // active rounds
-          let aref = round.inround_id
-          console.log(`${s}round ${round.id} analyst status ${round.analyst_status} in-round ref ${aref}`)
-          if (config.statuses[ round.analyst_status ] == 'first survey due') {
-            let answers = survey.generateAnswers()
-            let comment = `hello from analyst on pre-survey ${aref}:${analyst}`
-            promises.push( roundsService.submitRoundSurvey( round, aref, answers, comment, pre ) )
-          } else if (config.status[ round.analyst_status] == 'second survey due') {
-            let answers = survey.generateAnswers('down')
-            let comment = `hello from analyst on post-survey ${aref}:${analyst}`
-            promises.push( roundsService.submitRoundSurvey( round, aref, answers, comment, post ) )
-          } else if (config.status[ rai.analyst_status] == 'brief due') {
-            promises.push( roundsService.submitRoundBrief( round, aref, briefs[aref] ) )
-          }
-        })
-        console.log(`${s}${promises.length} promises`)
-        Promise.all( promises ).then( result => {
-          console.log(`${s}analyst work done`,result)
-          cyclesService.getCyclesInfo( analyst ).then( cycles => {
-            let cyclesStatus = statusService.cyclesByStatus( { cycles, rounds:state.rounds, timestamp:state.timestamp, tokens:state.tokens } )
-            console.log(`${s}resolving analystUpdate`)
-            //console.log(`${s}cycles by status`,byStatus)
-            resolve( { timestamp, analyst, cyclesStatus } )
-          }).catch( reject )       
+  //let num_rounds = 0
+  //let num_active_rounds = 0
+  //roundsService.getActiveRounds( analyst ).then( activeRounds => {
+  Promise.all( [ roundsService.getRoundsActive(), roundsService.getRounds() ] ).then( nums => {
+    let [ num_active_rounds, num_rounds ] = nums
+    const isRoundActive = idx => idx < num_rounds - num_active_rounds
+    roundsService.getRoundsInfo( 0, num_rounds ).then( rounds => { // get all of them, we'll need them
+      console.log( `${s}${num_rounds} total rounds and ${num_active_rounds} active rounds`)
+      console.log(rounds)    
+      state.rounds = rounds
+      cyclesService.getCronInfo().then( timestamp => {
+        let currentCycle = config.cycleIdx( timestamp )
+        //let cyclePhase = config.cyclePhase( currentCycle, timestamp )
+        console.log(`${s}cycle ${currentCycle} with timestamp ${timestamp}`)
+        cyclesService.getCyclesInfo( analyst ).then( cycles => {
+          //console.log( `${s}got cycles info`)//,cycles )
+          let byStatus = statusService.cyclesByStatus( { cycles, rounds:rounds, timestamp:timestamp, tokens:state.tokens } )
+          let promises = []
+          byStatus.comingSignupCycles.forEach( cycle => { // volunteer for any future cycles some number of times
+            let status = cycle.role[ role ]
+            if ( status.num_volunteers + status.num_confirms < numVolunteerRepeats ) { // volunteer to this cycle
+              promises.push( cyclesService.cycleSignup( cycle.id, analyst, role ) )
+              console.log(`${s}volunteering to cycle ${cycle.id}`)
+            }
+            console.log(`${s}on cycle ${currentCycle}....volunteers for cycle ${cycle.id} ${status.num_volunteers}, timestamp ${timestamp}, phase ${config.cyclePhase(cycle.id-1,timestamp)}, confirm due ${statusService.isConfirmDue(cycle,timestamp)}`)
+            if ( status.num_volunteers && statusService.isConfirmDue( cycle, timestamp ) ) {
+              promises.push( cyclesService.cycleConfirm( cycle.id, analyst, role ) )
+              console.log(`${s}confirming to cycle ${cycle.id}`)
+            }
+          })
+          byStatus.activeCycles.forEach( cycle => {
+            console.log(`${s}active cycle ${cycle}`)
+          })
+          rounds.forEach( ( round, idx ) => { // active rounds
+            if ( !isRoundActive( idx ) ) return
+            let aref = round.inround_id
+            console.log(`${s}round`,round)
+            console.log(`${s}round ${round.id} analyst status ${round.analyst_status} in-round ref ${aref}`)
+            if (config.STATUSES[ round.analyst_status ] == 'first survey due') {
+              let answers = survey.generateAnswers()
+              let comment = `hello from analyst on pre-survey ${aref}:${analyst}`
+              promises.push( roundsService.submitRoundSurvey( round.id, aref, answers, comment, pre ) )
+            } else if (config.STATUSES[ round.analyst_status] == 'second survey due') {
+              let answers = survey.generateAnswers('down')
+              let comment = `hello from analyst on post-survey ${aref}:${analyst}`
+              promises.push( roundsService.submitRoundSurvey( round.id, aref, answers, comment, post ) )
+            } else if (config.STATUSES[ round.analyst_status] == 'brief due') {
+              promises.push( roundsService.submitRoundBrief( round.id, aref, briefs[aref] ) )
+            }
+          })
+          console.log(`${s}${promises.length} active round work promises`)
+          Promise.all( promises ).then( result => {
+            console.log(`${s}active round work done`,result)
+            cyclesService.getCyclesInfo( analyst ).then( cycles => {
+              let cyclesStatus = statusService.cyclesByStatus( { cycles, rounds:rounds, timestamp:timestamp, tokens:state.tokens } )
+              console.log(`${s}resolving analystUpdate`)
+              //console.log(`${s}cycles by status`,byStatus)
+              resolve( { timestamp, analyst, cyclesStatus } )
+            }).catch( reject )       
+          }).catch( reject )
         }).catch( reject )
       }).catch( ctlError )
     }).catch( ctlError )

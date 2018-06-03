@@ -255,18 +255,44 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
           }
         })
         console.log(`${s}${promises.length} promises`)
-        Promise.all( promises ).then( () => {
+        Promise.all( promises ).then( result => {
+          console.log(`${s}analyst work done`,result)
           cyclesService.getCyclesInfo( analyst ).then( cycles => {
-          let byStatus = statusService.cyclesByStatus( { cycles, rounds:state.rounds, timestamp:state.timestamp, tokens:state.tokens } )
+            let cyclesStatus = statusService.cyclesByStatus( { cycles, rounds:state.rounds, timestamp:state.timestamp, tokens:state.tokens } )
             console.log(`${s}resolving analystUpdate`)
             //console.log(`${s}cycles by status`,byStatus)
-            resolve(byStatus)
+            resolve( { timestamp, analyst, cyclesStatus } )
           }).catch( reject )       
         }).catch( reject )
       }).catch( ctlError )
     }).catch( ctlError )
   }).catch( ctlError )
 })
+
+
+// at this point in time, do all the stuff analysts are due to do
+const analystsUpdate = () => new Promise( ( resolve, reject ) => {  
+  let s = '***[au]***'
+  Promise.all( [ roundsService.getRoundsActive(), roundsService.getRounds() ] ).then( nums => {
+    let [ num_active_rounds, num_rounds ] = nums
+    console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` )
+    roundsService.getRoundsInfo( num_rounds - num_active_rounds, num_active_rounds ).then( rounds => {
+      console.log(`${s}got active rounds`,rounds)
+      Promise.all( testAnalysts.map( analystInfo => analystUpdate( analystInfo.id ) ) ).then( result => {
+        console.log( `${s}promises result`,result )
+        resolve( result )
+      }).catch( reject )
+    }).catch( reject )
+  }).catch( reject )
+})
+
+ctlRouter.route( '/analystsUpdate' ).get( ( req, res ) => {
+  analystsUpdate().then( result => {
+    console.log(`${s}`,result)
+    res.json( result )
+  }).catch( ctlError )
+})
+
 
 /*
  *      api routes
@@ -365,41 +391,41 @@ ctlRouter.route( '/testSimRun/:totalTime/:interval' ).get( ( req, res ) => { // 
 
   console.log(`${s}interval time: ${intervalTime}...period: ${config.CYCLE_PERIOD}`)
   const runCrons = timestamp => new Promise( ( resolve, reject ) => {
-    const doCron = cronTime => ra.cronTo( cronTime ).then( res => {
-      let cycleStart = config.cycleIdx( cronTime )
-      console.log(`${s+s}${cronRunIdx}-cron ran at ${cronTime}:${toDate(cronTime)}...cycle start:${cycleStart}`)
-      console.log( res )
-      cronRunIdx++
-      
-      //console.log(`${s}get rounds active`)
-      Promise.all( [ roundsService.getRoundsActive(), roundsService.getRounds() ] ).then( nums => {
-        let [ num_active_rounds, num_rounds ] = nums
-        console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` )
-        roundsService.getRoundsInfo( num_rounds - num_active_rounds, num_active_rounds ).then( rounds => {
-          console.log(`${s}got active rounds`,rounds)
-          state.rounds = rounds
-          let promises = testAnalysts.map( analystInfo => analystUpdate( analystInfo.id ) )
-          utils.runPromisesInSequence( promises ).then( () => {
+    const cron = cronTime => {
+      ra.cycleRoundCanCreate( config.cycleIdx( cronTime ) ).then( canCreate => {
+        console.log(`cron for ${cronTime} with cycle ${config.cycleIdx(cronTime)} ...can create round: ${canCreate}`)
+        ra.cronTo( cronTime ).then( res => {
+          let cycleStart = config.cycleIdx( cronTime )
+          console.log(`${s+s}${cronRunIdx}-cron ran at ${cronTime}:${toDate(cronTime)}...cycle start:${cycleStart}`)
+          console.log( res )
+          cronRunIdx++
+          console.log(`${s}do analysts update`)
+          analystsUpdate().then( result => {
+            console.log(`${s}analysts update finished`,result)
             let nextTime = cronTime + intervalTime
-            if ( nextTime <= finishTime ) {
-              ra.cycleRoundCanCreate( config.cycleIdx( nextTime ) )
-              .then( canCreate => {
-                console.log(`cron for ${nextTime} with cycle ${config.cycleIdx(nextTime)} ...can create round: ${canCreate}`)
-                doCron( nextTime ) // repeat
-              }).catch( reject )
-            }
-            else resolve( cronTime )
-          }).catch( reject )
+            if ( nextTime <= finishTime )
+              cron( nextTime ) // repeat
+            else 
+              resolve( cronTime )
+
+          }).catch( ctlError )
+
+
         }).catch( reject )
       }).catch( reject )
-    }).catch( reject )
-    doCron( timestamp )
+    }
+    cron( timestamp )  
   })
+
 
   cyclesService.getCronInfo().then( timestamp => {
     finishTime = timestamp + totalTime
     console.log(`${s}cron procedure...${totalTime} cycles ${timestamp}:${toDate(timestamp)} => ${finishTime}:${toDate(finishTime)}`)
-    runCrons( timestamp + intervalTime ).then( lastTime => console.log(`finished ${lastTime}:${toDate(lastTime)}`))
+    runCrons( timestamp + intervalTime ).then( timestamp => {
+      let date = toDate( timestamp )
+      console.log(`finished ${timestamp}:${date}`)
+      res.json({ timestamp, date })
+    })
   })
 })
 

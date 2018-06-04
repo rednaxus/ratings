@@ -46,6 +46,24 @@ module.exports = {
     })  
   }),
 
+  getAllRounds: ( analyst = -1 ) => new Promise( ( resolve, reject ) => {
+    Promise.all( [ module.exports.getRoundsActive(), module.exports.getRounds() ] ).then( nums => {
+      let [ num_active_rounds, num_rounds ] = nums
+      console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` ) 
+
+      module.exports.getRoundsInfo( 0, num_rounds ).then( rounds => {
+        console.log(`${s}got all rounds for analyst ${analyst}`,rounds)
+        if (analyst == -1) 
+          return resolve( rounds )
+        Promise.all(
+          rounds.map( (round, idx) => module.exports.getRoundAnalystInfo( round.id, analyst ).then( roundAnalystInfo => 
+            rounds[idx] = { ...round, ...roundAnalystInfo } 
+          ))
+        ).then( resolve( rounds ) )
+      })
+    })  
+  }),
+
   getRoundInfo: ( round, deep = true ) => new Promise( (resolve,reject) => getRatingAgency().then( ra  => {
     const err = err => {
       console.error(`Error from server on getRoundInfo: ${err}` ) 

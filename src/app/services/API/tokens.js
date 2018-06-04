@@ -50,7 +50,7 @@ module.exports = {
   * add coverage for the token
   */
   coverToken: (name, address) => new Promise( ( resolve, reject ) => RatingAgency().then( ra => {
-    console.log('covering token',name)
+    //console.log('covering token',name, address, typeof address)
     ra.tokenCover( address, name, 0 ).then( result => { 
       console.log(`coverage added for token ${name} with address ${address}`)
       resolve( result )

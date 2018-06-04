@@ -205,10 +205,10 @@ contract RatingAgency {
      *   Token methods
     */
 
-    event TokenAdd( uint32, address);
+    //event TokenAdd( uint32, string);
     function tokenCover( address _tokenContract, string _name, uint _timeperiod ) public {  // only specify period if different
         covered_tokens[ num_tokens ] = CoveredToken( _tokenContract, stringToBytes32( _name ), _timeperiod, msg.sender, time );
-        emit TokenAdd( num_tokens, _tokenContract );
+        //emit TokenAdd( num_tokens, _name );
         num_tokens++;
     }
 
@@ -367,7 +367,7 @@ contract RatingAgency {
     }
 
     function cyclePhase( uint16 cycle, uint timestamp ) public view returns ( uint8 ) { // used for triggering certain events
-        uint timephase = timestamp - this.cycleTime( cycle );
+        uint timephase = timestamp - cycleTime( cycle );
         return ( 
             timephase < 0 ? 0 : (timephase > cycle_period ? CYCLE_FRACTIONS + 1: 
                 uint8( CYCLE_FRACTIONS * timephase / cycle_period )

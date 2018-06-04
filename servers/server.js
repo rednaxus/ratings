@@ -145,6 +145,8 @@ const ctlError = err => console.log( 'ctl error', err )
 
 const toDate = timestamp => moment(timestamp*1000).format('MMMM Do YYYY, h:mm:ss a')
 
+const timeInfo = timestamp => ( { timestamp:timestamp, date:toDate( timestamp ), cycle: config.cycleIdx( timestamp ) } )
+
 //console.log('web3',web3.eth.personal);
 web3.eth.getCoinbase( ( err, coinbase ) => { // setup on launch
 
@@ -231,9 +233,11 @@ const getBlocks = blockrange => {
 
 const getAnalystCycles = analyst => new Promise ( ( resolve, reject ) => cyclesService.getCyclesInfo( analyst ).then( cycles => {
     //console.log( `${s}got cycles for analyst ${ analyst }`,cycles )
-  let cyclesInfo = statusService.cyclesByStatus( { cycles, rounds:state.rounds, timestamp:state.timestamp, tokens:state.tokens })
-  //console.log(`cycles by status for ${analyst}`,cyclesByStatus)
-  resolve( { cycles, cyclesByStatus: cyclesInfo } )
+  roundsService.getAllRounds().then( rounds => {
+    let cyclesInfo = statusService.cyclesByStatus( { cycles, rounds:rounds, timestamp:state.timestamp, tokens:state.tokens })
+    //console.log(`cycles by status for ${analyst}`,cyclesByStatus)
+    resolve( { cycles, cyclesByStatus: cyclesInfo } )
+  }).catch( reject )
 }).catch( reject ))
 
 
@@ -280,14 +284,17 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
             console.log(`${s}round`,round)
             console.log(`${s}round ${round.id} analyst status ${round.analyst_status} in-round ref ${aref}`)
             if (config.STATUSES[ round.analyst_status ] == 'first survey due') {
+              console.log(`first survey submitting on round ${round.id} for analyst ${analyst}`)
               let answers = survey.generateAnswers()
               let comment = `hello from analyst on pre-survey ${aref}:${analyst}`
               promises.push( roundsService.submitRoundSurvey( round.id, aref, answers, comment, pre ) )
             } else if (config.STATUSES[ round.analyst_status] == 'second survey due') {
+              console.log(`second survey submitting on round ${round.id} for analyst ${analyst}`)
               let answers = survey.generateAnswers('down')
               let comment = `hello from analyst on post-survey ${aref}:${analyst}`
               promises.push( roundsService.submitRoundSurvey( round.id, aref, answers, comment, post ) )
             } else if (config.STATUSES[ round.analyst_status] == 'brief due') {
+              console.log(`brief submitting on round ${round.id} for analyst ${analyst}`)
               promises.push( roundsService.submitRoundBrief( round.id, aref, briefs[aref] ) )
             }
           })
@@ -356,6 +363,38 @@ apiRouter.get('/round/:round/:analyst', ( req, res ) => {
 })
 
 
+apiRouter.get('/roundsActive', ( req, res ) => {
+  cyclesService.getCronInfo().then( timestamp => {
+    //console.log(`${s}cron`, timestamp )
+    roundsService.getActiveRounds().then( activeRounds => {
+      //console.log( 'active rounds',activeRounds )
+      res.json( { ...timeInfo( timestamp ), activeRounds } )
+    })
+  })
+})
+
+// get rounds finished
+apiRouter.get('/roundsFinished', ( req, res ) => {
+  cyclesService.getCronInfo().then( timestamp => {
+    //console.log(`${s}cron`, timestamp )
+    roundsService.getFinishedRounds().then( finishedRounds => {
+      //console.log( 'finished rounds', finishedRounds )
+      res.json( { ...timeInfo( timestamp ), finishedRounds } )
+    })
+  })
+})
+
+// get all rounds
+apiRouter.get('/rounds', ( req, res ) => {
+  cyclesService.getCronInfo().then( timestamp => {
+    //console.log(`${s}cron`, timestamp )
+    roundsService.getAllRounds().then( rounds => {
+      //console.log( 'all rounds', rounds )
+      res.json( { ...timeInfo( timestamp ), rounds } )
+    })
+  })
+})
+
 apiRouter.get('/roundSummaries/:fromDate').get( ( req, res ) => {
   res.json({ message: 'yay, rounds'})
 })
@@ -364,10 +403,9 @@ apiRouter.get('/roundSummaries/:fromDate').get( ( req, res ) => {
 apiRouter.route('/getAnalystCyclesStatus/:analyst').get( ( req, res ) => {
   cyclesService.getCronInfo().then( timestamp => {
     console.log(`${s}cron`, timestamp )
-    let timeInfo = { timestamp:timestamp, date:toDate( timestamp ), cycle: config.cycleIdx( timestamp ) } 
     getAnalystCycles( +req.params.analyst ).then( ( { cycles, cyclesByStatus } ) => {
       console.log(`${s}`,cycles,cyclesByStatus)
-      res.json( {...timeInfo, ...cyclesByStatus } )
+      res.json( {...timeInfo( timestamp ), ...cyclesByStatus } )
     })
   })
 })
@@ -414,9 +452,9 @@ ctlRouter.get('/', function(req, res) {
   0xb7cb1c96db6b22b0d3d9536e0108d062bd488f74, // Walton
   0x4ceda7906a5ed2179785cd3a40a69ee8bc99c466 // Aeon
 */
-ctlRouter.route('/token/:name/:address').get( ( req, res ) => {
+ctlRouter.route('/tokenAdd/:name/:address').get( ( req, res ) => {
   let [ name, address ] = [ req.params.name, req.params.address ]
-  tokenService.coverToken( name, address ).then( result => {
+  tokensService.coverToken( name, address ).then( result => {
     //console.log( result )
     res.json(result)
   })

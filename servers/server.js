@@ -89,21 +89,27 @@ t.forEach( t => {
 })
 
 
-const cycletest = { id: 1 }
+const cycletest = { id: 4 }
+const nextcycletest = { id: 5 }
 
-
-let a = [ 1, 2, 3, 4, 5, 6, 7, 8 ]
+let a = [ -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8 ]
 a.forEach( phase => {
+  console.log(`cycle time ${config.cycleTime(cycletest.id)} : phase time ${config.cyclePhaseTime( phase )}`)
   let timestamp = config.cycleTime(cycletest.id)+config.cyclePhaseTime( phase )
   let data = {
+    cycle: cycletest.id,
     timestamp,
+    timestampCycle:config.cycleIdx(timestamp),
+    cycleTime: config.cycleTime( cycletest.id ),
+    nextCycleTime: config.cycleTime( cycletest.id + 1),
     fracTime: config.cycleFracTime( phase ),
+    expectedPhase: phase,
     phase: config.cyclePhase(cycletest.id, timestamp ),    
-    period: config.CYCLE_PERIOD
+    period: config.CYCLE_PERIOD,
+    isConfirmDue: statusService.isConfirmDue(cycletest,timestamp),
+    isFuture: statusService.isFuture(nextcycletest,timestamp)
   }
   console.log(`${s}`,data)
-  console.log(`is confirm due ${statusService.isConfirmDue(cycletest,timestamp)}`)
-  console.log(`is future ${statusService.isFuture(cycletest,timestamp)}`)
 })
 
 //console.log('survey',survey)
@@ -145,7 +151,10 @@ const ctlError = err => console.log( 'ctl error', err )
 
 const toDate = timestamp => moment(timestamp*1000).format('MMMM Do YYYY, h:mm:ss a')
 
-const timeInfo = timestamp => ( { timestamp:timestamp, date:toDate( timestamp ), cycle: config.cycleIdx( timestamp ) } )
+const timeInfo = timestamp => {
+  let cycle = config.cycleIdx( timestamp )
+  return { timestamp:timestamp, date:toDate( timestamp ), cycle: config.cycleIdx( timestamp ), phase: config.cyclePhase( cycle, timestamp ) }
+} 
 
 //console.log('web3',web3.eth.personal);
 web3.eth.getCoinbase( ( err, coinbase ) => { // setup on launch
@@ -266,13 +275,24 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
           byStatus.comingSignupCycles.forEach( cycle => { // volunteer for any future cycles some number of times
             let status = cycle.role[ role ]
             if ( status.num_volunteers + status.num_confirms < numVolunteerRepeats ) { // volunteer to this cycle
-              promises.push( cyclesService.cycleSignup( cycle.id, analyst, role ) )
               console.log(`${s}volunteering to cycle ${cycle.id}`)
+              promises.push( 
+                cyclesService.cycleSignup( cycle.id, analyst, role ).then( result => {
+                  console.log(`${s}volunteered to cycle ${cycle.id}`)
+                  return result
+                })
+              )
+
             }
             console.log(`${s}on cycle ${currentCycle}....volunteers for cycle ${cycle.id} ${status.num_volunteers}, timestamp ${timestamp}, phase ${config.cyclePhase(cycle.id-1,timestamp)}, confirm due ${statusService.isConfirmDue(cycle,timestamp)}`)
             if ( status.num_volunteers && statusService.isConfirmDue( cycle, timestamp ) ) {
-              promises.push( cyclesService.cycleConfirm( cycle.id, analyst, role ) )
               console.log(`${s}confirming to cycle ${cycle.id}`)
+              promises.push( 
+                cyclesService.cycleConfirm( cycle.id, analyst, role ).then( result => {
+                  console.log(`${s}volunteered to cycle ${cycle.id}`)
+                  return result
+                })
+              )
             }
           })
           byStatus.activeCycles.forEach( cycle => {
@@ -284,28 +304,42 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
             console.log(`${s}round`,round)
             console.log(`${s}round ${round.id} analyst status ${round.analyst_status} in-round ref ${aref}`)
             if (config.STATUSES[ round.analyst_status ] == 'first survey due') {
-              console.log(`first survey submitting on round ${round.id} for analyst ${analyst}`)
+              console.log(`${s}first survey submitting on round ${round.id} for aref ${aref}`)
               let answers = survey.generateAnswers()
               let comment = `hello from analyst on pre-survey ${aref}:${analyst}`
-              promises.push( roundsService.submitRoundSurvey( round.id, aref, answers, comment, pre ) )
+              promises.push( 
+                roundsService.submitRoundSurvey( round.id, aref, answers, comment, pre ).then( result => {
+                  console.log(`pre-survey submitted for round ${round.id} by aref ${aref}`)
+                  return result
+                }) 
+              )
             } else if (config.STATUSES[ round.analyst_status] == 'second survey due') {
-              console.log(`second survey submitting on round ${round.id} for analyst ${analyst}`)
+              console.log(`${s}second survey submitting on round ${round.id} for analyst ${analyst}`)
               let answers = survey.generateAnswers('down')
               let comment = `hello from analyst on post-survey ${aref}:${analyst}`
-              promises.push( roundsService.submitRoundSurvey( round.id, aref, answers, comment, post ) )
+              promises.push( 
+                roundsService.submitRoundSurvey( round.id, aref, answers, comment, post ).then( result => {
+                  console.log(`post-survey submitted for round ${round.id} by analyst ${analyst}:${aref}`)
+                  return result
+                }) 
+              )
             } else if (config.STATUSES[ round.analyst_status] == 'brief due') {
               console.log(`brief submitting on round ${round.id} for analyst ${analyst}`)
-              promises.push( roundsService.submitRoundBrief( round.id, aref, briefs[aref] ) )
+              promises.push( 
+                roundsService.submitRoundBrief( round.id, aref, briefs[aref] ).then( result => {
+                  console.log(`brief submitted for round ${round.id} by analyst ${analyst}:${aref}`)
+                }) 
+              )
             }
           })
-          console.log(`${s}${promises.length} active round work promises`)
+          console.log(`${s}${promises.length} cycle or active round work promises`)
           Promise.all( promises ).then( result => {
-            console.log(`${s}active round work done`,result)
+            console.log(`${s}cycle or active round work done`)//,result)
             cyclesService.getCyclesInfo( analyst ).then( cycles => {
               let cyclesStatus = statusService.cyclesByStatus( { cycles, rounds:rounds, timestamp:timestamp, tokens:state.tokens } )
               console.log(`${s}resolving analystUpdate`)
               //console.log(`${s}cycles by status`,byStatus)
-              resolve( { timestamp, analyst, cyclesStatus } )
+              resolve( { ...timeInfo(timestamp), analyst, cyclesStatus } )
             }).catch( reject )       
           }).catch( reject )
         }).catch( reject )

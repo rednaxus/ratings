@@ -14,9 +14,10 @@ contract RatingAgency {
     //uint constant ACTIVE_TIME = 86400 * 28;
     //uint constant SCHEDULE_TIME = 86400 * 4; // 4 days before round activates
     // new timings by cycle fraction
-    uint8 constant CYCLE_SCHEDULE = 7; // e.g. 1/7 of CYCLE_PERIOD
-    uint8 constant CYCLE_BRIEF_DUE = 4;
-    uint8 constant CYCLE_SURVEY_DUE = 4;
+    //uint8 constant CYCLE_SCHEDULE = 7; // e.g. 1/7 of CYCLE_PERIOD
+    //uint8 constant CYCLE_BRIEF_DUE = 4;
+    //uint8 constant CYCLE_SURVEY_DUE = 4;
+    uint8 constant CYCLE_FINISH_PHASE = 3; // i
     //uint constant BRIEF_DUE_TIME = 86400 * 7;
     //uint constant SURVEY_DUE_TIME = 86400 * 7;
 
@@ -331,15 +332,14 @@ contract RatingAgency {
 
     event CycleFinished( uint16 cycle, uint16 cycle_finished, uint time );
     function cycleFinish( uint16 _cycle ) public { // finish any previous cycles
-        for ( uint16 round = num_rounds - num_rounds_active; round < num_rounds; round++ ) {
-            Cycle storage c = cycles[ rounds[ round ].cycle ];
-            if ( c.timestart + c.period <= time ) {
+        for ( uint16 round = num_rounds - num_rounds_active; round < num_rounds; round++ ){
+            if ( cyclePhase( rounds[ round ].cycle, time ) >= CYCLE_FINISH_PHASE ) {
                 roundFinish( round );
                 return;  // ! because of gas purposes only finish one round...can adjust this if finish is less costly
             }
         }
         for ( uint16 cycle = 0; cycle < _cycle; cycle++ ){ // deactivate any past cycles
-            c = cycles[ cycle ];
+            Cycle storage c = cycles[ cycle ];
             if (c.stat == ACTIVE && c.timestart + c.period <= time ){
                 c.stat = FINISHED;  
                 emit CycleFinished( _cycle, cycle, time );
@@ -369,8 +369,8 @@ contract RatingAgency {
     function cyclePhase( uint16 cycle, uint timestamp ) public view returns ( uint8 ) { // used for triggering certain events
         uint timephase = timestamp - cycleTime( cycle );
         return ( 
-            timephase < 0 ? 0 : (timephase > cycle_period ? CYCLE_FRACTIONS + 1: 
-                uint8( CYCLE_FRACTIONS * timephase / cycle_period )
+            timephase < 0 ? 0 : (timephase >= cycle_period ? CYCLE_FRACTIONS + 1: 
+                uint8( CYCLE_FRACTIONS * timephase / cycle_period ) + 1
             ) 
         );
     }

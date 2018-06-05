@@ -8,7 +8,10 @@ const isVolunteer = cycle => cycle.role[ 0 ].num_volunteers || cycle.role[ 1 ].n
 const isConfirmed = cycle => cycle.role[ 0 ].num_confirms || cycle.role[ 1 ].num_confirms
 const hasRounds = cycle => cycle.role.length && (cycle.role[ 0 ].num_rounds || cycle.role[ 1 ].num_rounds)
 const hasSignups = cycle => !isVolunteer( cycle ) && !isConfirmed( cycle ) && !hasRounds( cycle ) 
-const isFuture = cycle => cycle.id > activeNow
+const isFuture = cycle =>{ 
+  //console.log(`isfuture ${cycle.id} ${activeNow}`)
+  return cycle.id > activeNow
+}
 const isActive = cycle => cycle.timestart >= now && cycle.timestart < nextTime 
 const isFinished = cycle => activeNow != cycle.id && cycle.timestart < now
 const isConfirmDue = cycle => {
@@ -81,7 +84,7 @@ const AnalystStatus = {
       if ( !isActive( cycle ) || !hasRounds( cycle ) ) return
       cycle.role.forEach( (role,idx) => {
         for ( let i = 0; i < role.num_rounds; i++ ){
-          console.log('active rounds for role',role,i,role.rounds)
+          //console.log('active rounds for role',role,i,role.rounds)
           let round = getRound( role.rounds[ i ] )
           activeCycles.push(
             { ...cycle, role: idx, token: round.covered_token, round: role.rounds[ i ] }
@@ -95,7 +98,7 @@ const AnalystStatus = {
       if ( !isFinished( cycle ) ) return
       cycle.role.forEach( (role,idx) => {
         for ( let i = 0; i < role.num_rounds; i++ ){
-          console.log('finished rounds for role',role,i,role.rounds)
+          //console.log('finished rounds for role',role,i,role.rounds)
           let round = getRound( role.rounds[ i ] )
           finishedCycles.push(
             { ...cycle, role: idx, token: round.covered_token, round: role.rounds[ i ]}

@@ -52,14 +52,18 @@ module.exports = {
       console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` ) 
 
       module.exports.getRoundsInfo( 0, num_rounds ).then( rounds => {
-        console.log(`${s}got all rounds for analyst ${analyst}`,rounds)
         if (analyst == -1) 
           return resolve( rounds )
         Promise.all(
-          rounds.map( (round, idx) => module.exports.getRoundAnalystInfo( round.id, analyst ).then( roundAnalystInfo => 
-            rounds[idx] = { ...round, ...roundAnalystInfo } 
-          ))
-        ).then( resolve( rounds ) )
+          rounds.map( (round, idx) => module.exports.getRoundAnalystInfo( round.id, analyst ).then( roundAnalystInfo => {
+            round = { ...round, ...roundAnalystInfo } 
+            return round
+          }) )
+        ).then( rounds => {
+          console.log(`${s}got all rounds for analyst ${analyst}`,rounds)        
+          resolve(rounds) 
+        })
+        .catch( reject )
       })
     })  
   }),
@@ -149,7 +153,7 @@ module.exports = {
 
   })
 */
-
+ 
   getRoundAnalystInfo: ( round, analyst=0 ) => new Promise( (resolve,reject) => {
     getRatingAgency().then( ra => {
       ra.roundAnalyst( round, analyst ).then( rRound => { 
@@ -157,7 +161,11 @@ module.exports = {
           id:             round,
           analyst:        analyst,
           inround_id:     rRound[0].toNumber(), 
-          analyst_status: rRound[1].toNumber()
+          analyst_status: rRound[1].toNumber(),
+          answers: [
+            hexToBytes( rRound[2] ),
+            hexToBytes( rRound[3] )
+          ]
         }
         console.log('got round analyst',res)
         resolve( res )

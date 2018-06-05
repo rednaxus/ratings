@@ -441,13 +441,13 @@ contract RatingAgency {
         emit RoundActivated( r.cycle, round, num_rounds_active, r.num_analysts );
     }
 
-    function roundAnalyst( uint16 _round, uint32 _analyst ) public view returns (uint8, uint8) {
+    function roundAnalyst( uint16 _round, uint32 _analyst ) public view returns ( uint8, uint8, bytes32, bytes32 ) {
         Round storage round = rounds[_round];
-        for ( uint8 i=0; i < round.num_analysts; i++){
-            if ( round.analysts[ i ].analyst == _analyst )
-                return( i, round.analysts[ i ].stat );
+        for ( uint8 aref = 0; aref < round.num_analysts; aref++){
+            if ( round.analysts[ aref ].analyst == _analyst )
+                return( aref, round.analysts[ aref ].stat, round.surveys[ aref ][ 0 ].answers, round.surveys[ aref ][ 1 ].answers );
         }
-        return ( 0, NONE );    // not found, no status
+        return ( 0, NONE, 0, 0 );    // not found, no status
     }
     function roundAnalystId( uint16 _round, uint8 _inround_analyst) public view returns (uint32) {
         return ( rounds[ _round ].analysts[ _inround_analyst ].analyst );

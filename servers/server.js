@@ -259,8 +259,8 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
   //roundsService.getActiveRounds( analyst ).then( activeRounds => {
   Promise.all( [ roundsService.getRoundsActive(), roundsService.getRounds() ] ).then( nums => {
     let [ num_active_rounds, num_rounds ] = nums
-    const isRoundActive = idx => idx < num_rounds - num_active_rounds
-    roundsService.getRoundsInfo( 0, num_rounds ).then( rounds => { // get all of them, we'll need them
+    const isRoundActive = idx => idx >= num_rounds - num_active_rounds
+    roundsService.getAllRounds( analyst ).then( rounds => { // get all of them, we'll need them
       console.log( `${s}${num_rounds} total rounds and ${num_active_rounds} active rounds`)
       console.log(rounds)    
       state.rounds = rounds
@@ -289,7 +289,7 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
               console.log(`${s}confirming to cycle ${cycle.id}`)
               promises.push( 
                 cyclesService.cycleConfirm( cycle.id, analyst, role ).then( result => {
-                  console.log(`${s}volunteered to cycle ${cycle.id}`)
+                  console.log(`${s}confirmed to cycle ${cycle.id}`)
                   return result
                 })
               )
@@ -309,7 +309,7 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
               let comment = `hello from analyst on pre-survey ${aref}:${analyst}`
               promises.push( 
                 roundsService.submitRoundSurvey( round.id, aref, answers, comment, pre ).then( result => {
-                  console.log(`pre-survey submitted for round ${round.id} by aref ${aref}`)
+                  console.log(`pre-survey submitted for round ${round.id} by aref ${aref}`,answers)
                   return result
                 }) 
               )
@@ -319,7 +319,7 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
               let comment = `hello from analyst on post-survey ${aref}:${analyst}`
               promises.push( 
                 roundsService.submitRoundSurvey( round.id, aref, answers, comment, post ).then( result => {
-                  console.log(`post-survey submitted for round ${round.id} by analyst ${analyst}:${aref}`)
+                  console.log(`post-survey submitted for round ${round.id} by aref ${aref}`,answers)
                   return result
                 }) 
               )
@@ -327,7 +327,7 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
               console.log(`brief submitting on round ${round.id} for analyst ${analyst}`)
               promises.push( 
                 roundsService.submitRoundBrief( round.id, aref, briefs[aref] ).then( result => {
-                  console.log(`brief submitted for round ${round.id} by analyst ${analyst}:${aref}`)
+                  console.log(`brief ${briefs[aref]} submitted for round ${round.id} by aref ${aref}`)
                 }) 
               )
             }
@@ -352,16 +352,9 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
 // at this point in time, do all the stuff analysts are due to do
 const analystsUpdate = () => new Promise( ( resolve, reject ) => {  
   let s = '***[au]***'
-  Promise.all( [ roundsService.getRoundsActive(), roundsService.getRounds() ] ).then( nums => {
-    let [ num_active_rounds, num_rounds ] = nums
-    console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` )
-    roundsService.getRoundsInfo( num_rounds - num_active_rounds, num_active_rounds ).then( rounds => {
-      console.log(`${s}got active rounds`,rounds)
-      Promise.all( testAnalysts.map( analystInfo => analystUpdate( analystInfo.id ) ) ).then( result => {
-        console.log( `${s}promises result`,result )
-        resolve( result )
-      }).catch( reject )
-    }).catch( reject )
+  Promise.all( testAnalysts.map( analystInfo => analystUpdate( analystInfo.id ) ) ).then( result => {
+    console.log( `${s}analysts update done`,result )
+    resolve( result )
   }).catch( reject )
 })
 
@@ -423,6 +416,17 @@ apiRouter.get('/rounds', ( req, res ) => {
   cyclesService.getCronInfo().then( timestamp => {
     //console.log(`${s}cron`, timestamp )
     roundsService.getAllRounds().then( rounds => {
+      //console.log( 'all rounds', rounds )
+      res.json( { ...timeInfo( timestamp ), rounds } )
+    })
+  })
+})
+
+apiRouter.get('/rounds/:analyst', ( req, res ) => {
+  let analyst = +req.params.analyst
+  cyclesService.getCronInfo().then( timestamp => {
+    //console.log(`${s}cron`, timestamp )
+    roundsService.getAllRounds( analyst ).then( rounds => {
       //console.log( 'all rounds', rounds )
       res.json( { ...timeInfo( timestamp ), rounds } )
     })

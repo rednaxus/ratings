@@ -223,7 +223,7 @@ const appConfig = {
   ETHEREUM: {
     provider: 'http://localhost:8545', // 'http://52.41.77.72:8302',
     ws: 'ws://localhost:8545',
-    gas:4700000,
+    gas:6700000,
     gasPrice: 20*1000000000, // 20 gwei
     network: 7
   },

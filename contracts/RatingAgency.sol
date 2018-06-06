@@ -15,8 +15,9 @@ contract RatingAgency {
     //uint constant SCHEDULE_TIME = 86400 * 4; // 4 days before round activates
     // new timings by cycle fraction
     //uint8 constant CYCLE_SCHEDULE = 7; // e.g. 1/7 of CYCLE_PERIOD
-    //uint8 constant CYCLE_BRIEF_DUE = 4;
-    //uint8 constant CYCLE_SURVEY_DUE = 4;
+    uint8 constant CYCLE_BRIEF_DUE = 1; // due in phase 1, i.e. at the end of phase 1
+    uint8 constant CYCLE_PRE_SURVEY_DUE = 1;
+    uint8 constant CYCLE_POST_SURVEY_DUE = 2; 
     uint8 constant CYCLE_FINISH_PHASE = 3; // i
     //uint constant BRIEF_DUE_TIME = 86400 * 7;
     //uint constant SURVEY_DUE_TIME = 86400 * 7;
@@ -41,12 +42,12 @@ contract RatingAgency {
     uint8 constant ASSIGNED = 8;
     uint8 constant SCHEDULED_LEAD = 9;
     uint8 constant SCHEDULED_JURIST = 10;
-    uint8 constant BRIEF_DUE = 11;
+    uint8 constant BRIEF_DUE = 11;  // keep these 6 in time-numerical order for comparisons
     uint8 constant BRIEF_SUBMITTED = 12;
-    uint8 constant FIRST_SURVEY_DUE = 13;
-    uint8 constant FIRST_SURVEY_SUBMITTED = 14;
-    uint8 constant SECOND_SURVEY_DUE = 15;
-    uint8 constant SECOND_SURVEY_SUBMITTED = 16;
+    uint8 constant PRE_SURVEY_DUE = 13;
+    uint8 constant PRE_SURVEY_SUBMITTED = 14;
+    uint8 constant POST_SURVEY_DUE = 15;
+    uint8 constant POST_SURVEY_SUBMITTED = 16;
     uint8 constant ROUND_TALLIED = 17;
     uint8 constant DISQUALIFIED = 18;
 
@@ -197,7 +198,7 @@ contract RatingAgency {
         registry = AnalystRegistry( _registry );
         registry.update( time );
 
-        cycleExtend( time, 0 ); // bootstrap cycles
+        //cycleExtend( time, 0 ); // bootstrap cycles
         bootstrapTokens( 3 );
     }
 
@@ -396,9 +397,34 @@ contract RatingAgency {
         return cycle_period * _idx / 4 + ZERO_BASE_TIME;    // cycles offset
     }
 
-    function cycleUpdate( uint16 _cycle ) public { // update to see if rounds need cancelling 
-        Cycle storage cycle = cycles[ _cycle ]; 
-        
+    function cycleUpdate( uint16 _cycle ) public { // update to see if rounds need cancelling, or if statusues need to change
+        //Cycle storage cycle = cycles[ _cycle ];
+
+        // for each active round...check cycle phase against lead and jury statuses
+        for (uint16 round = num_rounds - num_rounds_active; round < num_rounds; round++ ){
+            Round storage r = rounds [ round ];
+            if ( r.stat == CANCELLED ) continue;
+            uint8 phase = cyclePhase( r.cycle, time );
+            for( uint8 aref = 0; aref < r.num_analysts; aref++ ){
+                RoundAnalyst storage ra = r.analysts[ aref ];
+                if (aref < 2) {
+                    if ( ra.stat == BRIEF_SUBMITTED ) continue;
+                    if ( phase > CYCLE_BRIEF_DUE && ra.stat != BRIEF_SUBMITTED ) {
+                        ra.stat = DISQUALIFIED;
+                        roundCancel( round ); 
+                    }
+                } else {
+                    if ( ra.stat == DISQUALIFIED || ra.stat == POST_SURVEY_SUBMITTED ) continue;
+                    if ( phase > CYCLE_PRE_SURVEY_DUE ) {
+                        if ( ra.stat <= PRE_SURVEY_DUE ) ra.stat = DISQUALIFIED;
+                        else if ( ra.stat == PRE_SURVEY_SUBMITTED && phase > CYCLE_PRE_SURVEY_DUE ) 
+                            ra.stat = POST_SURVEY_DUE;
+                    if ( phase > CYCLE_POST_SURVEY_DUE && ra.stat <= POST_SURVEY_DUE ) 
+                        ra.stat = DISQUALIFIED; // don't cancel rounds for jurists disqualified
+                    }
+                }
+            }
+        }
     }
 
     event CycleVolunteer( uint16 cycle, uint32 analyst, uint8 role, uint8 num_volunteers );
@@ -435,7 +461,7 @@ contract RatingAgency {
         roundPopulate( _cycle, round );
         for (uint8 a = 0; a < r.num_analysts; a++ ) {
             RoundAnalyst storage ra = r.analysts[ a ];
-            ra.stat = a<2 ? BRIEF_DUE: FIRST_SURVEY_DUE;
+            ra.stat = a<2 ? BRIEF_DUE: PRE_SURVEY_DUE;
             registry.activateRound( ra.analyst, round );
         }       
         emit RoundActivated( r.cycle, round, num_rounds_active, r.num_analysts );
@@ -468,24 +494,22 @@ contract RatingAgency {
         emit BriefSubmitted( _round, _analyst, _file );
     }
 
+    event RoundCancelled( uint16 _cycle, uint16 _round, uint8 _lastState );
+    function roundCancel( uint16 _round ) public {
+        Round storage round = rounds[ _round ];
+        emit RoundCancelled( round.cycle, _round, round.stat );
+        rounds[ _round ].stat = CANCELLED;
+    }
+
     event RoundFinished( uint16 _cycle, uint16 _round, uint16 num_rounds_active );
     function roundFinish( uint16 _round ) public {
         rounds[ _round ].stat = FINISHED;
         roundTally( _round );
         num_rounds_active--;
-        /*for (uint16 i = 0; i < num_rounds_active; i++){ // remove from active rounds
-            if ( rounds_active[i] == _round ) {
-                num_rounds_active--;
-                for (uint16 j = i; j < num_rounds_active; j++)
-                    rounds_active[ j ] = rounds_active[ j + 1 ];
-                break;
-            }
-        }
-        */
         emit RoundFinished( rounds[ _round ].cycle, _round, num_rounds_active );
     }
 
-    function roundInfo ( uint16 _round ) public view returns (
+    function roundInfo( uint16 _round ) public view returns (
         uint16, uint16, uint32, uint16, uint8, uint8
     ) {
         Round storage round = rounds[ _round ];
@@ -609,13 +633,13 @@ contract RatingAgency {
         //require( _idx==0 && analyst.stat == FIRST_SURVEY_DUE || _idx==1 && analyst.stat == SECOND_SURVEY_DUE );
         _answers |= 0x1 << 247; // submit bit
         round.surveys[_analyst][_idx] = RoundSurvey( _answers, _comment );
-        analyst.stat = _idx == 0 ? FIRST_SURVEY_SUBMITTED : SECOND_SURVEY_SUBMITTED;
+        analyst.stat = _idx == 0 ? PRE_SURVEY_SUBMITTED : POST_SURVEY_SUBMITTED;
         emit SurveySubmitted( _round, _analyst, _idx, _answers, _answers[ 1 ], _answers[ 0 ]  );
     }
 
     event TallyLog( uint16 round, uint8 analyst, bytes32 avg0, bytes32 avg1, bytes32 sway);
     event TallyWin( uint16 round, uint8 winner );
-    event TempLog( uint ibyte, uint n, uint a, uint b, int c);
+    //event TempLog( uint ibyte, uint n, uint a, uint b, int c);
     function roundTally( uint16 _round ) public {
         Round storage round = rounds[ _round ];
         uint8 i;
@@ -638,7 +662,7 @@ contract RatingAgency {
                 sway_sum += int(round.surveys[ aref ][ 1 ].answers[ ibyte ]) - int(round.surveys[ aref ][ 0 ].answers[ ibyte ]);
                 n++;
             }
-            emit TempLog( ibyte, n, sum[ 0 ], sum[ 1 ], sway_sum );
+            //emit TempLog( ibyte, n, sum[ 0 ], sum[ 1 ], sway_sum );
             require( n != 0 );
 
             for( i = 0; i < 2; i++ ) 

@@ -157,15 +157,17 @@ module.exports = {
   getRoundAnalystInfo: ( round, analyst=0 ) => new Promise( (resolve,reject) => {
     getRatingAgency().then( ra => {
       ra.roundAnalyst( round, analyst ).then( rRound => { 
+        let answers = [0,0].map( ( _, idx ) => {
+          a = hexToBytes( rRound[ idx + 2 ] )
+          return a[1] ? a : []  // check submit 'bit'
+        })
+
         var res = {
           id:             round,
           analyst:        analyst,
           inround_id:     rRound[0].toNumber(), 
           analyst_status: rRound[1].toNumber(),
-          answers: [
-            hexToBytes( rRound[2] ),
-            hexToBytes( rRound[3] )
-          ]
+          answers
         }
         console.log('got round analyst',res)
         resolve( res )
@@ -218,6 +220,7 @@ module.exports = {
     preOrPost = 0 
   ) => new Promise( (resolve,reject) => getRatingAgency().then( ra => {
       let _answers = answers instanceof Array ? toHexString( answers ): answers
+      console.log(`submitting ${preOrPost==0 ? "pre-":"post-"} survey with answers ${answers} to round ${round}`)
       ra.roundSurveySubmit( round, analystRef, preOrPost, answers, comment ).then( result => {
         console.log('submitted survey result',result)
         resolve( 'done' )

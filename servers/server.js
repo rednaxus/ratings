@@ -79,7 +79,8 @@ let state = {
 let t = [
   config.cycleTime( 0 ),
   config.cycleTime( 0 ) + config.cyclePhaseTime(2),
-  config.cycleTime( 5 ) + config.cyclePhaseTime(2)
+  config.cycleTime( 5 ) + config.cyclePhaseTime(2),
+
 ]
 
 t.forEach( t => {
@@ -88,6 +89,7 @@ t.forEach( t => {
   console.log(`test cycle phase for cycle 1`,config.cyclePhase(1,t))
 })
 
+console.log(`cycle 2 time: ${config.cycleTime(2)}, test ${1515974400} cycle phase for cycle 2`,config.cyclePhase(2,1515974400))
 
 const cycletest = { id: 4 }
 const nextcycletest = { id: 5 }
@@ -300,6 +302,7 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
           })
           rounds.forEach( ( round, idx ) => { // active rounds
             if ( !isRoundActive( idx ) ) return
+            if ( !round.analysts.includes( analyst ) ) return
             let aref = round.inround_id
             console.log(`${s}round`,round)
             console.log(`${s}round ${round.id} analyst status ${round.analyst_status} in-round ref ${aref}`)
@@ -310,25 +313,27 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
               promises.push( 
                 roundsService.submitRoundSurvey( round.id, aref, answers, comment, pre ).then( result => {
                   console.log(`pre-survey submitted for round ${round.id} by aref ${aref}`,answers)
+                  console.log(result)
                   return result
                 }) 
               )
-            } else if (config.STATUSES[ round.analyst_status] == 'second survey due') {
+            } else if (config.STATUSES[ round.analyst_status ] == 'second survey due') {
               console.log(`${s}second survey submitting on round ${round.id} for analyst ${analyst}`)
               let answers = survey.generateAnswers('down')
               let comment = `hello from analyst on post-survey ${aref}:${analyst}`
               promises.push( 
                 roundsService.submitRoundSurvey( round.id, aref, answers, comment, post ).then( result => {
                   console.log(`post-survey submitted for round ${round.id} by aref ${aref}`,answers)
+                  console.log(result)
                   return result
-                }) 
+                }).catch( ctlError )
               )
-            } else if (config.STATUSES[ round.analyst_status] == 'brief due') {
+            } else if (config.STATUSES[ round.analyst_status ] == 'brief due') {
               console.log(`brief submitting on round ${round.id} for analyst ${analyst}`)
               promises.push( 
                 roundsService.submitRoundBrief( round.id, aref, briefs[aref] ).then( result => {
                   console.log(`brief ${briefs[aref]} submitted for round ${round.id} by aref ${aref}`)
-                }) 
+                }).catch( ctlError )
               )
             }
           })
@@ -377,15 +382,16 @@ apiRouter.get('/', ( req, res ) => {
 apiRouter.route( '/cronInfo' ).get( (req, res ) => {
   cyclesService.getCronInfo().then( timestamp => {
     console.log(`${s}cron`, timestamp )
-    res.json( { timestamp:timestamp, date:toDate( timestamp ), cycle: config.cycleIdx( timestamp ) } )
+    res.json( timeInfo( timestamp )  )
   }).catch( apiError )
 })
 
 apiRouter.get('/round/:round/:analyst', ( req, res ) => {
-  roundsService.getRoundInfo( req.params.round, req.params.analyst ).then( roundInfo => {
-
-    console.log('round info',roundInfo)
-    res.json( roundInfo )
+  cyclesService.getCronInfo().then( timestamp => {
+    roundsService.getRoundInfo( req.params.round, req.params.analyst ).then( roundInfo => {
+      console.log('round info',roundInfo)
+      res.json( {...timeInfo(timestamp), round:roundInfo } )
+    }).catch( apiError )
   }).catch( apiError )
 })
 
@@ -503,9 +509,12 @@ ctlRouter.route( '/cron/:interval' ).get( ( req, res ) => { // interval as fract
   let intervalTime = config.cycleFracTime( +req.params.interval )
   console.log(`${s}interval time ${intervalTime}`)
   cyclesService.pulseCron( intervalTime ).then( result => {
-    console.log(`${s}cron`, result )
-    res.json( result )
+    cyclesService.getCronInfo().then( timestamp => {
+      console.log(`${s}cron`, result )
+      res.json( { ...timeInfo( timestamp ) , result } )
+    }).catch( apiError )
   }).catch( apiError )
+
 })
 
 

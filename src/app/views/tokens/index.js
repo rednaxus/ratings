@@ -14,18 +14,19 @@ const mapStateToProps = state => {
     selection:          state.selection,
     app:                state.app,
     tokens:             state.tokens,
+    rounds:             state.rounds,
     userAuth:           state.user.authentication
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    actions : bindActionCreators(
-      {
-        enterTokensView: actions.enterTokensView,
-        leaveTokensView: actions.leaveTokensView
-      },
-      dispatch)
+    actions : bindActionCreators({
+      enterTokensView: actions.enterTokensView,
+      leaveTokensView: actions.leaveTokensView,
+      fetchRoundsFinished: actions.fetchRoundsFinished
+    },
+    dispatch)
   }
 }
 

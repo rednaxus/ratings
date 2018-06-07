@@ -119,24 +119,42 @@ module.exports = {
     })
   }),
 
-  getRoundSummary: ( round ) => new Promise( (resolve,reject) => {
-    getRatingAgency().then( ra  => {
-      ra.roundSummary( round ).then( rRound => { 
-        let i = 0
-        let res = {
-          id:             round, 
-          averages:       [ hexToBytes( rRound[i++] ), hexToBytes( rRound[i++] ) ],
-          sways:          hexToBytesSigned( rRound[i++] ),
-          winner:         rRound[i++].toNumber()
-        }
-        console.log('got round summary',res)
-        resolve( res )
-      }).catch( err => { 
-        console.error("Error from server on getRoundSummary:"  + err) 
-        reject( err )
-      })
+  getRoundSummary: ( round ) => new Promise( ( resolve,reject ) => getRatingAgency().then( ra  => {
+    ra.roundSummary( round ).then( rRound => { 
+      let i = 0
+      let res = {
+        id:             round, 
+        averages:       [ hexToBytes( rRound[i++] ), hexToBytes( rRound[i++] ) ],
+        sways:          hexToBytesSigned( rRound[i++] ),
+        winner:         rRound[i++].toNumber()
+      }
+      console.log('got round summary',res)
+      resolve( res )
+    }).catch( err => { 
+      console.error("Error from server on getRoundSummary:"  + err) 
+      reject( err )
     })
-  }),
+  })),
+
+  // redundant?
+  getRoundsSummary: ( token = -1 ) => new Promise( ( resolve, reject ) => getRatingAgency().then( ra  => {
+    const err = err => {
+      console.error(`Error from server on getRoundsInfo: ${err}` ) 
+      reject( err )
+    }
+    Promise.all( [ module.exports.getRoundsActive(), module.exports.getRounds() ] ).then( nums => {
+      let [ num_active_rounds, num_rounds ] = nums
+      let num_finished_rounds = num_rounds - num_active_rounds
+      console.log( `${s}${num_finished_rounds} finished rounds and ${num_rounds} total rounds` ) 
+
+      Promise.all( 
+        new Array( num_finished_rounds ).fill().map( (_,idx) => module.exports.getRoundInfo( idx, false ) ) 
+      ).then( rounds => {
+        console.log(`got round summaries`, rounds )
+        resolve(rounds)
+      }).catch( err )
+    }).catch( err )
+  })),
 
 /*
   getRoundAnalysts: ( round ) => new Promise( (resolve, reject ) = getRatingAgency().then( ra ) => {

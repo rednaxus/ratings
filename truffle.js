@@ -26,6 +26,9 @@ module.exports = {
 };
 // ethereum typical gas: 3141592
 /*
+
+ganache-cli -i 7 -s dog1
+
 Available Accounts
 ==================
 (0) 0x9f943ed85fb1b63b2a68af79290e5023d32f5e96

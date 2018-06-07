@@ -27,6 +27,7 @@ export {
 export { 
 	getRoundInfo, 
 	getRoundAnalystInfo,
+	getRoundsSummary,
 	submitRoundSurvey,
 	submitRoundBrief
 } from './rounds'

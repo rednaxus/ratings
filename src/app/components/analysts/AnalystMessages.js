@@ -128,7 +128,7 @@ const message_templates = {
   round_finished: {
     link: data => `round/${data.round}`,
     heading: data => <div>Round Finished</div>,
-    body: data => <div>Analysis round for <Link to={`/token/${data.tokenId}`}>{data.tokenName}</Link> (ended <Moment from={data.now}>{data.start}</Moment>) has finished. Thank you for partcipating!</div>,
+    body: data => <div>Analysis round for <Link to={`/token/${data.tokenId}`}>{data.tokenName}</Link> (ended <Moment from={data.now}>{data.start}</Moment>) has finished. Thank you for participating!</div>,
     footer: data => <div>Round Info</div>,
     glyph: data => <div className="messageGlyph"><Glyphicon glyph="education"></Glyphicon></div>
   },

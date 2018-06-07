@@ -4,15 +4,15 @@
 /* eslint consistent-return:0 */
 import moment               from 'moment'
 import * as _ from 'lodash'
-import { getRoundInfo, getRoundAnalystInfo, submitRoundSurvey } from '../../services/API'
+import { getRoundInfo, getRoundAnalystInfo, getRoundsSummary, submitRoundSurvey } from '../../services/API'
 import { toHexString } from '../../services/utils'
 import { fetchTokenData }  from './tokens'
 
 //import { store } from '../../Root'
 
-const REQUEST_ROUNDS_DATA   = 'REQUEST_ROUNDS_DATA'
-const RECEIVED_ROUNDS_DATA  = 'RECEIVED_ROUNDS_DATA'
-const ERROR_ROUNDS_DATA     = 'ERROR_ROUNDS_DATA'
+const REQUEST_ROUNDS_FINISHED   = 'REQUEST_ROUNDS_FINISHED'
+const RECEIVED_ROUNDS_FINISHED  = 'RECEIVED_ROUNDS_FINISHED'
+const ERROR_ROUNDS_FINISHED     = 'ERROR_ROUNDS_FINISHED'
 
 const REQUEST_ROUND_INFO   = 'REQUEST_ROUND_INFO'
 const RECEIVED_ROUND_INFO  = 'RECEIVED_ROUND_INFO'
@@ -39,11 +39,11 @@ const rounds = (state = initialState, action) => {
 
   switch (action.type) {
 
-  case REQUEST_ROUNDS_DATA:
+  case REQUEST_ROUNDS_FINISHED:
     return { ...state, isFetching: action.isFetching, time: action.time }
-  case RECEIVED_ROUNDS_DATA:
+  case RECEIVED_ROUNDS_FINISHED:
     return { ...state, isFetching: action.isFetching, data: [...action.data], time: action.time }
-  case ERROR_ROUNDS_DATA:
+  case ERROR_ROUNDS_FINISHED:
     return { ...state, isFetching: action.isFetching, time: action.time }
 
   case REQUEST_ROUND_INFO:
@@ -149,6 +149,21 @@ export const fetchRoundInfo = ( round ) => {
         })
       }).catch( err ) 
     }) 
+  }
+}
+
+
+export const fetchRoundsFinished = () => {
+  const request = (time = moment().format()) => ( { type: REQUEST_ROUNDS_FINISHED, isFetching: true, time } )
+  const success = (data, time = moment().format()) => ( { type: RECEIVED_ROUNDS_FINISHED, isFetching: false, data, time } )
+  const failure = (time = moment().format()) => ( { type: ERROR_ROUNDS_FINISHED, isFetching: false, time } )
+  console.log('fetch rounds finished')
+  return dispatch => {
+    dispatch(request())
+      console.log('getting rounds data from api')
+      getRoundsSummary()
+      .then( data => dispatch(success(data)) )
+      .catch( error => dispatch(failure(error)) )    
   }
 }
 

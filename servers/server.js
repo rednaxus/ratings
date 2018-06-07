@@ -379,6 +379,17 @@ apiRouter.get('/', ( req, res ) => {
     res.json({ message: 'hooray! welcome to api!' });   
 })
 
+apiRouter.route('/analystCyclesStatus/:analyst').get( ( req, res ) => {
+  cyclesService.getCronInfo().then( timestamp => {
+    console.log(`${s}cron`, timestamp )
+    getAnalystCycles( +req.params.analyst ).then( ( { cycles, cyclesByStatus } ) => {
+      console.log(`${s}`,cycles,cyclesByStatus)
+      res.json( {...timeInfo( timestamp ), ...cyclesByStatus } )
+    }).catch( apiError )
+  }).catch( apiError )
+})
+
+
 apiRouter.route( '/cronInfo' ).get( (req, res ) => {
   cyclesService.getCronInfo().then( timestamp => {
     console.log(`${s}cron`, timestamp )
@@ -444,16 +455,15 @@ apiRouter.get('/roundSummaries/:fromDate').get( ( req, res ) => {
 })
 
 
-apiRouter.route('/getAnalystCyclesStatus/:analyst').get( ( req, res ) => {
-  cyclesService.getCronInfo().then( timestamp => {
-    console.log(`${s}cron`, timestamp )
-    getAnalystCycles( +req.params.analyst ).then( ( { cycles, cyclesByStatus } ) => {
-      console.log(`${s}`,cycles,cyclesByStatus)
-      res.json( {...timeInfo( timestamp ), ...cyclesByStatus } )
-    })
-  })
-})
 
+
+apiRouter.route('/tokenSummaries').get( ( req, res ) => {
+  cyclesService.getCronInfo().then( timestamp => {
+    roundsService.getRoundsSummary().then( finishedRounds => {
+      res.json( { ...timeInfo( timestamp ), finishedRounds } )
+    }).catch( apiError )
+  }).catch( apiError )
+})
 /*
 curl -X POST --data '{"jsonrpc":"2.0","method":"eth_getBalance","params":["0x7E5BCE8eE498F6C29e4DdAd10CB816D6E2f139f7", "latest"],"id":1}' http://localhost:8545
 */
@@ -532,7 +542,7 @@ ctlRouter.route('/testDoAnalyst/:analyst').get( ( req, res ) => {
   * simulate a series of cycles, 
   * for the test analysts, each cycle volunteer early and confirm at the right phase, submit surveys or briefs depending on role
   * totalTime is time from last cron...interval is in proportion of 28
-  *  e.g. totalTime: 2419200 for 28 more days (1 standard cycle) 604800 for 7 days...
+  *  e.g. totalTime: 2419200 for 28 more days (1 standard cycle) 604800 for 7 days...7257600 -- 3 months
 */
 ctlRouter.route( '/testSimRun/:totalTime/:interval' ).get( ( req, res ) => { // interval as fraction of period
   let totalTime = +req.params.totalTime
@@ -544,7 +554,7 @@ ctlRouter.route( '/testSimRun/:totalTime/:interval' ).get( ( req, res ) => { // 
   const runCrons = timestamp => new Promise( ( resolve, reject ) => {
     const cron = cronTime => {
       ra.cycleRoundCanCreate( config.cycleIdx( cronTime ) ).then( canCreate => {
-        console.log(`cron for ${cronTime} with cycle ${config.cycleIdx(cronTime)} ...can create round: ${canCreate}`)
+        console.log(`${s}${cronTime}:${toDate(cronTime)} cron with cycle ${config.cycleIdx(cronTime)} ...can create round: ${canCreate}`)
         ra.cronTo( cronTime ).then( res => {
           let cycleStart = config.cycleIdx( cronTime )
           console.log(`${s+s}${cronRunIdx}-cron ran at ${cronTime}:${toDate(cronTime)}...cycle start:${cycleStart}`)

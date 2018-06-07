@@ -64,15 +64,18 @@ class TokensView extends Component {
     enterTokensView()
   }
 
+  componentDidMount() {
+    const { actions: { fetchRoundsFinished } } = this.props
+    fetchRoundsFinished()
+  }
+
   componentWillUnmount() {
     const { actions: { leaveTokensView } } = this.props
     leaveTokensView()
   }
 
   render() {
-    const { tokens, userAuth } = this.props
-
-    console.log('auth',userAuth)
+    const { tokens, userAuth, rounds } = this.props
 
     const { header } = this.state
 

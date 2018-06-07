@@ -6,8 +6,10 @@ const { parseB32StringToUintArray } = require('../utils')
 
 module.exports = {
   getCronInfo: ( ms = false ) => new Promise( ( resolve, reject ) => RatingAgency().then( ra => {
-    ra.lasttime().then( result => resolve( ( ms ? 1000 : 1 ) * result.toNumber() ) )
-    .catch( err => { 
+    ra.lasttime().then( result => {
+      console.log(`got last time ${result.toNumber()}`)
+      resolve( ( ms ? 1000 : 1 ) * result.toNumber() ) 
+    }).catch( err => { 
       console.error( `Error from server on cron: ${err}` ) 
       reject( err )
     })

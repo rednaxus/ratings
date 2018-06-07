@@ -53,7 +53,7 @@ const appConfig = {
   STATUSES: [ // map array to contract
     'none',
     'pending',
-    'scheduled',
+    'activating',
     'active',
     'finished',
     'cancelled',

@@ -33,7 +33,7 @@ contract RatingAgency {
     // statuses
     uint8 constant NONE = 0;
     uint8 constant PENDING = 1;
-    uint8 constant SCHEDULED = 2;
+    uint8 constant ACTIVATING = 2;
     uint8 constant ACTIVE = 3;
     uint8 constant FINISHED = 4;
     uint8 constant CANCELLED = 5;
@@ -89,6 +89,7 @@ contract RatingAgency {
         uint timestart;
         uint period;
         uint8 stat;
+        uint32 next_chosen; // working amount for token selection during activation phase
         CycleRoleStatus[2] statuses;
         mapping ( uint16 => CycleAnalyst ) analysts;
         uint16 num_analysts;
@@ -225,19 +226,24 @@ contract RatingAgency {
      ***   Round Cycler  ***
     */
 
-    event CycleActivated( uint16 _cycle, uint time, uint16 num_rounds );
-    function cycleActivate( uint16 _cycle ) public returns ( bool activated ) {
+    event CycleActivated( uint16 _cycle, uint time );
+    event LogToken( uint16 _cycle, uint32 _token );
+    function cycleActivate( uint16 _cycle ) public returns ( bool round_activated ) {
+        uint32 offset = _cycle % CYCLE_FRACTIONS; // e.g. 0--3, keeps same token in same part of mon
         Cycle storage c = cycles[ _cycle ];
         if ( c.stat == ACTIVE ) return false;
-        c.stat = ACTIVE;
-        uint16 cyc4 = _cycle % CYCLE_FRACTIONS; // e.g. 0--3
-        for ( uint16 i = 0; i < num_tokens; i++ ) {
-            if ( !cycleRoundCanCreate( _cycle ) ) break; // stop cycle when out of availables
-            if ( i % CYCLE_FRACTIONS == cyc4 ) // e.g. every 4th token at this particular timeperiod
-                roundActivate( _cycle, i ); // fix this when redo schedule tokens...can only do ~1 activate per cron
+        if ( c.stat == NONE ) {
+            c.stat = ACTIVATING;        
+            c.next_chosen = offset;
         }
-        emit CycleActivated( _cycle, time, i );
-        return true;
+        if ( c.next_chosen < num_tokens && cycleRoundCanCreate( _cycle ) ){
+            roundActivate( _cycle, c.next_chosen ); // fix this to do random walk when i figure out how
+            c.next_chosen += CYCLE_FRACTIONS;
+            return true;   // one activation per cron
+        }
+        c.stat = ACTIVE;
+        emit CycleActivated( _cycle, time );
+        return false;
     }
 
     function cycleAnalystInfo( uint16 _cycle, uint32 _analyst ) public view returns (
@@ -332,11 +338,11 @@ contract RatingAgency {
     }
 
     event CycleFinished( uint16 cycle, uint16 cycle_finished, uint time );
-    function cycleFinish( uint16 _cycle ) public { // finish any previous cycles
+    function cycleFinish( uint16 _cycle ) public returns ( bool round_finished ) { // finish any previous cycles
         for ( uint16 round = num_rounds - num_rounds_active; round < num_rounds; round++ ){
             if ( cyclePhase( rounds[ round ].cycle, time ) >= CYCLE_FINISH_PHASE ) {
                 roundFinish( round );
-                return;  // ! because of gas purposes only finish one round...can adjust this if finish is less costly
+                return true;  // ! because of gas purposes only finish one round...can adjust this if finish is less costly
             }
         }
         for ( uint16 cycle = 0; cycle < _cycle; cycle++ ){ // deactivate any past cycles
@@ -345,8 +351,8 @@ contract RatingAgency {
                 c.stat = FINISHED;  
                 emit CycleFinished( _cycle, cycle, time );
             } 
-
         }
+        return false;
     }
 
     //event LogIt( uint, uint, uint16 );
@@ -358,12 +364,14 @@ contract RatingAgency {
 
     function cycleInfo ( uint16 _cycle ) public view returns (
         uint16, uint, uint, uint8,
-        uint16, uint16
+        uint16, uint16,
+        uint32
     ) {
         Cycle storage cycle = cycles[ _cycle ];
         return (
             _cycle, cycleTime( _cycle ), cycle.period, cycle.stat,
-            cycle.statuses[0].num_availables, cycle.statuses[1].num_availables
+            cycle.statuses[0].num_availables, cycle.statuses[1].num_availables,
+            cycle.next_chosen
         );
     }
 
@@ -707,9 +715,9 @@ contract RatingAgency {
 
         cycleUpdate( cycle );
         
-        cycleFinish( cycle );
+        bool task_executed = cycleFinish( cycle );  // finish all rounds first
 
-        cycleActivate( cycle );
+        if (!task_executed) cycleActivate( cycle );
 
         lasttime = time;
     }
@@ -742,7 +750,7 @@ contract RatingAgency {
     function ceil(uint a, uint m) public pure returns (uint r) {
         return (a + m - 1) / m * m;
     }
-
+    
     function lotteryNext( uint16 _last, uint16 _need, uint16 _total ) public view returns ( uint16 next ) {
         next = _last + uint16( randomIdx( _last, ( _total - _last ) / _need - 1 ) ) + 1;
     }

@@ -4,6 +4,9 @@
   import config from '../../config/appConfig'
   import TestTokenERC20Contract from '../../../../build/contracts/vevaTest.json'
 
+
+/*
+
   var address = TestTokenERC20Contract.networks["7"].address;
 
   var abi = TestTokenERC20Contract.abi;
@@ -21,6 +24,10 @@
   var vevaBalance;
   var fromWeiOne;
   var fromWeiTwo;
+
+
+
+
 
   web3.eth.getAccounts(
 
@@ -59,6 +66,8 @@
     }
   );
 
+*/
+
 
   export class Wallet extends PureComponent {
 
@@ -70,7 +79,7 @@
               <div className="pure-u-1-1">
                 <h1>VEVA Wallet</h1>
                 <p><strong>Hello!</strong> Welcome to your <span className="dog">Veva Token</span> wallet.</p>
-                <p>You have {vevaBalance} in your wallet.</p>
+                <p>You have in your wallet.</p>
               </div>
             </div>
             <div className="panel panel-default">
@@ -96,6 +105,7 @@
     }
   }
 
+/*
 
   function onItemClick() {
 
@@ -148,6 +158,8 @@
       }
     };
   };
+
+*/
 
 
 export default Wallet

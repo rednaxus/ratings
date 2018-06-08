@@ -8,10 +8,10 @@ import { Panel } from 'react-bootstrap'
 
 import Survey from '../../services/survey'
 
-const survey = new Survey()
+/*const survey = new Survey()*/
 
-import { 
-  AnimatedView, 
+import {
+  AnimatedView,
   Breadcrumb,
   Tokens,
   TokenCloud,

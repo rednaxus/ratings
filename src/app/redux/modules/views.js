@@ -80,8 +80,8 @@ const LEAVE_ROUND = 'LEAVE_ROUND'
 const ENTER_STATUS = 'ENTER_STATUS'
 const LEAVE_STATUS = 'LEAVE_STATUS'
 
-const ENTER_AVAILABILITY = 'ENTER_AVAILABILITY'
-const LEAVE_AVAILABILITY = 'LEAVE_AVAILABILITY'
+const ENTER_SCHEDULING = 'ENTER_SCHEDULING'
+const LEAVE_SCHEDULING = 'LEAVE_SCHEDULING'
 
 
 const ENTER_DASHBOARD = 'ENTER_DASHBOARD'
@@ -128,7 +128,7 @@ const views = (state = initialState, action) => {
   case ENTER_GRID_VIEW:
   case ENTER_ROUND:
   case ENTER_STATUS:
-  case ENTER_AVAILABILITY:
+  case ENTER_SCHEDULING:
   case ENTER_DASHBOARD:
   case ENTER_PROTECTED_VIEW:
     // can't enter if you are already inside
@@ -176,7 +176,7 @@ const views = (state = initialState, action) => {
   case LEAVE_GRID_VIEW:
   case LEAVE_ROUND:
   case LEAVE_STATUS:
-  case LEAVE_AVAILABILITY:
+  case LEAVE_SCHEDULING:
   case LEAVE_DASHBOARD:
   case LEAVE_PROTECTED_VIEW:
     // can't leave if you aren't already inside
@@ -771,11 +771,11 @@ export const leaveStatus = (time = moment().format()) => {
   return { type: LEAVE_STATUS, currentView: 'Status', enterTime: null, leaveTime: time }
 }
 
-export const enterAvailability = (time = moment().format()) => {
-  return { type: ENTER_AVAILABILITY, currentView: 'Availability', enterTime: time, leaveTime: null }
+export const enterScheduling = (time = moment().format()) => {
+  return { type: ENTER_SCHEDULING, currentView: 'Scheduling', enterTime: time, leaveTime: null }
 }
-export const leaveAvailability = (time = moment().format()) => {
-  return { type: LEAVE_AVAILABILITY, currentView: 'Availability', enterTime: null, leaveTime: time }
+export const leaveScheduling = (time = moment().format()) => {
+  return { type: LEAVE_SCHEDULING, currentView: 'Scheduling', enterTime: null, leaveTime: time }
 }
 
 export const enterDashboard = (time = moment().format()) => 

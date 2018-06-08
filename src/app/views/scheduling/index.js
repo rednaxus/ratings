@@ -3,7 +3,7 @@
 import { bindActionCreators } from 'redux'
 import { connect }            from 'react-redux'
 import * as actions           from '../../redux/modules/actions'
-import Availability           from './Availability'
+import Scheduling             from './Scheduling'
 
 const mapStateToProps = (state) => {
   return {
@@ -20,8 +20,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     actions : bindActionCreators(
       {
-        enterAvailability:        actions.enterAvailability,
-        leaveAvailability:        actions.leaveAvailability,
+        enterScheduling:          actions.enterScheduling,
+        leaveScheduling:          actions.leaveScheduling,
         fetchCyclesDataIfNeeded:  actions.fetchCyclesDataIfNeeded,
         fetchCronInfo:            actions.fetchCronInfo,
         cycleSignup:              actions.cycleSignup,
@@ -31,5 +31,5 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect( mapStateToProps, mapDispatchToProps )( Availability )
+export default connect( mapStateToProps, mapDispatchToProps )( Scheduling )
 

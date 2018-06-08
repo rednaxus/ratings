@@ -3,6 +3,7 @@ const config = require('../../config/appConfig')
 const { bytes32FromIpfsHash, ipfsHashFromBytes32 } = require('../ipfs')
 const { getRatingAgency, getAnalystRegistry } = require('../contracts')
 const { hexToBytes, hexToBytesSigned, toHexString } = require('../utils')
+const survey = require('../survey')
 
 const s = '***'
 
@@ -11,10 +12,10 @@ module.exports = {
     //console.log(`${s}get rounds active`)
     Promise.all( [ module.exports.getRoundsActive(), module.exports.getRounds() ] ).then( nums => {
       let [ num_active_rounds, num_rounds ] = nums
-      console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` ) 
+      //console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` ) 
 
       module.exports.getRoundsInfo( num_rounds - num_active_rounds, num_active_rounds ).then( rounds => {
-        console.log(`${s}got active rounds for analyst ${analyst}`,rounds)
+        //console.log(`${s}got active rounds for analyst ${analyst}`,rounds)
         if (analyst == -1) {
           resolve( rounds )
           return
@@ -31,10 +32,10 @@ module.exports = {
   getFinishedRounds: ( analyst = -1 ) => new Promise( ( resolve, reject ) => {
     Promise.all( [ module.exports.getRoundsActive(), module.exports.getRounds() ] ).then( nums => {
       let [ num_active_rounds, num_rounds ] = nums
-      console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` ) 
+      //console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` ) 
 
       module.exports.getRoundsInfo( 0, num_rounds - num_active_rounds ).then( rounds => {
-        console.log(`${s}got finished rounds for analyst ${analyst}`,rounds)
+        //console.log(`${s}got finished rounds for analyst ${analyst}`,rounds)
         if (analyst == -1) 
           return resolve( rounds )
         Promise.all(
@@ -49,18 +50,16 @@ module.exports = {
   getAllRounds: ( analyst = -1 ) => new Promise( ( resolve, reject ) => {
     Promise.all( [ module.exports.getRoundsActive(), module.exports.getRounds() ] ).then( nums => {
       let [ num_active_rounds, num_rounds ] = nums
-      console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` ) 
+      //console.log( `${s}${num_active_rounds} active rounds and ${num_rounds} total rounds` ) 
 
       module.exports.getRoundsInfo( 0, num_rounds ).then( rounds => {
-        if (analyst == -1) 
-          return resolve( rounds )
+        if (analyst == -1) return resolve( rounds )
         Promise.all(
           rounds.map( (round, idx) => module.exports.getRoundAnalystInfo( round.id, analyst ).then( roundAnalystInfo => {
-            round = { ...round, ...roundAnalystInfo } 
-            return round
+            return { ...round, ...roundAnalystInfo }
           }) )
         ).then( rounds => {
-          console.log(`${s}got all rounds for analyst ${analyst}`,rounds)        
+          //console.log(`${s}got all rounds for analyst ${analyst}`,rounds)        
           resolve(rounds) 
         })
         .catch( reject )
@@ -82,7 +81,7 @@ module.exports = {
         status:         rRound[4].toNumber(),
         num_analysts:   rRound[5].toNumber()
       }
-      console.log('got round',res)
+      //console.log('got round',res)
       let numFetch = 1
       ra.roundBriefs( round ).then( rBriefs => {
         //console.log('got briefs',round, rBriefs)
@@ -120,15 +119,17 @@ module.exports = {
   }),
 
   getRoundSummary: ( round ) => new Promise( ( resolve,reject ) => getRatingAgency().then( ra  => {
+    let surveyLength = survey.getElements().length
     ra.roundSummary( round ).then( rRound => { 
       let i = 0
       let res = {
         id:             round, 
-        averages:       [ hexToBytes( rRound[i++] ), hexToBytes( rRound[i++] ) ],
-        sways:          hexToBytesSigned( rRound[i++] ),
+        averages:       [ hexToBytes( rRound[i++], surveyLength ), hexToBytes( rRound[i++], surveyLength ) ],
+        sways:          hexToBytesSigned( rRound[i++], surveyLength ),
         winner:         rRound[i++].toNumber()
       }
-      console.log('got round summary',res)
+      res.averages.forEach( ( _, idx ) => res.averages[idx][1] &= 0x7f ) // strip submit bit
+      //console.log('got round summary',res)
       resolve( res )
     }).catch( err => { 
       console.error("Error from server on getRoundSummary:"  + err) 
@@ -177,7 +178,9 @@ module.exports = {
       ra.roundAnalyst( round, analyst ).then( rRound => { 
         let answers = [0,0].map( ( _, idx ) => {
           a = hexToBytes( rRound[ idx + 2 ] )
-          return a[1] ? a : []  // check submit 'bit'
+          if (!a[1]) return [] 
+          a[1] &= 0x7f
+          return a
         })
 
         var res = {
@@ -187,7 +190,7 @@ module.exports = {
           analyst_status: rRound[1].toNumber(),
           answers
         }
-        console.log('got round analyst',res)
+        //console.log('got round analyst',res)
         resolve( res )
       })
       .catch( result => { 
@@ -221,7 +224,7 @@ module.exports = {
   submitRoundBrief: ( round, aref, filehash ) => new Promise( (resolve,reject) => getRatingAgency().then( ra => {
     console.log('submitting brief',round,aref,filehash)
     ra.roundBriefSubmit( round, aref, bytes32FromIpfsHash(filehash) ).then( result => {
-      console.log('submit brief result',result)
+      //console.log('submit brief result',result)
       resolve( 'done' )
     }).catch( err => { 
       console.error("Error submitting brief:"  + err ) 
@@ -240,7 +243,7 @@ module.exports = {
       let _answers = answers instanceof Array ? toHexString( answers ): answers
       console.log(`submitting ${preOrPost==0 ? "pre-":"post-"} survey with answers ${answers} to round ${round}`)
       ra.roundSurveySubmit( round, analystRef, preOrPost, answers, comment ).then( result => {
-        console.log('submitted survey result',result)
+        //console.log('submitted survey result',result)
         resolve( 'done' )
       })
       .catch( result => { 

@@ -18,22 +18,11 @@ import { cyclesByStatus } from '../../services/analystStatus'
 const dateView = ({value,convert=true}) =>
   <Moment className="text-purple" format="dddd YYYY-MM-DD" date={ new Date(convert?value*1000:value) } />
 
-/*
-                          id={id} 
-                          timestart={timestart}
-                          timefinish={timefinish} 
-                          status={status}
-                          num_jurists_available={num_jurists_available}
-                          num_jurists_assigned={num_jurists_assigned}
-                          num_leads_available={num_leads_available}
-                          num_leads_assigned={num_leads_assigned}
-
-*/
 
 const colDefault = 'col-md-2 col-xs-2 text-center'
 //const colDefault2 = 'col-md-2 col-md-2 text-center'
 
-class Availability extends PureComponent {
+class Scheduling extends PureComponent {
   enterAnimationTimer = null
 
   columns = [
@@ -141,8 +130,8 @@ class Availability extends PureComponent {
   ]
 
   componentWillMount() {
-    const { actions: { enterAvailability } } = this.props;
-    enterAvailability();
+    const { actions: { enterScheduling } } = this.props;
+    enterScheduling();
   }
 
   componentDidMount() {
@@ -152,8 +141,8 @@ class Availability extends PureComponent {
   }
 
   componentWillUnmount() {
-    const { actions: { leaveAvailability } } = this.props
-    leaveAvailability()
+    const { actions: { leaveScheduling } } = this.props
+    leaveScheduling()
     clearTimeout(this.enterAnimationTimer)
   }
 
@@ -196,7 +185,7 @@ class Availability extends PureComponent {
     console.log(`analyst status for cycles`,analystStatus)
     return(
       <AnimatedView>
-        <Breadcrumb path={["dashboard","availability"]}></Breadcrumb>
+        <Breadcrumb path={["dashboard","scheduling"]}></Breadcrumb>
         <small className="pull-right">time last checked: { dateView( { value:cronInfo,convert:true} ) }</small> 
         { !analystStatus.comingVolunteerCycles.length ? "" :
         <div>
@@ -379,13 +368,13 @@ class Availability extends PureComponent {
   }
 }
 
-Availability.propTypes= {
+Scheduling.propTypes= {
   actions: PropTypes.shape({
-    enterAvailability: PropTypes.func.isRequired,
-    leaveAvailability: PropTypes.func.isRequired,
+    enterScheduling: PropTypes.func.isRequired,
+    leaveScheduling: PropTypes.func.isRequired,
     fetchCyclesDataIfNeeded: PropTypes.func.isRequired,
     fetchCronInfo: PropTypes.func.isRequired
   })
 }
 
-export default Availability
+export default Scheduling

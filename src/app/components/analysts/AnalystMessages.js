@@ -296,7 +296,7 @@ const message_templates = {
 
 export const AnalystMessages = ( props ) => {
 
-  let generatedMessages = generateMessages( props ).sort( ( msg1, msg2 ) => msg2.priority > msg1.priority )
+  let generatedMessages = generateMessages( props ).sort( ( msg1, msg2 ) => ( msg2.priority > msg1.priority ) )
   console.log('generated messages',generatedMessages)
 
   return generatedMessages.map( (message,idx) => {

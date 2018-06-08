@@ -3,7 +3,7 @@
 
 export { default as Round }               from './round'
 export { default as Status }              from './status'
-export { default as Availability }        from './availability'
+export { default as Scheduling }        	from './scheduling'
 export { default as TokenListView }       from './tokenList'
 export { default as PageNotFound }        from './pageNotFound'
 export { default as Modals }              from './modals/Modals'

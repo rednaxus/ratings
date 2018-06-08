@@ -128,7 +128,7 @@ export { // views:
 
   enterStatus, leaveStatus,
 
-  enterAvailability, leaveAvailability,
+  enterScheduling, leaveScheduling,
 
   enterDashboard, leaveDashboard
 }                                     from './views'

@@ -25,11 +25,11 @@ import WorkProgressConnected        from '../views/examples/workProgress'
 */
 import ProtectedConnected           from '../views/protected'
 
-import Dashboard  from '../views/dashboard'
-import Rules from '../views/rules'
-import Availability from '../views/availability'
-import About from '../views/about'
-import Wallet from '../views/wallet'
+import Dashboard                    from '../views/dashboard'
+import Rules                        from '../views/rules'
+import Scheduling                   from '../views/scheduling'
+import About                        from '../views/about'
+import Wallet                       from '../views/wallet'
 import Tokens from '../views/tokens'
 import Token from '../views/token'
 import UserListViewConnected        from '../views/userList'
@@ -43,7 +43,7 @@ import GridView from '../views/examples/grid'
 import Cycles from '../views/cycles'
 import Analysts from '../views/analysts'
 import Status from '../views/status'
-import FormsView from '../views/examples/forms'
+//import FormsView from '../views/examples/forms'
 
 export const MainRoutes = () => (
   <Switch>
@@ -74,7 +74,7 @@ export const MainRoutes = () => (
     */ }
     <Route path="/token/:token_id" component={ Token } />
 
-    <Route path="/scheduling" component={ Availability }  />
+    <Route path="/scheduling" component={ Scheduling }  />
     { /* <Route path="/Analyst/survey" component={ Survey } />
         <Route path="/admin/roundCycles" component={ RoundCycles } />
     */}
@@ -100,7 +100,7 @@ export const MainRoutes = () => (
     */}
     {/* private views: need user to be authenticated */}
 
-    <Route path="/examples/form" component={ FormsView } />
+    {/*<Route path="/examples/form" component={ FormsView } />*/}
     <PrivateRoute path="/protected" component={ ProtectedConnected } />
 
   </Switch>

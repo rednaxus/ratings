@@ -18,6 +18,7 @@ const roundsService = require('../src/app/services/API/rounds')
 const cyclesService = require('../src/app/services/API/cycles')
 const tokensService = require('../src/app/services/API/tokens')
 
+const tokenomics = require('../src/app/services/tokenomics')
 const statusService = require('../src/app/services/analystStatus')
 
 const { getRatingAgency: RatingAgency, getAnalystRegistry: AnalystRegistry } = require('../src/app/services/contracts')
@@ -28,8 +29,8 @@ const { bytes32FromIpfsHash, ipfsHashFromBytes32 } = require('../src/app/service
 
 let s = '****'
 
-const SurveyService = require('../src/app/services/survey')
-const survey = new SurveyService()
+const survey = require('../src/app/services/survey')
+
 let pre = 0
 let post = 1
 
@@ -460,7 +461,8 @@ apiRouter.get('/roundSummaries/:fromDate').get( ( req, res ) => {
 apiRouter.route('/tokenSummaries').get( ( req, res ) => {
   cyclesService.getCronInfo().then( timestamp => {
     roundsService.getRoundsSummary().then( finishedRounds => {
-      res.json( { ...timeInfo( timestamp ), finishedRounds } )
+      let tokenHistory = tokenomics.tokenHistory( finishedRounds, state.tokens, 5)
+      res.json( { ...timeInfo( timestamp ), tokenHistory, finishedRounds } )
     }).catch( apiError )
   }).catch( apiError )
 })

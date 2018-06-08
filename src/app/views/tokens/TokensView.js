@@ -37,7 +37,7 @@ class TokensView extends Component {
     let sections = survey.getSections()
     let header = []
     sections.forEach( ( section,idx) => {
-      header.push( { name: section, tablink: 'home', isActive: !idx } )
+      header.push( { name: section.name, tablink: 'home', isActive: !idx } )
     })
     this.state = { header }
 //      mockHeader: [

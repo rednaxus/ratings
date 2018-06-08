@@ -5,20 +5,21 @@
 const axios = require('axios')
 
 const baseUrl = 'https://api.ethplorer.io/'
-const params = { apiKey: 'freekey' }
+
+const config = require('../../config/appConfig')
 
 const fetchInstance = axios.create({
   baseURL: baseUrl,
   headers: {
     //'Accept': 'application/json',
     //'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
+    //'Access-Control-Allow-Origin': '*',
     //'Access-Control-Allow-Credentials': 'true',
     //'Access-Control-Allow-Methods': 'GET,HEAD,OPTIONS,POST,PUT',
     //'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
   	//'X-Requested-With': 'XMLHttpRequest'
   },
-  params: { apiKey: 'freekey' }
+  params: { apiKey: config.ETHPLORER.apiKey  }
 })
 
 /*

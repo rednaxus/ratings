@@ -231,6 +231,10 @@ const appConfig = {
   ipfsRepoUpload: 'https://ipfs.io',  //'http://localhost:5001',
   ipfsRepoDownload: 'https://ipfs.io/ipfs/', //http://localhost:8080/ipfs/'
 
+  ETHPLORER: {
+    apiKey: 'sifd7328Ophmc33' //  freekey
+  },
+
   ...customConfig
 
 }

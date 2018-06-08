@@ -15,10 +15,10 @@ import {
   Breadcrumb,
   Tokens,
   TokenCloud,
-  TabPanel            as TabPanelComponent,
-  TabPanelHeader      as TabPanelHeaderComponent,
-  TabPanelBody        as TabPanelBodyComponent,
-  TabPanelBodyContent as TabPanelBodyContentComponent
+  TabPanel,
+  TabPanelHeader,
+  TabPanelBody,
+  TabPanelBodyContent
 } from '../../components'
 
 import { store } from '../../Root'
@@ -88,26 +88,26 @@ class TokensView extends Component {
           <Tokens { ...{ store } } />
         </div>
         <Panel>
-          <TabPanelComponent>
-            <TabPanelHeaderComponent tabItems={header}/>
-            <TabPanelBodyComponent>
-              <TabPanelBodyContentComponent id="home" isActive>
+          <TabPanel>
+            <TabPanelHeader tabItems={header}/>
+            <TabPanelBody>
+              <TabPanelBodyContent id="home" isActive>
                 <h3>
                   Home
                 </h3>
-              </TabPanelBodyContentComponent>
-              <TabPanelBodyContentComponent id="about">
+              </TabPanelBodyContent>
+              <TabPanelBodyContent id="about">
                 <h3>
                   About
                 </h3>
-              </TabPanelBodyContentComponent>
-              <TabPanelBodyContentComponent id="profile">
+              </TabPanelBodyContent>
+              <TabPanelBodyContent id="profile">
                 <h3>
                   Profile
                 </h3>
-              </TabPanelBodyContentComponent>
-            </TabPanelBodyComponent>
-          </TabPanelComponent>
+              </TabPanelBodyContent>
+            </TabPanelBody>
+          </TabPanel>
         </Panel>
       </AnimatedView>
     );

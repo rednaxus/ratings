@@ -66,8 +66,8 @@ var buttonFlex = {
 };
 */
 
-var preKey = ("2018-03-27T14:06-0500");
-var dateKey = ("2018-03-28T19:06-0500");
+//var preKey = ("2018-03-27T14:06-0500");
+//var dateKey = ("2018-03-28T19:06-0500");
 /*"2019-05-19T12:59-0500"*/
 
 
@@ -296,7 +296,8 @@ const message_templates = {
 
 export const AnalystMessages = ( props ) => {
 
-  let generatedMessages = generateMessages( props ).sort( ( msg1, msg2 ) => ( msg2.priority > msg1.priority ) )
+  let generatedMessages = generateMessages( props ).sort( ( msg1, msg2 ) => ( msg2.priority - msg1.priority ) )
+
   console.log('generated messages',generatedMessages)
 
   return generatedMessages.map( (message,idx) => {

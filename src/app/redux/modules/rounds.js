@@ -3,8 +3,7 @@
 /* eslint no-console:0 */
 /* eslint consistent-return:0 */
 import moment               from 'moment'
-import * as _ from 'lodash'
-import { getRoundInfo, getRoundAnalystInfo, getRoundsSummary, submitRoundSurvey } from '../../services/API'
+import { getRoundInfo, getRoundAnalystInfo, getRoundsSummary, submitRound } from '../../services/API'
 import { toHexString } from '../../services/utils'
 import { fetchTokenData }  from './tokens'
 
@@ -50,13 +49,13 @@ const rounds = (state = initialState, action) => {
     return { ...state, time: action.time }
   case RECEIVED_ROUND_INFO: 
   case SET_ROUND_INFO: 
-    console.log('round info action is',action)
+    //console.log('round info action is',action)
     s = { data:[], ...state, time: action.time }
-    i = _.findIndex(s.data,['id',action.roundInfo.id])
+    i = s.data.findIndex( round => action.roundInfo.id == round.id ) //_.findIndex(s.data,['id',action.roundInfo.id])
     if (i==-1)
       s.data.push( action.roundInfo ) // add
     else
-      s.data[i] = {...s.data[i], ...action.roundInfo} // merge
+      s.data[i] = { ...s.data[i], ...action.roundInfo } // merge
     return s
     //return {...state, round: action.roundInfo, time: action.time }
   case ERROR_ROUND_INFO:
@@ -65,16 +64,17 @@ const rounds = (state = initialState, action) => {
   case REQUEST_ROUND_ANALYST_INFO:
     return { ...state, time: action.time }
   case RECEIVED_ROUND_ANALYST_INFO:
-    console.log('round analyst action is',action) 
+    //console.log('round analyst action is',action) 
     s = { data:[], ...state, time: action.time }
-    i = _.findIndex(s.data,['id',action.roundAnalystInfo.id])
-    if (i==-1)
+    // i = _.findIndex(s.data,['id',action.roundAnalystInfo.id])
+    i = s.data.findIndex( round => round.id == action.roundAnalystInfo.id )
+    if ( i==-1 )
       s.data.push( action.roundAnalystInfo ) // add
     else
       s.data[i] = {...s.data[i], ...action.roundAnalystInfo} // merge    
     return s
   case ERROR_ROUND_ANALYST_INFO:
-    return {...state, time: action.time }
+    return { ...state, time: action.time }
 
   default:
     return state;
@@ -227,5 +227,6 @@ export const submitSurvey = ( round, roundAnalyst, pre, answers ) => {
 export const roundActions = {
   fetchRoundInfo,
   fetchRoundAnalystInfo,
+  fetchRoundsFinished,
   submitSurvey
 }

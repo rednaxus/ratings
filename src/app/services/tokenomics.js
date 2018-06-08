@@ -17,10 +17,10 @@ module.exports = {
 			tokenObj.rounds.push( round )
 		})
 
-		tokenList.sort( (t1, t2) => ( t1.token > t2.token ) )
+		tokenList.sort( (t1, t2) => ( t1.token - t2.token ) )
 		//console.log(`${s}token list with unsorted rounds`,tokenList)
 		return tokenList.map( tokenItem => {
-			let rounds = tokenItem.rounds.sort( ( future, past ) => ( future.cycle < past.cycle ) )	 // sort so most recent first
+			let rounds = tokenItem.rounds.sort( ( future, past ) => ( past.cycle - future.cycle ) )	 // sort so most recent first
 			//console.log(`${s}rounds sorted for token ${tokenItem.token}`,rounds)
 			
 			if ( !last_rounds) return rounds 

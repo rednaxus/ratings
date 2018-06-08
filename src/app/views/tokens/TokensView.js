@@ -6,9 +6,7 @@ import PropTypes      from 'prop-types'
 
 import { Panel } from 'react-bootstrap'
 
-import Survey from '../../services/survey'
-
-/*const survey = new Survey()*/
+import survey from '../../services/survey'
 
 import {
   AnimatedView,
@@ -56,8 +54,6 @@ class TokensView extends Component {
   shouldComponentUpdate(){
     return true
   }
-
-
 
   componentWillMount() {
     const { actions: { enterTokensView } } = this.props

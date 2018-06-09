@@ -11,8 +11,8 @@ const config = require('../../config/appConfig')
 const fetchInstance = axios.create({
   baseURL: baseUrl,
   headers: {
-    //'Accept': 'application/json',
-    //'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
     //'Access-Control-Allow-Origin': '*',
     //'Access-Control-Allow-Credentials': 'true',
     //'Access-Control-Allow-Methods': 'GET,HEAD,OPTIONS,POST,PUT',

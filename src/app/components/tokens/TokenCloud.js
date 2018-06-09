@@ -2,6 +2,7 @@
 import React from 'react'
 import { TagCloud } from 'react-tagcloud'
 
+/*
 const data = [
   { id: 0, value: "Ethereum", count: 38 },
   { id: 1, value: "EOS", count: 30 },
@@ -20,7 +21,7 @@ const data = [
   { id: 14, value: "Ethos Coin", count: 5 }
 ];
 
-
+*/
 /* CSS:
 @keyframes blinker {
   50% { opacity: 0.0; }
@@ -45,6 +46,11 @@ const customRenderer = (tag, size, color) => (
 
 const TokenCloud = ( { tokens } ) => {
   console.log('tokens',tokens)
+
+  const data = tokens.map( token => {
+    let count = token.price && token.price.marketCapUsd ? token.price.marketCapUsd / 1000000000: 10
+    return { id: token.id, value: token.name, count: count } 
+  })
   return (
     <TagCloud tags={data} minSize={1} maxSize={2} renderer={customRenderer} />
   )

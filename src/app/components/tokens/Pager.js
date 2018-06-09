@@ -17,7 +17,7 @@ export const Pager = ({ api, current, gridData, pagingDataSource, store  }) => {
     store.dispatch(
       Actions.PagerActions.setPageIndexAsync({
         pageIndex: parseInt(index) - 1,
-        pageSize: 5,
+        pageSize: 20,
         dataSource: api,
         stateKey: 'analysts'
       })

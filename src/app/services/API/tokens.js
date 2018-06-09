@@ -12,7 +12,7 @@ module.exports = {
     console.log('in data source')
     return new Promise((resolve,reject) => {
       console.log(' beginning tokens fetch', pageSize, pageIndex )
-      pageSize = pageSize || 5
+      pageSize = pageSize || 20
       pageIndex = pageIndex || 0
       RatingAgency().then( ra => {
         ra.num_tokens().then( result => {

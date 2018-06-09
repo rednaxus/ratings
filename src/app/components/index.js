@@ -85,7 +85,8 @@ export {
 export { 
   TokenSummary,
   Tokens,
-  TokenCloud 
+  TokenCloud,
+  TokenCategories
 }                                     from './tokens'
 
 export { default as UserStatus }                 from './userStatus/UserStatus'

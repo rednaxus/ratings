@@ -13,6 +13,7 @@ import {
   Breadcrumb,
   Tokens,
   TokenCloud,
+  TokenCategories,
   TabPanel,
   TabPanelHeader,
   TabPanelBody,
@@ -83,6 +84,7 @@ class TokensView extends Component {
           <TokenCloud tokens={ tokens }/>
           <Tokens { ...{ store } } />
         </div>
+        <TokenCategories tokens={ tokens } rounds={ rounds }/>
         <Panel>
           <TabPanel>
             <TabPanelHeader tabItems={header}/>

@@ -13,8 +13,8 @@ const mapStateToProps = state => {
     bulkSelection:      state.bulkSelection,
     selection:          state.selection,
     app:                state.app,
-    tokens:             state.tokens,
-    rounds:             state.rounds,
+    tokens:             state.tokens.data,
+    rounds:             state.rounds.data,
     userAuth:           state.user.authentication
   }
 }

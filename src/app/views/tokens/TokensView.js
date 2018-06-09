@@ -82,7 +82,7 @@ class TokensView extends Component {
         <div className="simpleContainer">
           <h2 className="gridH2">Covered Tokens</h2>
           <TokenCloud tokens={ tokens }/>
-          <Tokens { ...{ store } } />
+          {/*<Tokens { ...{ store } } />*/}
         </div>
         <TokenCategories tokens={ tokens } rounds={ rounds }/>
         <Panel>

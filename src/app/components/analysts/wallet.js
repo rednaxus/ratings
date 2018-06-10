@@ -1,59 +1,58 @@
-  import React, { PureComponent, Component } from 'react'
-  import { AnimatedView } from '../../components'
-  import { store } from '../../Root'
-  import config from '../../config/appConfig'
-  import { getWeb3 } from '../../services/utils'
+import React, { PureComponent, Component } from 'react'
+import { AnimatedView } from '../../components'
+import { store } from '../../Root'
+import config from '../../config/appConfig'
+import { getWeb3 } from '../../services/utils'
 
-  import WalletService from '../../services/API/wallets'
-  import eth from '../../services/API/eth'
+import WalletService from '../../services/API/wallets'
+import eth from '../../services/API/eth'
 
-  var web3 = getWeb3() //new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+var web3 = getWeb3() //new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 
 
-  var accounts;
-  var vevaBalance;
-  var balanceDisplay;
+var accounts;
+var vevaBalance;
+var balanceDisplay;
 
-  const s = '** **USER** **'
+const s = '** **USER** **'
 
-  class ViewWallet extends Component {
+class ViewWallet extends Component {
 
-    constructor(props) {
-      super(props)
+  constructor(props) {
+    super(props)
 
-        eth.getAccounts().then( accounts => {
-          console.log(`${s}get accounts ${accounts}`)
-          accounts = web3.eth.accounts;
+      eth.getAccounts().then( accounts => {
+        console.log(`${s}get accounts ${accounts}`)
+        accounts = web3.eth.accounts;
 
-          if (accounts) {
+        if (accounts) {
 
-            console.log("Default account: " + web3.eth.defaultAccount);
-            console.log("Using web3 version: " + web3.version.api);
+          console.log("Default account: " + web3.eth.defaultAccount);
+          console.log("Using web3 version: " + web3.version.api);
 
-            eth.getBalance( web3.eth.defaultAccount ).then( balance => console.log(`${s}balance ${balance}`) )
+          eth.getBalance( web3.eth.defaultAccount ).then( balance => console.log(`${s}balance ${balance}`) )
 
-            WalletService.balanceOf( web3.eth.defaultAccount ).then( balance => { vevaBalance = balance.toNumber()})
+          WalletService.balanceOf( web3.eth.defaultAccount ).then( balance => { vevaBalance = balance.toNumber()})
 
-          }
-        }).catch( err => {
-          console.log('error getting accounts')
-        })
-
-      this.state = {balanceDisplay: vevaBalance};
-
-      //this.onItemClick = this.onItemClick.bind(this)
-      // test
-      WalletService.balanceOf( web3.eth.defaultAccount ).then( balance => {
-        console.log(`${s}balance: ${balance}`)
+        }
+      }).catch( err => {
+        console.log('error getting accounts')
       })
 
-    }
+    this.state = {balanceDisplay: vevaBalance};
 
+    //this.onItemClick = this.onItemClick.bind(this)
+    // test
+    WalletService.balanceOf( web3.eth.defaultAccount ).then( balance => {
+      console.log(`${s}balance: ${balance}`)
+    })
+
+  }
 
   componentWillMount() {
 
-    var fetchBalance = setInterval(function() {
+    this.fetchBalance = setInterval(function() {
 
       eth.getAccounts().then( accounts => {
         accounts = web3.eth.accounts;
@@ -83,8 +82,8 @@
 
 
   componentWillUnmount() {
-    clearInterval(this.interval);
-    clearInterval (fetchBalance);
+    if ( this.interval ) clearInterval( this.interval )
+    if ( this.fetchBalance ) clearInterval( this.fetchBalance )
   }
 
 
@@ -139,17 +138,14 @@
   }
 
 
-    render() {
-      return (
-        <AnimatedView>
-          <main>
-
-            <h1>Wallet</h1>
-            <p><strong>View Balance and Send Tokens Here</strong></p>
-            <p>You have <strong> {this.state.balanceDisplay} </strong> VEVA in your wallet.</p>
-
-              <div>
-
+  render() {
+    return (
+      <AnimatedView>
+        <main>
+          <h1>Wallet</h1>
+          <p><strong>View Balance and Send Tokens Here</strong></p>
+          <p>You have <strong> {this.state.balanceDisplay} </strong> VEVA in your wallet.</p>
+          <div>
             <label >Send to address</label>
             <input id="address" type="text" maxLength="42" />
 
@@ -160,10 +156,9 @@
 
             <button id="button" onClick={this.onItemClick}>SEND</button>
 
-              </div>
-              <br />
-              <div>
-
+          </div>
+          <br />
+          <div>
             <p>
               Please Note: You can only send up to the amount of VEVA in your wallet, and you may be charged a transaction fee by the Ethereum network.
               <br/>
@@ -171,25 +166,23 @@
               <br/>
               Please ensure that you ONLY send VEVA tokens to a VEVA-compatible ERC-20 wallet!
             </p>
+          </div>
 
-              </div>
-
-
-          </main>
-        </AnimatedView>
-      );
-    }
+        </main>
+      </AnimatedView>
+    )
   }
+}
 
 
-  export class Wallet extends PureComponent {
+export class Wallet extends PureComponent {
 
-    render() {
+  render() {
 
-      return(
-        <ViewWallet />
-      )
-    }
+    return(
+      <ViewWallet />
+    )
   }
+}
 
-  export default Wallet
+export default Wallet

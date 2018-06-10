@@ -21,7 +21,7 @@ const TokenCategories = ( { rounds, tokens } ) => {
   })
   */
   let history = tokenHistory( rounds, tokens, 5 ) // last 5 
-  console.log('history',history)
+  //console.log('history',history)
   return (
     <Panel className="panel-info card card-style">
       <Panel.Heading className="card-title">
@@ -31,10 +31,10 @@ const TokenCategories = ( { rounds, tokens } ) => {
         <div className="row table-header">
           <div className="col-md-1">token</div>
           { surveySections.map( ( section, idx ) => <div key={idx} className="col-md-1">{section.name}</div> ) }
-        <div className="col-md-1">last round</div>
+          <div className="col-md-1">last round</div>
         </div>
-        { history.map( historyItem => 
-          <div className="row table-body">
+        { history.map( ( historyItem, idx ) => 
+          <div key={idx} className="row table-body">
             <div className="col-md-1">
               <Link to={ '/token/' + historyItem.token } >{ tokens.find( token=> token.id == historyItem.token ).name }</Link>
             </div>

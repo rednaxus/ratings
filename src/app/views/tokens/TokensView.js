@@ -14,10 +14,7 @@ import {
   Tokens,
   TokenCloud,
   TokenCategories,
-  TabPanel,
-  TabPanelHeader,
-  TabPanelBody,
-  TabPanelBodyContent
+  TokenCategoriesDetail
 } from '../../components'
 
 import { store } from '../../Root'
@@ -33,12 +30,9 @@ class TokensView extends Component {
 
   constructor(props){
     super(props)
-    let sections = survey.getSections()
-    let header = []
-    sections.forEach( ( section,idx) => {
-      header.push( { name: section.name, tablink: 'home', isActive: !idx } )
-    })
-    this.state = { header }
+    //this.sections = survey.getSections()
+    //let header = this.sections.map( ( section,idx) => ( { name: section.name, tablink: `tab-panel-${idx}`, isActive: !idx } ) )
+    //this.state = { header }
 //      mockHeader: [
  //       {name: 'Home', tablink: 'home', isActive: true},
  //       {name: 'About', tablink: 'about', isActive: false},
@@ -74,7 +68,7 @@ class TokensView extends Component {
   render() {
     const { tokens, userAuth, rounds } = this.props
 
-    const { header } = this.state
+    //const { header } = this.state
 
     return (
       <AnimatedView>
@@ -85,28 +79,7 @@ class TokensView extends Component {
           {/*<Tokens { ...{ store } } />*/}
         </div>
         <TokenCategories tokens={ tokens } rounds={ rounds }/>
-        <Panel>
-          <TabPanel>
-            <TabPanelHeader tabItems={header}/>
-            <TabPanelBody>
-              <TabPanelBodyContent id="home" isActive>
-                <h3>
-                  Home
-                </h3>
-              </TabPanelBodyContent>
-              <TabPanelBodyContent id="about">
-                <h3>
-                  About
-                </h3>
-              </TabPanelBodyContent>
-              <TabPanelBodyContent id="profile">
-                <h3>
-                  Profile
-                </h3>
-              </TabPanelBodyContent>
-            </TabPanelBody>
-          </TabPanel>
-        </Panel>
+        <TokenCategoriesDetail tokens={ tokens } rounds={ rounds }/>
       </AnimatedView>
     );
   }

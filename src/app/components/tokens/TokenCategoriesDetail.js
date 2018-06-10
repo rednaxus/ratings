@@ -40,9 +40,9 @@ const TokenCategoriesDetail = ( { rounds, tokens } ) => {
           { surveySections.map( ( section, sIdx ) => 
             <TabPanelBodyContent key={sIdx} id={`tab-panel-${sIdx}`} isActive={sIdx==0}>
               <div className="row table-body small">
-                <div className="col-md-1">token</div> 
+                <div className="col-md-1"><em>token</em></div> 
                 { new Array(section.sectionLength).fill().map( ( _, aIdx ) => 
-                  <div key={aIdx} className="col-md-1">q{aIdx + section.startIndex}</div> 
+                  <div key={aIdx} className="col-md-1"><em>q{aIdx + section.startIndex}</em></div> 
                 )}
               </div>
               <br/>

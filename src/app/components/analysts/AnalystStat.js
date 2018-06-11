@@ -14,6 +14,9 @@ class AnalystStat extends PureComponent {
     const { analyst } = this.props
     const levelInfo = config.level_info( analyst.reputation )
     console.log('reputation',analyst.reputation,'levelInfo',levelInfo)
+    let roundsCompleted = analyst.reward_events.reduce( ( accum , reward ) => 
+      ( accum + ( reward.reward_type >= config.REWARD_ROUND_TOKENS_WINNER && reward.reward_type <= config.REWARD_ROUND_TOKENS_JURY_BOTTOM ? 1 : 0 ) ) 
+    ,0)
     return(
       <div>
         <div className="row">
@@ -30,7 +33,7 @@ class AnalystStat extends PureComponent {
                     <Stat
                       statFaIconName="fa-recycle"
                       statIconColor="#fa8564"
-                      statLabel={`${analyst.rounds.finished.length} Rounds Completed`}
+                      statLabel={`${roundsCompleted} Rounds Completed`}
                     />
                     {/*<Stat
                       statIoniconName="ion-md-alert"

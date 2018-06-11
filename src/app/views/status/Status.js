@@ -23,7 +23,7 @@ class Status extends Component {
   }
 
   render() {
-    const { currentView, userIsConnected, user, rounds, cronInfo } = this.props;
+    const { currentView, userIsConnected, user, rounds, cronInfo, tokens } = this.props
     if ( user.id === undefined) return( '' )
     
     console.log('rounds',rounds)
@@ -37,9 +37,9 @@ class Status extends Component {
     console.log('user rounds',user_rounds)
 
     let payouts = !user.reward_events ? [] : _.filter( user.reward_events, reward => 
-      config.reward_is_tokens(reward.reward_type) 
+      config.reward_is_tokens(reward) 
     )
-    console.log('payouts',payouts)
+    console.log('payouts',user.reward_events,payouts)
     /*[
       { id:47, token:3, status:'completed', start:+new Date(), finish:+new Date() },
       { id:48, token:4, status:'in-process', start:+new Date(), finish:+new Date() }
@@ -59,7 +59,7 @@ class Status extends Component {
           <AnalystStat analyst={ user } />
           <div className="row">
             <div className="col-md-6">
-              <AnalystRounds analystRounds={user_rounds}/>
+              <AnalystRounds analystRounds={user_rounds} analystPayouts={payouts} tokens={tokens}/>
             </div>
             <div className="col-md-6">
               <AnalystPayouts analystPayouts={payouts}/>

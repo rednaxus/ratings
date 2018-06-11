@@ -11,6 +11,7 @@ const mapStateToProps = (state) => {
     currentView:         state.views.currentView,
     user:                state.user.info,
     rounds:              state.rounds.data,
+    tokens:              state.tokens.data,
     cronInfo:            state.cycles.cronInfo 
   }
 }

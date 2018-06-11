@@ -5,6 +5,7 @@ import Moment from 'react-moment'
 import referralCode from '../../services/referralCode'
 import { userActions } from '../../redux/modules/actions'
 
+
 class AnalystReferrals extends Component {
   state = {
     email:          ''
@@ -62,8 +63,8 @@ class AnalystReferrals extends Component {
           }
           { analyst.referrals.map( ( referral, idx ) => // timestamp,reg_timestamp,email,analyst
             <div className="row" key={idx}>
-              <div className="col-md-3 small"><Moment from={timestamp} date={referral.timestamp}/></div>
-              <div className="col-md-3 small">{ referral.reg_timestamp ? <Moment from={timestamp} date={referral.reg_timestamp}/> : 'no' }</div>
+              <div className="col-md-3 small"><Moment format="MM/DD/YYYY" from={timestamp} date={referral.timestamp*1000}/></div>
+              <div className="col-md-3 small">{ referral.reg_timestamp ? <Moment format="MM/DD/YYYY" from={timestamp*1000} date={referral.reg_timestamp*1000}/> : 'no' }</div>
               <div className="col-md-3 small">{ referral.email }</div>
               <div className="col-md-3 small">{ referral.analyst ? referral.analyst : 'none' }</div>
             </div>

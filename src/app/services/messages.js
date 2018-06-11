@@ -103,7 +103,7 @@ user.rounds.finished = [8, 9, 0, 7]
 	if (comingSignupCycles.length) {
 		messages.push({
 			type: 'new_round_scheduling',
-			priority: 0,
+			priority: 1,
 			signupCycles:comingSignupCycles.length
 		})
 	}
@@ -112,7 +112,7 @@ user.rounds.finished = [8, 9, 0, 7]
 	comingConfirmedCycles.map( cycle =>
 		messages.push({
 			type: 'round_scheduled',
-			priority: 1, //'action-small',
+			priority: 2, //'action-small',
 			role: cycle.role,
 			due: config.cycleTime( cycle.id + 1, true ),
 			now: ms( timestamp ),

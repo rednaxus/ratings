@@ -28,10 +28,10 @@ const TokenCategories = ( { rounds, tokens } ) => {
         Token Summaries--recent 5 rounds
       </Panel.Heading>
       <Panel.Body className="card-text small">
-        <div className="row table-header">
-          <div className="col-md-1">token</div>
-          { surveySections.map( ( section, idx ) => <div key={idx} className="col-md-1">{section.name}</div> ) }
-          <div className="col-md-1">last round</div>
+        <div className="row table-header small">
+          <div className="col-md-1"><em>token</em></div>
+          { surveySections.map( ( section, idx ) => <div key={idx} className="col-md-1"><em>{section.name}</em></div> ) }
+          <div className="col-md-1"><em>last round</em></div>
         </div>
         { history.map( ( historyItem, idx ) => 
           <div key={idx} className="row table-body">

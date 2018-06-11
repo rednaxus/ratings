@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Panel } from 'react-bootstrap'
 import Wallet from '../analysts/wallet.js'
 
 
@@ -11,15 +12,15 @@ class AnalystPayouts extends Component {
   render() {
     const { analystPayouts } = this.props;
     return (
-      <div className="panel panel-success card card-style">
+      <Panel className="panel-success card card-style">
 
-        <div className="panel-heading">
-          <h4 className="card-title mt-3"><i className="fa fa-certificate"/>&nbsp;VEVA Tokens Earned</h4>
-        </div>
+        <Panel.Heading>
+          <h4 className="card-title mt-3"><i className="fa fa-certificate"/>&nbsp;Veva Wallet</h4>
+        </Panel.Heading>
 
-        <div className="panel-body">
+        <Panel.Body className="card-text">
 
-
+        { /* 
         <div>
           payouts =>
         </div>
@@ -32,11 +33,11 @@ class AnalystPayouts extends Component {
           )}
 
           <hr />
-
+          */}
           <Wallet />
-        </div>
+        </Panel.Body>
 
-      </div>
+      </Panel>
 
     )
   }

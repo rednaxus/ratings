@@ -10,7 +10,7 @@ const article = new schema.Entity('articles', {
 	author: user,
 	comments: [comment]
 })
-		
+
 
 
 module.exports = {
@@ -33,6 +33,9 @@ module.exports = {
 		  ]
 		}
 
+		/*
+		{"entities":{"users":{"1":{"id":"1","name":"Paul"},"2":{"id":"2","name":"Nicole"}},"comments":{"324":{"id":"324","commenter":"2"}},"articles":{"123":{"id":"123","author":"1","title":"My awesome blog post","comments":["324"]}}},"result":"123"}
+		*/
 
 		const normalizedData = normalize(myData, article)
 		console.log('original data:', myData)

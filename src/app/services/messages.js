@@ -51,6 +51,9 @@ const ms = secs => secs * 1000
 export const generateMessages = ( { user, cycles, rounds, tokens, timestamp } ) => {
 	console.log('generate messages', 'user',...user,'cycles',...cycles,'rounds',...rounds,'tokens',...tokens,timestamp)
 
+	const getToken = id => tokens.find( token => token.id == id )
+	const getRound = id => rounds.find( round => round.id == id )
+
 	let messages = []
 
 	//const { tokens, cycles, rounds } = store.getState()
@@ -122,7 +125,7 @@ user.rounds.finished = [8, 9, 0, 7]
 
 	/***** Round Activated *****/
 	activeCycles.map( cycle => {
-		let token  = tokens.find( token => token.id === cycle.token	)
+		let token  = getToken( cycle.token )
 		let round = rounds.find( round => round.id === cycle.round )
 		if ( is_recent( { timestamp: config.cycleTime( cycle.id ) } ) ) messages.push({
 			type: 'round_activated',
@@ -151,8 +154,9 @@ user.rounds.finished = [8, 9, 0, 7]
 
 	/***** Round Finished *****/
 	finishedCycles.map( cycle => {
-		let round = _.find(rounds,['id',cycle.round])
-		let token  = _.find(tokens,['id',cycle.token])
+		console.log('****',cycle,...tokens)
+		let round = rounds.find( round => round.id == cycle.round )
+		let token = getToken( cycle.token )
 		messages.push({
 			type: 'round_finished',
 			priority: 0,
@@ -286,13 +290,13 @@ user.rounds.finished = [8, 9, 0, 7]
 		let activeCellLog = [user.rounds.active.length-i]
 		console.log ("Round Active Test -- Active Round Array Member #", i, "(", activeCellLog, "): ", getActiveRoundId)  //if nothing in array, comes back Undefined
 
-		activeRound = _.find(rounds, ['id', getActiveRoundId])  /*find round ID in rounds data */
+		activeRound = rounds.find( round => round.id == getActiveRoundId )  /*find round ID in rounds data */
 
 		if (activeRound) {
 
 			activeCoveredToken = activeRound.covered_token					/* get covered Token */
 
-			getActiveTokenName = _.find(tokens, ['id', activeCoveredToken])  /*find covered Token */
+			getActiveTokenName = getToken( activeCoveredToken )  /*find covered Token */
 
 			roundTokenA = getActiveTokenName.name										/* set to string variable */
 
@@ -408,13 +412,13 @@ user.rounds.finished = [8, 9, 0, 7]
 		let startingCellLog = [user.rounds.scheduled.length-i]
 		console.log ("Round Starting Test -- Starting Round Array Member #", i, "(", startingCellLog, "): ", getStartingRoundId)  //if nothing in array, comes back Undefined
 
-		startingRound = _.find(rounds, ['id', getStartingRoundId])  /*find round ID in rounds data */
+		startingRound = rounds.find( round.id == getStartingRoundId )  /*find round ID in rounds data */
 
 		if (startingRound) {
 
 			startingCoveredToken = startingRound.covered_token					/*get covered token Id */
 
-			getStartingTokenName = _.find(tokens, ['id', startingCoveredToken])  /*find covered Token */
+			getStartingTokenName = getToken( startingCoveredToken )  /*find covered Token */
 
 			roundTokenStart = getStartingTokenName.name											/* set to variable */
 
@@ -468,13 +472,13 @@ user.rounds.finished = [8, 9, 0, 7]
 		let brCellLog = [user.rounds.active.length-i]
 		console.log ("Round Brief Due Test -- Active Round Array Member #", i, "(", brCellLog, "): ", getBRRoundId)  //if nothing in array, comes back Undefined
 
-		brRound = _.find(rounds, ['id', getBRRoundId])  /*find round ID in rounds data */
+		brRound = rounds.find( round => round.id == getBRRoundId )  /*find round ID in rounds data */
 
 		if (brRound) {
 
 			brCoveredToken = brRound.covered_token					/* get covered Token */
 
-			getBRTokenName = _.find(tokens, ['id', brCoveredToken])  /*find covered Token */
+			getBRTokenName = getToken( brCoveredToken )  /*find covered Token */
 
 			roundTokenBR = getBRTokenName.name										/* set to string variable */
 
@@ -538,13 +542,13 @@ user.rounds.finished = [8, 9, 0, 7]
 
 		getActiveRoundIdPre = user.rounds.active[user.rounds.active.length-i]  // get round ID
 
-		activeRoundPre = _.find(rounds, ['id', getActiveRoundIdPre])  //find round ID in rounds data
+		activeRoundPre = rounds.find( round.id == getActiveRoundIdPre )  //find round ID in rounds data
 
 		if (activeRoundPre) {
 			preDueReminder = (activeRoundPre.timestamp+(4*oneDay))
 			preDueDate = (activeRoundPre.timestamp+(6*oneDay))
 			activeCoveredTokenPre = activeRoundPre.covered_token					//get token being covered
-			getActiveTokenNamePre = _.find(tokens, ['id', activeCoveredTokenPre])  //find covered Token
+			getActiveTokenNamePre = getToken( activeCoveredTokenPre )  //find covered Token
 			roundTokenPre = getActiveTokenNamePre.name  //name of token set to var
 
 			//to test with just leads, remove !
@@ -617,13 +621,13 @@ user.rounds.finished = [8, 9, 0, 7]
 
 		getActiveRoundIdPost = user.rounds.active[user.rounds.active.length-i]  // get round ID
 
-		activeRoundPost = _.find(rounds, ['id', getActiveRoundIdPost])  //find round ID in rounds data
+		activeRoundPost = rounds.find( round => round.id == getActiveRoundIdPost )  //find round ID in rounds data
 
 		if (activeRoundPost) {
 			postDueReminder = (activeRoundPost.timestamp+(5*oneDay))
 			postDueDate = (activeRoundPost.timestamp+(7*oneDay))
 			activeCoveredTokenPost = activeRoundPost.covered_token					//get token being covered
-			getActiveTokenNamePost = _.find(tokens, ['id', activeCoveredTokenPost])  //find covered Token
+			getActiveTokenNamePost = getToken( activeCoveredTokenPost )  //find covered Token
 			roundTokenPost = getActiveTokenNamePost.name  //name of token set to var
 
 			//to test with just leads, remove !
@@ -675,11 +679,11 @@ user.rounds.finished = [8, 9, 0, 7]
 for (var i=1; i<16; i++) {
 
 	getConfirmRoundId = user.rounds.scheduled[user.rounds.scheduled.length-i]  // round ID
-	confirmRound = _.find(rounds, ['id', getConfirmRoundId])  // find round ID in rounds data
+	confirmRound = rounds.find(round.id == getConfirmRoundId )  // find round ID in rounds data
 
 	if (confirmRound) {
 		confirmCoveredToken = confirmRound.covered_token					//covered token name
-		getConfirmTokenName = _.find(tokens, ['id', confirmCoveredToken])  // find covered Token
+		getConfirmTokenName = getToken( confirmCoveredToken )  // find covered Token
 		roundTokenC = getConfirmTokenName.name										//name string set to var
 
 		//checks to see if user is a lead
@@ -740,7 +744,7 @@ for (var i=1; i<16; i++) {
 
 		//get Round Info
 		getStartRoundId = user.rounds.scheduled[user.rounds.scheduled.length-i]  // round ID
-		startRound = _.find(rounds, ['id', getStartRoundId])  // find round ID in rounds data
+		startRound = rounds.find( round => round.id == getStartRoundId )  // find round ID in rounds data
 
 		if (startRound) {
 
@@ -748,7 +752,7 @@ for (var i=1; i<16; i++) {
 			startReminderEnd = (startRound.timestamp)  //last time to remind user?  current: round Start
 
 			startCoveredToken = startRound.covered_token				//gets covered token
-			getStartTokenName = _.find(tokens, ['id', startCoveredToken])  // find covered Token
+			getStartTokenName = getToken( startCoveredToken )  // find covered Token
 			roundTokenSt = getStartTokenName.name								//sets name string to var
 
 			//console.log()
@@ -799,7 +803,7 @@ for (var i=1; i<16; i++) {
 
 		/*determine round(s) user is involved in*/
 		getActiveRoundIdBD = user.rounds.active[user.rounds.active.length-i]  // round ID
-		activeRoundBD = _.find(rounds, ['id', getActiveRoundIdBD])  //find round ID in rounds data
+		activeRoundBD = getRound( getActiveRoundIdBD )  //find round ID in rounds data
 
 		if (activeRoundBD) {
 
@@ -808,7 +812,7 @@ for (var i=1; i<16; i++) {
 			briefDueDate = (activeRoundBD.timestamp+(5*oneDay))
 
 			activeCoveredTokenBD = activeRoundBD.covered_token					//get Covered Token
-			getActiveTokenNameBD = _.find(tokens, ['id', activeCoveredTokenBD])  //find covered Token
+			getActiveTokenNameBD = getToken( activeCoveredTokenBD )  //find covered Token
 			roundTokenBD = getActiveTokenNameBD.name  //name of token
 
 			if ((config.isRoundLead(activeRoundBD.in_round_id) == 0 || config.isRoundLead(activeRoundBD.in_round_id) == 1)) {
@@ -864,7 +868,7 @@ for (var i=1; i<16; i++) {
 	for (var i=1; i<16; i++) {
 			/*determine round(s) user is involved in*/
 		getActiveRoundIdRD = user.rounds.active[user.rounds.active.length-i]  // round ID
-		activeRoundRD = _.find(rounds, ['id', getActiveRoundIdRD])  //find round ID in rounds data
+		activeRoundRD = getRound( getActiveRoundIdRD )  //find round ID in rounds data
 
 		if (activeRoundRD) {
 
@@ -873,7 +877,7 @@ for (var i=1; i<16; i++) {
 			rebutDueDate = (activeRoundRD.timestamp+(6*oneDay))
 
 			activeCoveredTokenRD = activeRoundRD.covered_token					//get Covered Token
-			getActiveTokenNameRD = _.find(tokens, ['id', activeCoveredTokenRD])  //find covered Token
+			getActiveTokenNameRD = getToken( activeCoveredTokenRD )  //find covered Token
 			roundTokenRD = getActiveTokenNameRD.name  //name of token
 
 			//is user a lead?
@@ -916,11 +920,11 @@ for (var i=1; i<16; i++) {
 
 		//get Round Info
 		getConfirmRoundIdJ = user.rounds.scheduled[user.rounds.scheduled.length-i]  // round ID
-		confirmRoundJ = _.find(rounds, ['id', getConfirmRoundIdJ])  // find round ID in rounds data
+		confirmRoundJ = getRound( getConfirmRoundIdJ )  // find round ID in rounds data
 
 		if (confirmRoundJ) {
 			confirmCoveredTokenJ = confirmRoundJ.covered_token					//name of covered token
-			getConfirmTokenNameJ = _.find(tokens, ['id', confirmCoveredTokenJ])  // find covered Token
+			getConfirmTokenNameJ = getToken( confirmCoveredTokenJ )  // find covered Token
 			roundTokenCj = getConfirmTokenNameJ.name										//token name set to var
 
 			//to test with leads: remove !

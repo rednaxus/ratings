@@ -25,6 +25,10 @@ const { getRatingAgency: RatingAgency, getAnalystRegistry: AnalystRegistry } = r
 const utils = require('../src/app/services/utils') // parseB32StringtoUintArray, toHexString, bytesToHex, hexToBytes
 const { bytes32FromIpfsHash, ipfsHashFromBytes32 } = require('../src/app/services/ipfs')
 
+const schemas = require('../src/app/services/schemas')
+schemas.test1()
+
+
 //console.log('config',config)
 
 let s = '****'

@@ -154,7 +154,7 @@ user.rounds.finished = [8, 9, 0, 7]
 
 	/***** Round Finished *****/
 	finishedCycles.map( cycle => {
-		console.log('****',cycle,...tokens)
+		//console.log('****',cycle,...tokens)
 		let round = rounds.find( round => round.id == cycle.round )
 		let token = getToken( cycle.token )
 		messages.push({

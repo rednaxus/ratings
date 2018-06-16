@@ -404,7 +404,7 @@ user.rounds.finished = [8, 9, 0, 7]
 	let displayRStime = false;
 
 
-	for (var i=1; i<16; i++) {
+	for (var i=1; i<16; i++) { 
 
 		getStartingRoundId = user.rounds.scheduled[user.rounds.scheduled.length-i]  /* get round ID of scheduled rounds*/
 

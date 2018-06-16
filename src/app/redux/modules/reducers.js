@@ -1,11 +1,12 @@
 // @flow weak
-
 import { routerReducer }    from 'react-router-redux'
 import { combineReducers }  from 'redux'
 
 import { reducer as formReducer } from 'redux-form'
 
 import { Reducers as gridReducers } from 'react-redux-grid'
+
+import { createReducer } from 'redux-orm'
 
 import app                  from './app'
 
@@ -26,13 +27,16 @@ import web3                 from './web3'
 import tokens               from './tokens'
 import survey               from './survey'
 
+import orm           from './models'
+
+
 export const reducers = {
   alert,
   user,
   earningGraph,
   sideMenu,
   //userInfos,
-  teamMates,
+  //teamMates,
   tokens,
   views,
   userAuth,
@@ -48,5 +52,6 @@ export default combineReducers({
   ...gridReducers,
   app: app,
   form: formReducer,
-  routing: routerReducer
+  routing: routerReducer,
+  db: createReducer( orm )
 })

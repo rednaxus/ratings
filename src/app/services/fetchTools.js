@@ -10,7 +10,7 @@ export const getLocationOrigin = () => {
   return window.location.origin;
 };
 
-/*
+/* 
   query options:
  */
 export const defaultOptions = {

@@ -32,13 +32,12 @@ class Status extends Component {
       //...user.rounds.scheduled,
       ...user.rounds.active,
       ...user.rounds.finished 
-    ].map( round_id => _.find( rounds,['id',round_id] ) )
+    ].map( round_id => rounds.find( round => round.id == round_id ) )
 
     console.log('user rounds',user_rounds)
 
-    let payouts = !user.reward_events ? [] : _.filter( user.reward_events, reward => 
-      config.reward_is_tokens(reward) 
-    )
+    let payouts = !user.reward_events ? [] 
+      : user.reward_events.filter( reward => config.reward_is_tokens( reward ) )
     console.log('payouts',user.reward_events,payouts)
     /*[
       { id:47, token:3, status:'completed', start:+new Date(), finish:+new Date() },

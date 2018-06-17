@@ -21,13 +21,14 @@ import teamMates            from './teamMates'
 import views                from './views'
 import userAuth             from './userAuth' // to die
 //import users                from './users' // to die
+import cron                 from './cron'
 import cycles               from './cycles'
 import rounds               from './rounds'
 import web3                 from './web3'
 import tokens               from './tokens'
 import survey               from './survey'
 
-import orm           from './models'
+import orm                  from './models'
 
 
 export const reducers = {
@@ -41,6 +42,7 @@ export const reducers = {
   views,
   userAuth,
   //users,
+  cron,
   cycles,
   rounds,
   survey,

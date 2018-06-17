@@ -6,26 +6,20 @@ import * as viewsActions        from '../../redux/modules/views'
 import Status                      from './Status'
 import { userActions } from '../../redux/modules/actions'
 
-const mapStateToProps = (state) => {
-  return {
-    currentView:         state.views.currentView,
-    user:                state.user.info,
-    rounds:              state.rounds.data,
-    tokens:              state.tokens.data,
-    cronInfo:            state.cycles.cronInfo 
-  }
-}
+const mapStateToProps = state => ({
+  currentView:         state.views.currentView,
+  user:                state.user.info,
+  rounds:              state.rounds.data,
+  tokens:              state.tokens.data,
+  timestamp:           state.cron.timestamp 
+})
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    actions : bindActionCreators(
-      {
-        ...viewsActions,
-        ...userActions
-      },
-      dispatch)
-  }
-}
+const mapDispatchToProps = dispatch => ({
+  actions : bindActionCreators({
+    ...viewsActions,
+    ...userActions
+  }, dispatch )
+})
 
 export default connect( mapStateToProps, mapDispatchToProps )( Status )
 

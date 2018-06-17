@@ -5,7 +5,7 @@ import PropTypes          from 'prop-types'
 import Moment from 'react-moment'
 import { Link } from 'react-router-dom'
 import { Panel } from 'react-bootstrap'
-import * as _ from 'lodash'
+import { isEmpty } from 'lodash'
 
 import {
   AnimatedView,
@@ -68,7 +68,7 @@ class Round extends PureComponent {
   }
   onBriefUpload( filehash ) {
     const { rounds, actions: { setRoundInfo } } = this.props
-    let round = {...rounds[_.findIndex(rounds,['id',this.idx])]}
+    let round = { ...rounds[ rounds.findIndex( round => round.id == this.idx ) ] }
     round.briefs[round.inround_id] = { timestamp:Math.round(+new Date() / 1000), filehash:filehash }
 
     setRoundInfo( round )
@@ -79,14 +79,14 @@ class Round extends PureComponent {
     let i, token, round
     const { rounds, tokens, user } = this.props
     console.log('rounds are',rounds)
-    i = _.findIndex(rounds,['id',this.idx])
+    i = rounds.findIndex( round => round.id == this.idx )
     console.log('finding for id:',this.idx, 'found at',i)
     round = rounds[i] // == -1 ? {}: rounds[ i ]
-    if (_.isEmpty(round)) {
+    if (isEmpty(round)) {
       console.log('got empty round',round)
       return <div>fetching...</div>
     }
-    i = _.findIndex(tokens,['id',round.covered_token])
+    i = tokens.findIndex( token => token.id == round.covered_token )
     token = i == -1 ? {} : tokens[ i ]
     let analyst_status = config.STATUSES[round.analyst_status]
     let leadPosition = round.inround_id == 0 ? 'bull' : (round.inround_id == 1 ? 'bear' : '' )

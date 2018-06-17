@@ -16,11 +16,11 @@ import config from '../../config/appConfig'
 import { cyclesByStatus } from '../../services/analystStatus'
 
 const dateView = ({value,convert=true}) =>
-  <Moment className="text-purple" format="dddd YYYY-MM-DD" date={ new Date(convert?value*1000:value) } />
+  <Moment className="text-purple" format="YYYY-MM-DD" date={ new Date(convert?value*1000:value) } />
 
 
-const colDefault = 'col-md-2 col-xs-2 text-center'
-//const colDefault2 = 'col-md-2 col-md-2 text-center'
+const colDefault = 'col-md-1 col-xs-1 text-center'
+const colDefault2 = 'col-md-2 col-xs-2 text-center'
 
 class Scheduling extends PureComponent {
   enterAnimationTimer = null
@@ -33,14 +33,14 @@ class Scheduling extends PureComponent {
     },
     {
       name: 'Start',
-      className: colDefault,
+      className: colDefault2,
       dataIndex: 'timestart',
       //renderer: ({column,value,row}) =>
       renderer: dateView  
     },
     {
       name: 'Finish',
-      className: colDefault,
+      className: colDefault2,
       dataIndex: 'timefinish',
       renderer: dateView
     }
@@ -50,7 +50,7 @@ class Scheduling extends PureComponent {
     ...this.columns,
     {
       name: 'Sign-Up',
-      className: colDefault,
+      className: colDefault2,
       dataIndex: 'analyst_status',
       renderer: ( { cycle, id } ) => // i.e. cycle
         <div>
@@ -164,7 +164,7 @@ class Scheduling extends PureComponent {
   }
 
   render() {
-    const { cycles, rounds, user, cronInfo, tokens } = this.props
+    const { cycles, rounds, user, timestamp, tokens } = this.props
     console.log('props',this.props,tokens)
     //let columns = this.columns
     let signupColumns = this.signupColumns
@@ -173,7 +173,7 @@ class Scheduling extends PureComponent {
     let confirmedColumns = this.confirmedColumns
     let volunteerColumns = this.volunteerColumns
 
-    let analystStatus = cyclesByStatus( { cycles, rounds, timestamp: cronInfo, tokens } )
+    let analystStatus = cyclesByStatus( { cycles, rounds, timestamp: timestamp, tokens } )
     /*{     
       comingSignupCycles, 
       comingVolunteerCycles, 
@@ -186,7 +186,7 @@ class Scheduling extends PureComponent {
     return(
       <AnimatedView>
         <Breadcrumb path={["dashboard","scheduling"]}></Breadcrumb>
-        <small className="pull-right">time last checked: { dateView( { value:cronInfo,convert:true} ) }</small> 
+        <small className="pull-right">time last checked: { dateView( { value:timestamp, convert:true } ) }</small> 
         { !analystStatus.comingVolunteerCycles.length ? "" :
         <div>
           <h2 className="text-red">Awaiting confirmations</h2>

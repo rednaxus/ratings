@@ -35,6 +35,7 @@ getTopTokens
 getTokenHistoryGrouped
 getTokenPriceHistoryGrouped
 */
+let s = '******'
 
 const initialState = {
   isFetching: false,
@@ -124,14 +125,19 @@ export const fetchTokenData = ( id, full=true ) => { // if full is set get all r
 
   //console.log('fetch token data',id)
   return ( dispatch, getState ) => {
+    const err = err => dispatch( error( err ) )
     dispatch( request( id ) )
-    if (full) dispatch( fetchTokenRounds( id ) )
     //console.log('getting token info from ethplorer')
     return getTokenInfo( id ).then( info => {
+      if (full) return getTokenRounds( id ).then( roundInfo => {
+        console.log(`${s}got token rounds`,roundInfo)
+        info.rounds = roundInfo.rounds
+        dispatch( receive( info ) )
+        return info
+      }).catch( err )
       dispatch( receive( info ) )
       return info
-    })
-    .catch( err => dispatch( error( err ) ) )
+    }).catch( err )
   }
 }
 

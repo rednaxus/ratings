@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import Moment from 'react-moment'
 import { Panel } from 'react-bootstrap'
-import * as _ from 'lodash'
+//import * as _ from 'lodash'
 
 import { 
   AnimatedView, 
@@ -71,11 +71,11 @@ class Token extends Component {
     const { currentView, tokens } = this.props
     const { labels, datasets } = this.dummyGraphData
 
-    let idx = _.findIndex(tokens.data,['id',+this.props.match.params.token_id])
+    let idx = tokens.findIndex( token => ( token.id == +this.props.match.params.token_id ) )
     if (idx === -1) return(
       <div>fetching....</div>
     )
-    let token = tokens.data[idx] 
+    let token = tokens[idx] 
     token.rounds = token.rounds || []
     let roundItems = token.rounds.map( (round_id,idx) => 
       <li key={idx}><Link to={"/round/"+round_id}>{round_id}</Link></li> 

@@ -13,7 +13,7 @@ const mapStateToProps = (state) => {
     user:                 state.user.info,
     tokens:               state.tokens.data,
     rounds:               state.rounds.data,
-    cronInfo:             state.cycles.cronInfo
+    timestamp:            state.cron.timestamp
   }
 }
 

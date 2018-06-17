@@ -49,8 +49,8 @@ class CyclesView extends Component {
   }
 
   render() {
-    const { cycles, cronInfo } = this.props
-    let crondate = new Date(cronInfo * 1000)
+    const { cycles, timestamp } = this.props
+    let crondate = new Date(timestamp * 1000)
 
     console.log('rendering cycles and rounds',this.props)
     return (

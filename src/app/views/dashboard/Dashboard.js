@@ -39,7 +39,7 @@ class Dashboard extends Component {
   }
 
   render() {
-    const { user, tokens, rounds, cycles, cronInfo } = this.props
+    const { user, tokens, rounds, cycles, timestamp } = this.props
     const { currentView } = this.props
     //const userFullName = `${userInfos.firstname} ${userInfos.lastname.toUpperCase()}`;
     console.log('dashboard render',...user,...tokens,...rounds,...cycles)
@@ -49,7 +49,7 @@ class Dashboard extends Component {
         <main className="container">
           <div className="row">
             <div className="col-md-10 text-right text-green small">
-              <Moment format="YYYY-MM-DD HH:MM" date={cronInfo * 1000}/>
+              <Moment format="YYYY-MM-DD HH:MM" date={timestamp * 1000}/>
             </div>
           </div>
           <AnalystMessages 
@@ -57,7 +57,7 @@ class Dashboard extends Component {
             cycles={ cycles } 
             tokens={ tokens } 
             rounds={ rounds } 
-            timestamp={ cronInfo }/>
+            timestamp={ timestamp }/>
           {/*<hr/>
           <div className="row">
             <div className="col-md-6">

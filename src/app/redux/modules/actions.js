@@ -23,11 +23,16 @@ export {
 }       from './tokens'
 
 //export { fetchUsersDataIfNeeded }       from './users'
+export {
+  fetchCronInfo,
+  pulseCron
+} from './cron'
+
 export { 
   cycleActions, 
   fetchCyclesDataIfNeeded, 
-  fetchCronInfo, 
-  pulseCron,
+//  fetchCronInfo, 
+//  pulseCron,
   cycleSignup,
   cycleConfirm
 }       from './cycles'

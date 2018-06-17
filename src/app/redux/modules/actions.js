@@ -19,7 +19,8 @@ export { fetchTeamMatesDataIfNeeded }    from './teamMates'
 export { 
   fetchTokensDataIfNeeded,
   fetchTokenData,
-  fetchTokenRounds
+  fetchTokenRounds,
+  setTokenSelection
 }       from './tokens'
 
 //export { fetchUsersDataIfNeeded }       from './users'

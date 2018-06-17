@@ -4,12 +4,15 @@ import Moment from 'react-moment'
 import { Panel } from 'react-bootstrap'
 //import * as _ from 'lodash'
 
+
 import { 
   AnimatedView, 
   TokenSummary, 
   Graph,
   Breadcrumb 
 } from '../../components'
+
+const s = '*****'
 
 class Token extends Component {
   dummyGraphData = {
@@ -61,24 +64,25 @@ class Token extends Component {
   componentDidUpdate() {
     if (this.idx !== +this.props.match.params.token_id) {
       this.idx = +this.props.match.params.token_id
-      const { actions: { fetchTokenData, fetchTokenRounds } } = this.props
+      const { actions: { fetchTokenData, fetchTokenRounds, setTokenSelection } } = this.props
+      setTokenSelection( this.idx )
       //fetchTokenRounds( this.idx ) 
       fetchTokenData( this.idx )
     }
   }
 
   render() {
-    const { currentView, tokens } = this.props
+    const { currentView, tokens/*, token*/ } = this.props
+    console.log(`${s}tokens from selector`,tokens)
+    console.log(`${s}token from selector`,token)
     const { labels, datasets } = this.dummyGraphData
 
     let idx = tokens.findIndex( token => ( token.id == +this.props.match.params.token_id ) )
-    if (idx === -1) return(
-      <div>fetching....</div>
-    )
+    if (idx === -1) return ( <div>fetching....</div> )
     let token = tokens[idx] 
     token.rounds = token.rounds || []
-    let roundItems = token.rounds.map( (round_id,idx) => 
-      <li key={idx}><Link to={"/round/"+round_id}>{round_id}</Link></li> 
+    let roundItems = token.rounds.map( (round,idx) => 
+      <li key={idx}><Link to={"/round/"+round.id}>{round.id}</Link></li> 
     )
     console.log('props',this.props)
     console.log('token',tokens,idx,token)

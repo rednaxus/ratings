@@ -21,7 +21,8 @@ import {
   ERROR_TOKEN_DATA,
   REQUEST_TOKEN_ROUNDS,
   RECEIVED_TOKEN_ROUNDS,
-  ERROR_TOKEN_ROUNDS
+  ERROR_TOKEN_ROUNDS,
+  SET_TOKEN_SELECTED
 } from './actionTypes'
 
 /*
@@ -41,6 +42,7 @@ const initialState = {
   isFetching: false,
   data:       [],
   info: null,
+  selection: null,
   time:       null
 }
 
@@ -79,8 +81,17 @@ export default function tokens(state = initialState, action) {
   case ERROR_TOKEN_DATA:
   case ERROR_TOKEN_ROUNDS:
     return { ...state, time: action.time }
+
+  case SET_TOKEN_SELECTED:
+    return { ...state, selection: action.id }
   default:
     return state
+  }
+}
+
+export function setTokenSelection( token_id ) {
+  return dispatch => {
+    dispatch( { type: SET_TOKEN_SELECTED, id: token_id } ) 
   }
 }
 

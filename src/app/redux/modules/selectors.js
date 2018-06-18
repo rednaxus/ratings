@@ -34,3 +34,20 @@ export const tokens = createSelector(
   })
 )
 
+export const rounds = createSelector(
+  ormSelector,
+  ormCreateSelector(orm, session => {
+    console.log('Running rounds selector',session.Round)
+    return session.Round.filter().toModelArray().map( round => {
+      return ( { ...round.ref } )
+    })
+  })
+)
+
+export const cycles = createSelector(
+  ormSelector,
+  ormCreateSelector(orm, session => {
+    console.log('Running cycles selector',session.Cycle )
+    return session.Cycle.all().toRefArray()
+  })
+)

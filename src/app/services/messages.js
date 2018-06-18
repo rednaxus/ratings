@@ -49,7 +49,7 @@ import { referralCode } from '../services/referralCode.js'
 const ms = secs => secs * 1000
 
 export const generateMessages = ( { user, cycles, rounds, tokens, timestamp } ) => {
-	console.log('generate messages', 'user',...user,'cycles',...cycles,'rounds',...rounds,'tokens',...tokens,timestamp)
+	//console.log('generate messages', 'user',...user,'cycles',...cycles,'rounds',...rounds,'tokens',...tokens,timestamp)
 
 	const getToken = id => tokens.find( token => token.id == id )
 	const getRound = id => rounds.find( round => round.id == id )
@@ -265,7 +265,7 @@ user.rounds.finished = [8, 9, 0, 7]
 		})
 	})
 
-	console.log('generated messages', messages )
+	//console.log('generated messages', messages )
 	return messages
 
 

@@ -42,7 +42,7 @@ class Dashboard extends Component {
     const { user, tokens, rounds, cycles, timestamp } = this.props
     const { currentView } = this.props
     //const userFullName = `${userInfos.firstname} ${userInfos.lastname.toUpperCase()}`;
-    console.log('dashboard render',...user,...tokens,...rounds,...cycles)
+    //console.log('dashboard render',...user,...tokens,...rounds,...cycles)
     if ( user.id === undefined) return( '' )
     return(
       <AnimatedView>

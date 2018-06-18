@@ -604,13 +604,16 @@ ctlRouter.route('/rounds').get( ( req, res ) => {
   }).catch( callError )
 })
 
-ctlRouter.route( '/cycleGenerateAvailabilities/:cycleId' ).get( ( req, res ) => {
-  ra.cycleGenerateAvailabilities(req.params.cycleId).then( result => {
-    //let str = util.inspect( result, { depth:6 } ) 
-    //console.log( str )
-    res.json( result )
-  }).catch( sendError )
+/* Make all test analysts available and confirmed for this cycle...do for next cycle if cycle unspecified */
+ctlRouter.route( [ '/cycleGenerateAvailabilities','/cycleGenerateAvailabilities/:cycleId' ] ).get( ( req, res ) => {
+  cyclesService.getCronInfo().then( timestamp => {
+    let cycle = req.params.cycleId == null ? config.cycleIdx( timestamp ) + 1 : +req.params.cycleId
+    ra.cycleGenerateAvailabilities( cycle ).then( result => {
+      res.json( { ...timeInfo( timestamp ), targetCycle: cycle, result } )
+    }).catch( ctlError )
+  }).catch( ctlError )
 })
+
 
 ctlRouter.route( '/roundActivate/:cycle/:token' ).get( ( req, res ) => {
   ra.roundActivate( req.params.cycle, req.params.token ).then( result => {

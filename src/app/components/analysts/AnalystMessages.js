@@ -229,7 +229,7 @@ const message_templates = {
   brief_posted: {
     link: data => 'admin/cycles',
     heading: data => <div>New Brief Posted!</div>,
-    body: data => <div>A lead analyst in the {data.token} round has posted a new brief. You can access it until it closes <Moment fromNow>{data.due}</Moment>.</div>,
+    body: data => <div>A lead analyst in the {data.token} round has posted a new brief. You can access it until it closes <Moment from={data.now}>{data.due}</Moment>.</div>,
     footer: data => <div>View Now</div>,
     glyph: data => <div className="messageGlyph"><Glyphicon glyph="edit"></Glyphicon></div>
   },
@@ -237,7 +237,7 @@ const message_templates = {
   pre_survey_due: {
     link: data => 'admin/cycles',
     heading: data => <div>Pre-Survey Due</div>,
-    body: data => <div>Reminder: Please take the pre-survey for the {data.round} round--it's due <Moment fromNow>{data.due}</Moment>.</div>,
+    body: data => <div>Reminder: Please take the pre-survey for the {data.round} round--it's due <Moment from={data.now}>{data.due}</Moment>.</div>,
     footer: data => <div>Take it Now</div>,
     glyph: data => <div className="messageGlyph"><Glyphicon glyph="list-alt"></Glyphicon></div>
   },
@@ -245,7 +245,7 @@ const message_templates = {
   post_survey_due:{
     link: data => 'admin/cycles',
     heading: data => <div>Post-Survey Due!</div>,
-    body: data => <div>Reminder: Please take the post-survey for round #{data.round}--it is due <Moment fromNow>{data.due}</Moment>.</div>,
+    body: data => <div>Reminder: Please take the post-survey for round #{data.round}--it is due <Moment from={data.now}>{data.due}</Moment>.</div>,
     footer: data => <div>Take it Now</div>,
     glyph: data => <div className="messageGlyph"><Glyphicon glyph="list-alt"></Glyphicon></div>
   },
@@ -262,7 +262,7 @@ const message_templates = {
   round_starting: {
     link: data => 'admin/cycles',
     heading: data => <div>Round Starting!</div>,
-    body: data => <div>Reminder! You are slated to participate in a round starting <Moment fromNow>{data.starting}</Moment>!</div>,
+    body: data => <div>Reminder! You are slated to participate in a round starting <Moment from={data.now}>{data.starting}</Moment>!</div>,
     footer: data => <div>Round Information</div>,
     glyph: data => <div className="messageGlyph"><Glyphicon glyph="bell"></Glyphicon></div>
   },
@@ -270,7 +270,7 @@ const message_templates = {
   briefs_due: {
     link: data => 'admin/cycles',
     heading: data => <div>Reminder: Brief Due!</div>,
-    body: data => <div>Your LEAD brief for the {data.round} round is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>
+    body: data => <div>Your LEAD brief for the {data.round} round is due <Moment from={data.now}>{data.due}</Moment>. Please remember to upload!</div>
     ,
     footer: data => <div>Upload Now</div>,
     glyph: data => <div className="messageGlyph"><Glyphicon glyph="paperclip"></Glyphicon></div>
@@ -279,7 +279,7 @@ const message_templates = {
   rebuttal_due: {
     link: data => 'admin/cycles',
     heading: data => <div>Rebuttal Due!</div>,
-    body: data => <div>Your LEAD rebuttal for the {data.round} round is due <Moment fromNow>{data.due}</Moment>. Please remember to upload!</div>,
+    body: data => <div>Your LEAD rebuttal for the {data.round} round is due <Moment from={data.now}>{data.due}</Moment>. Please remember to upload!</div>,
     footer: data => <div>View Opposing Brief</div>,
     glyph: data => <div className="messageGlyph"><Glyphicon glyph="paperclip"></Glyphicon></div>
   },
@@ -287,7 +287,7 @@ const message_templates = {
   round_confirmed: {
     link: data => 'admin/cycles',
     heading: data => <div>Round confirmed!</div>,
-    body: data => <div>One of your requested rounds has been confirmed and will be starting <Moment fromNow>{data.start}</Moment>!</div>,
+    body: data => <div>One of your requested rounds has been confirmed and will be starting <Moment from={data.now}>{data.start}</Moment>!</div>,
     footer: data => <div>View Round Schedule</div>,
     glyph: data => <div className="messageGlyph"><Glyphicon glyph="ok-sign"></Glyphicon></div>
   }
@@ -298,7 +298,7 @@ export const AnalystMessages = ( props ) => {
 
   let generatedMessages = generateMessages( props ).sort( ( msg1, msg2 ) => ( msg2.priority - msg1.priority ) )
 
-  console.log('generated messages',generatedMessages)
+  //console.log('generated messages',generatedMessages)
 
   return generatedMessages.map( (message,idx) => {
     let msg = message_templates[message.type]

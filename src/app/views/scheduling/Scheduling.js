@@ -9,18 +9,23 @@ import {
   AnimatedView, 
   Breadcrumb 
 } from '../../components'
-import * as _ from 'lodash'
+//import * as _ from 'lodash'
 
 import config from '../../config/appConfig'
 
 import { cyclesByStatus } from '../../services/analystStatus'
 
-const dateView = ({value,convert=true}) =>
-  <Moment className="text-purple" format="YYYY-MM-DD" date={ new Date(convert?value*1000:value) } />
+const dateView = ({value,timestamp,convert=true}) =>
+  <Moment from={timestamp*1000} className="text-purple" date={ new Date(convert?value*1000:value) } /> //format="YYYY-MM-DD" 
 
+const timeView = value =>
+  <Moment className="text-purple" format="YYYY-MM-DD hh:mm" date={ new Date( value*1000 ) } />
 
 const colDefault = 'col-md-1 col-xs-1 text-center'
 const colDefault2 = 'col-md-2 col-xs-2 text-center'
+
+
+const s = '**-**'
 
 class Scheduling extends PureComponent {
   enterAnimationTimer = null
@@ -76,8 +81,8 @@ class Scheduling extends PureComponent {
       className: colDefault,
       dataIndex: 'token',
       renderer: ( { cycle, id } ) => {
-        console.log('tokens',this.props.tokens,'token',cycle)
-        return <Link to={"/token/"+cycle.token}>{ _.find(this.props.tokens,['id',cycle.token]).symbol }</Link>
+        //console.log('tokens',this.props.tokens,'token',cycle)
+        return <Link to={"/token/"+cycle.token}>{ this.props.tokens.find( token => token.id == cycle.token ).name }</Link>
       }
     },{
       name: 'Round',
@@ -125,7 +130,11 @@ class Scheduling extends PureComponent {
     {
       name: 'Earnings',
       className: colDefault,
-      dataIndex: 'earnings'
+      dataIndex: 'earnings',
+      renderer: ( { cycle, id } ) => {
+        let rewardEvt = this.props.user.reward_events.find( reward => reward.ref == cycle.round ) 
+        return rewardEvt ? rewardEvt.value + ' tokens': '...'
+      }
     }
   ]
 
@@ -165,7 +174,9 @@ class Scheduling extends PureComponent {
 
   render() {
     const { cycles, rounds, user, timestamp, tokens } = this.props
-    console.log('props',this.props,tokens)
+    console.log(`${s}user`,user)
+    let currentCycle = config.cycleIdx( timestamp )
+    //console.log('props',this.props,tokens)
     //let columns = this.columns
     let signupColumns = this.signupColumns
     let activeColumns = this.activeColumns
@@ -182,15 +193,18 @@ class Scheduling extends PureComponent {
       finishedCycles
     } 
     */
+    analystStatus.confirmNeededCycles = analystStatus.comingVolunteerCycles.filter( cycle => cycle.id == currentCycle + 1 ) // only allow confirm one phase before next cycle
+    //analystStatus.comingWaitCycles = analystStatus.comingVolunteerCycles.filter( cycle => cycle.id == currentCycle + 1 )
     console.log(`analyst status for cycles`,analystStatus)
     return(
       <AnimatedView>
         <Breadcrumb path={["dashboard","scheduling"]}></Breadcrumb>
-        <small className="pull-right">time last checked: { dateView( { value:timestamp, convert:true } ) }</small> 
-        { !analystStatus.comingVolunteerCycles.length ? "" :
+        <div className="text-orange">Round Scheduling
+          <small className="pull-right">time last checked: { timeView( timestamp ) }</small> 
+        </div>
+        { !analystStatus.confirmNeededCycles.length ? "" :
         <div>
-          <h2 className="text-red">Awaiting confirmations</h2>
-          <Panel>
+          <Panel className="card card-style panel-active_large">
             <Panel.Heading>
               <Panel.Title>Rounds forming...confirm now</Panel.Title>
             </Panel.Heading>
@@ -202,7 +216,7 @@ class Scheduling extends PureComponent {
                 )
               }
               </div>
-              { analystStatus.comingVolunteerCycles.map( ( cycle, rowIdx ) => {
+              { analystStatus.confirmNeededCycles.map( ( cycle, rowIdx ) => {
                   let cols = volunteerColumns.map( ( col,colIdx ) => 
                     <div className={ col.className } key={ colIdx }>
                     { 
@@ -211,7 +225,8 @@ class Scheduling extends PureComponent {
                         row:    rowIdx, 
                         id:     cycle.id, 
                         value:  cycle[col.dataIndex],
-                        cycle:  cycle
+                        cycle:  cycle,
+                        timestamp: timestamp
                       }) || cycle[col.dataIndex] 
                     }
                     </div> 
@@ -225,7 +240,7 @@ class Scheduling extends PureComponent {
         }
         { !analystStatus.comingConfirmedCycles.length ? "" : 
         <div>
-          <Panel>
+          <Panel className="card card-style panel-info">
             <Panel.Heading>
               <Panel.Title>Confirmed rounds, awaiting start</Panel.Title>
             </Panel.Heading>
@@ -246,7 +261,8 @@ class Scheduling extends PureComponent {
                         row:    rowIdx, 
                         id:     cycle.id, 
                         value:  cycle[ col.dataIndex ],
-                        cycle:  cycle
+                        cycle:  cycle,
+                        timestamp: timestamp
                       }) || cycle[ col.dataIndex ] 
                     }
                     </div> 
@@ -260,9 +276,9 @@ class Scheduling extends PureComponent {
         }
         { !analystStatus.activeCycles.length ? "" : 
         <div> 
-          <Panel>
+          <Panel className="card card-style panel-active_small">
             <Panel.Heading>
-              <Panel.Title>Currently active rounds</Panel.Title>
+              <Panel.Title>Active rounds</Panel.Title>
             </Panel.Heading>
             <Panel.Body>
               <div className="row">
@@ -280,7 +296,8 @@ class Scheduling extends PureComponent {
                         row:      rowIdx, 
                         value:    cycle[col.dataIndex],
                         id:       cycle.id,
-                        cycle:    cycle
+                        cycle:    cycle,
+                        timestamp: timestamp
                       }) || cycle[col.dataIndex] 
                     }
                     </div> 
@@ -294,10 +311,9 @@ class Scheduling extends PureComponent {
         }
         { !analystStatus.comingSignupCycles.length ? <h2>All rounds signed up</h2> :
         <div>
-          <h2 className="text-red">Sign up for coming rounds</h2>
-          <Panel>
+          <Panel className="card card-style panel-active_large">
             <Panel.Heading>
-              <Panel.Title>Upcoming rounds available....</Panel.Title>
+              <Panel.Title>Upcoming Rounds--available...signup now!</Panel.Title>
             </Panel.Heading>
             <Panel.Body>
               <div className="row">
@@ -314,7 +330,8 @@ class Scheduling extends PureComponent {
                           row:      rowIdx, 
                           id:       cycle.id, 
                           value:    cycle[ col.dataIndex ],
-                          cycle:    cycle
+                          cycle:    cycle,
+                          timestamp: timestamp
                         }) || cycle[col.dataIndex] 
                       }
                     </div> 
@@ -328,10 +345,9 @@ class Scheduling extends PureComponent {
         }
         { !analystStatus.finishedCycles.length ? "" : 
         <div>
-          <hr/>
-          <Panel>
+          <Panel className="card card-style panel-info">
             <Panel.Heading>
-              <Panel.Title>Evaluation rounds finished</Panel.Title>
+              <Panel.Title>Completed Rounds</Panel.Title>
             </Panel.Heading>
             <Panel.Body>
               <div className="row">
@@ -349,7 +365,8 @@ class Scheduling extends PureComponent {
                           row:      rowIdx, 
                           value:    cycle[ col.dataIndex ],
                           id:       cycle.id,
-                          cycle:    cycle
+                          cycle:    cycle,
+                          timestamp: timestamp
                         }) 
                         || cycle[col.dataIndex] 
                       }

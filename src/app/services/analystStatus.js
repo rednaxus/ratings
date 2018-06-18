@@ -4,15 +4,17 @@
 const config = require('../config/appConfig')
 
 
-const isVolunteer = cycle => cycle.role[ 0 ].num_volunteers || cycle.role[ 1 ].num_volunteers
-const isConfirmed = cycle => cycle.role[ 0 ].num_confirms || cycle.role[ 1 ].num_confirms
-const hasRounds = cycle => cycle.role.length && (cycle.role[ 0 ].num_rounds || cycle.role[ 1 ].num_rounds)
+const isVolunteer = cycle => cycle.role.reduce( ( accum, r ) => accum + r.num_volunteers, 0 )
+const isConfirmed = cycle => cycle.role.reduce( ( accum, r ) => accum + r.num_confirms, 0 )
+const hasRounds = cycle => cycle.role.length && ( cycle.role.reduce( ( accum, r ) => accum + r.num_rounds, 0 ) )
 const hasSignups = cycle => !isVolunteer( cycle ) && !isConfirmed( cycle ) && !hasRounds( cycle ) 
-const isFuture = cycle =>{ 
-  //console.log(`isfuture ${cycle.id} ${activeNow}`)
+const isFuture = cycle => cycle.id > activeNow 
+/*{ 
+  console.log(`isfuture ${cycle.id}:${config.cycleTime(cycle.id)} ${activeNow}:${now} ...isFuture: ${cycle.id > activeNow}`)
   return cycle.id > activeNow
 }
-const isActive = cycle => cycle.timestart >= now && cycle.timestart < nextTime 
+*/
+const isActive = cycle => ['active','activating'].includes( config.STATUSES[ cycle.status ] )
 const isFinished = cycle => activeNow != cycle.id && cycle.timestart < now
 const isConfirmDue = cycle => {
   //let phase = config.cyclePhase( cycle.id , now )
@@ -22,6 +24,8 @@ const isConfirmDue = cycle => {
 let now
 let nextTime
 let activeNow
+
+let s='-*-*-*-'
 
 const setTime = timestamp => {
   now = timestamp // cronInfo 
@@ -48,28 +52,26 @@ const AnalystStatus = {
   },
   cyclesByStatus: ( { cycles, rounds, timestamp, tokens } ) => {
 
-    //console.log('cycles',cycles,now,nextTime)
-
     setTime( timestamp )
+    //cycles.forEach( cycle => console.log(`${s}cycle ${cycle.id}:${config.cycleTime(cycle.id)}`) )
+    //console.log(`${s}cycles`,cycles, activeNow, now, nextTime)
+    const getRound = round_id => rounds.find( round => round.id == round_id )
 
-    const getRound = round_id => {
-      let round = rounds.find( round => round.id == round_id )
-      return round
-    }
+    let comingSignupCycles = cycles.filter( isFuture )
 
     let comingVolunteerCycles = [] // signed up, need to confirm
     cycles.forEach ( cycle => {
-      if ( !isVolunteer( cycle ) ) return
+      if ( !isFuture( cycle ) || !isVolunteer( cycle ) ) return
       cycle.role.forEach( ( role, idx ) => {
         for ( let i = 0; i < role.num_volunteers; i++ ){
           comingVolunteerCycles.push( { ...cycle, role: idx } )
         }
-      } )
-    } )
+      })
+    })
 
     let comingConfirmedCycles = [] // signed up, confirmed
     cycles.forEach ( cycle => {
-      if ( !isConfirmed( cycle ) ) return
+      if ( !isFuture( cycle ) || !isConfirmed( cycle ) ) return
       cycle.role.forEach( ( role,idx ) => {
         for ( let i = 0; i < role.num_confirms; i++ ){
           comingConfirmedCycles.push( { ...cycle, role: idx } )
@@ -77,7 +79,6 @@ const AnalystStatus = {
       })
     })
 
-    let comingSignupCycles = cycles.filter( isFuture )
 
     let activeCycles = []
     cycles.forEach( cycle => {
@@ -107,18 +108,16 @@ const AnalystStatus = {
       } )
     } )
 
-    //console.log('signup cycles',comingSignupCycles)
-    //console.log('volunteer cycles',comingVolunteerCycles)
-    //console.log('confirmed cycles',comingConfirmedCycles)
-    //console.log('active cycles',activeCycles)
-    //console.log('finished cycles',finishedCycles)
-    return ( {
+    let result = {
       comingSignupCycles, 
       comingVolunteerCycles, 
       comingConfirmedCycles,
       activeCycles,
       finishedCycles
-    } )
+    }
+    console.log(`${s}result`, result )
+
+    return result
   }  
 }
 

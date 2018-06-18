@@ -151,9 +151,24 @@ Token.fields = {
     rounds: many('Round','tokens')
 }
 
+export class SurveyQuestion extends ValidatingModel {
+  static reducer( action, SurveyQuestion, session ) {
+    const { type } = action
+    switch (type) {
+
+    }
+  }
+}
+SurveyQuestion.modelName = 'SurveyQuestion'
+SurveyQuestion.fields = {
+    id: attr(),
+    name: attr(),
+    value: attr()
+}
+
 const orm = new ORM()
 
-orm.register( Cycle, Round, Token )
+orm.register( Cycle, Round, Token, SurveyQuestion )
 
 
 

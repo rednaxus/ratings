@@ -3,14 +3,15 @@
 import { bindActionCreators } from 'redux'
 import { connect }            from 'react-redux'
 import * as actions           from '../../redux/modules/actions'
+import { cycles, rounds, tokens }      from '../../redux/modules/selectors'
 import Scheduling             from './Scheduling'
 
 const mapStateToProps = state => ({
   currentView:          state.views.currentView,
-  cycles:               state.cycles.data,
+  cycles:               cycles( state ),
   user:                 state.user.info,
-  tokens:               state.tokens.data,
-  rounds:               state.rounds.data,
+  tokens:               tokens( state ),
+  rounds:               rounds( state ),
   timestamp:            state.cron.timestamp
 })
 

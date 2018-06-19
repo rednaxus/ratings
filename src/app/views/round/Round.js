@@ -103,10 +103,10 @@ class Round extends PureComponent {
           return (<BriefUpload round={ round.id } roundAnalyst={ round.inround_id } onComplete={ this.onBriefUpload } />)
         case 'brief submitted' :
           return ('') //<Brief edit={true} />)
-        case 'first survey due':
+        case 'pre survey due':
           return (
             <div>
-              <div>Pre survey due <Moment from={timestamp*1000}>{1000*(config.cycleTime(round.cycle) + config.cyclePhaseTime(2))}</Moment></div>
+              <div>Pre survey due <Moment from={timestamp*1000}>{1000*(config.cycleTime(round.cycle) + config.cyclePhaseTime(1))}</Moment></div>
               <JuristSurvey  
                 round={ round.id } 
                 pre={ true } 
@@ -115,19 +115,19 @@ class Round extends PureComponent {
               />
             </div>
           )
-        case 'first survey submitted':
+        case 'pre survey submitted':
           return ('') //(<Brief />)
-        case 'second survey due':
+        case 'post survey due':
           return(
             <div>
-              <div>Post survey due <Moment from={timestamp*1000}>{1000*(config.cycleTime(round.cycle) + config.cyclePhaseTime(3))}</Moment></div>
+              <div>Post survey due <Moment from={timestamp*1000}>{1000*(config.cycleTime(round.cycle) + config.cyclePhaseTime(2))}</Moment></div>
               <JuristSurvey 
                 round={ round.id } 
                 roundAnalyst={ round.inround_id } 
                 pre={ false }
               />
             </div> )
-        case 'second survey submitted':
+        case 'post survey submitted':
           return(<div>Round completion <Moment from={timestamp*1000}>{1000*(config.cycleTime(round.cycle) + config.cyclePhaseTime(2))}</Moment></div>)
       }
     }
@@ -137,49 +137,51 @@ class Round extends PureComponent {
     return(
       <AnimatedView>
         <Breadcrumb path={["dashboard","eval-round"]} />
-        <Panel>
-          <Panel.Heading><Panel.Title>Evaluation Round</Panel.Title></Panel.Heading>
-          <Panel.Body>
-            <div>
-              Round { this.idx } for token <Link to={"/token/"+token.id}><span className="text-success">{ token.name }</span></Link> with status <span className="text-danger">{ config.STATUSES[round.status] }</span>
-            </div>
-            <div className="row">
-              <div className="col-md-4">Start: <Moment className="bg-green" format="YYYY-MM-DD HH:mm" date={ new Date(config.cycleTime(round.cycle,true)) } /></div>
-              <div className="col-md-4"> Finish: <Moment className="bg-red" format="YYYY-MM-DD HH:mm" date={ new Date(config.cycleTime(round.cycle+4,true)) } /></div>
-              <div className="col-md-4">Number of analysts: {round.num_analysts}</div>
-              <div>
-                <span>{ 
-                  round.briefs[0].timestamp ? 
-                    <a 
-                      href={ config.ipfsRepoDownload+round.briefs[0].filehash }
-                      target="_blank"
-                    >Bull brief--
-                      <Moment format="YYYY/MM/DD" date={ round.briefs[0].timestamp*1000 } />
-                    </a>
-                    : <span>Bull brief due by <Moment format="YYYY/MM/DD" /></span>
-                }</span>
-                <span className="pull-right">{ 
-                  round.briefs[1].timestamp ? 
-                    <a 
-                      href={ config.ipfsRepoDownload+round.briefs[1].filehash }
-                      target="_blank"
-                    >Bear brief--
-                      <Moment format="YYYY/MM/DD" date={ round.briefs[1].timestamp*1000 } />
-                    </a>
-                    : <span>Bear brief due by <Moment format="YYYY/MM/DD" /></span>
-                }</span>
-              </div> 
-            </div>
-            <TokenSummary token={token} format="small" />
-            <div className="row">
-              <h2 className="text-center">My status in round => { analyst_status }&nbsp;{ round.inround_id < 2 ? `( ${leadPosition})`: '' }</h2>  
-            </div>
-            <div>{ getActivity( analyst_status ) }</div>
-            
-          </Panel.Body>
-        </Panel>
-
-
+        <div className="row">
+          <div className="col-md-8"><h4>Evaluation Round</h4></div>         
+          <div className="col-md-4 text-right text-green small">
+            <Moment format="YYYY-MM-DD HH:MM" date={timestamp * 1000}/>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-6">Round { this.idx } for token <Link to={"/token/"+token.id}><span>{ token.name }</span></Link> with status <span className="text-danger">{ config.STATUSES[round.status] }</span></div>
+          <div className="col-md-6">Number of analysts: {round.num_analysts}</div>
+        </div>
+        <div className="row">
+          <div className="col-md-6">Start: <Moment className="bg-green" from={timestamp*1000} date={ new Date(config.cycleTime(round.cycle,true)) } /></div>
+          <div className="col-md-6"> Finish: <Moment className="bg-red" from={timestamp*1000} date={ new Date(config.cycleTime(round.cycle+2,true)) } /></div>
+        </div>
+        <div className="row">             
+          <div className="col-md-6">
+            { 
+              round.briefs[0].timestamp ? 
+                <a 
+                  href={ config.ipfsRepoDownload+round.briefs[0].filehash }
+                  target="_blank"
+                >Bull brief--
+                  <Moment from={timestamp*1000} date={ round.briefs[0].timestamp*1000 } />
+                </a>
+                : <span>Bull brief due <Moment from={timestamp*1000}>{1000*(config.cycleTime(round.cycle)+config.cyclePhaseTime(1))}</Moment></span>
+            }
+          </div>
+          <div className="col-md-6">
+            { 
+              round.briefs[1].timestamp ? 
+                <a 
+                  href={ config.ipfsRepoDownload+round.briefs[1].filehash }
+                  target="_blank"
+                >Bear brief--
+                  <Moment from={timestamp*1000} date={ round.briefs[1].timestamp*1000 } />
+                </a>
+                : <span>Bear brief due <Moment from={timestamp*1000}>{1000*(config.cycleTime(round.cycle)+config.cyclePhaseTime(1))}</Moment></span>
+            }
+          </div> 
+        </div>
+        <TokenSummary token={token} format="small" />
+        <div className="row">
+          <h4 className="text-center">My status in round => <span className="text-red">{ analyst_status }&nbsp;{ round.inround_id < 2 ? `( ${leadPosition})`: '' }</span></h4>  
+        </div>
+        <div>{ getActivity( analyst_status ) }</div>
       </AnimatedView>
     )
   }

@@ -129,7 +129,7 @@ class Scheduling extends PureComponent {
     ...this.activeColumns,
     {
       name: 'Earnings',
-      className: colDefault,
+      className: colDefault2,
       dataIndex: 'earnings',
       renderer: ( { cycle, id } ) => {
         let rewardEvt = this.props.user.reward_events.find( reward => reward.ref == cycle.round ) 

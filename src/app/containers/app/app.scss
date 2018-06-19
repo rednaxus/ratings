@@ -1,4 +1,55 @@
 
+/* panel heading for informational (no action required) cards */
+.panel-info > .panel-heading {
+  color: #3C3744 !important;
+  background-color: #B4C5E4 !important;
+  border-color: #30343F !important;
+}
+
+/* panel heading for really important panels */
+.panel-active_large > .panel-heading {
+  color: #3C3744 !important;
+  background-color: #F18F01 !important;
+  border-color: #30343F !important;
+}
+
+/* panel heading for less-critical-but-still-needing-action panels */
+.panel-active_small > .panel-heading {
+  border-bottom: 1px solid #30343F !important;
+  background-color: #EB5E55 !important;
+}
+
+.panel-active > .panel-heading {
+  color: #3C3744 !important;
+  background-color: #27c24c !important;
+  border-color: #30343F !important;
+}
+
+/* panel heading for really important panels */
+.panel-active-large > .panel-heading {
+  color: #3C3744 !important;
+  background-color: #F18F01 !important;
+  border-color: #30343F !important;
+}
+
+/* panel heading for less-critical-but-still-needing-action panels */
+.panel-active-small > .panel-heading {
+  border-bottom: 1px solid #30343F !important;
+  background-color: #EB5E55 !important;
+}
+
+/* glyphicon colors */
+.messageGlyph {
+color: #30343F !important;
+}
+
+.text-green {
+  color: #001095 !important;
+}
+
+
+
+
 .red {
   color: red;
 }
@@ -552,9 +603,9 @@ form .rw-popup-container {
 */
 
 .question-panel {
-  max-height: 300px;
-  min-height: 300px;
-  overflow-y: scroll;
+//  max-height: 300px;
+//  min-height: 300px;
+//  overflow-y: scroll;
 }
 
 .question-body {
@@ -572,6 +623,24 @@ form .rw-popup-container {
 .panel-body { 
   font-size:14px;
 }
+
+.panel-action {
+  border-color: #fc3;
+}
+
+.panel-action > .panel-heading {
+  color: #31708f;
+  background-color: #27c24c;
+  border-color: #bce8f1;
+}
+.panel-action > .panel-heading + .panel-collapse > .panel-body {
+  border-top-color: #bce8f1;
+}
+.panel-action > .panel-heading .badge {
+  color: #d9edf7;
+  background-color: #31708f;
+}
+
 .panel-action-big {
   border-color: #fc3;
 }

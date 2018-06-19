@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { clearData, setData, setComplete } from '../../redux/modules/survey'
 import { submitSurvey } from '../../redux/modules/rounds'
-import Survey from '../../services/survey'
+import survey from '../../services/survey'
 
 
 /*
@@ -35,7 +35,7 @@ const encodeData = data => {
 class JuristSurvey extends Component {
   constructor(props) {
     super(props);
-    this.survey = new Survey()
+    //this.survey = new Survey()
     this.nextPage = this.nextPage.bind(this);
     this.previousPage = this.previousPage.bind(this);
     this.state = {
@@ -57,12 +57,12 @@ class JuristSurvey extends Component {
   render() {
     const { onSubmit } = this.props
     const { page } = this.state
-    let elements = this.survey.getElements()
+    let elements = survey.getElements()
     return (
       <div>
-        <Panel>
+        {/*<Panel className="card card-style panel-info">
           <Panel.Heading>Jurist Survey<span className="red small pull-right">Complete by: <Moment/></span></Panel.Heading>
-          <Panel.Body className="question-panel">
+          <Panel.Body className="question-panel">*/}
           {elements.map( (element,idx) => 
             <Question
               key={idx}
@@ -74,8 +74,8 @@ class JuristSurvey extends Component {
               onValueChange={ (question,value) => this.onValueChange(question,value) }
             />)}
             <button>Submit Survey</button>
-          </Panel.Body>
-        </Panel>
+          {/*</Panel.Body>
+        </Panel>*/}
 
         {/*
         {page === 1 && <WizardFormFirstPage onSubmit={this.nextPage} />}
@@ -116,5 +116,3 @@ const mapDispatchToProps = dispatch => bindActionCreators( {
 }, dispatch )
 
 export default connect( mapStateToProps, mapDispatchToProps )( JuristSurvey )
-
-//export default JuristSurvey

@@ -165,7 +165,7 @@ const Question = props => {
 
   return (
     <div>
-      <Panel className={"panel-success card card-style"}>
+      <Panel className="panel-active card card-style">
         <Panel.Heading className={"card-title"}>{questionNumber+1}. {questionData.name}</Panel.Heading>
         <Panel.Body>
           <form className="jurist-survey" onSubmit={handleSubmit}>

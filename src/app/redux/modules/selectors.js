@@ -3,6 +3,8 @@ import orm from './models'
 import { createSelector } from 'reselect'
 import { createSelector as ormCreateSelector } from 'redux-orm'
 
+import config from '../../config/appConfig'
+
 // Selects the state managed by Redux-ORM.
 export const ormSelector = state => state.db
 const s = '*****'
@@ -34,10 +36,20 @@ export const tokens = createSelector(
   })
 )
 
-export const rounds = createSelector(
+export const roundsFinished = createSelector(
   ormSelector,
   ormCreateSelector(orm, session => {
     console.log('Running rounds selector',session.Round)
+    return session.Round.filter( round => config.STATUSES[round.status] == 'finished' ).toModelArray().map( round => {
+      return ( { ...round.ref } )
+    })
+  })
+)
+
+export const rounds = createSelector(
+  ormSelector,
+  ormCreateSelector(orm, session => {
+    console.log('Running rounds finished selector',session.Round)
     return session.Round.filter().toModelArray().map( round => {
       return ( { ...round.ref } )
     })

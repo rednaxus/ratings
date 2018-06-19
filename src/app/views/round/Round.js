@@ -45,6 +45,11 @@ class Round extends PureComponent {
     enterRound()
   }
 
+  componentDidMount() {
+    const { actions: { fetchRoundInfo } } = this.props
+    fetchRoundInfo()
+  }
+
   componentWillUnmount() {
     const { actions: { leaveRound } } = this.props
     leaveRound()
@@ -77,15 +82,15 @@ class Round extends PureComponent {
 
   render() {
     let i, token, round
-    const { rounds, tokens, user } = this.props
+    const { rounds, timestamp, tokens, user } = this.props
     console.log('rounds are',rounds)
     i = rounds.findIndex( round => round.id == this.idx )
     console.log('finding for id:',this.idx, 'found at',i)
-    round = rounds[i] // == -1 ? {}: rounds[ i ]
-    if (isEmpty(round)) {
-      console.log('got empty round',round)
+    if ( i == -1 ) {
+      console.log('no round yet',this.idx)
       return <div>fetching...</div>
     }
+    round = rounds[i] // == -1 ? {}: rounds[ i ]
     i = tokens.findIndex( token => token.id == round.covered_token )
     token = i == -1 ? {} : tokens[ i ]
     let analyst_status = config.STATUSES[round.analyst_status]
@@ -101,7 +106,7 @@ class Round extends PureComponent {
         case 'first survey due':
           return (
             <div>
-              <div>Pre survey due by xxx</div>
+              <div>Pre survey due <Moment from={timestamp*1000}>{1000*(config.cycleTime(round.cycle) + config.cyclePhaseTime(2))}</Moment></div>
               <JuristSurvey  
                 round={ round.id } 
                 pre={ true } 
@@ -115,7 +120,7 @@ class Round extends PureComponent {
         case 'second survey due':
           return(
             <div>
-              <div>Post survey due by xxx</div>
+              <div>Post survey due <Moment from={timestamp*1000}>{1000*(config.cycleTime(round.cycle) + config.cyclePhaseTime(3))}</Moment></div>
               <JuristSurvey 
                 round={ round.id } 
                 roundAnalyst={ round.inround_id } 
@@ -123,7 +128,7 @@ class Round extends PureComponent {
               />
             </div> )
         case 'second survey submitted':
-          return(<div>Round completion at xxx</div>)
+          return(<div>Round completion <Moment from={timestamp*1000}>{1000*(config.cycleTime(round.cycle) + config.cyclePhaseTime(2))}</Moment></div>)
       }
     }
     
@@ -142,15 +147,7 @@ class Round extends PureComponent {
               <div className="col-md-4">Start: <Moment className="bg-green" format="YYYY-MM-DD HH:mm" date={ new Date(config.cycleTime(round.cycle,true)) } /></div>
               <div className="col-md-4"> Finish: <Moment className="bg-red" format="YYYY-MM-DD HH:mm" date={ new Date(config.cycleTime(round.cycle+4,true)) } /></div>
               <div className="col-md-4">Number of analysts: {round.num_analysts}</div>
-            </div>
-            <div className="row">
-              <h2 className="text-center">My status in round => { analyst_status }&nbsp;{ round.inround_id < 2 ? `( ${leadPosition})`: '' }</h2>  
-            </div>
-            <div>{ getActivity( analyst_status ) }</div>
-            <TokenSummary token={token} format="small" />
-            <Panel>
-              <Panel.Heading>Briefs submitted</Panel.Heading>
-              <Panel.Body>
+              <div>
                 <span>{ 
                   round.briefs[0].timestamp ? 
                     <a 
@@ -171,8 +168,13 @@ class Round extends PureComponent {
                     </a>
                     : <span>Bear brief due by <Moment format="YYYY/MM/DD" /></span>
                 }</span>
-              </Panel.Body>
-            </Panel>
+              </div> 
+            </div>
+            <TokenSummary token={token} format="small" />
+            <div className="row">
+              <h2 className="text-center">My status in round => { analyst_status }&nbsp;{ round.inround_id < 2 ? `( ${leadPosition})`: '' }</h2>  
+            </div>
+            <div>{ getActivity( analyst_status ) }</div>
             
           </Panel.Body>
         </Panel>

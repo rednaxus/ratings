@@ -8,7 +8,7 @@ import { Panel } from 'react-bootstrap'
 const TokenSummary = ( { token } ) => {
 	const tokenLink = (address) => "https://etherscan.io/address/"+token.address
   return (
-	  <Panel>
+	  <Panel className="card card-style panel-active">
 	    <Panel.Heading>
 	      <Panel.Title><strong className="text-success">{token.name}</strong> => {token.symbol}</Panel.Title>
 	    </Panel.Heading>

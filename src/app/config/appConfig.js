@@ -217,7 +217,9 @@ const appConfig = {
   priority: [
     { name: "info",         value: 0 }, // values used for relativized random sort
     { name: "active_small", value: 1 },
-    { name: "active_large", value: 2 }
+    { name: "active_large", value: 2 },
+    { name: "active-small", value: 1 },
+    { name: "active-large", value: 2 }
   ],
 
   ETHEREUM: {

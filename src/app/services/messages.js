@@ -53,7 +53,7 @@ export const generateMessages = ( { user, cycles, rounds, tokens, timestamp } ) 
 
 	const getToken = id => tokens.find( token => token.id == id )
 	const getRound = id => rounds.find( round => round.id == id )
-
+	let currentCycle = config.cycleIdx( timestamp )
 	let messages = []
 
 	//const { tokens, cycles, rounds } = store.getState()
@@ -129,7 +129,7 @@ user.rounds.finished = [8, 9, 0, 7]
 		let round = rounds.find( round => round.id === cycle.round )
 		if ( is_recent( { timestamp: config.cycleTime( cycle.id ) } ) ) messages.push({
 			type: 'round_activated',
-			priority: 0,
+			priority: 2,
 			role: cycle.role,
 			start: ms( config.cycleTime( cycle.id ) ),
 			due: ms( config.cycleTime( cycle.id ) + config.CYCLE_PERIOD / config.CYCLE_SURVEY_DUE ),
@@ -141,7 +141,7 @@ user.rounds.finished = [8, 9, 0, 7]
 		})
 		messages.push({
 			type: 'rounds_in_progress',
-			priority: 0,
+			priority: 1,
 			start: ms( config.cycleTime( cycle.id ) ),
 			now: ms( timestamp ),
 			role: cycle.role,
@@ -154,6 +154,7 @@ user.rounds.finished = [8, 9, 0, 7]
 
 	/***** Round Finished *****/
 	finishedCycles.map( cycle => {
+		if (cycle <= currentCycle - 4 ) return
 		//console.log('****',cycle,...tokens)
 		let round = rounds.find( round => round.id == cycle.round )
 		let token = getToken( cycle.token )

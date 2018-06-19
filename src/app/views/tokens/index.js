@@ -3,6 +3,7 @@
 import { bindActionCreators } from 'redux'
 import { connect }            from 'react-redux'
 import * as actions           from '../../redux/modules/actions'
+import { roundsFinished, tokens }     from '../../redux/modules/selectors'
 import TokensView               from './TokensView'
 
 const mapStateToProps = state => {
@@ -13,8 +14,8 @@ const mapStateToProps = state => {
     bulkSelection:      state.bulkSelection,
     selection:          state.selection,
     app:                state.app,
-    tokens:             state.tokens.data,
-    rounds:             state.rounds.data,
+    tokens:             tokens(state),
+    rounds:             roundsFinished(state),
     userAuth:           state.user.authentication
   }
 }

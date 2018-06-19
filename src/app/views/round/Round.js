@@ -75,7 +75,7 @@ class Round extends PureComponent {
     const { rounds, actions: { setRoundInfo } } = this.props
     let round = { ...rounds[ rounds.findIndex( round => round.id == this.idx ) ] }
     round.briefs[round.inround_id] = { timestamp:Math.round(+new Date() / 1000), filehash:filehash }
-
+    round.analyst_status = config.STATUSES.indexOf('brief submitted')
     setRoundInfo( round )
     this.forceUpdate()
   }

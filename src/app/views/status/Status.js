@@ -59,14 +59,10 @@ class Status extends Component {
           <div className="row">
             <div className="col-md-6">
               <AnalystRounds analystRounds={user_rounds} analystPayouts={payouts} tokens={tokens}/>
+              <AnalystReferrals timestamp={ cronInfo } analyst={ user } />
             </div>
             <div className="col-md-6">
               <AnalystPayouts analystPayouts={payouts}/>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-md-6">
-              <AnalystReferrals timestamp={ cronInfo } analyst={ user } />
             </div>
           </div>
         </main>

@@ -15,7 +15,9 @@ import config from '../../config/appConfig'
 
 import { cyclesByStatus } from '../../services/analystStatus'
 
-const dateView = ({value,timestamp,convert=true}) =>
+const dateView = ({value,timestamp,convert=true,abs=false}) =>
+  abs ? 
+  <Moment format="YYYY-MM-DD" className="text-purple" date={ new Date(convert?value*1000:value) } /> :
   <Moment from={timestamp*1000} className="text-purple" date={ new Date(convert?value*1000:value) } /> //format="YYYY-MM-DD" 
 
 const timeView = value =>
@@ -40,14 +42,14 @@ class Scheduling extends PureComponent {
       name: 'Start',
       className: colDefault2,
       dataIndex: 'timestart',
-      //renderer: ({column,value,row}) =>
-      renderer: dateView  
+      renderer: ({ value, timestamp }) => dateView( { value, timestamp } )  
     },
     {
       name: 'Finish',
       className: colDefault2,
       dataIndex: 'timefinish',
-      renderer: dateView
+      renderer: ({ value, timestamp, abs=false }) => 
+        dateView({ value: value - config.cyclePhaseTime(2), timestamp, abs })
     }
   ]
 
@@ -95,6 +97,11 @@ class Scheduling extends PureComponent {
       dataIndex: 'role',
       className: colDefault,
       renderer: ( { cycle, id } ) => config.role_name[ cycle.role ]
+    },{
+      name: 'Status',
+      dataIndex: 'analyst_status',
+      className: colDefault2,
+      renderer: ( { cycle, id, round } ) => round ? config.STATUSES[round.analyst_status] : ''
     }
   ]
 
@@ -126,8 +133,25 @@ class Scheduling extends PureComponent {
   ]
 
   finishedColumns = [
-    ...this.activeColumns,
+    ...this.columns,
     {
+      name: 'Token',
+      className: colDefault,
+      dataIndex: 'token',
+      renderer: ( { cycle, id } ) => 
+        <Link to={"/token/"+cycle.token}>{ this.props.tokens.find( token => token.id == cycle.token ).name }</Link>
+    },{
+      name: 'Round',
+      className: colDefault,
+      dataIndex: 'round',
+      renderer: ( { cycle, id } ) => 
+        <Link to={"/round/"+cycle.round}>{ cycle.round }</Link>
+    },{
+      name: 'Role',
+      dataIndex: 'role',
+      className: colDefault,
+      renderer: ( { cycle, id } ) => config.role_name[ cycle.role ]
+    },{
       name: 'Earnings',
       className: colDefault2,
       dataIndex: 'earnings',
@@ -297,7 +321,8 @@ class Scheduling extends PureComponent {
                         value:    cycle[col.dataIndex],
                         id:       cycle.id,
                         cycle:    cycle,
-                        timestamp: timestamp
+                        timestamp: timestamp,
+                        round: rounds.find( round => round.id == cycle.round )
                       }) || cycle[col.dataIndex] 
                     }
                     </div> 
@@ -366,7 +391,8 @@ class Scheduling extends PureComponent {
                           value:    cycle[ col.dataIndex ],
                           id:       cycle.id,
                           cycle:    cycle,
-                          timestamp: timestamp
+                          timestamp: timestamp,
+                          abs: true
                         }) 
                         || cycle[col.dataIndex] 
                       }

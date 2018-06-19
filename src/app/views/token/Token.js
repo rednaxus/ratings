@@ -94,7 +94,7 @@ class Token extends Component {
         <div className="simpleContainer">
           <TokenSummary token={token} />
           { roundItems.length && 
-          <Panel>
+          <Panel className="card card-style panel-active-small">
             <Panel.Heading>
               <Panel.Title>Token Ratings History</Panel.Title>
             </Panel.Heading>

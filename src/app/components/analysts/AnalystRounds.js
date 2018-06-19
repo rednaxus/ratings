@@ -22,9 +22,7 @@ class AnalystRounds extends Component {
     return (
       <Panel className="panel-info card card-style">
 
-        <Panel.Heading className="card-title">
-          <h4 className="card-title mt-3"><i className="fa fa-recycle"/>&nbsp;Rounds Involvement</h4>
-        </Panel.Heading>
+        <Panel.Heading className="card-title"><i className="fa fa-recycle"/>&nbsp;Rounds Involvement</Panel.Heading>
 
         <Panel.Body className="card-text">
           { analystRounds.map( ( round, idx ) => {

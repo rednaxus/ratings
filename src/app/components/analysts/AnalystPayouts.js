@@ -12,11 +12,9 @@ class AnalystPayouts extends Component {
   render() {
     const { analystPayouts } = this.props;
     return (
-      <Panel className="panel-success card card-style">
+      <Panel className="panel-active card card-style">
 
-        <Panel.Heading>
-          <h4 className="card-title mt-3"><i className="fa fa-certificate"/>&nbsp;Veva Wallet</h4>
-        </Panel.Heading>
+        <Panel.Heading className="card-title"><i className="fa fa-certificate"/>&nbsp;Veva Wallet</Panel.Heading>
 
         <Panel.Body className="card-text">
 

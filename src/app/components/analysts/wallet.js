@@ -140,36 +140,34 @@ class ViewWallet extends Component {
 
   render() {
     return (
-      <AnimatedView>
-        <main>
-          <h1>Wallet</h1>
-          <p><strong>View Balance and Send Tokens Here</strong></p>
-          <p>You have <strong> {this.state.balanceDisplay} </strong> VEVA in your wallet.</p>
-          <div>
-            <label >Send to address</label>
-            <input id="address" type="text" maxLength="42" />
+      <main>
+        <h1>Wallet</h1>
+        <p><strong>View Balance and Send Tokens Here</strong></p>
+        <p>You have <strong> {this.state.balanceDisplay} </strong> VEVA in your wallet.</p>
+        <div>
+          <label >Send to address</label>
+          <input id="address" type="text" maxLength="42" />
 
+          <br/>
+          <label >Amount</label>
+          <input id="amount" type="text" maxLength="26" />
+          <br/>
+
+          <button id="button" onClick={this.onItemClick}>SEND</button>
+
+        </div>
+        <br />
+        <div>
+          <p>
+            Please Note: You can only send up to the amount of VEVA in your wallet, and you may be charged a transaction fee by the Ethereum network.
             <br/>
-            <label >Amount</label>
-            <input id="amount" type="text" maxLength="26" />
+            Additionally, please note that valid ERC-20 addresses are 40 hex characters (0-9, A-F), prefixed with "0x".
             <br/>
+            Please ensure that you ONLY send VEVA tokens to a VEVA-compatible ERC-20 wallet!
+          </p>
+        </div>
 
-            <button id="button" onClick={this.onItemClick}>SEND</button>
-
-          </div>
-          <br />
-          <div>
-            <p>
-              Please Note: You can only send up to the amount of VEVA in your wallet, and you may be charged a transaction fee by the Ethereum network.
-              <br/>
-              Additionally, please note that valid ERC-20 addresses are 40 hex characters (0-9, A-F), prefixed with "0x".
-              <br/>
-              Please ensure that you ONLY send VEVA tokens to a VEVA-compatible ERC-20 wallet!
-            </p>
-          </div>
-
-        </main>
-      </AnimatedView>
+      </main>
     )
   }
 }

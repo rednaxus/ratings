@@ -10,7 +10,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Moment from 'react-moment'
-import { Glyphicon } from 'react-bootstrap'
+import { Glyphicon, Panel } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
 import { generateMessages, generateMockMessages } from '../../services/messages'
@@ -305,21 +305,20 @@ export const AnalystMessages = ( props ) => {
     return (
       <div className="row" key={idx} >
         <div className="col-md-10">
-          <div className={`panel panel-${config.priority[message.priority].name} card card-style`}>
+          <Panel className={`panel-${config.priority[message.priority].name} card card-style`}>
 
-            <div className="panel-heading">
-              <h4 className="card-title mt-3">{ msg.heading( message )}</h4>
-              <Link to={ msg.link( message ) }>{ message.type }</Link>
-            </div>
+            <Panel.Heading className="card-title">{ msg.heading( message )}
+              {/*<Link to={ msg.link( message ) }>{ message.type }</Link>*/}
+            </Panel.Heading>
 
-            <div className="panel-body cardFlex">
+            <Panel.Body className="cardFlex">
               <div className="card-text glyphStyle">
                 { msg.glyph( message ) }
               </div>
               <div className="card-text large infoRow">
                 { msg.body( message ) }
               </div>
-            </div>
+            </Panel.Body>
 
             <div className="meta">
               <Link to={ msg.link(message) }>
@@ -328,7 +327,7 @@ export const AnalystMessages = ( props ) => {
                 </div>
               </Link>
             </div>
-          </div>
+          </Panel>
         </div>
       </div>
     )

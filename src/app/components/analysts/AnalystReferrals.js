@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import Moment from 'react-moment'
+import { Panel } from 'react-bootstrap'
 import referralCode from '../../services/referralCode'
 import { userActions } from '../../redux/modules/actions'
 
@@ -45,12 +46,10 @@ class AnalystReferrals extends Component {
 
     console.log('analystReferrals props',this.props)
     return (
-      <div className="panel panel-success card card-style">
-        <div className="panel-heading">
-          <h4 className="card-title mt-3"><i className="fa fa-user-circle"/>&nbsp;Referrals</h4>
-        </div>
+      <Panel className="panel-active-large card card-style">
+        <Panel.Heading className="card-title"><i className="fa fa-user-circle"/>&nbsp;Referrals</Panel.Heading>
 
-        <div className="panel-body">
+        <Panel.Body className="card-text">
           { analyst.referred_by ? <div className="small text-purple">Referred by: { analyst.referred_by }</div> : '' }
 
           { analyst.referrals.length ? 
@@ -95,8 +94,8 @@ class AnalystReferrals extends Component {
             </div>
           </div> 
           : '' }
-        </div>
-      </div>
+        </Panel.Body>
+      </Panel>
     )
   }
 }

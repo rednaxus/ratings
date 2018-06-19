@@ -25,9 +25,9 @@ export class BriefUpload extends PureComponent {
   }
   render() { 
     return (
-      <Panel>
-        <Panel.Heading>Upload Brief -- drop it in the box</Panel.Heading>
-        <Panel.Body>
+      <Panel className="card card-style panel-active-large">
+        <Panel.Heading className="card-title">Upload Brief -- drop it in the box</Panel.Heading>
+        <Panel.Body className="card-text">
           <IpfsFileInput 
             onChange={(files)=>console.log("here i am",files)} 
             onUploaded={this.onUploaded}

@@ -13,7 +13,7 @@ const app = express()
 const bodyParser = require('body-parser')
 
 const parseRange = require('parse-numeric-range').parse
-const config = require('../src/app/config/appConfig')
+const config = require('./config')
 const roundsService = require('../src/app/services/API/rounds')
 const cyclesService = require('../src/app/services/API/cycles')
 const tokensService = require('../src/app/services/API/tokens')

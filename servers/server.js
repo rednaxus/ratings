@@ -28,6 +28,26 @@ const { bytes32FromIpfsHash, ipfsHashFromBytes32 } = require('../src/app/service
 const schemas = require('../src/app/services/schemas')
 schemas.test1()
 
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(config.sendgrid.apiKey);
+const emails = [
+  {
+    to: 'recipient1@example.org',
+    from: 'sender@example.org',
+    subject: 'Hello recipient 1',
+    text: 'Hello plain world!',
+    html: '<p>Hello HTML world!</p>',
+  },
+  {
+    to: 'recipient2@example.org',
+    from: 'other-sender@example.org',
+    subject: 'Hello recipient 2',
+    text: 'Hello other plain world!',
+    html: '<p>Hello other HTML world!</p>',
+  },
+];
+//sgMail.send(emails);
+
 
 //console.log('config',config)
 
@@ -60,7 +80,7 @@ const standardTokens = [
 
 let numVolunteerRepeats = 1 // controls how many total rounds get run, i.e. how hard we stress the system
 
-var port = process.env.PORT || 9030        
+var port = process.env.PORT || 9030
 
 var apiRouter = express.Router()
 var ctlRouter = express.Router()
@@ -111,7 +131,7 @@ a.forEach( phase => {
     nextCycleTime: config.cycleTime( cycletest.id + 1),
     fracTime: config.cycleFracTime( phase ),
     expectedPhase: phase,
-    phase: config.cyclePhase(cycletest.id, timestamp ),    
+    phase: config.cyclePhase(cycletest.id, timestamp ),
     period: config.CYCLE_PERIOD,
     isConfirmDue: statusService.isConfirmDue(cycletest,timestamp),
     isFuture: statusService.isFuture(nextcycletest,timestamp)
@@ -128,7 +148,7 @@ let sb32 = utils.toHexString(sarr)
 console.log('survey hex:', sb32)
 console.log('survey convert to arr', utils.hexToBytes(sb32).toString())
 
-let briefs = [  // dummy briefs for testing 
+let briefs = [  // dummy briefs for testing
   'QmZsWca6dJJUC7CRX1imJnGzw1ZHMT8oEiJXF2AtrfXCpG',
   'QmZRDDRpYyjgWGQKWo736KKmhsr1So4HtMXKxvpKbr7E3Z'
 ]
@@ -140,8 +160,8 @@ let tr
 let round_analysts = []
 
 
-let testAnalysts = new Array(14).fill().map( ( item,idx ) => 
-  ({ id: idx, email: `veva${ (idx<10?'0':'') + idx }@veva.one` }) 
+let testAnalysts = new Array(14).fill().map( ( item,idx ) =>
+  ({ id: idx, email: `veva${ (idx<10?'0':'') + idx }@veva.one` })
 )
 console.log( 'test analysts',testAnalysts )
 
@@ -161,7 +181,7 @@ const toDate = timestamp => moment(timestamp*1000).format('MMMM Do YYYY, h:mm:ss
 const timeInfo = timestamp => {
   let cycle = config.cycleIdx( timestamp )
   return { timestamp:timestamp, date:toDate( timestamp ), cycle: config.cycleIdx( timestamp ), phase: config.cyclePhase( cycle, timestamp ) }
-} 
+}
 
 //console.log('web3',web3.eth.personal);
 web3.eth.getCoinbase( ( err, coinbase ) => { // setup on launch
@@ -180,7 +200,7 @@ web3.eth.getCoinbase( ( err, coinbase ) => { // setup on launch
       console.log(`${s}tokens:`,tokens)
       state.tokens = tokens
       // cover any missing tokens now
-      Promise.all( 
+      Promise.all(
         standardTokens.reduce( ( promises, token ) => {
           if ( tokens.find( coveredToken => coveredToken.address == token.address) ) return promises
           return [ ...promises, tokensService.coverToken( token.name, token.address ) ]
@@ -235,7 +255,7 @@ const getBlocks = blockrange => {
         blockResults.push(result);
       }));
     });
-    
+
     Promise.all(blocks).then(()=> {
       blockResults.sort((b1,b2)=> { return(b1.number - b2.number) } );
       //console.log('got blocks',rangeArr);
@@ -269,7 +289,7 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
     const isRoundActive = idx => idx >= num_rounds - num_active_rounds
     roundsService.getAllRounds( analyst ).then( rounds => { // get all of them, we'll need them
       console.log( `${s}${num_rounds} total rounds and ${num_active_rounds} active rounds`)
-      console.log(rounds)    
+      console.log(rounds)
       state.rounds = rounds
       cyclesService.getCronInfo().then( timestamp => {
         let currentCycle = config.cycleIdx( timestamp )
@@ -283,7 +303,7 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
             let status = cycle.role[ role ]
             if ( status.num_volunteers + status.num_confirms < numVolunteerRepeats ) { // volunteer to this cycle
               console.log(`${s}volunteering to cycle ${cycle.id}`)
-              promises.push( 
+              promises.push(
                 cyclesService.cycleSignup( cycle.id, analyst, role ).then( result => {
                   console.log(`${s}volunteered to cycle ${cycle.id}`)
                   return result
@@ -294,7 +314,7 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
             console.log(`${s}on cycle ${currentCycle}....volunteers for cycle ${cycle.id} ${status.num_volunteers}, timestamp ${timestamp}, phase ${config.cyclePhase(cycle.id-1,timestamp)}, confirm due ${statusService.isConfirmDue(cycle,timestamp)}`)
             if ( status.num_volunteers && statusService.isConfirmDue( cycle, timestamp ) ) {
               console.log(`${s}confirming to cycle ${cycle.id}`)
-              promises.push( 
+              promises.push(
                 cyclesService.cycleConfirm( cycle.id, analyst, role ).then( result => {
                   console.log(`${s}confirmed to cycle ${cycle.id}`)
                   return result
@@ -315,18 +335,18 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
               console.log(`${s}first survey submitting on round ${round.id} for aref ${aref}`)
               let answers = survey.generateAnswers()
               let comment = `hello from analyst on pre-survey ${aref}:${analyst}`
-              promises.push( 
+              promises.push(
                 roundsService.submitRoundSurvey( round.id, aref, answers, comment, pre ).then( result => {
                   console.log(`pre-survey submitted for round ${round.id} by aref ${aref}`,answers)
                   console.log(result)
                   return result
-                }) 
+                })
               )
             } else if (config.STATUSES[ round.analyst_status ] == 'second survey due') {
               console.log(`${s}second survey submitting on round ${round.id} for analyst ${analyst}`)
               let answers = survey.generateAnswers('down')
               let comment = `hello from analyst on post-survey ${aref}:${analyst}`
-              promises.push( 
+              promises.push(
                 roundsService.submitRoundSurvey( round.id, aref, answers, comment, post ).then( result => {
                   console.log(`post-survey submitted for round ${round.id} by aref ${aref}`,answers)
                   console.log(result)
@@ -335,7 +355,7 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
               )
             } else if (config.STATUSES[ round.analyst_status ] == 'brief due') {
               console.log(`brief submitting on round ${round.id} for analyst ${analyst}`)
-              promises.push( 
+              promises.push(
                 roundsService.submitRoundBrief( round.id, aref, briefs[aref] ).then( result => {
                   console.log(`brief ${briefs[aref]} submitted for round ${round.id} by aref ${aref}`)
                 }).catch( ctlError )
@@ -350,7 +370,7 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
               console.log(`${s}resolving analystUpdate`)
               //console.log(`${s}cycles by status`,byStatus)
               resolve( { ...timeInfo(timestamp), analyst, cyclesStatus } )
-            }).catch( reject )       
+            }).catch( reject )
           }).catch( reject )
         }).catch( reject )
       }).catch( ctlError )
@@ -360,7 +380,7 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
 
 
 // at this point in time, do all the stuff analysts are due to do
-const analystsUpdate = () => new Promise( ( resolve, reject ) => {  
+const analystsUpdate = () => new Promise( ( resolve, reject ) => {
   let s = '***[au]***'
   Promise.all( testAnalysts.map( analystInfo => analystUpdate( analystInfo.id ) ) ).then( result => {
     console.log( `${s}analysts update done`,result )
@@ -381,7 +401,7 @@ ctlRouter.route( '/analystsUpdate' ).get( ( req, res ) => {
 */
 
 apiRouter.get('/', ( req, res ) => {
-    res.json({ message: 'hooray! welcome to api!' });   
+    res.json({ message: 'hooray! welcome to api!' });
 })
 
 apiRouter.route('/analystCyclesStatus/:analyst').get( ( req, res ) => {
@@ -477,7 +497,7 @@ apiRouter.route('/eth').get(function(req,res){
     console.log('got get');
 }).post(function(req,res) {
   console.log('got post, making proxy request',req.body);
-  ethProxy.web(req, res, { target: 'http://localhost:8545' }, function(e) { 
+  ethProxy.web(req, res, { target: 'http://localhost:8545' }, function(e) {
     console.log('got proxy response',e);
     res.json({message:"got it"});
   })
@@ -490,9 +510,25 @@ apiRouter.route('/eth').get(function(req,res){
 */
 
 ctlRouter.get('/', function(req, res) {
-  res.json({ message: 'hooray! welcome to ctl!' });   
+  res.json({ message: 'hooray! welcome to ctl!' });
 })
 
+
+ctlRouter.get('/testSendMail', (req, res) => {
+  const testSend = [
+    {
+      to: 'reuben@veva.one',
+      from: 'VEVA@veva.one',
+      subject: 'test email',
+      text: 'test email successful!'
+    }
+  ]
+
+  sgMail.send(testSend);
+
+  res.json ({message: "done"});
+
+})
 
 /*
   0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0, //EOS
@@ -544,8 +580,8 @@ ctlRouter.route('/testDoAnalyst/:analyst').get( ( req, res ) => {
 })
 
 
-/* 
-  * simulate a series of cycles, 
+/*
+  * simulate a series of cycles,
   * for the test analysts, each cycle volunteer early and confirm at the right phase, submit surveys or briefs depending on role
   * totalTime is time from last cron...interval is in proportion of 28
   *  e.g. totalTime: 2419200 for 28 more days (1 standard cycle) 604800 for 7 days...7257600 -- 3 months
@@ -572,7 +608,7 @@ ctlRouter.route( '/testSimRun/:totalTime/:interval' ).get( ( req, res ) => { // 
             let nextTime = cronTime + intervalTime
             if ( nextTime <= finishTime )
               cron( nextTime ) // repeat
-            else 
+            else
               resolve( cronTime )
 
           }).catch( ctlError )
@@ -581,7 +617,7 @@ ctlRouter.route( '/testSimRun/:totalTime/:interval' ).get( ( req, res ) => { // 
         }).catch( reject )
       }).catch( reject )
     }
-    cron( timestamp )  
+    cron( timestamp )
   })
 
 
@@ -599,7 +635,7 @@ ctlRouter.route( '/testSimRun/:totalTime/:interval' ).get( ( req, res ) => { // 
 
 ctlRouter.route('/rounds').get( ( req, res ) => {
   ra.lasttime().call( tr ).then( result => {
-    res.json({lasttime: result})    
+    res.json({lasttime: result})
     console.log( result )
   }).catch( callError )
 })
@@ -617,7 +653,7 @@ ctlRouter.route( [ '/cycleGenerateAvailabilities','/cycleGenerateAvailabilities/
 
 ctlRouter.route( '/roundActivate/:cycle/:token' ).get( ( req, res ) => {
   ra.roundActivate( req.params.cycle, req.params.token ).then( result => {
-    //let str = util.inspect( result, { depth:6 } ) 
+    //let str = util.inspect( result, { depth:6 } )
     //console.log( str )
     res.json( result )
   }).catch( sendError )
@@ -628,10 +664,10 @@ ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
   let cycle = +req.params.cycle
   let token = +req.params.token
   console.log( `${s}Volunteer test users to cycle ${cycle} for token ${token}` )
-  let promises = []  
+  let promises = []
   testAnalysts.forEach( analyst => {
     let role = analyst.id < 4 ? 0 : 1  // first four in test analysts are leads
-    promises.push( 
+    promises.push(
       cyclesService.cycleSignup( cycle, analyst.id, role )
       /*.then( result => {
         console.log( `${s}got result`,result )
@@ -643,12 +679,12 @@ ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
   Promise.all( promises ).then( results_volunteer => {
     console.log( `${s}got volunteer results`,results_volunteer )
     //res.json( results_volunteer )
-    
+
     console.log( `${s}Confirm test analysts to cycle ${cycle} for token ${token}` )
     promises = []
     testAnalysts.forEach( analyst => {
-      let role = analyst.id < 4 ? 0 : 1       
-      promises.push( 
+      let role = analyst.id < 4 ? 0 : 1
+      promises.push(
         cyclesService.cycleConfirm( cycle, analyst.id, role )
         /*.then( result => {
           console.log( `${s}got result`,result )
@@ -683,13 +719,13 @@ ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
                 promises = []
                 round_analysts.forEach( ( round_analyst, idx ) => {
                   if ( idx < 2 ) return // no survey for leads
-                  
+
                   let answers = utils.toHexString( survey.generateAnswers() )
                   //let qualitatives = utils.toHexString([42]) // encoded byte, i.e. true/false
                   //let recommendation = 50
                   let comment = `hello from analyst on pre-survey ${idx}:${round_analyst}`
-                  promises.push( 
-                    ra.roundSurveySubmit( round, idx, pre, answers, comment ) 
+                  promises.push(
+                    ra.roundSurveySubmit( round, idx, pre, answers, comment )
                     /*.then( result => {
                       console.log( `${s}got result`,result )
                       return result
@@ -710,7 +746,7 @@ ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
                   Promise.all( promises ).then( results_briefs => {
                     console.log( `${s}Briefs submitted`,results_briefs )
                     // res.json( results_briefs )
-                    
+
                     console.log( `${s}Submit post-surveys for round ${round}` )
                     promises = []
                     round_analysts.forEach( ( round_analyst, idx ) => {
@@ -720,8 +756,8 @@ ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
                       //let qualitatives = utils.toHexString([24]) // encoded byte, i.e. true/false
                       //let recommendation = 20
                       let comment = `hello from analyst on post-survey ${idx}:${round_analyst}`
-                      promises.push( 
-                        ra.roundSurveySubmit( round, idx, post, answers, comment ) 
+                      promises.push(
+                        ra.roundSurveySubmit( round, idx, post, answers, comment )
                       )
                     })
                     Promise.all( promises ).then( results_survey_submit => {
@@ -746,7 +782,7 @@ ctlRouter.route( '/testWholeRound/:cycle/:token' ).get( ( req, res) => {
     })
 
   }).catch( ctlError )
- 
+
 
 })
 
@@ -776,13 +812,13 @@ ctlRouter.route( '/testNextCycle' ).get( ( req, res ) => {
 
   ra.lasttime().then( timestamp => {
     let cycle = config.cycleIdx( timestamp ) + 1 // next cycle is of interest
-    
+
     console.log( `${s}Volunteer test users to cycle ${cycle} for token ${token}` )
-    let promises = testAnalysts.map( analyst => ra.cycleVolunteer( cycle, analyst.id, analyst.id < 4 ? 0 : 1 ) )  // first four in test analysts are leads      
+    let promises = testAnalysts.map( analyst => ra.cycleVolunteer( cycle, analyst.id, analyst.id < 4 ? 0 : 1 ) )  // first four in test analysts are leads
     Promise.all( promises ).then( results_volunteer => {
       console.log( `${s}got volunteer results`,results_volunteer )
       //res.json( results_volunteer )
-      
+
       console.log( `${s}Confirm test analysts to cycle ${cycle} for token ${token}` )
       let promises = testAnalysts.map( analyst => ra.cycleConfirm( cycle, analyst.id, analyst.id < 4 ? 0 : 1 ) )
       Promise.all( promises ).then( results_confirm => {
@@ -790,7 +826,7 @@ ctlRouter.route( '/testNextCycle' ).get( ( req, res ) => {
         //res.json( results_confirm )
 
         console.log( `${s}cron forward to target cycle ${cycle}` )
-        ra.cronTo( config.cycleTime ( cycle ) ).then( result_cron => { 
+        ra.cronTo( config.cycleTime ( cycle ) ).then( result_cron => {
           console.log(`${s}cycle ${cycle - 1} finished`,result_cron)
           console.log(`${s}get rounds active`)
           roundsService.getRoundsActive().then( active_rounds => {
@@ -802,7 +838,7 @@ ctlRouter.route( '/testNextCycle' ).get( ( req, res ) => {
                 console.log( `${s}submit pre-surveys for round ${round}` )
                 let promises = roundInfo.analysts.map( ( analyst, aref ) => {
                   if ( aref < 2 ) return null// no survey for leads
-                  
+
                   let answers = utils.toHexString( survey.generateAnswers() )
                   let comment = `hello from analyst on pre-survey ${aref}:${analyst}`
                   return roundsService.submitRoundSurvey( round, aref, answers, comment, pre )
@@ -817,15 +853,15 @@ ctlRouter.route( '/testNextCycle' ).get( ( req, res ) => {
                   Promise.all( promises ).then( results_briefs => {
                     console.log( `${s}Briefs submitted for round ${round}`,results_briefs )
                     // res.json( results_briefs )
-                    console.log( `briefs submitted for round ${round}`)   
+                    console.log( `briefs submitted for round ${round}`)
 
                     console.log(`${s}advancing cron to cycle+frac`)
-                    ra.cronTo( config.cycleTime ( cycle ) + config.cycleFracTime( config.CYCLE_FRACTION ) ).then( result_cron => { 
+                    ra.cronTo( config.cycleTime ( cycle ) + config.cycleFracTime( config.CYCLE_FRACTION ) ).then( result_cron => {
                       ra.lasttime().then( timestamp => {
                         console.log(`${s}cron advanced to ${timestamp}:${toDate(timestamp)}`)
                         console.log(`${s}....submitting post brief surveys`)
 
-                        resolve( timestamp )              
+                        resolve( timestamp )
                       }).catch( reject )
                     }).catch( ctlError )
 
@@ -833,11 +869,11 @@ ctlRouter.route( '/testNextCycle' ).get( ( req, res ) => {
                 }).catch( ctlError )
               }).catch( ctlError )
             }))
-          }).catch( ctlError )          
+          }).catch( ctlError )
         }).catch( ctlError )
-        
 
-        
+
+
         // cron phase1, submit pre jury surveys
         // cron to phase 2, do leads submissions
         // cron to phase 3, post jury surveys
@@ -846,12 +882,12 @@ ctlRouter.route( '/testNextCycle' ).get( ( req, res ) => {
       })
 
     }).catch( ctlError )
-   
+
 
 
   }).catch( ctlError )
 
-   
+
   // get the current time/cycle
 
   // Volunteer users to next cycle
@@ -861,10 +897,10 @@ ctlRouter.route( '/testNextCycle' ).get( ( req, res ) => {
   // Move cron to start of next cycle
 
     // Call roundCanActivate (should return next token id) -- do until false
-  
+
     // Activate round for next token
 
-  
+
   // Move cron halfway to first survey due
 
   // for each round:
@@ -876,9 +912,8 @@ ctlRouter.route( '/testNextCycle' ).get( ( req, res ) => {
 
     // Generate second surveys for all jurists and submit them
 
-  // 
+  //
 
 
 })
 */
-

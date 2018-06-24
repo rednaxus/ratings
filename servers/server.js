@@ -331,8 +331,8 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
             let aref = round.inround_id
             console.log(`${s}round`,round)
             console.log(`${s}round ${round.id} analyst status ${round.analyst_status} in-round ref ${aref}`)
-            if (config.STATUSES[ round.analyst_status ] == 'first survey due') {
-              console.log(`${s}first survey submitting on round ${round.id} for aref ${aref}`)
+            if (config.STATUSES[ round.analyst_status ] == 'pre survey due') {
+              console.log(`${s}pre survey submitting on round ${round.id} for aref ${aref}`)
               let answers = survey.generateAnswers()
               let comment = `hello from analyst on pre-survey ${aref}:${analyst}`
               promises.push(
@@ -342,8 +342,8 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
                   return result
                 })
               )
-            } else if (config.STATUSES[ round.analyst_status ] == 'second survey due') {
-              console.log(`${s}second survey submitting on round ${round.id} for analyst ${analyst}`)
+            } else if (config.STATUSES[ round.analyst_status ] == 'post survey due') {
+              console.log(`${s}post survey submitting on round ${round.id} for analyst ${analyst}`)
               let answers = survey.generateAnswers('down')
               let comment = `hello from analyst on post-survey ${aref}:${analyst}`
               promises.push(

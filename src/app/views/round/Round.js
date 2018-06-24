@@ -46,8 +46,7 @@ class Round extends PureComponent {
   }
 
   componentDidMount() {
-    const { actions: { fetchRoundInfo } } = this.props
-    fetchRoundInfo()
+
   }
 
   componentWillUnmount() {
@@ -61,6 +60,10 @@ class Round extends PureComponent {
 
     this.idx = +this.props.match.params.id
     console.log('component will receive props',this.idx)
+
+    const { actions: { fetchRoundInfo } } = this.props
+    //console.log('call fech round info',this.idx)
+    fetchRoundInfo(this.idx)
 
     //const { actions: { fetchTokenData, fetchTokenRounds } } = this.props
     //const { actions: { fetchRoundInfo, fetchRoundAnalystInfo, fetchTokenRounds } } = this.props

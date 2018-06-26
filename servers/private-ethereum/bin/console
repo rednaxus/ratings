@@ -3,5 +3,5 @@ geth \
   --networkid 7 \
   --rpc \
   --ipcpath ~/vols/data/ethereum-1/01/geth.ipc \
-  --nodiscover
+  --nodiscover \
   console

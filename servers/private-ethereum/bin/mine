@@ -1,14 +1,17 @@
-#/Users/chafey/src/OpenSource/go-ethereum/build/bin/geth \
 geth \
   --datadir ~/vols/data/ethereum-1/01 \
   --networkid 7 \
   --rpc \
   --rpcapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" \
-  --rpcaddr "0.0.0.0" \  
-  --ipcpath ~/vols/data/ethereum-1/01/geth.ipc \
+  --ipcpath geth.ipc \
   --nodiscover \
   --mine \
   --minerthreads 1 \
   --verbosity 3 \
   --rpccorsdomain "*" \
-  --etherbase 0x5DFE021F45f00Ae83B0aA963bE44A1310a782fCC
+  --etherbase 0x5DFE021F45f00Ae83B0aA963bE44A1310a782fCC \
+  console
+
+
+
+#   --rpcaddr "0.0.0.0" \  

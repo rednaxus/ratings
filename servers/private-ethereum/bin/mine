@@ -1,11 +1,11 @@
 #/Users/chafey/src/OpenSource/go-ethereum/build/bin/geth \
 geth \
-  --datadir ./nets/01 \
-  --networkid 1042 \
+  --datadir ~/vols/data/ethereum-1/01 \
+  --networkid 7 \
   --rpc \
   --rpcapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" \
-  --rpcport 8045
-  --ipcpath ./nets/01/geth.ipc \
+  --rpcaddr "0.0.0.0" \  
+  --ipcpath ~/vols/data/ethereum-1/01/geth.ipc \
   --nodiscover \
   --mine \
   --minerthreads 1 \

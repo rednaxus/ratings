@@ -22,8 +22,8 @@ contract RatingAgency {
     //uint constant BRIEF_DUE_TIME = 86400 * 7;
     //uint constant SURVEY_DUE_TIME = 86400 * 7;
 
-    uint8 constant JURY_SIZE = 6; /// target jury size
-    uint8 constant JURISTS_MIN = 2; // min jurists for a round
+    uint8 constant JURY_SIZE = 16; /// target jury size
+    uint8 constant JURISTS_MIN = 4; // min jurists for a round
     uint16 constant ROUND_VALUE_DEFAULT = 100;
 
     //uint16 constant REPUTATION_LEAD = 12;

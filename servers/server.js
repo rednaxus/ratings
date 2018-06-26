@@ -159,8 +159,10 @@ let ar
 let tr
 let round_analysts = []
 
+let num_analysts = 60
+let num_leads = 6
 
-let testAnalysts = new Array(14).fill().map( ( item,idx ) =>
+let testAnalysts = new Array(num_analysts).fill().map( ( item,idx ) =>
   ({ id: idx, email: `veva${ (idx<10?'0':'') + idx }@veva.one` })
 )
 console.log( 'test analysts',testAnalysts )
@@ -207,16 +209,36 @@ web3.eth.getCoinbase( ( err, coinbase ) => { // setup on launch
         }, [] )
       ).then( results => {
         console.log(`added ${results.length} standard tokens`)
-        console.log(`${s}waiting...`)
+        console.log(`${s}ready...`)
       }).catch( ctlError )
     }).catch( ctlError )
   })
-  AnalystRegistry().then( _ar  => {
-    ar = _ar
+  AnalystRegistry().then( ar  => {
     ar.num_analysts().then( result => {
-      console.log(`analysts: ${ result.toNumber() }`)
-    })
-  })
+      let num = result.toNumber()
+      console.log(`analysts: ${ num }`)
+      if (num) return
+      console.log(`${s}creating analysts....please wait`)
+      let promises = []
+      new Array(num_analysts).fill().map( (_, idx) => {
+        let email = 'veva' + (idx < 10 ? '0':'') + idx + '@veva.one'
+        let password = 'veva'
+        promises.push( ar.register(email,password,0) )
+        //console.log(`email ${email}`)
+      })
+      Promise.all( promises ).then( results => {
+        console.log(`${s}${results.length} analysts registered`)
+        promises = []
+        new Array(num_leads).fill().map( (_,idx) => {
+          promises.push( ar.rewardPoints( idx, config.REWARD_BONUS, config.LEVELS[config.LEAD_LEVEL].points, config.LEAD_LEVEL ) )
+        })
+        Promise.all( promises ).then( results => {
+          console.log(`${s}${results.length} leads promoted`)
+          console.log(`${s}analysts ready`)
+        }).catch( ctlError )
+      }).catch( ctlError )
+    }).catch( ctlError )
+  }).catch( ctlError )
 })
 
 
@@ -626,7 +648,7 @@ ctlRouter.route( '/testSimRun/:totalTime/:interval' ).get( ( req, res ) => { // 
     console.log(`${s}cron procedure...${totalTime} cycles ${timestamp}:${toDate(timestamp)} => ${finishTime}:${toDate(finishTime)}`)
     runCrons( timestamp + intervalTime ).then( timestamp => {
       let date = toDate( timestamp )
-      console.log(`finished ${timestamp}:${date}`)
+      console.log(`${s}${s}finished ${timestamp}:${date}${s}`)
       res.json({ timestamp, date })
     })
   })

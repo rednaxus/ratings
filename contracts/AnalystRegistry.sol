@@ -106,7 +106,7 @@ contract AnalystRegistry {
         levels.push( [100,10] );
         levels.push( [200,20] );
         levels.push( [500,30] );
-        bootstrap(14,4);
+        //bootstrap(14,4);
     }
 
     function activateRound( uint32 _analyst, uint16 _round ) public {
@@ -314,11 +314,13 @@ contract AnalystRegistry {
     }
 
     /* utilities */
+    /*
     function bytesOntoBytes32( bytes32 b32, byte[32] b, uint8 start, uint8 length ) private pure returns ( bytes32 out ) {
         out = b32;
         for (uint8 i = 0; i < length; i++)
             out |= bytes32(b[ i ]) >> ( (i+start) * 8);
     }
+    */
     /*
     function bytesToBytes32(bytes b) private pure returns (bytes32 out) {
         for (uint i = 0; i < 32; i++)
@@ -329,6 +331,7 @@ contract AnalystRegistry {
     /* testing */ 
 
     /* create some analysts */
+    /*
     function bootstrap(uint16 _numanalysts, uint16 _numleads) public {
         uint16 new_analysts = _numanalysts == 0 ? 12 : _numanalysts;
         uint16 new_leads = _numleads == 0 ? 2 : _numleads;
@@ -347,6 +350,7 @@ contract AnalystRegistry {
             }
         }
     }
+    */
 
 
 }

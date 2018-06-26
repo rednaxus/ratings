@@ -86,9 +86,9 @@ const AnalystStatus = {
       cycle.role.forEach( (role,idx) => {
         for ( let i = 0; i < role.num_rounds; i++ ){
           //console.log('active rounds for role',role,i,role.rounds)
-          let round = getRound( role.rounds[ i ] )
+          let round = getRound( role.rounds[ i ] ) || null  // fix me! make sure round is fetched before being here
           activeCycles.push(
-            { ...cycle, role: idx, token: round.covered_token, round: role.rounds[ i ] }
+            { ...cycle, role: idx, token: round ? round.covered_token: null, round: role.rounds[ i ] }
           )
         }        
       })
@@ -100,9 +100,9 @@ const AnalystStatus = {
       cycle.role.forEach( (role,idx) => {
         for ( let i = 0; i < role.num_rounds; i++ ){
           //console.log('finished rounds for role',role,i,role.rounds)
-          let round = getRound( role.rounds[ i ] )
+          let round = getRound( role.rounds[ i ] ) || null
           finishedCycles.push(
-            { ...cycle, role: idx, token: round.covered_token, round: role.rounds[ i ]}
+            { ...cycle, role: idx, token: round ? round.covered_token: null, round: role.rounds[ i ]}
           )
         }
       } )

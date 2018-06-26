@@ -1,0 +1,6 @@
+rm -rf ~/vols/data/ethereum-1/01
+mkdir ~/vols/data/ethereum-1/01
+cp -r config/keystore ~/vols/data/ethereum-1/01
+geth \
+  --datadir ~/vols/data/ethereum-1/01 \
+  init config/genesis.json

@@ -3,6 +3,7 @@ geth \
   --networkid 7 \
   --rpc \
   --rpcapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" \
+  --rpcport 8302 \
   --ipcpath geth.ipc \
   --nodiscover \
   --mine \
@@ -10,8 +11,10 @@ geth \
   --verbosity 3 \
   --rpccorsdomain "*" \
   --etherbase 0x5DFE021F45f00Ae83B0aA963bE44A1310a782fCC \
-  console
+  --rpcaddr "0.0.0.0" \
+  --unlock 0 \
+  --password "password" \
+console
 
 
 
-#   --rpcaddr "0.0.0.0" \  

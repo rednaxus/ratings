@@ -194,6 +194,7 @@
     "redux-orm-proptypes": "^0.1.0",
     "redux-thunk": "^2.2.0",
     "reselect": "^3.0.1",
+    "sass": "^1.7.1",
     "serialize-javascript": "^1.4.0",
     "smoothscroll-polyfill": "^0.4.0",
     "solc": "^0.4.19",

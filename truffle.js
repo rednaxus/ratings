@@ -28,6 +28,13 @@ module.exports = {
       network_id: "*", // Match any network id
       from: "0x5dfe021f45f00ae83b0aa963be44a1310a782fcc",
       gas: 6700000 // 4700000  add extra to bootstrap test data      
+    },
+    development_3_local: {
+      host: "localhost",
+      port: 8302,
+      network_id: "*", // Match any network id
+      from: "0x5dfe021f45f00ae83b0aa963be44a1310a782fcc",
+      gas: 6700000 // 4700000  add extra to bootstrap test data      
     }
   }
 };

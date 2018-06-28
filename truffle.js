@@ -31,10 +31,10 @@ module.exports = {
     },
     development_3_local: {
       host: "localhost",
-      port: 8302,
+      port: 8301,
       network_id: "*", // Match any network id
       from: "0x5dfe021f45f00ae83b0aa963be44a1310a782fcc",
-      gas: 6700000 // 4700000  add extra to bootstrap test data      
+      gas: 6700000  //add extra to bootstrap test data      
     }
   }
 };

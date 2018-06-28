@@ -1,10 +1,10 @@
 geth \
-  --datadir ~/vols/data/ethereum-1/01 \
+  --datadir ~/vols/data/ethereum-1/02 \
   --networkid 7 \
-  --port 30301 \
+  --port 30302 \
   --rpc \
   --rpcapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" \
-  --rpcport 8301 \
+  --rpcport 8302 \
   --ipcpath geth.ipc \
   --nodiscover \
   --mine \

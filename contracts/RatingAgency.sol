@@ -139,7 +139,7 @@ contract RatingAgency {
     /**
      * test data
     */
-    address constant testregistry1 = 0x380cb3e3fc13e0728170a8299fd85085269bfef8;
+    /*address constant testregistry1 = 0x380cb3e3fc13e0728170a8299fd85085269bfef8;
     address[16] live_tokens = [
         0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0, //EOS
         0xf230b790e05390fc8295f4d3f60332c93bed42e2, // Tronix
@@ -184,7 +184,7 @@ contract RatingAgency {
             tokenCover( live_tokens[ i ], token_names[ i ], 0 );
         }
     }
-
+    */
     /**
      * Constructor
     */
@@ -194,13 +194,13 @@ contract RatingAgency {
 
         cycle_period = _period == 0 ? CYCLE_PERIOD : _period;
 
-        if ( _registry == 0 ) _registry = testregistry1;
+        //if ( _registry == 0 ) _registry = testregistry1;
         registryAddress = _registry;
         registry = AnalystRegistry( _registry );
         registry.update( time );
 
         //cycleExtend( time, 0 ); // bootstrap cycles
-        bootstrapTokens( 3 );
+        //bootstrapTokens( 3 );
     }
 
 

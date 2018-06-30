@@ -23,5 +23,9 @@ RUN mkdir .ethereum
 RUN cp -r config/keystore .ethereum
 RUN geth init config/genesis.json
 
-ENTRYPOINT bash
+# ENTRYPOINT bash
+
+CMD exec geth --identity="NODE_ONE" --networkid="7" --verbosity=3 --mine --minerthreads=1 --rpc --rpcport=8312 --rpcaddr 0.0.0.0   --unlock 0 --password "config/password" console
+
+
 

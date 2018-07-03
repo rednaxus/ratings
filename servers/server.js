@@ -28,6 +28,7 @@ const { bytes32FromIpfsHash, ipfsHashFromBytes32 } = require('../src/app/service
 const schemas = require('../src/app/services/schemas')
 schemas.test1()
 
+/*
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(config.sendgrid.apiKey);
 const emails = [
@@ -46,6 +47,7 @@ const emails = [
     html: '<p>Hello other HTML world!</p>',
   },
 ];
+*/
 //sgMail.send(emails);
 
 
@@ -100,7 +102,7 @@ let state = {
   tokens: []
 }
 
-
+/*
 let t = [
   config.cycleTime( 0 ),
   config.cycleTime( 0 ) + config.cyclePhaseTime(2),
@@ -147,6 +149,7 @@ console.log('survey answers',sarr.toString())
 let sb32 = utils.toHexString(sarr)
 console.log('survey hex:', sb32)
 console.log('survey convert to arr', utils.hexToBytes(sb32).toString())
+*/
 
 let briefs = [  // dummy briefs for testing
   'QmZsWca6dJJUC7CRX1imJnGzw1ZHMT8oEiJXF2AtrfXCpG',
@@ -159,8 +162,8 @@ let ar
 let tr
 let round_analysts = []
 
-let num_analysts = 60
-let num_leads = 6
+let num_analysts = 14 // 60
+let num_leads = 4 // 6
 
 let testAnalysts = new Array(num_analysts).fill().map( ( item,idx ) =>
   ({ id: idx, email: `veva${ (idx<10?'0':'') + idx }@veva.one` })

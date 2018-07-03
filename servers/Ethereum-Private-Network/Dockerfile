@@ -25,7 +25,13 @@ RUN geth init config/genesis.json
 
 # ENTRYPOINT bash
 
-CMD exec geth --identity="NODE_ONE" --networkid="7" --verbosity=3 --mine --minerthreads=1 --rpc --rpcport=8312 --rpcaddr 0.0.0.0   --unlock 0 --password "config/password" console
+CMD exec geth \
+--identity="NODE_ONE" \
+--networkid="7" \
+--verbosity=3 \
+--mine --minerthreads=1 \
+--rpc --rpcapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" --rpcport=8312 --rpcaddr 0.0.0.0 \
+--unlock 0 --password "config/password"
 
 
 

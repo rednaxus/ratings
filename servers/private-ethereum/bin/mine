@@ -15,7 +15,7 @@ geth \
   --rpcaddr "0.0.0.0" \
   --unlock 0 \
   --password "password" \
-  --bootnodes "enode://d0fed4d1ed4bfbd5374aa3d7ca724312083dbb7568cd161ca1c82e485064d5317e53a1534cbcf86ad784f2b0fe557092072b99ac7d85332c1ed1750df36ea3a9@34.217.64.52:30301" \
+  --targetgaslimit 6700000 \
 console
 
 

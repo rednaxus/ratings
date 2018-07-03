@@ -29,7 +29,7 @@ module.exports = {
       from: "0x5dfe021f45f00ae83b0aa963be44a1310a782fcc",
       gas: 6700000 // 4700000  add extra to bootstrap test data      
     },
-    development_3_local: {
+    d3local: {
       host: "localhost",
       port: 8301,
       network_id: "*", // Match any network id

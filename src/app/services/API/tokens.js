@@ -91,8 +91,10 @@ module.exports = {
       console.error("Error from server:"  + result) 
       reject( result )
     }
+    console.log('getting num tokens')
     ra.num_tokens().then( result => {
       let numTokens = result.toNumber()
+      if (!numTokens) return resolve( [] )
       let numFetch = 0
       let tokens = []
       for (let i = 0; i < numTokens; i++) {

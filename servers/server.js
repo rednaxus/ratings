@@ -208,8 +208,7 @@ web3.eth.getCoinbase( ( err, coinbase ) => { // setup on launch
           return [ ...promises, tokensService.coverToken( token.name, token.address ) ]
         }, [] )
       ).then( results => {
-        console.log(`added ${results.length} standard tokens`)
-        console.log(`${s}ready...`)
+        console.log(`${s}tokens ready...added ${results.length} standard tokens`)
       }).catch( ctlError )
     }).catch( ctlError )
   })

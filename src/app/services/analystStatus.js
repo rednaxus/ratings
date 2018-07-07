@@ -115,7 +115,7 @@ const AnalystStatus = {
       activeCycles,
       finishedCycles
     }
-    console.log(`${s}result`, result )
+    //console.log(`${s}result`, result )
 
     return result
   }  

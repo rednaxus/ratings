@@ -72,6 +72,19 @@ module.exports = {
       console.error(`Error from server on getRoundInfo: ${err}` ) 
       reject( err )
     }
+    const err2 = err => {
+      console.error(`Error 2 from server on getRoundInfo: ${err}` ) 
+      reject( err )
+    }
+    const err3 = err => {
+      console.error(`Error 3 from server on getRoundInfo: ${err}` ) 
+      reject( err )
+    }    
+    const err4 = err => {
+      console.error(`Error 4 from server on getRoundInfo: ${err}` ) 
+      reject( err )
+    }  
+    console.log(`${s}get round info for round ${round}`)
     ra.roundInfo( round ).then( rRound => { 
       var res = {
         id:             rRound[0].toNumber(), 
@@ -90,7 +103,7 @@ module.exports = {
           { timestamp: rBriefs[2].toNumber(), filehash: ipfsHashFromBytes32( rBriefs[3] ) }
         ]
         if ( !--numFetch ) resolve( res )
-      }).catch ( err )
+      }).catch ( err2 )
       if ( deep && res.num_analysts ) { // round analysts
         numFetch++
         let promises = new Array(res.num_analysts).fill().map( (_,a) => ra.roundAnalystId( round, a ) )
@@ -98,14 +111,14 @@ module.exports = {
           res.analysts = analysts.map( analyst => analyst.toNumber() )
           //console.log(`${s}round analysts: ${round_analysts.toString()}`)
           if ( !--numFetch ) resolve( res )
-        }).catch( err )
+        }).catch( err3 )
       }
       if ( config.STATUSES[ res.status ] == 'finished' ){
         numFetch++
         module.exports.getRoundSummary( round ).then( rSummary => {
           res = { ...res, ...rSummary }
           if ( !--numFetch ) resolve( res )
-        }).catch( err )
+        }).catch( err4 )
       }
     }).catch( err )
   })),
@@ -222,7 +235,7 @@ module.exports = {
 
   // function submitBrief( uint16 _round, uint8 _analyst, address _file )
   submitRoundBrief: ( round, aref, filehash ) => new Promise( (resolve,reject) => getRatingAgency().then( ra => {
-    console.log('submitting brief',round,aref,filehash)
+    //console.log('submitting brief',round,aref,filehash)
     ra.roundBriefSubmit( round, aref, bytes32FromIpfsHash(filehash) ).then( result => {
       //console.log('submit brief result',result)
       resolve( 'done' )
@@ -241,7 +254,7 @@ module.exports = {
     preOrPost = 0 
   ) => new Promise( (resolve,reject) => getRatingAgency().then( ra => {
       let _answers = answers instanceof Array ? toHexString( answers ): answers
-      console.log(`submitting ${preOrPost==0 ? "pre-":"post-"} survey with answers ${answers} to round ${round}`)
+      //console.log(`submitting ${preOrPost==0 ? "pre-":"post-"} survey with answers ${answers} to round ${round}`)
       ra.roundSurveySubmit( round, analystRef, preOrPost, answers, comment ).then( result => {
         //console.log('submitted survey result',result)
         resolve( 'done' )

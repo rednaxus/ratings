@@ -316,7 +316,7 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
       cyclesService.getCronInfo().then( timestamp => {
         let currentCycle = config.cycleIdx( timestamp )
         //let cyclePhase = config.cyclePhase( currentCycle, timestamp )
-        console.log(`${s}cycle ${currentCycle}: ${JSON.serialize(timeInfo(timestamp))}`)
+        console.log(`${s}cycle ${currentCycle}: ${JSON.stringify(timeInfo(timestamp))}`)
         cyclesService.getCyclesInfo( analyst ).then( cycles => {
           //console.log( `${s}got cycles info`)//,cycles )
           let byStatus = statusService.cyclesByStatus( { cycles, rounds:rounds, timestamp:timestamp, tokens:state.tokens } )

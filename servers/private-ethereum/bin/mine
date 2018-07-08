@@ -16,6 +16,7 @@ geth \
   --unlock 0 \
   --password "password" \
   --targetgaslimit 6700000 \
+  --gcmode archive \
 console
 
 

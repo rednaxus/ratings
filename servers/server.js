@@ -160,8 +160,8 @@ let ar
 let tr
 let round_analysts = []
 
-let num_analysts = 14 // 60
-let num_leads = 4 // 6
+let num_analysts = 60
+let num_leads = 6
 
 let testAnalysts = new Array(num_analysts).fill().map( ( item,idx ) =>
   ({ id: idx, email: `veva${ (idx<10?'0':'') + idx }@veva.one` })
@@ -408,12 +408,6 @@ const promiseSerial = promisefuncs =>
     Promise.resolve([])
   )
 
-[10,20,30]
-  .reduce(function(promise, arg) {
-    return promise.then(function() {
-      return fn(arg);
-    }), Promise.resolve();
-  });
 
 const a = val => new Promise( ( resolve, reject ) => resolve(val*10) )
 const promises = [ a(3), a(6), a(8) ]
@@ -425,7 +419,9 @@ promises.reduce((prev, cur) => prev.then(cur), Promise.resolve()).then( result =
 const analystsUpdate = () => new Promise( ( resolve, reject ) => {
   func = id => analystUpdate( id )
   let s = '***[au]***'
-  testAnalysts.reduce( (promise, analystInfo ) => promise.then( () => func( analystInfo.id ) ), Promise.resolve() ).then( result => resolve(result) ).catch( reject )
+  // serial promise sequence in order of test analyst
+  testAnalysts.reduce( (promise, analystInfo ) => promise.then( () => func( analystInfo.id ) ), Promise.resolve() )
+  .then( result => resolve(result) ).catch( reject )
   
  // promiseSerial( testAnalysts.map( analystInfo => analystUpdate( analystInfo.id ) ) ).then( result => {
     //console.log( `${s}analysts update done`,result )

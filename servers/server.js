@@ -25,8 +25,6 @@ const { getRatingAgency: RatingAgency, getAnalystRegistry: AnalystRegistry } = r
 const utils = require('../src/app/services/utils') // parseB32StringtoUintArray, toHexString, bytesToHex, hexToBytes
 const { bytes32FromIpfsHash, ipfsHashFromBytes32 } = require('../src/app/services/ipfs')
 
-const schemas = require('../src/app/services/schemas')
-schemas.test1()
 
 /*
 const sgMail = require('@sendgrid/mail');
@@ -312,13 +310,13 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
     let [ num_active_rounds, num_rounds ] = nums
     const isRoundActive = idx => idx >= num_rounds - num_active_rounds
     roundsService.getAllRounds( analyst ).then( rounds => { // get all of them, we'll need them
-      console.log( `${s}${num_rounds} total rounds and ${num_active_rounds} active rounds`)
-      console.log(rounds)
+      console.log( `${s}Analyst update began---${num_rounds} total rounds and ${num_active_rounds} active rounds`)
+      //console.log(rounds)
       state.rounds = rounds
       cyclesService.getCronInfo().then( timestamp => {
         let currentCycle = config.cycleIdx( timestamp )
         //let cyclePhase = config.cyclePhase( currentCycle, timestamp )
-        console.log(`${s}cycle ${currentCycle} with timestamp ${timestamp}`)
+        console.log(`${s}cycle ${currentCycle}: ${JSON.stringify(timeInfo(timestamp))}`)
         cyclesService.getCyclesInfo( analyst ).then( cycles => {
           //console.log( `${s}got cycles info`)//,cycles )
           let byStatus = statusService.cyclesByStatus( { cycles, rounds:rounds, timestamp:timestamp, tokens:state.tokens } )
@@ -346,23 +344,23 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
               )
             }
           })
-          byStatus.activeCycles.forEach( cycle => {
-            console.log(`${s}active cycle ${cycle}`)
-          })
+          //byStatus.activeCycles.forEach( cycle => {
+          //  console.log(`${s}active cycle ${cycle}`)
+          //})
           rounds.forEach( ( round, idx ) => { // active rounds
             if ( !isRoundActive( idx ) ) return
             if ( !round.analysts.includes( analyst ) ) return
             let aref = round.inround_id
-            console.log(`${s}round`,round)
             console.log(`${s}round ${round.id} analyst status ${round.analyst_status} in-round ref ${aref}`)
+            console.log(`${s}round ${JSON.stringify(round)}`)
             if (config.STATUSES[ round.analyst_status ] == 'pre survey due') {
               console.log(`${s}pre survey submitting on round ${round.id} for aref ${aref}`)
               let answers = survey.generateAnswers()
               let comment = `hello from analyst on pre-survey ${aref}:${analyst}`
               promises.push(
                 roundsService.submitRoundSurvey( round.id, aref, answers, comment, pre ).then( result => {
-                  console.log(`pre-survey submitted for round ${round.id} by aref ${aref}`,answers)
-                  console.log(result)
+                  console.log(`${s}pre-survey submitted for round ${round.id} by aref ${aref}`,JSON.stringify(answers))
+                  //console.log(result)
                   return result
                 })
               )
@@ -372,26 +370,27 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
               let comment = `hello from analyst on post-survey ${aref}:${analyst}`
               promises.push(
                 roundsService.submitRoundSurvey( round.id, aref, answers, comment, post ).then( result => {
-                  console.log(`post-survey submitted for round ${round.id} by aref ${aref}`,answers)
-                  console.log(result)
+                  console.log(`${s}post-survey submitted for round ${round.id} by aref ${aref} ${JSON.stringify(answers)}`)
+                  //console.log(result)
                   return result
                 }).catch( ctlError )
               )
             } else if (config.STATUSES[ round.analyst_status ] == 'brief due') {
-              console.log(`brief submitting on round ${round.id} for analyst ${analyst}`)
+              console.log(`${s}brief submitting on round ${round.id} for analyst ${analyst}`)
               promises.push(
                 roundsService.submitRoundBrief( round.id, aref, briefs[aref] ).then( result => {
-                  console.log(`brief ${briefs[aref]} submitted for round ${round.id} by aref ${aref}`)
+                  console.log(`${s}brief ${briefs[aref]} submitted for round ${round.id} by aref ${aref}`)
+                  return result
                 }).catch( ctlError )
               )
             }
           })
           console.log(`${s}${promises.length} cycle or active round work promises`)
           Promise.all( promises ).then( result => {
-            console.log(`${s}cycle or active round work done`)//,result)
+            //console.log(`${s}cycle or active round work done`,result)
             cyclesService.getCyclesInfo( analyst ).then( cycles => {
               let cyclesStatus = statusService.cyclesByStatus( { cycles, rounds:rounds, timestamp:timestamp, tokens:state.tokens } )
-              console.log(`${s}resolving analystUpdate`)
+              //console.log(`${s}resolving analystUpdate`)
               //console.log(`${s}cycles by status`,byStatus)
               resolve( { ...timeInfo(timestamp), analyst, cyclesStatus } )
             }).catch( reject )
@@ -403,13 +402,35 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
 })
 
 
+const promiseSerial = promisefuncs =>
+  promisefuncs.reduce( ( promise, promisefunc ) =>
+    promise.then( result => promisefunc.then( Array.prototype.concat.bind(result) ) ),
+    Promise.resolve([])
+  )
+
+[10,20,30]
+  .reduce(function(promise, arg) {
+    return promise.then(function() {
+      return fn(arg);
+    }), Promise.resolve();
+  });
+
+const a = val => new Promise( ( resolve, reject ) => resolve(val*10) )
+const promises = [ a(3), a(6), a(8) ]
+promises.reduce((prev, cur) => prev.then(cur), Promise.resolve()).then( result => console.log(result,'resolved sequence') )
+
+//promiseSerial( promises ).then( result => console.log('%%%%%',result) ).catch( err => console.log(err,'oops') )
+
 // at this point in time, do all the stuff analysts are due to do
 const analystsUpdate = () => new Promise( ( resolve, reject ) => {
+  func = id => analystUpdate( id )
   let s = '***[au]***'
-  Promise.all( testAnalysts.map( analystInfo => analystUpdate( analystInfo.id ) ) ).then( result => {
-    console.log( `${s}analysts update done`,result )
-    resolve( result )
-  }).catch( reject )
+  testAnalysts.reduce( (promise, analystInfo ) => promise.then( () => func( analystInfo.id ) ), Promise.resolve() ).then( result => resolve(result) ).catch( reject )
+  
+ // promiseSerial( testAnalysts.map( analystInfo => analystUpdate( analystInfo.id ) ) ).then( result => {
+    //console.log( `${s}analysts update done`,result )
+ //   resolve( result )
+ // }).catch( reject )
 })
 
 ctlRouter.route( '/analystsUpdate' ).get( ( req, res ) => {
@@ -628,8 +649,8 @@ ctlRouter.route( '/testSimRun/:totalTime/:interval' ).get( ( req, res ) => { // 
           cronRunIdx++
           console.log(`${s}do analysts update`)
           analystsUpdate().then( result => {
-            console.log(`${s}analysts update finished`,result)
             let nextTime = cronTime + intervalTime
+            console.log(`${s}analysts update finished...next cron at ${nextTime}`) //,result)
             if ( nextTime <= finishTime )
               cron( nextTime ) // repeat
             else
@@ -650,6 +671,7 @@ ctlRouter.route( '/testSimRun/:totalTime/:interval' ).get( ( req, res ) => { // 
     console.log(`${s}cron procedure...${totalTime} cycles ${timestamp}:${toDate(timestamp)} => ${finishTime}:${toDate(finishTime)}`)
     runCrons( timestamp + intervalTime ).then( timestamp => {
       let date = toDate( timestamp )
+      console.log(`${s}${s}`)
       console.log(`${s}${s}finished ${timestamp}:${date}${s}`)
       res.json({ timestamp, date })
     })

@@ -9,7 +9,7 @@ geth \
   --nodiscover \
   --mine \
   --minerthreads 1 \
-  --verbosity 3 \
+  --verbosity 2 \
   --rpccorsdomain "*" \
   --etherbase 0x5DFE021F45f00Ae83B0aA963bE44A1310a782fCC \
   --rpcaddr "0.0.0.0" \

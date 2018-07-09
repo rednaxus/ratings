@@ -1,0 +1,20 @@
+geth \
+  --datadir ~/vols/data/ethereum-1/01 \
+  --networkid 7 \
+  --port 30301 \
+  --rpc \
+  --rpcapi "admin,debug,eth,miner,net,personal,shh,txpool,web3" \
+  --rpcport 8301 \
+  --ipcpath geth.ipc \
+  --nodiscover \
+  --mine \
+  --minerthreads 1 \
+  --verbosity 3 \
+  --rpccorsdomain "*" \
+  --etherbase 0x5DFE021F45f00Ae83B0aA963bE44A1310a782fCC \
+  --rpcaddr "0.0.0.0" \
+  --unlock 0 \
+  --password "password" 
+
+
+

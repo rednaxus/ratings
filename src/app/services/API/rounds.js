@@ -72,19 +72,7 @@ module.exports = {
       console.error(`Error from server on getRoundInfo: ${err}` ) 
       reject( err )
     }
-    const err2 = err => {
-      console.error(`Error 2 from server on getRoundInfo: ${err}` ) 
-      reject( err )
-    }
-    const err3 = err => {
-      console.error(`Error 3 from server on getRoundInfo: ${err}` ) 
-      reject( err )
-    }    
-    const err4 = err => {
-      console.error(`Error 4 from server on getRoundInfo: ${err}` ) 
-      reject( err )
-    }  
-    console.log(`${s}get round info for round ${round}`)
+    //console.log(`${s}get round info for round ${round}`)
     ra.roundInfo( round ).then( rRound => { 
       var res = {
         id:             rRound[0].toNumber(), 
@@ -103,7 +91,7 @@ module.exports = {
           { timestamp: rBriefs[2].toNumber(), filehash: ipfsHashFromBytes32( rBriefs[3] ) }
         ]
         if ( !--numFetch ) resolve( res )
-      }).catch ( err2 )
+      }).catch ( err )
       if ( deep && res.num_analysts ) { // round analysts
         numFetch++
         let promises = new Array(res.num_analysts).fill().map( (_,a) => ra.roundAnalystId( round, a ) )
@@ -111,14 +99,14 @@ module.exports = {
           res.analysts = analysts.map( analyst => analyst.toNumber() )
           //console.log(`${s}round analysts: ${round_analysts.toString()}`)
           if ( !--numFetch ) resolve( res )
-        }).catch( err3 )
+        }).catch( err )
       }
       if ( config.STATUSES[ res.status ] == 'finished' ){
         numFetch++
         module.exports.getRoundSummary( round ).then( rSummary => {
           res = { ...res, ...rSummary }
           if ( !--numFetch ) resolve( res )
-        }).catch( err4 )
+        }).catch( err )
       }
     }).catch( err )
   })),

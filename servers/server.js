@@ -210,6 +210,9 @@ web3.eth.getCoinbase( ( err, coinbase ) => { // setup on launch
         }, [] )
       ).then( results => {
         console.log(`${s}tokens ready...added ${results.length} standard tokens`)
+        if (results.length) tokensService.getTokensInfo(false).then( tokens => {
+          state.tokens = tokens
+        }}.catch( ctlError )
       }).catch( ctlError )
     }).catch( ctlError )
   })

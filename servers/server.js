@@ -402,16 +402,16 @@ const analystUpdate = analyst => new Promise( (resolve, reject ) => {
 })
 
 
-const promiseSerial = promisefuncs =>
-  promisefuncs.reduce( ( promise, promisefunc ) =>
-    promise.then( result => promisefunc.then( Array.prototype.concat.bind(result) ) ),
-    Promise.resolve([])
-  )
+//const promiseSerial = promisefuncs =>
+//  promisefuncs.reduce( ( promise, promisefunc ) =>
+//    promise.then( result => promisefunc.then( Array.prototype.concat.bind(result) ) ),
+//    Promise.resolve([])
+//  )
 
 
-const a = val => new Promise( ( resolve, reject ) => resolve(val*10) )
-const promises = [ a(3), a(6), a(8) ]
-promises.reduce((prev, cur) => prev.then(cur), Promise.resolve()).then( result => console.log(result,'resolved sequence') )
+//const a = val => new Promise( ( resolve, reject ) => resolve(val*10) )
+//const promises = [ a(3), a(6), a(8) ]
+//promises.reduce((prev, cur) => prev.then(cur), Promise.resolve()).then( result => console.log(result,'resolved sequence') )
 
 //promiseSerial( promises ).then( result => console.log('%%%%%',result) ).catch( err => console.log(err,'oops') )
 
@@ -522,6 +522,14 @@ apiRouter.get('/roundSummaries/:fromDate').get( ( req, res ) => {
 
 
 
+apiRouter.route('/tokenRecommendations').get( ( req, res ) => {
+  cyclesService.getCronInfo().then( timestamp => {
+    roundsService.getRoundsSummary().then( finishedRounds => {
+      let tokenHistory = tokenomics.tokenHistorySummary( finishedRounds, state.tokens, 5)
+      res.json( { ...timeInfo( timestamp ), recommendations: tokenHistory } )
+    }).catch( apiError )
+  }).catch( apiError )
+})
 
 apiRouter.route('/tokenSummaries').get( ( req, res ) => {
   cyclesService.getCronInfo().then( timestamp => {

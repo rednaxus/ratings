@@ -159,12 +159,12 @@ module.exports = {
     Promise.all( [ module.exports.getRoundsActive(), module.exports.getRounds() ] ).then( nums => {
       let [ num_active_rounds, num_rounds ] = nums
       let num_finished_rounds = num_rounds - num_active_rounds
-      console.log( `${s}${num_finished_rounds} finished rounds and ${num_rounds} total rounds` ) 
+      //console.log( `${s}${num_finished_rounds} finished rounds and ${num_rounds} total rounds` ) 
 
       Promise.all( 
         new Array( num_finished_rounds ).fill().map( (_,idx) => module.exports.getRoundInfo( idx, false ) ) 
       ).then( rounds => {
-        console.log(`got round summaries`, rounds )
+        //console.log(`got round summaries`, rounds )
         resolve(rounds)
       }).catch( err )
     }).catch( err )

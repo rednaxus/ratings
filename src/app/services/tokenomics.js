@@ -5,6 +5,8 @@ const s = '***te**'
 module.exports = {
 	tokenHistory: ( rounds, tokens, last_rounds = 0 ) => {
 		let surveySections = survey.getSections()
+		let recommendationIdx = survey.recommendationIndex()
+
 		//console.log('survey sections', surveySections )
 		let tokenList = []
 		rounds.filter( round => config.STATUSES[ round.status ] == "finished" ).forEach( round => {
@@ -20,13 +22,16 @@ module.exports = {
 		tokenList.sort( (t1, t2) => ( t1.token - t2.token ) )
 		//console.log(`${s}token list with unsorted rounds`,tokenList)
 		return tokenList.map( tokenItem => {
+			let token = tokens.find( token => token.id == tokenItem.token )
 			let rounds = tokenItem.rounds.sort( ( future, past ) => ( past.cycle - future.cycle ) )	 // sort so most recent first
 			//console.log(`${s}rounds sorted for token ${tokenItem.token}`,rounds)
 			
 			if ( !last_rounds) return rounds 
 
-			tokenItem.lastrun = config.cycleTime( tokenItem.rounds[ 0 ].cycle )
-			tokenItem.firstrun = config.cycleTime( tokenItem.rounds[ tokenItem.rounds.length - 1 ].cycle )
+			tokenItem.address = token.address
+			tokenItem.name = token.name
+			tokenItem.lastrun = config.cycleTime( rounds[ 0 ].cycle )
+			tokenItem.firstrun = config.cycleTime( rounds[ tokenItem.rounds.length - 1 ].cycle )
 			tokenItem.numrun = tokenItem.rounds.length
 			tokenItem.averages = rounds.reduce( ( accum, round, idx ) => ( 
 				idx >= last_rounds ? accum : round.averages.map( ( preOrPost, pIdx) => 
@@ -36,7 +41,11 @@ module.exports = {
 				)
 			), [[],[]] )	
 
+
 			let surveyLength = survey.getElements().length
+			//console.log('averages',tokenItem.averages)
+			tokenItem.lastRecommendation = rounds[ 0 ].averages[1][recommendationIdx]
+			tokenItem.recentAvgRecommendation = tokenItem.averages[1][recommendationIdx]
 			tokenItem.sectionAverages = tokenItem.averages.map( ( preOrPostAverages, preOrPostIdx ) => 
 				preOrPostAverages.reduce( ( accum, avg, idx ) => {
 					if ( idx >= surveyLength ) return accum
@@ -56,9 +65,18 @@ module.exports = {
 		return tokenList
 	},
 
-	summariesByCategory: () => {
-
-	},
+	tokenHistorySummary: (rounds, tokens, last_rounds = 0 ) => 
+		module.exports.tokenHistory( rounds, tokens, last_rounds ).map( tokenItem => ({
+				//token: tokenItem.token,
+				address: tokenItem.address,
+				name: tokenItem.name,
+				lastrun: tokenItem.lastrun,
+				firstrun: tokenItem.firstrun,
+				numrun: tokenItem.numrun,
+				lastRecommendation: tokenItem.lastRecommendation,
+				recentAvgRecommendation: tokenItem.recentAvgRecommendation,
+				sectionAverages: tokenItem.sectionAverages[1]
+		}))
 }
 
 

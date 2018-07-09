@@ -5,11 +5,13 @@ const json = require('../../../survey.json') // services are interoperable serve
 var indexer = {}
 var elements = []
 var sections = []
+var recommendationIdx
 let index = 0
 json.pages.forEach( page => {
 	let startIndex = index
 	page.elements.forEach( element => {
   	elements.push( element )
+  	if (element.name == 'jurist recommendation') recommendationIdx = index
   	indexer[ element.name ] = index++ 
 	})
 	sections.push( { name: page.name, startIndex: startIndex, sectionLength: index - startIndex } )			
@@ -37,6 +39,10 @@ module.exports = {
 	
 	getSections(){
 		return sections
+	},
+	
+	recommendationIndex(){
+		return recommendationIdx
 	}
 
 

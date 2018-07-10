@@ -181,7 +181,7 @@ user.rounds.finished = [8, 9, 0, 7]
 
 	/***** Recent Payments *****/
 
-  console.log('reward events',user.reward_events)
+  //console.log('reward events',user.reward_events)
 
 	user.reward_events.forEach( ( reward, idx ) => { 
 		if ( !config.reward_is_tokens( reward ) || !is_recent( reward ) ) return

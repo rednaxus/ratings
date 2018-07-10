@@ -9,6 +9,8 @@ import AnalystMessages from '../../components/analysts/AnalystMessages'
 
 import { AnimatedView, Breadcrumb } from '../../components'
 
+const s = '**!**'
+
 class Dashboard extends Component {
   //constructor(props, { user }) {
   constructor(props) {
@@ -40,6 +42,7 @@ class Dashboard extends Component {
 
   render() {
     const { user, tokens, rounds, cycles, timestamp } = this.props
+    console.log(`${s}tokens in dash`,tokens)
     const { currentView } = this.props
     //const userFullName = `${userInfos.firstname} ${userInfos.lastname.toUpperCase()}`;
     //console.log('dashboard render',...user,...tokens,...rounds,...cycles)

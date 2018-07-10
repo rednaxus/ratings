@@ -25,7 +25,8 @@ const mapDispatchToProps = dispatch => {
     actions : bindActionCreators({
       enterTokensView: actions.enterTokensView,
       leaveTokensView: actions.leaveTokensView,
-      fetchRoundsFinished: actions.fetchRoundsFinished
+      fetchRoundsFinished: actions.fetchRoundsFinished,
+      fetchTokensDataIfNeeded: actions.fetchTokensDataIfNeeded
     },
     dispatch)
   }

@@ -16,7 +16,7 @@ import { parseB32StringToUintArray } from '../utils'
 */
 
 const info = userId => new Promise((resolve,reject) => {
-  console.log(' beginning user info fetch')
+  //console.log(' beginning user info fetch')
   
   web3 = window.web3
   let userInfo = {
@@ -206,7 +206,7 @@ const login = (email, password) => new Promise((resolve,reject) => {
     analystRegistry.login( email, password ).then(result => {
       // id,email,reputation,token_balance
       let email = web3.toAscii(result[1])
-      console.log('login result',result, email)
+      //console.log('login result',result, email)
       let user = { 
         id: result[0].toNumber(),
         password: password,
@@ -215,7 +215,7 @@ const login = (email, password) => new Promise((resolve,reject) => {
         token_balance: result[3].toNumber()
       }
       auth.setToken( 'mock token' )
-      console.log('setting user info', user)
+      //console.log('setting user info', user)
       auth.setUserInfo( user )
       resolve(user) // should push user data
     })
@@ -233,14 +233,14 @@ const login = (email, password) => new Promise((resolve,reject) => {
 
 const register = ( email, password, regcode ) => new Promise( (resolve,reject) => {
   web3 = window.web3
-  console.log(' register', email, password, regcode)
+  //console.log(' register', email, password, regcode)
   let email_a = web3.fromAscii(email)
   let password_a = web3.fromAscii(password)
-  console.log(email_a,password_a)
+  //console.log(email_a,password_a)
 
   AnalystRegistry().then( analystRegistry => {
     analystRegistry.register( email, password, regcode ).then( result => { // transaction object
-      console.log('reg result',result)
+      //console.log('reg result',result)
       resolve( email )
     })
   }).catch(result => { 

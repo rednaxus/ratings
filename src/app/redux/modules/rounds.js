@@ -133,11 +133,11 @@ export const fetchRoundInfo = ( round ) => {
     const err = ( error ) => dispatch( failure( error ) )
     return new Promise( (resolve,reject) => {
       dispatch( request() )
-      console.log('getting round info',round)
+      //console.log('getting round info',round)
       getRoundInfo(round).then( roundInfo => {
-        console.log('got round info for round',round)
+        //console.log('got round info for round',round)
         fetchTokenData( roundInfo.covered_token, false )( dispatch, getState ).then( ( tokenData ) => {
-          console.log(' got token data',tokenData)
+          //console.log(' got token data',tokenData)
           resolve( roundInfo )
           dispatch( success( roundInfo ) ) 
         }).catch( ( error ) => {
@@ -153,10 +153,10 @@ export const fetchRoundsFinished = () => {
   const request = (time = moment().format()) => ( { type: REQUEST_ROUNDS_FINISHED, isFetching: true, time } )
   const success = (data, time = moment().format()) => ( { type: RECEIVED_ROUNDS_FINISHED, isFetching: false, data, time } )
   const failure = (time = moment().format()) => ( { type: ERROR_ROUNDS_FINISHED, isFetching: false, time } )
-  console.log('fetch rounds finished')
+  //console.log('fetch rounds finished')
   return dispatch => {
     dispatch(request())
-      console.log('getting rounds data from api')
+      //console.log('getting rounds data from api')
       getRoundsSummary()
       .then( data => dispatch(success(data)) )
       .catch( error => dispatch(failure(error)) )    
@@ -176,7 +176,7 @@ export const fetchRoundAnalystInfo = ( round, analyst = -1 ) => {
     return { type: ERROR_ROUND_ANALYST_INFO, time }
   }
   return ( dispatch, getState ) => {
-    console.log('fetch analyst info', round, analyst)
+    //console.log('fetch analyst info', round, analyst)
     dispatch( request() )
     //console.log('getting round analyst infor for user ',getState(),getUser(getState()))
     return getRoundAnalystInfo(round, analyst==-1 ? getUser(getState()) : analyst).then( roundAnalystInfo => {
@@ -211,7 +211,7 @@ export const submitSurvey = ( round, roundAnalyst, pre, answers ) => {
   return (dispatch,getState) => {
     dispatch( request() )
     let answersB32 = toHexString( answers )
-    console.log('data',answers,'bytes32',answersB32)
+    //console.log('data',answers,'bytes32',answersB32)
     submitRoundSurvey( round, roundAnalyst, answersB32, qualitatives, recommendation, comment, pre?0:1 )
     .then( result => {
       dispatch( success() ) 

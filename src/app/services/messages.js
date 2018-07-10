@@ -48,6 +48,8 @@ import { referralCode } from '../services/referralCode.js'
 
 const ms = secs => secs * 1000
 
+const s = '**/**'
+
 export const generateMessages = ( { user, cycles, rounds, tokens, timestamp } ) => {
 	//console.log('generate messages', 'user',...user,'cycles',...cycles,'rounds',...rounds,'tokens',...tokens,timestamp)
 
@@ -125,7 +127,10 @@ user.rounds.finished = [8, 9, 0, 7]
 
 	/***** Round Activated *****/
 	activeCycles.map( cycle => {
+		//console.log(`${s}getting cycle token ${cycle.token}`,cycle)
+		if ( !cycle.token ) return // don't show me at all, no actual token / round running
 		let token  = getToken( cycle.token )
+		//console.log(`${s}got token`,token)
 		let round = rounds.find( round => round.id === cycle.round )
 		if ( is_recent( { timestamp: config.cycleTime( cycle.id ) } ) ) messages.push({
 			type: 'round_activated',
@@ -156,6 +161,7 @@ user.rounds.finished = [8, 9, 0, 7]
 	finishedCycles.map( cycle => {
 		if (cycle <= currentCycle - 4 ) return
 		//console.log('****',cycle,...tokens)
+		if (!cycle.token) return
 		let round = rounds.find( round => round.id == cycle.round )
 		let token = getToken( cycle.token )
 		messages.push({

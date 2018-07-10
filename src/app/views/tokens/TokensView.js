@@ -56,8 +56,9 @@ class TokensView extends Component {
   }
 
   componentDidMount() {
-    const { actions: { fetchRoundsFinished } } = this.props
+    const { actions: { fetchRoundsFinished, fetchTokensDataIfNeeded } } = this.props
     fetchRoundsFinished()
+    fetchTokensDataIfNeeded()
   }
 
   componentWillUnmount() {
@@ -67,7 +68,7 @@ class TokensView extends Component {
 
   render() {
     const { tokens, userAuth, rounds } = this.props
-
+    if (!tokens || !tokens.length) return '' // not ready yet
     //const { header } = this.state
 
     return (

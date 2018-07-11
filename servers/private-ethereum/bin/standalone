@@ -16,7 +16,9 @@ geth \
   --unlock 0 \
   --password "password" \
   --targetgaslimit 6700000 \
-  --gcmode archive 
-
+  --gcmode archive \
+  --identity VEVA-1 \
+  --ethstats VEVA-1:LOVENEO@localhost:3000 \
+  --exec 'loadScript("snippets.js")'
 
 

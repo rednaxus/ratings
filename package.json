@@ -152,7 +152,7 @@
     "lodash": "^4.17.10",
     "moment": "^2.19.3",
     "morgan": "^1.9.0",
-    "node-sass": "^4.9.0",
+    "node-sass": "^4.9.2",
     "normalizr": "^3.2.4",
     "nuka-carousel": "^3.0.1",
     "openzeppelin-solidity": "^1.10.0",

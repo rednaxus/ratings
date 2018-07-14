@@ -21,6 +21,8 @@ command = /home/ubuntu/gofiles/src/github.com/ethereum/go-ethereum/build/bin/get
   --ethash.dagdir "/home/ubuntu/.ethash"
 autostart=true  
 autorestart=true  
+directory=/home/ubuntu/vols/ratings/servers/private-ethereum
 stderr_logfile=/var/log/supervisor/geth.err.log  
 stdout_logfile=/var/log/supervisor/geth.out.log
+user=ubuntu
 

@@ -120,7 +120,7 @@ export class Token extends ValidatingModel {
     case REQUEST_TOKENS_DATA:
       break
     case RECEIVED_TOKENS_DATA:
-      console.log(`${s}tokens data`,action.data)
+      //console.log(`${s}tokens data`,action.data)
       action.data.forEach( token => Token.upsert( token ) )
       break
     case ERROR_TOKENS_DATA:
@@ -131,15 +131,14 @@ export class Token extends ValidatingModel {
       break
     case RECEIVED_TOKEN_DATA: 
       Token.upsert( action.info )
-      console.log(`${s}received token data`,action.info)
+      //console.log(`${s}received token data`,action.info)
       break
     case RECEIVED_TOKEN_ROUNDS:
-      console.log(`${s}received token rounds`)
+      //console.log(`${s}received token rounds`)
       Token.upsert( action.info )
       break
     case ERROR_TOKEN_DATA:
     case ERROR_TOKEN_ROUNDS:
-      console.log(`rtd`)
       break
     }
   }

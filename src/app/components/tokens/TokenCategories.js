@@ -13,8 +13,8 @@ const surveySections = survey.getSections()
 const toDate = timestamp => moment(timestamp*1000).format('MM/DD/YY')
 
 const TokenCategories = ( { rounds, tokens } ) => {
-  console.log('tokens',tokens)
-
+  //console.log('tokens',tokens)
+  if (!tokens || !tokens.length) return ''
   /*const data = tokens.map( token => {
     let count = token.price && token.price.marketCapUsd ? token.price.marketCapUsd / 1000000000: 10
     return { id: token.id, value: token.name, count: count } 

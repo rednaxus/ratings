@@ -75,6 +75,7 @@ export const navigation = {
       ]
     },
      // group menu #4
+     /*
     {
       id: 4,
       group: 'Tests1',
@@ -210,5 +211,6 @@ export const navigation = {
         }
       ]
     }
+    */
   ]
 };

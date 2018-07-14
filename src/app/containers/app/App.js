@@ -61,7 +61,7 @@ class App extends Component {
 
   // #region lifecycle methods
   componentDidMount() {
-    console.log('component did mount props',this.props)
+    //console.log('component did mount props',this.props)
     const {
       actions: {
         //fetchUserInfoDataIfNeeded,
@@ -96,7 +96,7 @@ class App extends Component {
   }
 
   render() {
-    const { appName, connectionStatus, helloWord } = this.state;
+    const { appName, connectionStatus, helloWord } = this.state
     const { 
       //userInfos, 
       userIsConnected, 
@@ -106,12 +106,12 @@ class App extends Component {
       user,
       userAuth
     } = this.props
-    console.log('props in app',this.props)
+    //console.log('props in app',this.props)
 
     //const userFullName = `${userInfos.firstname} ${userInfos.lastname.toUpperCase()}`;
     const userFullName = user.name ? user.name : '' // should not get here if not logged in but during testing
     const username = user.name ? user.name: ''
-    console.log( 'alert:',alert )
+    //console.log( 'alert:',alert )
     return (
       <div>
         <Header

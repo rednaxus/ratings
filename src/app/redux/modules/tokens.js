@@ -97,7 +97,7 @@ export function setTokenSelection( token_id ) {
 
 export function fetchTokensDataIfNeeded() {
   return (dispatch, getState) => {
-    console.log('fetch tokens data if needed')
+    //console.log('fetch tokens data if needed')
     if (shouldFetchTokensData(getState())) {
       return dispatch(fetchTokensData());
     }

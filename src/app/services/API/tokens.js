@@ -11,7 +11,7 @@ module.exports = {
   }) {
     console.log('in data source')
     return new Promise((resolve,reject) => {
-      console.log(' beginning tokens fetch', pageSize, pageIndex )
+      //console.log(' beginning tokens fetch', pageSize, pageIndex )
       pageSize = pageSize || 20
       pageIndex = pageIndex || 0
       RatingAgency().then( ra => {
@@ -91,7 +91,7 @@ module.exports = {
       console.error("Error from server:"  + result) 
       reject( result )
     }
-    console.log('getting num tokens')
+    //console.log('getting num tokens')
     ra.num_tokens().then( result => {
       let numTokens = result.toNumber()
       if (!numTokens) return resolve( [] )

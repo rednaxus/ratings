@@ -65,7 +65,7 @@ export const refreshInfo = (deep = true) => { // get from id, deep means to get 
 
   return (dispatch,getState) => {
     const user = getState().user
-    console.log('user',user)
+    //console.log('user',user)
     const user_id = user.authentication && user.authentication.id ? user.authentication.id : 0
     dispatch( request( { user_id } ) )
     return new Promise( (resolve,reject) => {
@@ -78,7 +78,7 @@ export const refreshInfo = (deep = true) => { // get from id, deep means to get 
         resolve( userInfo )
       }
       userService.info( user_id ).then( userInfo => {
-        console.log('refreshInfo, got info',userInfo)
+        //console.log('refreshInfo, got info',userInfo)
         if ( !deep ) returnSuccess( userInfo )
         else {
           userService.getAnalystRounds( userInfo ).then( rounds => {
@@ -89,9 +89,9 @@ export const refreshInfo = (deep = true) => { // get from id, deep means to get 
             allRounds.forEach( round => {
               numFetches++
               fetchRoundInfo( round )( dispatch, getState ).then( roundInfo => {
-                console.log('got round info', round, roundInfo )
+                //console.log('got round info', round, roundInfo )
                 fetchRoundAnalystInfo( round, user_id )( dispatch, getState ).then( ( roundAnalystInfo ) => {
-                  console.log('got round analyst info', round, roundAnalystInfo )
+                  //console.log('got round analyst info', round, roundAnalystInfo )
                   if ( !--numFetches ) returnSuccess( userInfo )
                 })
               })
@@ -121,7 +121,7 @@ const login = ( email, password, reload = true ) => {
           window.location.reload()
         }
         else refreshInfo()(dispatch,getState).then( userInfo => { 
-          console.log('got user info',userInfo) 
+          //console.log('got user info',userInfo) 
           dispatch( fetchCyclesDataIfNeeded() )
         })
       },
@@ -209,7 +209,7 @@ const initialInfoState = { infoFetching: false }
 const info = (state = initialInfoState, action) => {
   switch (action.type) {
     case userConstants.INFO_REQUEST:
-      console.log('info request',state)
+      //console.log('info request',state)
       return { infoFetching: true } 
     case userConstants.INFO_SUCCESS:
       return { infoFetching: false, ...action.userInfo }

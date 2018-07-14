@@ -45,7 +45,7 @@ const customRenderer = (tag, size, color) => (
 );
 
 const TokenCloud = ( { tokens } ) => {
-  console.log('tokens',tokens)
+  //console.log('tokens',tokens)
 
   const data = tokens.map( token => {
     let count = token.price && token.price.marketCapUsd ? token.price.marketCapUsd / 1000000000: 10

@@ -97,6 +97,7 @@
     "jest": "^21.2.1",
     "json-loader": "^0.5.4",
     "nodemon": "^1.17.5",
+    "node-sass": "^4.9.2",
     "postcss": "^6.0.14",
     "postcss-cssnext": "^3.0.2",
     "postcss-focus": "^3.0.0",

@@ -42,11 +42,16 @@ class JuristSurvey extends Component {
     this.onSubmit = this.onSubmit.bind( this )
     this.numAnswered = 0
     this.elements = survey.getElements()
+    this.submitDisabled = false
   }
-  onSubmit( a ) {
+  onSubmit( e ) {
+    const { round, roundAnalyst, pre, onFinish } = this.props
     let answers = this.props.questions.sort( (q1,q2) => q1.id - q2.id ).map( ( question,idx ) => Math.round(question.value * 100 / (this.elements[idx].maxRate || 5) ) )
-    console.log(`survey submit with`,answers)
-    this.props.onFinish( answers )
+    //console.log(`survey submit with`,answers)
+    this.submitDisabled = true
+
+    onFinish( round, roundAnalyst, pre, answers )
+    this.props.clearQuestionData()
   }
   onValueChange(question,value,oldValue) {
     //console.log('value change',question,value)
@@ -93,7 +98,7 @@ class JuristSurvey extends Component {
         )}
 
 
-        <button className={`btn btn-primary`} disabled={this.numAnswered < this.elements.length} onClick={ (e) => this.onSubmit("hello") } >Submit Survey</button>
+        <button className={`btn btn-primary`} disabled={this.submitDisabled || this.numAnswered < this.elements.length} onClick={ this.onSubmit } >Submit Survey</button>
       </div>
     );
   }

@@ -3,7 +3,7 @@
 /* eslint no-console:0 */
 /* eslint consistent-return:0 */
 import moment               from 'moment'
-import { getRoundInfo, getRoundAnalystInfo, getRoundsSummary, submitRound } from '../../services/API'
+import { getRoundInfo, getRoundAnalystInfo, getRoundsSummary, submitRound, submitRoundSurvey } from '../../services/API'
 import { toHexString } from '../../services/utils'
 import { fetchTokenData }  from './tokens'
 
@@ -203,7 +203,7 @@ export const submitSurvey = ( round, roundAnalyst, pre, answers ) => {
   const success = ( time = moment().format() ) => ( { type: RECEIVED_SURVEY_SUBMIT, time } )
   const failure = (time = moment().format()) => ( { type: ERROR_SURVEY_SUBMIT, time } )
   
-  console.log('submitSurvey action',round,roundAnalyst,pre,answers)
+  //console.log('submitSurvey action',round,roundAnalyst,pre,answers)
   let qualitatives = 0
   let recommendation = 0
   let comment = ""
@@ -212,11 +212,15 @@ export const submitSurvey = ( round, roundAnalyst, pre, answers ) => {
     dispatch( request() )
     let answersB32 = toHexString( answers )
     //console.log('data',answers,'bytes32',answersB32)
-    submitRoundSurvey( round, roundAnalyst, answersB32, qualitatives, recommendation, comment, pre?0:1 )
+    return submitRoundSurvey( round, roundAnalyst, answersB32, qualitatives, recommendation, comment, pre?0:1 )
     .then( result => {
       dispatch( success() ) 
+      return fetchRoundAnalystInfo( round, roundAnalyst )( dispatch, getState )
     } )
-    .catch( err => { console.log('error submitting survey')} )
+    .catch( err => { 
+      console.log('error submitting survey')
+      return err
+    })
   }
 }
 

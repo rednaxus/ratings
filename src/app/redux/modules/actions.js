@@ -42,7 +42,8 @@ export {
   fetchRoundInfo, 
   fetchRoundAnalystInfo, 
   fetchRoundsFinished,
-  setRoundInfo
+  setRoundInfo,
+  submitSurvey
 }  from './rounds'
 
 export {

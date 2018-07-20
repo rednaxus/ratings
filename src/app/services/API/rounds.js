@@ -254,8 +254,20 @@ module.exports = {
     })
   ),
 
-
-
+  /*
+  submitRoundSurveyTest : ( 
+    round, 
+    analystRef, // analyst ref in the round
+    answers,  // can be either array or encoded with toHexString
+    comment, 
+    preOrPost = 0 
+  ) => new Promise( (resolve,reject) => getRatingAgency().then( ra => {
+      let _answers = answers instanceof Array ? toHexString( answers ): answers
+      console.log(`test submitting ${preOrPost==0 ? "pre-":"post-"} survey with answers ${answers} to round ${round}`)
+      setTimeout( () => { resolve('test done') }, 1000)
+    })
+  ),
+  */
   dataSource: function getData({pageIndex, pageSize}) {
     return new Promise( (resolve,reject) => {
       const { store } = require('../../Root')

@@ -14,6 +14,8 @@ import {
   BriefUpload
 }                         from '../../components'
 
+//import { submitSurvey } from '../../redux/modules/rounds'
+
 //import JuristSurvey from '../../components/juristSurvey'
 import { JuristSurvey } from '../../components'
 
@@ -38,6 +40,7 @@ class Round extends PureComponent {
   constructor( props ){
     super( props )
     this.onBriefUpload = this.onBriefUpload.bind( this )
+    this.onSurveySubmit = this.onSurveySubmit.bind( this )
   }
 
   componentWillMount() {
@@ -61,10 +64,10 @@ class Round extends PureComponent {
     this.idx = +this.props.match.params.id
     //console.log('component will receive props',this.idx)
 
-    const { actions: { fetchRoundInfo } } = this.props
+    const { actions: { fetchRoundInfo, fetchRoundAnalystInfo } } = this.props
     //console.log('call fech round info',this.idx)
     fetchRoundInfo(this.idx)
-
+    //fetchRoundAnalystInfo(this.idx)
     //const { actions: { fetchTokenData, fetchTokenRounds } } = this.props
     //const { actions: { fetchRoundInfo, fetchRoundAnalystInfo, fetchTokenRounds } } = this.props
     //fetchRoundInfo( this.idx )
@@ -83,8 +86,11 @@ class Round extends PureComponent {
     this.forceUpdate()
   }
 
-  onSurveySubmit( answers ){
-    console.log('on survey submit with answers',answers)
+  onSurveySubmit( round, roundAnalyst, pre, answers ){
+    //console.log('on survey submit',round, roundAnalyst, pre, answers)
+    const { actions: { submitSurvey } } = this.props
+    submitSurvey( round, roundAnalyst, pre, answers )
+
   }
 
   render() {

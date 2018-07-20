@@ -12,6 +12,56 @@ import 'react-widgets/dist/css/react-widgets.css'
 import validate from './validate'
 
 import Slider from '../slider'
+//import { surveyQuestion } from '../../redux/modules/selectors'
+
+let s = '***'
+
+const Question = props => {
+  const { handleSubmit, pristine, nextPage, previousPage, submitting, questionNumber, questionData, questionValue } = props
+  //console.log('question data',state,surveyQuestion) 
+  //let rating = surveyQuestion.value 
+
+  const handleOnSliderChange = (value,oldValue) => {
+    //console.log('slider change',value)
+    if (props.onValueChange) props.onValueChange(questionNumber,value,oldValue)
+  }
+
+  //console.log(`${s}question value ${questionValue}`, questionNumber, questionData)
+  //console.log(`${s}max,min rate`,questionData.maxRate, questionData.minRate)
+  return (
+    <div>
+      <Panel className={`panel-active${questionValue?"":"-large"} card card-style`}>
+        <Panel.Heading className={"card-title"}>{questionNumber+1}. {questionData.name}</Panel.Heading>
+        <Panel.Body>
+          <form className="jurist-survey" onSubmit={handleSubmit}>
+            <div>
+              <div className="question-body"><i className="fa fa-bar-chart fa-lg"/>{questionData.title}</div>
+              <Slider
+                value={questionValue}
+                min={questionData.minRate || 0}
+                max={questionData.maxRate || 5}
+                step={0.1}
+                orientation="horizontal"
+                onChange={handleOnSliderChange}
+              />
+            </div>
+          </form>
+        </Panel.Body>
+      </Panel>
+
+ 
+    </div>
+  )
+}
+
+export default reduxForm({
+  form: 'jurist-survey', //                 <------ same form name
+  destroyOnUnmount: false, //        <------ preserve form data
+  forceUnregisterOnUnmount: true, // <------ unregister fields on unmount
+  validate,
+})( Question )
+
+
 
 
 //momentLocaliser(moment)
@@ -153,64 +203,3 @@ const renderDateTimePicker = ({ input: { onChange, value }, showTime }) => (
   />
 )
 */
-
-const Question = props => {
-  const { handleSubmit, pristine, nextPage, previousPage, submitting, questionNumber, questionData } = props;
-  console.log('question data',questionData) 
-  let rating = 0 
-  const handleOnSliderChange = (value) => {
-    console.log('slider change',value)
-    if (props.onValueChange) props.onValueChange(questionNumber,value)
-  }
-
-  return (
-    <div>
-      <Panel className="panel-active card card-style">
-        <Panel.Heading className={"card-title"}>{questionNumber+1}. {questionData.name}</Panel.Heading>
-        <Panel.Body>
-          <form className="jurist-survey" onSubmit={handleSubmit}>
-            <div>
-              {/*<label className="question-title">{questionData.name}</label>*/}
-              <div className="question-body"><i className="fa fa-bar-chart fa-lg"/>{questionData.title}</div>
-              {/*<Field
-                name={"rating-"+questionNumber}
-                component={renderRating}
-                data={['1', '2', '3', '4', '5']}
-              />*/}
-              <Slider
-                value={rating}
-                min={0}
-                max={5}
-                step={0.1}
-                orientation="horizontal"
-                onChange={handleOnSliderChange}
-              />
-            </div>
-            <div>{/*
-              <button type="button" className="previous" onClick={previousPage} >
-                Previous
-              </button>
-              <button type="button" className="next" onClick={nextPage} >
-                Next
-              </button>
-              <button type="submit" disabled={pristine || submitting}>
-                Submit
-              </button>
-            */}
-            </div>
-          </form>
-        </Panel.Body>
-      </Panel>
-
- 
-    </div>
-  )
-}
-
-export default reduxForm({
-  form: 'jurist-survey', //                 <------ same form name
-  destroyOnUnmount: false, //        <------ preserve form data
-  forceUnregisterOnUnmount: true, // <------ unregister fields on unmount
-  validate,
-})( Question )
-

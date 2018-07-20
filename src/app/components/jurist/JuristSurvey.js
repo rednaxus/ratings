@@ -5,10 +5,10 @@ import Question from './Question'
 import Moment from 'react-moment'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { clearData, setData, setComplete } from '../../redux/modules/survey'
+import { clearQuestionData, setQuestionData, setComplete } from '../../redux/modules/survey'
 import { submitSurvey } from '../../redux/modules/rounds'
 import survey from '../../services/survey'
-
+import { surveyQuestions, surveyQuestion }     from '../../redux/modules/selectors'
 
 /*
 import json from '../../../../survey.json'
@@ -29,22 +29,33 @@ const encodeData = data => {
   return result
 }
 */
-
+let s = '****'
 
 
 class JuristSurvey extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     //this.survey = new Survey()
-    this.nextPage = this.nextPage.bind(this);
-    this.previousPage = this.previousPage.bind(this);
-    this.state = {
-      page: 1,
-    };
+    this.nextPage = this.nextPage.bind(this)
+    this.previousPage = this.previousPage.bind(this)
+    this.state = { page: 1 }
+    this.onSubmit = this.onSubmit.bind( this )
+    this.numAnswered = 0
+    this.elements = survey.getElements()
   }
-  onValueChange(question,value) {
-    console.log('value change',question,value)
-    //setData()
+  onSubmit( a ) {
+    let answers = this.props.questions.sort( (q1,q2) => q1.id - q2.id ).map( ( question,idx ) => Math.round(question.value * 100 / (this.elements[idx].maxRate || 5) ) )
+    console.log(`survey submit with`,answers)
+    this.props.onFinish( answers )
+  }
+  onValueChange(question,value,oldValue) {
+    //console.log('value change',question,value)
+    if (oldValue == value) return 
+     
+    if (!oldValue) this.numAnswered++
+    else if (!value) this.numAnswered--
+    //console.log(`${s}num answered ${this.numAnswered}`)
+    this.props.setQuestionData( question, value )
   }
   nextPage() {
     this.setState({ page: this.state.page + 1 });
@@ -55,46 +66,34 @@ class JuristSurvey extends Component {
   }
 
   render() {
-    const { onSubmit } = this.props
+    const { onSubmit, questions } = this.props
     const { page } = this.state
-    let elements = survey.getElements()
+    //console.log('questions',questions) 
+    this.numAnswered = 0
     return (
       <div>
-        {/*<Panel className="card card-style panel-info">
-          <Panel.Heading>Jurist Survey<span className="red small pull-right">Complete by: <Moment/></span></Panel.Heading>
-          <Panel.Body className="question-panel">*/}
-          {elements.map( (element,idx) => 
-            <Question
-              key={idx}
-              questionData={element} 
-              questionNumber={idx}
-              onSubmit={this.nextPage} 
-              previousPage={this.previousPage}
-              nextPage={this.nextPage}
-              onValueChange={ (question,value) => this.onValueChange(question,value) }
-            />)}
-            <button>Submit Survey</button>
-          {/*</Panel.Body>
-        </Panel>*/}
+          {this.elements.map( (element,idx) => {
+            //let value = surveyQuestion(this.state,idx)
+            let q = questions.find( question => question.id == idx )
+            if (q && q.value > 0) this.numAnswered++
+            //console.log(`${s}`,q)
+            return ( 
+              <Question
+                key={idx}
+                questionData={element} 
+                questionNumber={idx}
+                questionValue={q ? q.value : 0}
+                onSubmit={this.nextPage} 
+                previousPage={this.previousPage}
+                nextPage={this.nextPage}
+                onValueChange={ ( question, value, oldValue ) => this.onValueChange( question, value, oldValue ) }
+              />
+            )
+          }
+        )}
 
-        {/*
-        {page === 1 && <WizardFormFirstPage onSubmit={this.nextPage} />}
-        {page === 2 &&
-          <WizardFormSecondPage
-            previousPage={this.previousPage}
-            onSubmit={this.nextPage}
-          />}
-        {page === 3 &&
-          <WizardFormThirdPage
-            previousPage={this.previousPage}
-            onSubmit={this.nextPage}
-          />}
-        {page === 4 &&
-          <WizardFormFourthPage
-            previousPage={this.previousPage}
-            onSubmit={onSubmit}
-          />}
-        */}
+
+        <button className={`btn btn-primary`} disabled={this.numAnswered < this.elements.length} onClick={ (e) => this.onSubmit("hello") } >Submit Survey</button>
       </div>
     );
   }
@@ -105,12 +104,12 @@ JuristSurvey.propTypes = {
 };
 
 const mapStateToProps = state => ( {
-  data: state.survey.data
+  questions: surveyQuestions(state)
 } )
 
 const mapDispatchToProps = dispatch => bindActionCreators( {
-  clearData,
-  setData,
+  clearQuestionData,
+  setQuestionData,
   setComplete,
   submitSurvey
 }, dispatch )

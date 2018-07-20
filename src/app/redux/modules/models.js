@@ -41,7 +41,10 @@ import {
   ERROR_TOKEN_DATA,
   REQUEST_TOKEN_ROUNDS,
   RECEIVED_TOKEN_ROUNDS,
-  ERROR_TOKEN_ROUNDS
+  ERROR_TOKEN_ROUNDS,
+
+  SET_SURVEY_QUESTION_DATA,
+  CLEAR_SURVEY_DATA
 } from './actionTypes'
 
 const ValidatingModel = propTypesMixin(Model)
@@ -154,7 +157,14 @@ export class SurveyQuestion extends ValidatingModel {
   static reducer( action, SurveyQuestion, session ) {
     const { type } = action
     switch (type) {
-
+      case SET_SURVEY_QUESTION_DATA:
+        //console.log('upserting',action)
+        SurveyQuestion.upsert( action.questionData )
+        break
+      case CLEAR_SURVEY_DATA:
+        console.log('clearing')
+        SurveyQuestion.all().delete()
+        break;
     }
   }
 }

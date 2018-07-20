@@ -45,7 +45,7 @@ export const reducers = {
   cron,
   cycles,
   rounds,
-  survey,
+  //survey,
   web3
 }
 

@@ -45,6 +45,12 @@ export {
   setRoundInfo
 }  from './rounds'
 
+export {
+  setQuestionData,
+  clearQuestionData
+}   from './survey'
+
+
 export { 
   switchFeature, 
   ready, 

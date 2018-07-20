@@ -220,18 +220,8 @@
      "maxRateDescription": "hi",
      "minRateDescription": "lo",
      "name": "jurist recommendation",
-     "rateValues": [
-      "1",
-      "2",
-      "3",
-      "4",
-      "5",
-      "6",
-      "7",
-      "8",
-      "9",
-      "10"
-     ],
+     "minRate": 0,
+     "maxRate": 10,
      "title": "After reviewing the Bull and Bear valuation briefs what is your recommendation?"
     }
    ],

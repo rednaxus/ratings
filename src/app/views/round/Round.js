@@ -59,7 +59,7 @@ class Round extends PureComponent {
     if (this.idx === +this.props.match.params.id) return
 
     this.idx = +this.props.match.params.id
-    console.log('component will receive props',this.idx)
+    //console.log('component will receive props',this.idx)
 
     const { actions: { fetchRoundInfo } } = this.props
     //console.log('call fech round info',this.idx)
@@ -83,12 +83,16 @@ class Round extends PureComponent {
     this.forceUpdate()
   }
 
+  onSurveySubmit( answers ){
+    console.log('on survey submit with answers',answers)
+  }
+
   render() {
     let i, token, round
     const { rounds, timestamp, tokens, user } = this.props
-    console.log('rounds are',rounds)
+    //console.log('rounds are',rounds)
     i = rounds.findIndex( round => round.id == this.idx )
-    console.log('finding for id:',this.idx, 'found at',i)
+    //console.log('finding for id:',this.idx, 'found at',i)
     if ( i == -1 ) {
       console.log('no round yet',this.idx)
       return <div>fetching...</div>
@@ -98,7 +102,7 @@ class Round extends PureComponent {
     token = i == -1 ? {} : tokens[ i ]
     let analyst_status = config.STATUSES[round.analyst_status]
     let leadPosition = round.inround_id == 0 ? 'bull' : (round.inround_id == 1 ? 'bear' : '' )
-    console.log('analyst status is',round.analyst_status, analyst_status)
+    //console.log('analyst status is',round.analyst_status, analyst_status)
     //analyst_status = 'brief due' // testing
     const getActivity = (analyst_status) => {
       switch(analyst_status) {
@@ -114,7 +118,7 @@ class Round extends PureComponent {
                 round={ round.id } 
                 pre={ true } 
                 roundAnalyst={ round.inround_id }
-                onSubmit={ showResults }
+                onFinish={ this.onSurveySubmit }
               />
             </div>
           )
@@ -128,6 +132,7 @@ class Round extends PureComponent {
                 round={ round.id } 
                 roundAnalyst={ round.inround_id } 
                 pre={ false }
+                onFinish={ this.onSurveySubmit }
               />
             </div> )
         case 'post survey submitted':
@@ -135,7 +140,7 @@ class Round extends PureComponent {
       }
     }
     
-    console.log('appconfig',config)
+    //console.log('appconfig',config)
     
     return(
       <AnimatedView>

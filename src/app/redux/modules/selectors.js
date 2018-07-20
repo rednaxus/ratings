@@ -63,3 +63,27 @@ export const cycles = createSelector(
     return session.Cycle.all().toRefArray()
   })
 )
+
+export const surveyQuestion = createSelector( // note doesn't work right now
+  ormSelector,
+  //state => state.db.surveyQuestions,
+  ormCreateSelector( orm, (session, selectedQuestionId) => {
+    //console.log(`${s}Running question selector for selected question ${selectedQuestionId}`);
+    // .ref returns a reference to the plain
+    // JavaScript object in the store.
+    if ( ! session.SurveyQuestion.hasId( selectedQuestionId ) ) return ({})
+    //return ( { ...session.Token.withId(selectedTokenId).ref, rounds: token.rounds.toRefArray()} )
+
+    return ( { ...session.SurveyQuestion.withId(selectedQuestionId).ref } )
+  })
+)
+
+export const surveyQuestions = createSelector(
+  ormSelector,
+  ormCreateSelector(orm, session => {
+    //console.log('Running survey questions selector',session.SurveyQuestion)
+    return session.SurveyQuestion.filter().toModelArray().map( question => {
+      return ( { ...question.ref } )
+    })
+  })
+)

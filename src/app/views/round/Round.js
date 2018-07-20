@@ -66,8 +66,8 @@ class Round extends PureComponent {
 
     const { actions: { fetchRoundInfo, fetchRoundAnalystInfo } } = this.props
     //console.log('call fech round info',this.idx)
-    fetchRoundInfo(this.idx)
-    //fetchRoundAnalystInfo(this.idx)
+    fetchRoundInfo(this.idx, true)
+    fetchRoundAnalystInfo(this.idx)
     //const { actions: { fetchTokenData, fetchTokenRounds } } = this.props
     //const { actions: { fetchRoundInfo, fetchRoundAnalystInfo, fetchTokenRounds } } = this.props
     //fetchRoundInfo( this.idx )
@@ -99,11 +99,16 @@ class Round extends PureComponent {
     //console.log('rounds are',rounds)
     i = rounds.findIndex( round => round.id == this.idx )
     //console.log('finding for id:',this.idx, 'found at',i)
-    if ( i == -1 ) {
+    const fetching = () => <div>fetching...</div>
+    if ( i == -1) {
       console.log('no round yet',this.idx)
-      return <div>fetching...</div>
+      return fetching()
     }
-    round = rounds[i] // == -1 ? {}: rounds[ i ]
+    round = rounds[i]
+    if (!round.analyst_status || !round.status ) {
+      return fetching()
+    }
+
     i = tokens.findIndex( token => token.id == round.covered_token )
     token = i == -1 ? {} : tokens[ i ]
     let analyst_status = config.STATUSES[round.analyst_status]
@@ -158,43 +163,50 @@ class Round extends PureComponent {
           </div>
         </div>
         <div className="row">
-          <div className="col-md-6">Round { this.idx } for token <Link to={"/token/"+token.id}><span>{ token.name }</span></Link> with status <span className="text-danger">{ config.STATUSES[round.status] }</span></div>
-          <div className="col-md-6">Number of analysts: {round.num_analysts}</div>
+          <h4 className="text-center"></h4>  
         </div>
-        <div className="row">
-          <div className="col-md-6">Start: <Moment className="bg-green" from={timestamp*1000} date={ new Date(config.cycleTime(round.cycle,true)) } /></div>
-          <div className="col-md-6"> Finish: <Moment className="bg-red" from={timestamp*1000} date={ new Date(config.cycleTime(round.cycle+2,true)) } /></div>
-        </div>
-        <div className="row">             
-          <div className="col-md-6">
-            { 
-              round.briefs[0].timestamp ? 
-                <a 
-                  href={ config.ipfsRepoDownload+round.briefs[0].filehash }
-                  target="_blank"
-                >Bull brief--
-                  <Moment from={timestamp*1000} date={ round.briefs[0].timestamp*1000 } />
-                </a>
-                : <span>Bull brief due <Moment from={timestamp*1000}>{1000*(config.cycleTime(round.cycle)+config.cyclePhaseTime(1))}</Moment></span>
-            }
-          </div>
-          <div className="col-md-6">
-            { 
-              round.briefs[1].timestamp ? 
-                <a 
-                  href={ config.ipfsRepoDownload+round.briefs[1].filehash }
-                  target="_blank"
-                >Bear brief--
-                  <Moment from={timestamp*1000} date={ round.briefs[1].timestamp*1000 } />
-                </a>
-                : <span>Bear brief due <Moment from={timestamp*1000}>{1000*(config.cycleTime(round.cycle)+config.cyclePhaseTime(1))}</Moment></span>
-            }
-          </div> 
-        </div>
+        <Panel className="card card-style panel-active-large">
+          <Panel.Heading>
+            <Panel.Title><strong className="text-gray">My status in round => <span className="text-black">{ analyst_status }&nbsp;{ round.inround_id < 2 ? `( ${leadPosition})`: '' }</span></strong></Panel.Title>
+          </Panel.Heading>
+          <Panel.Body>
+            <div className="row">
+              <div className="col-md-6">Round { this.idx } for token <Link to={"/token/"+token.id}><span>{ token.name }</span></Link> (<span className="text-danger">{ config.STATUSES[round.status] }</span>)</div>
+              <div className="col-md-6">Analysts: {round.num_analysts}</div>
+            </div>
+            <div className="row">
+              <div className="col-md-6">Start: <Moment className="bg-green" from={timestamp*1000} date={ new Date(config.cycleTime(round.cycle,true)) } /></div>
+              <div className="col-md-6"> Finish: <Moment className="bg-red" from={timestamp*1000} date={ new Date(config.cycleTime(round.cycle+2,true)) } /></div>
+            </div>
+            <div className="row">             
+              <div className="col-md-6">
+                { 
+                  round.briefs[0].timestamp ? 
+                    <a 
+                      href={ config.ipfsRepoDownload+round.briefs[0].filehash }
+                      target="_blank"
+                    >Bull brief--
+                      <Moment from={timestamp*1000} date={ round.briefs[0].timestamp*1000 } />
+                    </a>
+                    : <span>Bull brief <Moment from={timestamp*1000}>{1000*(config.cycleTime(round.cycle)+config.cyclePhaseTime(1))}</Moment></span>
+                }
+              </div>
+              <div className="col-md-6">
+                { 
+                  round.briefs[1].timestamp ? 
+                    <a 
+                      href={ config.ipfsRepoDownload+round.briefs[1].filehash }
+                      target="_blank"
+                    >Bear brief--
+                      <Moment from={timestamp*1000} date={ round.briefs[1].timestamp*1000 } />
+                    </a>
+                    : <span>Bear brief <Moment from={timestamp*1000}>{1000*(config.cycleTime(round.cycle)+config.cyclePhaseTime(1))}</Moment></span>
+                }
+              </div> 
+            </div>
+            </Panel.Body>
+          </Panel>
         <TokenSummary token={token} format="small" />
-        <div className="row">
-          <h4 className="text-center">My status in round => <span className="text-red">{ analyst_status }&nbsp;{ round.inround_id < 2 ? `( ${leadPosition})`: '' }</span></h4>  
-        </div>
         <div>{ getActivity( analyst_status ) }</div>
       </AnimatedView>
     )

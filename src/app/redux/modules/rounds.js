@@ -119,7 +119,7 @@ export const setRoundInfo = ( roundInfo ) => dispatch => {
   dispatch(  { type: SET_ROUND_INFO, roundInfo, time: moment().format() } )
 }
 
-export const fetchRoundInfo = ( round ) => {
+export const fetchRoundInfo = ( round, deep = false ) => {
   const request = (time = moment().format()) => {
     return { type: REQUEST_ROUND_INFO, time }
   }

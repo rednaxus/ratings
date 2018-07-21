@@ -185,8 +185,8 @@ class Round extends PureComponent {
                     <a 
                       href={ config.ipfsRepoDownload+round.briefs[0].filehash }
                       target="_blank"
-                    >Bull brief--
-                      <Moment from={timestamp*1000} date={ round.briefs[0].timestamp*1000 } />
+                    >Bull brief submitted--
+                      <Moment from={timestamp*1000}>{ round.briefs[0].timestamp*1000 }</Moment>
                     </a>
                     : <span>Bull brief <Moment from={timestamp*1000}>{1000*(config.cycleTime(round.cycle)+config.cyclePhaseTime(1))}</Moment></span>
                 }
@@ -197,8 +197,8 @@ class Round extends PureComponent {
                     <a 
                       href={ config.ipfsRepoDownload+round.briefs[1].filehash }
                       target="_blank"
-                    >Bear brief--
-                      <Moment from={timestamp*1000} date={ round.briefs[1].timestamp*1000 } />
+                    >Bear brief submitted--
+                      <Moment from={timestamp*1000}>{ round.briefs[1].timestamp*1000 }</Moment>
                     </a>
                     : <span>Bear brief <Moment from={timestamp*1000}>{1000*(config.cycleTime(round.cycle)+config.cyclePhaseTime(1))}</Moment></span>
                 }
@@ -206,8 +206,8 @@ class Round extends PureComponent {
             </div>
             </Panel.Body>
           </Panel>
-        <TokenSummary token={token} format="small" />
         <div>{ getActivity( analyst_status ) }</div>
+        <TokenSummary token={token} format="small" />
       </AnimatedView>
     )
   }

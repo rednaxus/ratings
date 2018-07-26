@@ -15,13 +15,12 @@ export class BriefUpload extends PureComponent {
     console.log("got submit")
   }
 
-  onUploaded = (files) => {
-    console.log("files uploaded",files)
-    let hash = files.ipfs[0].hash
-    return
+  onUploaded = file => {
+    console.log("brief uploaded",file)
+    let hash = file.ipfs
     submitRoundBrief(this.props.round, this.props.roundAnalyst, hash).then( () => {
-      console.log('brief uploaded',this.props.round,files.ipfs[0].hash)
-      if ( this.props.onComplete ) this.props.onComplete( files.ipfs[0].hash )
+      console.log('brief uploaded',this.props.round,hash)
+      if ( this.props.onComplete ) this.props.onComplete( hash )
     })
   }
   render() { 

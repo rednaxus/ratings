@@ -156,6 +156,7 @@ class Round extends PureComponent {
     return(
       <AnimatedView>
         <Breadcrumb path={["dashboard","eval-round"]} />
+        <BriefUpload round={ round.id } roundAnalyst={ round.inround_id } onComplete={ this.onBriefUpload } />
         <div className="row">
           <div className="col-md-8"><h4>Evaluation Round</h4></div>         
           <div className="col-md-4 text-right text-green small">

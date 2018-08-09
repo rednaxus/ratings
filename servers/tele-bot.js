@@ -14,6 +14,8 @@ app.use(
 app.post('/new-message', function(req, res) {
   const { message } = req.body
 
+  console.log(`got new message`,message)
+
   //Each message contains "text" and a "chat" object, which has an "id" which is the chat id
 
   if (!message || message.text.toLowerCase().indexOf('run round') < 0) {

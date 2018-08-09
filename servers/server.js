@@ -160,8 +160,8 @@ let ar
 let tr
 let round_analysts = []
 
-let num_analysts = 60
-let num_leads = 6
+let num_analysts = config.numTestAnalysts || 60
+let num_leads = config.numTestLeads || 6
 
 let testAnalysts = new Array(num_analysts).fill().map( ( item,idx ) =>
   ({ id: idx, email: `veva${ (idx<10?'0':'') + idx }@veva.one` })

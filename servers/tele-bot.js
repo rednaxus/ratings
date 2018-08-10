@@ -2,8 +2,9 @@ var express = require('express')
 var app = express()
 var bodyParser = require('body-parser')
 const axios = require('axios')
+const config = require('./config')
 
-const botStr = 'https://api.telegram.org/bot637622678:AAHX54UuHozJkwrIYm5vXAptuxZUWLpIuZ8'
+const botStr = `https://api.telegram.org/bot${config.telegram.botkey}`
 const smelly = 'https://agario-skins.org/images/skins/custom/smelly.png'
 
 const msgStr = `${botStr}/sendMessage`
